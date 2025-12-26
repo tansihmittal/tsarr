@@ -215,20 +215,38 @@ const VideoCaptionsLayout = () => {
     updateState({
       isTranscribing: true,
       transcriptionProgress: "Initializing...",
-      transcriptionPercent: 0,
+      transcriptionPercent: 5,
     });
+
+    // Simulated progress since Whisper callbacks are unreliable
+    let currentProgress = 5;
+    const progressInterval = setInterval(() => {
+      const increment = currentProgress < 30 ? 2 : currentProgress < 60 ? 1.5 : currentProgress < 85 ? 1 : 0.3;
+      currentProgress = Math.min(90, currentProgress + increment);
+      const phase = currentProgress < 25 ? "Loading model..." : currentProgress < 50 ? "Extracting audio..." : "Generating captions...";
+      updateState({
+        transcriptionProgress: phase,
+        transcriptionPercent: Math.round(currentProgress),
+      });
+    }, 300);
 
     try {
       const result = await whisperTranscriber.transcribeVideo(
         videoRef.current,
         state.wordsPerCaption,
         (status, progress) => {
-          updateState({
-            transcriptionProgress: status,
-            transcriptionPercent: progress || 0,
-          });
+          // Only update if we get real progress
+          if (progress && progress > currentProgress) {
+            currentProgress = progress;
+            updateState({
+              transcriptionProgress: status,
+              transcriptionPercent: progress,
+            });
+          }
         }
       );
+
+      clearInterval(progressInterval);
 
       // Convert transcription segments to captions
       const newCaptions: Caption[] = result.segments.map((segment) => ({
@@ -245,6 +263,7 @@ const VideoCaptionsLayout = () => {
         transcriptionPercent: 100,
       });
     } catch (error) {
+      clearInterval(progressInterval);
       console.error("Transcription failed:", error);
       updateState({
         isTranscribing: false,
