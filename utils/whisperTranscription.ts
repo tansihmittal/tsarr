@@ -180,13 +180,25 @@ class WhisperTranscriber {
       await this.yieldToUI();
       onProgress?.("Generating subtitles...", 25);
 
-      // Run transcription
-      const result = await this.transcriber(processedAudio, {
-        chunk_length_s: 30,
-        stride_length_s: 5,
-        return_timestamps: "word",
-        task: "transcribe",
-      });
+      // Run transcription with error handling for worker issues
+      let result;
+      try {
+        result = await this.transcriber(processedAudio, {
+          chunk_length_s: 30,
+          stride_length_s: 5,
+          return_timestamps: "word",
+          task: "transcribe",
+        });
+      } catch (transcriptionError: any) {
+        console.error("Transcription error:", transcriptionError);
+        // If worker fails, try without word timestamps
+        result = await this.transcriber(processedAudio, {
+          chunk_length_s: 30,
+          stride_length_s: 5,
+          return_timestamps: true,
+          task: "transcribe",
+        });
+      }
 
       await this.yieldToUI();
       onProgress?.("Processing results...", 90);
@@ -199,7 +211,7 @@ class WhisperTranscriber {
 
       if (result.chunks && Array.isArray(result.chunks)) {
         const words = result.chunks.filter(
-          (chunk: any) => chunk.text && chunk.timestamp && chunk.timestamp[0] !== null
+          (chunk: any) => chunk && typeof chunk.text === 'string' && chunk.text.trim() && chunk.timestamp && chunk.timestamp[0] !== null
         );
 
         let currentPhrase: string[] = [];
@@ -209,7 +221,7 @@ class WhisperTranscriber {
 
         for (let i = 0; i < words.length; i++) {
           const word = words[i];
-          const wordText = word.text.trim();
+          const wordText = typeof word.text === 'string' ? word.text.trim() : '';
           
           // Use exact timestamps from Whisper
           const wordStart = typeof word.timestamp[0] === 'number' ? word.timestamp[0] : 0;
