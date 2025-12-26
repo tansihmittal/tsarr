@@ -770,6 +770,7 @@ const MapMakerLayout: React.FC = () => {
   const bubbleScale = scaleLinear().domain([minValue, maxValue]).range([4, 30]);
 
   const getCountryColor = (geoId: string) => {
+    if (!geoId) return defaultFill;
     // Normalize the geoId for comparison
     const normalizedGeoId = geoId.toLowerCase().trim();
     
@@ -1073,8 +1074,9 @@ const MapMakerLayout: React.FC = () => {
                   >
                     <Geographies geography={geoUrl}>
                       {({ geographies }: { geographies: any[] }) =>
-                        geographies.map((geo: any) => {
-                          const geoId = geo.properties.name || geo.id;
+                        geographies?.map((geo: any) => {
+                          const geoId = geo?.properties?.name || geo?.id || '';
+                          if (!geoId) return null;
                           return (
                             <Geography
                               key={geo.rsmKey}
