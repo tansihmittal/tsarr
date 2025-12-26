@@ -1,20 +1,6 @@
 declare module 'react-simple-maps' {
   import * as React from 'react';
 
-  export interface ZoomableGroupProps {
-    center?: [number, number];
-    zoom?: number;
-    minZoom?: number;
-    maxZoom?: number;
-    translateExtent?: [[number, number], [number, number]];
-    onMoveStart?: (event: any) => void;
-    onMove?: (event: any) => void;
-    onMoveEnd?: (event: any) => void;
-    children?: React.ReactNode;
-  }
-
-  export const ZoomableGroup: React.FC<ZoomableGroupProps>;
-
   export interface GeographiesProps {
     geography: string | object;
     children: (data: { geographies: any[] }) => React.ReactNode;

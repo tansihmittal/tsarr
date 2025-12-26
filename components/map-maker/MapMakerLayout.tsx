@@ -8,7 +8,6 @@ import {
   Geography,
   Marker,
   Line,
-  ZoomableGroup,
 } from "react-simple-maps";
 import { scaleLinear } from "d3-scale";
 import {
@@ -1072,127 +1071,125 @@ const MapMakerLayout: React.FC = () => {
                     projectionConfig={{ center: currentRegion.center, scale: currentRegion.scale * zoom }}
                     style={{ width: "100%", height: "100%" }}
                   >
-                    <ZoomableGroup center={currentRegion.center} zoom={zoom}>
-                      <Geographies geography={geoUrl}>
-                        {({ geographies }: { geographies: any[] }) =>
-                          geographies.map((geo: any) => {
-                            const geoId = geo.properties.name || geo.id;
-                            return (
-                              <Geography
-                                key={geo.rsmKey}
-                                geography={geo}
-                                fill={mapType === "choropleth" ? getCountryColor(geoId) : defaultFill}
-                                stroke={strokeColor}
-                                strokeWidth={strokeWidth}
-                                style={{
-                                  default: { outline: "none" },
-                                  hover: { outline: "none", fill: mapType === "choropleth" ? getCountryColor(geoId) : "#a5b4fc" },
-                                  pressed: { outline: "none" },
-                                }}
-                              />
-                            );
-                          })
-                        }
-                      </Geographies>
-
-                      {/* Bubble markers */}
-                      {mapType === "bubble" &&
-                        data.filter((d) => d.coordinates).map((d) => (
-                          <Marker key={d.id} coordinates={d.coordinates!}>
-                            <circle r={bubbleScale(d.value)} fill={colorScale(d.value)} fillOpacity={0.7} stroke={strokeColor} strokeWidth={1} />
-                            {showLabels && (
-                              <text textAnchor="middle" y={-bubbleScale(d.value) - 5} className="text-[10px] fill-gray-700 font-medium">{d.name}</text>
-                            )}
-                          </Marker>
-                        ))}
-
-                      {/* Point markers with icons */}
-                      {mapType === "marker" &&
-                        data.filter((d) => d.coordinates).map((d) => (
-                          <Marker key={d.id} coordinates={d.coordinates!}>
-                            {renderMarkerIcon(d.icon || markerIcon, markerSize, d.color || markerColor)}
-                            {showLabels && (
-                              <text textAnchor="middle" y={-markerSize - 4} className="text-[10px] fill-gray-700 font-medium">{d.name}</text>
-                            )}
-                          </Marker>
-                        ))}
-
-                      {/* Heat map circles */}
-                      {mapType === "heatmap" &&
-                        data.filter((d) => d.coordinates).map((d) => (
-                          <Marker key={d.id} coordinates={d.coordinates!}>
-                            <circle r={bubbleScale(d.value) * 1.5} fill={colorScale(d.value)} fillOpacity={0.4} style={{ filter: "blur(8px)" }} />
-                            <circle r={bubbleScale(d.value)} fill={colorScale(d.value)} fillOpacity={0.6} />
-                          </Marker>
-                        ))}
-
-                      {/* Flow lines with arrows */}
-                      {mapType === "flow" &&
-                        flows.map((f) => {
-                          if (f.from[0] === 0 && f.from[1] === 0) return null;
-                          if (f.to[0] === 0 && f.to[1] === 0) return null;
-                          
-                          const midX = (f.from[0] + f.to[0]) / 2;
-                          const midY = (f.from[1] + f.to[1]) / 2;
-                          const strokeW = Math.max(2, Math.min(f.value / 20, 8));
-                          
+                    <Geographies geography={geoUrl}>
+                      {({ geographies }: { geographies: any[] }) =>
+                        geographies.map((geo: any) => {
+                          const geoId = geo.properties.name || geo.id;
                           return (
-                            <g key={f.id}>
-                              {/* Main flow line */}
-                              <Line 
-                                from={f.from} 
-                                to={f.to} 
-                                stroke={flowColor} 
-                                strokeWidth={strokeW} 
-                                strokeLinecap="round" 
-                                strokeOpacity={0.7}
-                              />
-                              {/* Start point - small circle */}
-                              <Marker coordinates={f.from}>
-                                <circle r={5} fill={flowColor} stroke="#fff" strokeWidth={2} />
-                              </Marker>
-                              {/* End point - arrow triangle */}
-                              <Marker coordinates={f.to}>
+                            <Geography
+                              key={geo.rsmKey}
+                              geography={geo}
+                              fill={mapType === "choropleth" ? getCountryColor(geoId) : defaultFill}
+                              stroke={strokeColor}
+                              strokeWidth={strokeWidth}
+                              style={{
+                                default: { outline: "none" },
+                                hover: { outline: "none", fill: mapType === "choropleth" ? getCountryColor(geoId) : "#a5b4fc" },
+                                pressed: { outline: "none" },
+                              }}
+                            />
+                          );
+                        })
+                      }
+                    </Geographies>
+
+                    {/* Bubble markers */}
+                    {mapType === "bubble" &&
+                      data.filter((d) => d.coordinates).map((d) => (
+                        <Marker key={d.id} coordinates={d.coordinates!}>
+                          <circle r={bubbleScale(d.value)} fill={colorScale(d.value)} fillOpacity={0.7} stroke={strokeColor} strokeWidth={1} />
+                          {showLabels && (
+                            <text textAnchor="middle" y={-bubbleScale(d.value) - 5} className="text-[10px] fill-gray-700 font-medium">{d.name}</text>
+                          )}
+                        </Marker>
+                      ))}
+
+                    {/* Point markers with icons */}
+                    {mapType === "marker" &&
+                      data.filter((d) => d.coordinates).map((d) => (
+                        <Marker key={d.id} coordinates={d.coordinates!}>
+                          {renderMarkerIcon(d.icon || markerIcon, markerSize, d.color || markerColor)}
+                          {showLabels && (
+                            <text textAnchor="middle" y={-markerSize - 4} className="text-[10px] fill-gray-700 font-medium">{d.name}</text>
+                          )}
+                        </Marker>
+                      ))}
+
+                    {/* Heat map circles */}
+                    {mapType === "heatmap" &&
+                      data.filter((d) => d.coordinates).map((d) => (
+                        <Marker key={d.id} coordinates={d.coordinates!}>
+                          <circle r={bubbleScale(d.value) * 1.5} fill={colorScale(d.value)} fillOpacity={0.4} style={{ filter: "blur(8px)" }} />
+                          <circle r={bubbleScale(d.value)} fill={colorScale(d.value)} fillOpacity={0.6} />
+                        </Marker>
+                      ))}
+
+                    {/* Flow lines with arrows */}
+                    {mapType === "flow" &&
+                      flows.map((f) => {
+                        if (f.from[0] === 0 && f.from[1] === 0) return null;
+                        if (f.to[0] === 0 && f.to[1] === 0) return null;
+                        
+                        const midX = (f.from[0] + f.to[0]) / 2;
+                        const midY = (f.from[1] + f.to[1]) / 2;
+                        const strokeW = Math.max(2, Math.min(f.value / 20, 8));
+                        
+                        return (
+                          <g key={f.id}>
+                            {/* Main flow line */}
+                            <Line 
+                              from={f.from} 
+                              to={f.to} 
+                              stroke={flowColor} 
+                              strokeWidth={strokeW} 
+                              strokeLinecap="round" 
+                              strokeOpacity={0.7}
+                            />
+                            {/* Start point - small circle */}
+                            <Marker coordinates={f.from}>
+                              <circle r={5} fill={flowColor} stroke="#fff" strokeWidth={2} />
+                            </Marker>
+                            {/* End point - arrow triangle */}
+                            <Marker coordinates={f.to}>
+                              <g>
+                                <circle r={8} fill={flowColor} stroke="#fff" strokeWidth={2} />
+                                <text 
+                                  textAnchor="middle" 
+                                  dominantBaseline="central" 
+                                  fill="#fff" 
+                                  fontSize="10" 
+                                  fontWeight="bold"
+                                >
+                                  ▶
+                                </text>
+                              </g>
+                            </Marker>
+                            {/* Label at midpoint */}
+                            {showLabels && f.label && (
+                              <Marker coordinates={[midX, midY]}>
                                 <g>
-                                  <circle r={8} fill={flowColor} stroke="#fff" strokeWidth={2} />
+                                  <rect 
+                                    x={-40} 
+                                    y={-10} 
+                                    width={80} 
+                                    height={16} 
+                                    fill="white" 
+                                    fillOpacity={0.9} 
+                                    rx={3}
+                                  />
                                   <text 
                                     textAnchor="middle" 
-                                    dominantBaseline="central" 
-                                    fill="#fff" 
-                                    fontSize="10" 
-                                    fontWeight="bold"
+                                    dominantBaseline="central"
+                                    className="text-[9px] fill-gray-700 font-medium"
                                   >
-                                    ▶
+                                    {f.label}
                                   </text>
                                 </g>
                               </Marker>
-                              {/* Label at midpoint */}
-                              {showLabels && f.label && (
-                                <Marker coordinates={[midX, midY]}>
-                                  <g>
-                                    <rect 
-                                      x={-40} 
-                                      y={-10} 
-                                      width={80} 
-                                      height={16} 
-                                      fill="white" 
-                                      fillOpacity={0.9} 
-                                      rx={3}
-                                    />
-                                    <text 
-                                      textAnchor="middle" 
-                                      dominantBaseline="central"
-                                      className="text-[9px] fill-gray-700 font-medium"
-                                    >
-                                      {f.label}
-                                    </text>
-                                  </g>
-                                </Marker>
-                              )}
-                            </g>
-                          );
-                        })}
-                    </ZoomableGroup>
+                            )}
+                          </g>
+                        );
+                      })}
                   </ComposableMap>
                   {renderLegend()}
                 </div>
