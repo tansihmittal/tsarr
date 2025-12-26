@@ -252,7 +252,7 @@ const ImageTextEditorPreview = ({
   const handleDownload = () => {
     if (!canvasRef.current) return;
     const link = document.createElement("a");
-    link.download = `edited-image.png`;
+    link.download = `tsarr-in-edited-image.png`;
     link.href = canvasRef.current.toDataURL("image/png");
     link.click();
   };

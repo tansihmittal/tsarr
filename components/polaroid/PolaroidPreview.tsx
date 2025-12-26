@@ -37,7 +37,7 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset }: Props) 
         logging: false,
       });
       const link = document.createElement("a");
-      link.download = `polaroid-${Date.now()}.png`;
+      link.download = `tsarr-in-polaroid-${Date.now()}.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
       toast.success("Image downloaded!");

@@ -103,7 +103,7 @@ export const downloadimagePng = (node: HTMLDivElement | null, res: number, filen
       .then(function (dataUrl) {
         var a = document.createElement("a");
         a.href = dataUrl;
-        a.download = filename ? `${filename}.png` : `tsarr.in-${new Date().toISOString()}.png`;
+        a.download = filename ? `tsarr-in-${filename}.png` : `tsarr-in-screenshot-${new Date().toISOString()}.png`;
         a.click();
         toast.success("Image saved", { id: savingToast });
       })
@@ -147,7 +147,7 @@ export const downloadimageJpeg = (node: HTMLDivElement | null, res: number) => {
       .then(function (dataUrl) {
         var a = document.createElement("a");
         a.href = dataUrl;
-        a.download = `tsarr.in-${new Date().toISOString()}.jpeg`;
+        a.download = `tsarr-in-screenshot-${new Date().toISOString()}.jpeg`;
         a.click();
         toast.success("Image saved", { id: savingToast });
       })
@@ -190,7 +190,7 @@ export const downloadimageSvg = (node: HTMLDivElement | null, res: number) => {
       .then(function (dataUrl) {
         var a = document.createElement("a");
         a.href = dataUrl;
-        a.download = `tsarr.in-${new Date().toISOString()}.svg`;
+        a.download = `tsarr-in-screenshot-${new Date().toISOString()}.svg`;
         a.click();
         toast.success("Image saved", { id: savingToast });
       })

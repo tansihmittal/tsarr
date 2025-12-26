@@ -111,7 +111,7 @@ const ClipboardSaverLayout: React.FC = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `clipboard-image.${outputFormat}`;
+      a.download = `tsarr-in-clipboard-image.${outputFormat}`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success(`Downloaded as ${outputFormat.toUpperCase()}!`);

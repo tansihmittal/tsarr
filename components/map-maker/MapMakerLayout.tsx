@@ -936,7 +936,7 @@ const MapMakerLayout: React.FC = () => {
       }
       const a = document.createElement("a");
       a.href = dataUrl;
-      a.download = `map.${format}`;
+      a.download = `tsarr-in-map.${format}`;
       a.click();
       toast.success(`Exported as ${format.toUpperCase()}${format !== "svg" ? ` ${scale}x` : ""}`);
     } catch {

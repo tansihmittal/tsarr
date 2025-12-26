@@ -433,7 +433,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
                 : "image/png";
 
           const link = document.createElement("a");
-          link.download = `text-behind-image-${scale}x.${state.exportFormat}`;
+          link.download = `tsarr-in-text-behind-image-${scale}x.${state.exportFormat}`;
           link.href = exportCanvas.toDataURL(mimeType, 0.95);
           link.click();
         };
@@ -458,7 +458,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
               : "image/png";
 
         const link = document.createElement("a");
-        link.download = `text-behind-image-${scale}x.${state.exportFormat}`;
+        link.download = `tsarr-in-text-behind-image-${scale}x.${state.exportFormat}`;
         link.href = exportCanvas.toDataURL(mimeType, 0.95);
         link.click();
       }

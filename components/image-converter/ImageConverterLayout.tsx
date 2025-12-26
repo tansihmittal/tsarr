@@ -92,7 +92,7 @@ const ImageConverterLayout: React.FC = () => {
           const url = URL.createObjectURL(fallbackBlob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `converted.${state.outputFormat}`;
+          a.download = `tsarr-in-converted.${state.outputFormat}`;
           a.click();
           URL.revokeObjectURL(url);
           toast.success(`Converted to ${state.outputFormat.toUpperCase()}!`);
@@ -102,7 +102,7 @@ const ImageConverterLayout: React.FC = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `converted.${state.outputFormat}`;
+      a.download = `tsarr-in-converted.${state.outputFormat}`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success(`Converted to ${state.outputFormat.toUpperCase()}!`);

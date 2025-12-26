@@ -164,7 +164,7 @@ const WatermarkRemoverLayout: React.FC = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `watermark-removed.${state.outputFormat}`;
+      a.download = `tsarr-in-watermark-removed.${state.outputFormat}`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success("Image exported!");

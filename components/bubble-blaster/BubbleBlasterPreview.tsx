@@ -209,7 +209,7 @@ const BubbleBlasterPreview = ({
     ctx.drawImage(workingCanvasRef.current, 0, 0);
 
     const link = document.createElement("a");
-    link.download = `bubble-blaster-${scale}x.png`;
+    link.download = `tsarr-in-bubble-blaster-${scale}x.png`;
     link.href = exportCanvas.toDataURL("image/png");
     link.click();
     toast.success(`Downloaded at ${scale}x resolution`);

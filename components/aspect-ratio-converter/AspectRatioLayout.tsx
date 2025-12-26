@@ -95,7 +95,7 @@ const AspectRatioLayout: React.FC = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `converted-${state.targetAspectRatio.name.replace(":", "x")}-${state.outputScale}x.${state.outputFormat}`;
+      a.download = `tsarr-in-converted-${state.targetAspectRatio.name.replace(":", "x")}-${state.outputScale}x.${state.outputFormat}`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success("Image exported!");

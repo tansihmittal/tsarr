@@ -1287,7 +1287,7 @@ const GlobeMakerLayout: React.FC = () => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `globe.${format}`;
+            a.download = `tsarr-in-globe.${format}`;
             a.click();
             URL.revokeObjectURL(url);
             toast.success(`Exported as ${format.toUpperCase()}`);
@@ -1341,7 +1341,7 @@ const GlobeMakerLayout: React.FC = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "globe.gif";
+        a.download = "tsarr-in-globe.gif";
         a.click();
         URL.revokeObjectURL(url);
         setIsRecording(false);
@@ -1395,7 +1395,7 @@ const GlobeMakerLayout: React.FC = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "globe.gif";
+        a.download = "tsarr-in-globe.gif";
         a.click();
         URL.revokeObjectURL(url);
         setIsRecording(false);
@@ -1553,7 +1553,7 @@ const GlobeMakerLayout: React.FC = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "globe.html";
+      a.download = "tsarr-in-globe.html";
       a.click();
       URL.revokeObjectURL(url);
       toast.success("HTML file downloaded!");

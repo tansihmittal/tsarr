@@ -100,7 +100,7 @@ const ImageResizerLayout: React.FC = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `resized-${dims.width}x${dims.height}.${state.outputFormat}`;
+      a.download = `tsarr-in-resized-${dims.width}x${dims.height}.${state.outputFormat}`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success("Image exported!");

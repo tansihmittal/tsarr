@@ -792,7 +792,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `video-captions-${exportQuality}.webm`;
+      a.download = `tsarr-in-video-captions-${exportQuality}.webm`;
       a.click();
       URL.revokeObjectURL(url);
       setIsExportingVideo(false);
@@ -972,7 +972,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `video-with-captions-${exportQuality}.${fileExtension}`;
+      a.download = `tsarr-in-video-with-captions-${exportQuality}.${fileExtension}`;
       a.click();
       URL.revokeObjectURL(url);
       setIsExportingVideo(false);

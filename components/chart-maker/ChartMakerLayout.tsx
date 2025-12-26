@@ -709,7 +709,7 @@ const ChartMakerLayout: React.FC = () => {
       
       const a = document.createElement("a");
       a.href = dataUrl;
-      a.download = `chart.${format}`;
+      a.download = `tsarr-in-chart.${format}`;
       a.click();
       toast.success(`Exported as ${format.toUpperCase()}${format !== "svg" ? ` ${scale}x` : ""}`);
     } catch {
@@ -775,7 +775,7 @@ const ChartMakerLayout: React.FC = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `chart-animation.${mimeType.includes("mp4") ? "mp4" : "webm"}`;
+        a.download = `tsarr-in-chart-animation.${mimeType.includes("mp4") ? "mp4" : "webm"}`;
         a.click();
         URL.revokeObjectURL(url);
         setIsExportingGif(false);

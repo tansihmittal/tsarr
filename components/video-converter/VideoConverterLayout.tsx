@@ -263,7 +263,7 @@ const VideoConverterLayout: React.FC = () => {
 
       const a = document.createElement("a");
       a.href = downloadUrl;
-      a.download = `converted.${outputFormat}`;
+      a.download = `tsarr-in-converted.${outputFormat}`;
       a.click();
       URL.revokeObjectURL(downloadUrl);
 
