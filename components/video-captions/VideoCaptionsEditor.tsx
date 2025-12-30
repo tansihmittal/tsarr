@@ -63,7 +63,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
       setLocalTime(0.001);
       setTimeout(() => setLocalTime(0), 10);
     }
-  }, [state.captions.length]);
+  }, [state.captions.length, localTime]);
 
   // Global mouse events for resize (so it works even when mouse leaves the container)
   useEffect(() => {

@@ -59,7 +59,7 @@ const DebouncedInput = memo(({ value, onChange, className, placeholder, maxLengt
     if (!isTypingRef.current && value !== localValue) {
       setLocalValue(value);
     }
-  }, [value]);
+  }, [value, localValue]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = maxLength ? e.target.value.slice(0, maxLength) : e.target.value;
@@ -104,7 +104,7 @@ const DebouncedTextarea = memo(({ value, onChange, className, placeholder, maxLe
     if (!isTypingRef.current && value !== localValue) {
       setLocalValue(value);
     }
-  }, [value]);
+  }, [value, localValue]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;

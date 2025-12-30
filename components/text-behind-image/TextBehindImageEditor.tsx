@@ -276,7 +276,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
 
       return canvas;
     },
-    [state, canvasRef]
+    [state, canvasRef, drawTextLayer]
   );
 
   useEffect(() => {
