@@ -2,17 +2,16 @@
 const nextConfig = {
   reactStrictMode: true,
   compiler: {
-    // Enables the styled-components SWC transform
     styledComponents: true,
   },
   webpack: (config, { isServer }) => {
-    // Handle WASM files for ONNX Runtime
+    // Handle WASM files
     config.experiments = {
       ...config.experiments,
       asyncWebAssembly: true,
     };
 
-    // Fallback for node modules in browser
+    // Browser-only fallbacks
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -21,11 +20,11 @@ const nextConfig = {
         crypto: false,
       };
 
-      // Ignore onnxruntime-node (server-only)
+      // Ignore server-only packages
       config.resolve.alias = {
         ...config.resolve.alias,
         "onnxruntime-node": false,
-        "sharp": false,
+        sharp: false,
       };
     }
 
@@ -37,19 +36,36 @@ const nextConfig = {
 
     return config;
   },
-  // Headers for WASM and cross-origin resources
+  // Rewrites for dynamic sitemap and robots.txt
+  async rewrites() {
+    return [
+      {
+        source: '/sitemap.xml',
+        destination: '/sitemap.xml',
+      },
+      {
+        source: '/robots.txt',
+        destination: '/robots.txt',
+      },
+    ];
+  },
+  // Required headers for SharedArrayBuffer (needed by ONNX/WebGPU)
   async headers() {
     return [
       {
-        source: "/(.*)",
+        source: "/:path*",
         headers: [
+          {
+            key: "Cross-Origin-Embedder-Policy",
+            value: "require-corp",
+          },
           {
             key: "Cross-Origin-Opener-Policy",
             value: "same-origin",
           },
           {
-            key: "Cross-Origin-Embedder-Policy",
-            value: "credentialless",
+            key: "Cross-Origin-Resource-Policy",
+            value: "cross-origin",
           },
         ],
       },
