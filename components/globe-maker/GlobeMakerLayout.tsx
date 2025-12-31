@@ -1597,7 +1597,7 @@ const GlobeMakerLayout: React.FC = () => {
             </div>
 
             {/* Globe Container */}
-            <div className="relative flex-1 min-h-[500px] lg:min-h-[600px] flex items-center justify-center rounded-2xl overflow-hidden" style={{ background: background.background }}>
+            <div className="relative flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl overflow-hidden" style={{ background: background.background }}>
               <div ref={globeContainerRef} className="absolute inset-0" style={{ width: "100%", height: "100%" }} />
               {!globeLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center">

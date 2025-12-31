@@ -1060,7 +1060,7 @@ const MapMakerLayout: React.FC = () => {
             </div>
 
             {/* Map Container */}
-            <div className="relative flex-1 min-h-[500px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
+            <div className="relative flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
               <div
                 ref={mapContainerRef}
                 className="w-full h-full flex flex-col items-center justify-center relative"

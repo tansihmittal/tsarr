@@ -931,7 +931,7 @@ const ChartMakerLayout: React.FC = () => {
             </div>
 
             {/* Chart Container */}
-            <div className="relative flex-1 min-h-[500px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
+            <div className="relative flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
               <div ref={chartContainerRef} className="w-full h-full flex items-center justify-center" style={{ background: background.background, padding: `${padding}px`, borderRadius: `${borderRadius}px` }}>
                 <div className="w-full h-full max-w-[800px] max-h-[500px]">{renderChart()}</div>
               </div>

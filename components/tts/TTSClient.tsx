@@ -28,7 +28,7 @@ export default function TTSClient() {
   if (error) {
     return (
       <TTSLayout>
-        <div className="flex items-center justify-center min-h-[500px]">
+        <div className="flex items-center justify-center min-h-[300px] sm:min-h-[400px]">
           <div className="text-center text-red-500">
             <p>Error loading TTS: {error}</p>
           </div>
@@ -41,7 +41,7 @@ export default function TTSClient() {
   if (!mounted) {
     return (
       <TTSLayout>
-        <div className="flex items-center justify-center min-h-[500px]">
+        <div className="flex items-center justify-center min-h-[300px] sm:min-h-[400px]">
           <div className="text-center">
             <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
             <p className="text-gray-500">Loading TTS Engine...</p>

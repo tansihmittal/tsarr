@@ -253,7 +253,7 @@ const TTSMain: React.FC<Props> = () => {
       </div>
 
       {/* Main Editor Area */}
-      <div className="relative w-full min-h-[500px] lg:min-h-[600px] flex flex-col rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex flex-col rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
         <div className="flex-1 p-4">
           <textarea
             value={text}

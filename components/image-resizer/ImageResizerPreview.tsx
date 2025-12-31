@@ -103,7 +103,7 @@ const ImageResizerPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCo
           <label><OptionButtonOutline title="Reset Image" disabled><BsRepeat /></OptionButtonOutline></label>
           <OptionButtonOutline title="Reset Canvas" disabled><BiReset /></OptionButtonOutline>
         </div>
-        <div className="relative w-full min-h-[500px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
+        <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
           <div className={`p-6 sm:p-8 bg-base-100 relative z-20 rounded-2xl shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-primary" : ""}`} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
             <div className="flex gap-1 flex-col mb-6">
               <div className="flex items-start gap-4 sm:gap-6">
@@ -149,7 +149,7 @@ const ImageResizerPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCo
           {state.originalWidth} × {state.originalHeight} px → {dims.width} × {dims.height} px
         </span>
       </div>
-      <div className={`relative w-full min-h-[500px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border ${isDragging ? "border-primary border-dashed bg-primary/5" : "border-base-200/80"} overflow-hidden`} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
+      <div className={`relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border ${isDragging ? "border-primary border-dashed bg-primary/5" : "border-base-200/80"} overflow-hidden`} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
         <div className="relative flex items-center justify-center p-4">
           <canvas ref={canvasRef} className="max-w-full max-h-[550px] rounded-lg shadow-2xl shadow-black/10" />
         </div>

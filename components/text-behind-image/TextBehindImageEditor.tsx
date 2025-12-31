@@ -655,7 +655,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
       {/* Editor Canvas Area */}
       <div
         ref={containerRef}
-        className="relative w-full min-h-[500px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden"
+        className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden"
       >
         {state.image ? (
           <div className="relative p-8">

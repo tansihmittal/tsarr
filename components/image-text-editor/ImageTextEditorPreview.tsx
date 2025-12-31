@@ -385,7 +385,7 @@ const ImageTextEditorPreview = ({
       {/* Canvas area */}
       <div
         ref={containerRef}
-        className="relative flex-1 min-h-[500px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden"
+        className="relative flex-1 min-h-[300px] sm:min-h-[400px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden"
       >
         {state.image ? (
           <div className="relative p-6">
