@@ -15,6 +15,12 @@
   "categories": ["utilities", "productivity", "photo"],
   "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "prefer_related_applications": false,
+  "serviceworker": {
+    "src": "/sw.js",
+    "scope": "/",
+    "type": "classic",
+    "update_via_cache": "none"
+  },
   "related_applications": [
     {
       "platform": "webapp",

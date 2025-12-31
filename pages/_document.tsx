@@ -48,6 +48,24 @@ export default function Document() {
         {/* <meta name="msvalidate.01" content="your-bing-verification-code" /> */}
       </Head>
       <body className="antialiased">
+        {/* Early service worker registration for PWA detection */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                    .then(function(registration) {
+                      console.log('SW registered: ', registration.scope);
+                    })
+                    .catch(function(error) {
+                      console.log('SW registration failed: ', error);
+                    });
+                });
+              }
+            `,
+          }}
+        />
         <Main />
         <NextScript />
       </body>
