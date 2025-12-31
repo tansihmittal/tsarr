@@ -67,27 +67,41 @@ const DropZone: React.FC<Props> = () => {
   const handleFilePickerClick = (e?: React.MouseEvent) => {
     e?.preventDefault();
     e?.stopPropagation();
-    filePicker.current?.click();
+    // Reset the input value before clicking to ensure change event fires
+    if (filePicker.current) {
+      filePicker.current.value = '';
+      filePicker.current.click();
+    }
   };
 
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    setLoading(true);
     const file = e.target.files?.[0];
-    if (file) {
-      const fileUrl = URL.createObjectURL(file);
-
-      if (updateData) {
-        updateData("selectedImage", fileUrl);
-        
-        // Get image dimensions
-        const img = new window.Image();
-        img.onload = () => {
-          updateData("imageDimensions", { width: img.width, height: img.height });
-        };
-        img.src = fileUrl;
-      }
+    if (!file) {
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+    
+    setLoading(true);
+    const fileUrl = URL.createObjectURL(file);
+
+    if (updateData) {
+      // Set image immediately
+      updateData("selectedImage", fileUrl);
+      
+      // Get image dimensions
+      const img = new window.Image();
+      img.onload = () => {
+        updateData("imageDimensions", { width: img.width, height: img.height });
+        setLoading(false);
+      };
+      img.onerror = () => {
+        setLoading(false);
+      };
+      img.src = fileUrl;
+    } else {
+      setLoading(false);
+    }
+    
     // Reset input value to allow re-uploading same file
     e.target.value = '';
   };

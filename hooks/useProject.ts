@@ -58,17 +58,25 @@ export const useProject = (options: UseProjectOptions): UseProjectReturn => {
           setProjectNameState(existingProject.name);
           setIsNewProject(false);
           setLastSaved(new Date(existingProject.updatedAt));
+        } else {
+          // Project ID in URL but not found - treat as new project
+          setProjectId(null);
+          setProjectNameState(defaultName);
+          setIsNewProject(true);
         }
-      } else {
-        // New project
+      } else if (router.isReady) {
+        // Router is ready and no project param - definitely a new project
+        // Reset state to ensure clean slate
         setProjectId(null);
         setProjectNameState(defaultName);
         setIsNewProject(true);
+        setLastSaved(null);
+        setHasUnsavedChanges(false);
       }
     };
     
     loadFromUrl();
-  }, [router.query, defaultName]);
+  }, [router.query, router.isReady, defaultName]);
 
   // Auto-save timer
   useEffect(() => {

@@ -60,6 +60,13 @@ const Editor: React.FC<Props> = () => {
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { presets, savePreset } = useLocalPresets();
 
+  // Check if we have a project ID in URL on initial render
+  const [hasProjectInUrl] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const urlParams = new URLSearchParams(window.location.search);
+    return !!urlParams.get('project');
+  });
+
   // Project system integration - Canva-style auto-save
   const project = useProject({
     type: "screenshot",
@@ -70,10 +77,7 @@ const Editor: React.FC<Props> = () => {
   // Load project data when project ID is in URL
   useEffect(() => {
     // Only load if there's a project ID in URL and we haven't loaded yet
-    const urlParams = new URLSearchParams(window.location.search);
-    const projectIdFromUrl = urlParams.get('project');
-    
-    if (projectIdFromUrl && project.projectId && !projectLoaded) {
+    if (hasProjectInUrl && project.projectId && !projectLoaded) {
       const savedProject = getProject(project.projectId);
       if (savedProject?.data) {
         const data = savedProject.data;
@@ -99,11 +103,11 @@ const Editor: React.FC<Props> = () => {
         if (data.frameUrl) updateData && updateData("frameUrl", data.frameUrl);
         setProjectLoaded(true);
       }
-    } else if (!projectIdFromUrl) {
+    } else if (!hasProjectInUrl) {
       // No project in URL, mark as loaded to prevent loading old data
       setProjectLoaded(true);
     }
-  }, [project.projectId, projectLoaded, updateData]);
+  }, [hasProjectInUrl, project.projectId, projectLoaded, updateData]);
 
   // Get current editor state for saving
   const getEditorState = () => ({
