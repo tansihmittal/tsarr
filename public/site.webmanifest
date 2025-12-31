@@ -114,10 +114,5 @@
       "platform": "webapp",
       "url": "https://tsarr.in/site.webmanifest"
     }
-  ],
-  "scope_extensions": [
-    {
-      "origin": "https://tsarr.in"
-    }
   ]
 }
