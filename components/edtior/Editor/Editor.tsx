@@ -20,6 +20,10 @@ import { FaPencilAlt } from "react-icons/fa";
 import SaveLocalPresetModal from "@/components/common/SaveLocalPresetModal";
 import { useLocalPresets } from "@/hooks/useLocalPresets";
 import { PresetSettings } from "@/interface";
+import { useProject } from "@/hooks/useProject";
+import { getProject } from "@/utils/projectStorage";
+import { imageToBase64 } from "@/utils/imageStorage";
+import ProjectNameHeader from "@/components/common/ProjectNameHeader";
 
 interface Props {}
 
@@ -45,12 +49,130 @@ const Editor: React.FC<Props> = () => {
     currentBoxShadow,
     selectedFrame,
     imageDimensions,
+    frameTitle,
+    frameUrl,
   } = useEditorContext();
 
   const imageToDownload = useRef<HTMLDivElement | null>(null);
   const [showSavePresetModal, setShowSavePresetModal] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [projectLoaded, setProjectLoaded] = useState(false);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { presets, savePreset } = useLocalPresets();
+
+  // Project system integration - Canva-style auto-save
+  const project = useProject({
+    type: "screenshot",
+    defaultName: "Untitled Screenshot",
+    autoSaveInterval: 0, // We handle auto-save manually with debounce
+  });
+
+  // Load project data when project ID is in URL
+  useEffect(() => {
+    if (project.projectId && !projectLoaded) {
+      const savedProject = getProject(project.projectId);
+      if (savedProject?.data) {
+        const data = savedProject.data;
+        // Restore editor state from saved project
+        if (data.selectedImage) updateData && updateData("selectedImage", data.selectedImage);
+        if (data.imageDimensions) updateData && updateData("imageDimensions", data.imageDimensions);
+        if (data.currentBackground) updateData && updateData("currentBackground", data.currentBackground);
+        if (data.currentBackgroundType) updateData && updateData("currentBackgroundType", data.currentBackgroundType);
+        if (data.scale !== undefined) updateData && updateData("scale", data.scale);
+        if (data.borderRadius !== undefined) updateData && updateData("borderRadius", data.borderRadius);
+        if (data.canvasRoundness !== undefined) updateData && updateData("canvasRoundness", data.canvasRoundness);
+        if (data.padding !== undefined) updateData && updateData("padding", data.padding);
+        if (data.left !== undefined) updateData && updateData("left", data.left);
+        if (data.right !== undefined) updateData && updateData("right", data.right);
+        if (data.tilt) updateData && updateData("tilt", data.tilt);
+        if (data.rotate !== undefined) updateData && updateData("rotate", data.rotate);
+        if (data.aspectRatio) updateData && updateData("aspectRatio", data.aspectRatio);
+        if (data.currentBoxShadow) updateData && updateData("currentBoxShadow", data.currentBoxShadow);
+        if (data.noise !== undefined) updateData && updateData("noise", data.noise);
+        if (data.watermark) updateData && updateData("watermark", data.watermark);
+        if (data.selectedFrame) updateData && updateData("selectedFrame", data.selectedFrame);
+        if (data.frameTitle) updateData && updateData("frameTitle", data.frameTitle);
+        if (data.frameUrl) updateData && updateData("frameUrl", data.frameUrl);
+        setProjectLoaded(true);
+      }
+    }
+  }, [project.projectId, projectLoaded, updateData]);
+
+  // Get current editor state for saving
+  const getEditorState = () => ({
+    selectedImage,
+    imageDimensions,
+    currentBackground,
+    currentBackgroundType,
+    scale,
+    borderRadius,
+    canvasRoundness,
+    padding,
+    left,
+    right,
+    tilt,
+    rotate,
+    aspectRatio,
+    currentBoxShadow,
+    noise,
+    watermark,
+    selectedFrame,
+    frameTitle,
+    frameUrl,
+  });
+
+  // Auto-save with debounce (Canva-style) - saves 2 seconds after last change
+  useEffect(() => {
+    // Only auto-save if there's an image (actual content to save)
+    if (!selectedImage) return;
+    
+    // Clear previous timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    // Set new timeout for auto-save
+    autoSaveTimeoutRef.current = setTimeout(async () => {
+      const editorState = getEditorState();
+      // Convert blob URL to base64 for persistence
+      if (editorState.selectedImage && editorState.selectedImage.startsWith('blob:')) {
+        editorState.selectedImage = await imageToBase64(editorState.selectedImage);
+      }
+      project.save(editorState, imageToDownload.current);
+    }, 2000); // 2 second debounce
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [
+    selectedImage,
+    currentBackground,
+    currentBackgroundType,
+    scale,
+    borderRadius,
+    canvasRoundness,
+    padding,
+    left,
+    right,
+    tilt,
+    rotate,
+    aspectRatio,
+    currentBoxShadow,
+    noise,
+    watermark,
+    selectedFrame,
+    frameTitle,
+    frameUrl,
+  ]);
+
+  // Mark project as changed when editor state changes
+  useEffect(() => {
+    if (projectLoaded || selectedImage) {
+      project.markChanged();
+    }
+  }, [selectedImage, currentBackground, scale, borderRadius, canvasRoundness, padding, left, right, tilt, rotate, aspectRatio, currentBoxShadow, noise, watermark, selectedFrame]);
 
   // Share functionality
   const handleShare = async () => {
@@ -204,6 +326,13 @@ const Editor: React.FC<Props> = () => {
 
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
+      {/* Project Name */}
+      <ProjectNameHeader
+        name={project.projectName}
+        onNameChange={project.setProjectName}
+        isSaving={project.isSaving}
+      />
+
       {/* Top options */}
       <div
         style={{ pointerEvents: selectedImage ? "auto" : "none" }}
@@ -278,26 +407,17 @@ const Editor: React.FC<Props> = () => {
           <FaPencilAlt className={showAnnotations ? "text-primary" : "icon"} />
         </OptionButtonOutline>
 
-        <div
-          className={`text-white bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 px-4 flex items-center justify-center gap-2.5 rounded-lg transition-all duration-200 ${
-            !selectedImage || isSharing
-              ? "opacity-50 cursor-not-allowed" 
-              : "hover:from-indigo-600 hover:to-purple-700 cursor-pointer press-effect"
-          }`}
-          onClick={selectedImage && !isSharing ? handleShare : undefined}
+        <OptionButtonOutline
+          title={isSharing ? "Sharing..." : "Share"}
+          onTap={handleShare}
+          disabled={!selectedImage || isSharing}
         >
           {isSharing ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              <span className="font-medium">Sharing...</span>
-            </>
+            <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
           ) : (
-            <>
-              <BsShare className="text-lg" />
-              <span className="font-medium">Share</span>
-            </>
+            <BsShare className="icon" />
           )}
-        </div>
+        </OptionButtonOutline>
       </div>
 
       {/* Image Dimensions Display */}

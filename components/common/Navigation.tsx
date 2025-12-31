@@ -1,5 +1,5 @@
 import { useAuthContext } from "@/context/User";
-import { BsPersonFillGear, BsGrid3X3Gap } from "react-icons/bs";
+import { BsPersonFillGear, BsGrid3X3Gap, BsFolder2 } from "react-icons/bs";
 import { useRef } from "react";
 import Link from "next/link";
 
@@ -16,27 +16,27 @@ const Navigation: React.FC<Props> = () => {
   };
 
   return (
-    <nav className="border-b-2 h-[70px] bg-base-100 border-b-base-200 flex items-center mb-4">
-      <div className="container mx-auto px-[1rem] lg:px-0 flex items-center justify-between">
+    <nav className="border-b-2 h-[60px] sm:h-[70px] bg-base-100/95 backdrop-blur-lg border-b-base-200 flex items-center mb-4 sticky top-0 z-50">
+      <div className="container mx-auto px-4 lg:px-0 flex items-center justify-between">
         {/* Logo - Left side */}
         <Link 
           href="/" 
-          className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+          className="text-lg sm:text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
         >
           tsarr.in
         </Link>
 
         {/* Right side - Theme toggle + Tools button */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Dark/Light Mode Toggle */}
           <label
-            className="swap swap-rotate text-primary-content"
+            className="swap swap-rotate text-primary-content p-2"
             onClick={themeToggle}
           >
             <input type="checkbox" ref={themeSwatch} />
 
             <svg
-              className="swap-on fill-current w-8 h-8"
+              className="swap-on fill-current w-6 h-6 sm:w-8 sm:h-8"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
             >
@@ -44,7 +44,7 @@ const Navigation: React.FC<Props> = () => {
             </svg>
 
             <svg
-              className="swap-off fill-current w-8 h-8"
+              className="swap-off fill-current w-6 h-6 sm:w-8 sm:h-8"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
             >
@@ -52,13 +52,22 @@ const Navigation: React.FC<Props> = () => {
             </svg>
           </label>
 
+          {/* Projects Button */}
+          <Link
+            href="/projects"
+            className="flex items-center gap-2 p-2.5 rounded-xl text-primary-content hover:bg-base-200 transition-colors"
+            title="My Projects"
+          >
+            <BsFolder2 className="text-lg" />
+          </Link>
+
           {/* Tools Button */}
           <Link
             href="/tools"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-base-200 text-primary-content hover:bg-base-200 transition-colors"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl border-2 border-base-200 text-primary-content hover:bg-base-200 transition-colors"
           >
             <BsGrid3X3Gap className="text-lg" />
-            <span className="font-medium">Tools</span>
+            <span className="font-medium hidden sm:inline">Tools</span>
           </Link>
 
           {/* User dropdown (if logged in) */}
@@ -66,10 +75,10 @@ const Navigation: React.FC<Props> = () => {
             <div className="dropdown dropdown-end">
               <label 
                 tabIndex={0}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-base-200 text-primary-content hover:bg-base-200 transition-colors cursor-pointer"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl border-2 border-base-200 text-primary-content hover:bg-base-200 transition-colors cursor-pointer"
               >
                 <BsPersonFillGear className="text-lg" />
-                <span className="font-medium">
+                <span className="font-medium hidden sm:inline">
                   {currentUser.displayName
                     ?.split(" ")
                     .map((word) => word[0])
@@ -78,7 +87,7 @@ const Navigation: React.FC<Props> = () => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[200px] border-2 rounded-md shadow-lg"
+                className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[200px] border-2 rounded-xl shadow-lg"
               >
                 <li>
                   <a>Go to Dashboard</a>

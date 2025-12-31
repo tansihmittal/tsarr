@@ -1,10 +1,23 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Navigation from "../common/Navigation";
 import { PolaroidState } from "./types";
 import PolaroidPreview from "./PolaroidPreview";
 import PolaroidControls from "./PolaroidControls";
+import { useProject } from "@/hooks/useProject";
+import { getProject } from "@/utils/projectStorage";
+import { imageToBase64 } from "@/utils/imageStorage";
 
 const PolaroidLayout = () => {
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [projectLoaded, setProjectLoaded] = useState(false);
+
+  // Project system - Canva-style auto-save
+  const project = useProject({
+    type: "polaroid",
+    defaultName: "Untitled Polaroid",
+    silentSave: true,
+  });
+
   const [state, setState] = useState<PolaroidState>({
     image: null,
     imageWidth: 400,
@@ -47,6 +60,41 @@ const PolaroidLayout = () => {
   });
 
   const polaroidRef = useRef<HTMLDivElement>(null);
+
+  // Load project data when project ID is in URL
+  useEffect(() => {
+    if (project.projectId && !projectLoaded) {
+      const savedProject = getProject(project.projectId);
+      if (savedProject?.data) {
+        setState(savedProject.data);
+        setProjectLoaded(true);
+      }
+    }
+  }, [project.projectId, projectLoaded]);
+
+  // Auto-save with debounce (2 seconds after last change)
+  useEffect(() => {
+    if (!state.image) return;
+    
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(async () => {
+      const stateToSave = { ...state };
+      // Convert blob URL to base64 for persistence
+      if (stateToSave.image && stateToSave.image.startsWith('blob:')) {
+        stateToSave.image = await imageToBase64(stateToSave.image);
+      }
+      project.save(stateToSave, polaroidRef.current);
+    }, 2000);
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [state]);
 
   const updateState = useCallback((updates: Partial<PolaroidState>) => {
     setState((prev) => ({ ...prev, ...updates }));
@@ -105,17 +153,20 @@ const PolaroidLayout = () => {
   }, []);
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
-      <section className="container mx-auto px-4 lg:px-0 relative">
-        <div className="grid gap-5 lg:grid-cols-[3fr_1.5fr]">
+      <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
+        <div className="grid gap-4 lg:gap-5 lg:grid-cols-[3fr_1.5fr]">
           <PolaroidPreview
             state={state}
             polaroidRef={polaroidRef}
             updateState={updateState}
             onImageUpload={handleImageUpload}
             onReset={handleReset}
+            projectName={project.projectName}
+            onProjectNameChange={project.setProjectName}
+            isSaving={project.isSaving}
           />
           <PolaroidControls
             state={state}

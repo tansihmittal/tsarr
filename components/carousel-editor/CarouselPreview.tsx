@@ -5,6 +5,7 @@ import { BsClipboard, BsChevronLeft, BsChevronRight, BsGlobe, BsShare } from "re
 import { BiReset } from "react-icons/bi";
 import { FiDownload } from "react-icons/fi";
 import { shareImage } from "../../utils/share";
+import ProjectNameHeader from "../common/ProjectNameHeader";
 
 interface Props {
   state: CarouselEditorState;
@@ -13,9 +14,12 @@ interface Props {
   onExportAll: () => void;
   onCopy: () => void;
   updateState: (updates: Partial<CarouselEditorState>) => void;
+  projectName: string;
+  onProjectNameChange: (name: string) => void;
+  isSaving: boolean;
 }
 
-const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExportAll, onCopy, updateState }) => {
+const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExportAll, onCopy, updateState, projectName, onProjectNameChange, isSaving }) => {
   const currentSlideData = state.slides[state.currentSlide];
 
   const OptionButtonOutline = ({ title, onTap, children }: { children: ReactNode; title: string; onTap?: () => void }) => (
@@ -98,6 +102,13 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
 
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
+      {/* Project Name */}
+      <ProjectNameHeader
+        name={projectName}
+        onNameChange={onProjectNameChange}
+        isSaving={isSaving}
+      />
+
       <div className="grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center">
         <div className="dropdown">
           <label tabIndex={0}><OptionButtonOutline title="Export"><TfiExport /></OptionButtonOutline></label>
@@ -111,13 +122,7 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
         <OptionButtonOutline title="Export All" onTap={onExportAll}><FiDownload /></OptionButtonOutline>
         <OptionButtonOutline title="Copy" onTap={onCopy}><BsClipboard /></OptionButtonOutline>
         <OptionButtonOutline title="Reset" onTap={handleReset}><BiReset /></OptionButtonOutline>
-        <div
-          className="text-white bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 px-4 flex items-center justify-center gap-2.5 rounded-lg transition-all duration-200 hover:from-indigo-600 hover:to-purple-700 cursor-pointer press-effect"
-          onClick={() => shareImage(previewRef.current)}
-        >
-          <BsShare className="text-lg" />
-          <span className="font-medium">Share</span>
-        </div>
+        <OptionButtonOutline title="Share" onTap={() => shareImage(previewRef.current)}><BsShare /></OptionButtonOutline>
       </div>
 
       <div className="relative w-full min-h-[500px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden py-8">

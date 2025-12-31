@@ -1,7 +1,72 @@
 import Head from "next/head";
 import Link from "next/link";
-import { BsArrowRight, BsGithub, BsTwitter, BsLinkedin } from "react-icons/bs";
+import { useState, useEffect } from "react";
+import { 
+  BsArrowRight, BsGithub, BsTwitter, BsLinkedin, BsSearch, BsFolder2, BsImage, 
+  BsCode, BsType, BsCameraVideo, BsCardImage, BsAspectRatio, BsArrowsFullscreen,
+  BsArrowRepeat, BsClipboard, BsBarChartFill, BsGlobe, BsEraserFill, BsSoundwave,
+  BsPencilSquare, BsChatSquare, BsX
+} from "react-icons/bs";
+import { MdSubtitles } from "react-icons/md";
+import { RiSlideshow3Line } from "react-icons/ri";
 import { toolsData } from "@/data/toolsData";
+import { Project, cacheProjects, getRecentProjects } from "@/utils/projectStorage";
+import MobileNav from "@/components/common/MobileNav";
+
+const typeRoutes: Record<string, string> = {
+  screenshot: "/editor",
+  code: "/code",
+  tweet: "/tweet",
+  carousel: "/carousel",
+  polaroid: "/polaroid",
+  "text-behind-image": "/text-behind-image",
+};
+
+// Unique icon for each tool by slug
+const toolIcons: Record<string, any> = {
+  "screenshot-editor": BsImage,
+  "code-screenshots": BsCode,
+  "text-behind-image": BsType,
+  "video-captions": MdSubtitles,
+  "tweet-editor": BsTwitter,
+  "carousel-editor": RiSlideshow3Line,
+  "aspect-ratio-converter": BsAspectRatio,
+  "image-resizer": BsArrowsFullscreen,
+  "image-converter": BsArrowRepeat,
+  "clipboard-saver": BsClipboard,
+  "video-converter": BsCameraVideo,
+  "chart-maker": BsBarChartFill,
+  "map-maker": BsGlobe,
+  "3d-globe": BsGlobe,
+  "polaroid-generator": BsCardImage,
+  "watermark-remover": BsEraserFill,
+  "text-to-speech": BsSoundwave,
+  "image-text-editor": BsPencilSquare,
+  "bubble-blaster": BsChatSquare,
+};
+
+// Unique color for each tool by slug
+const toolColors: Record<string, string> = {
+  "screenshot-editor": "bg-violet-500",
+  "code-screenshots": "bg-emerald-500",
+  "text-behind-image": "bg-pink-500",
+  "video-captions": "bg-blue-500",
+  "tweet-editor": "bg-sky-500",
+  "carousel-editor": "bg-orange-500",
+  "aspect-ratio-converter": "bg-teal-500",
+  "image-resizer": "bg-lime-500",
+  "image-converter": "bg-cyan-500",
+  "clipboard-saver": "bg-amber-500",
+  "video-converter": "bg-indigo-500",
+  "chart-maker": "bg-rose-500",
+  "map-maker": "bg-green-500",
+  "3d-globe": "bg-purple-500",
+  "polaroid-generator": "bg-yellow-500",
+  "watermark-remover": "bg-red-500",
+  "text-to-speech": "bg-fuchsia-500",
+  "image-text-editor": "bg-slate-500",
+  "bubble-blaster": "bg-stone-500",
+};
 
 const toolsListSchema = {
   "@context": "https://schema.org",
@@ -18,171 +83,226 @@ const toolsListSchema = {
   }))
 };
 
-const breadcrumbSchema = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://tsarr.in" },
-    { "@type": "ListItem", position: 2, name: "Tools", item: "https://tsarr.in/tools" }
-  ]
-};
-
 export default function ToolsPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [recentProjects, setRecentProjects] = useState<Project[]>([]);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+  useEffect(() => {
+    const loadRecent = async () => {
+      await cacheProjects();
+      setRecentProjects(getRecentProjects());
+    };
+    loadRecent();
+  }, []);
+
+  const categories = ["all", ...Array.from(new Set(toolsData.map(t => t.category)))];
+  
+  const filteredTools = toolsData.filter(tool => {
+    const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tool.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || tool.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <>
       <Head>
-        {/* Primary Meta Tags */}
         <title>All 19+ Free Image and Video Tools | tsarr.in</title>
-        <meta name="title" content="All 19+ Free Image and Video Tools | tsarr.in" />
-        <meta name="description" content="Browse all 19+ free online tools: screenshot editor, code screenshots, video captions, image converter, text to speech, watermark remover, and more. No login required, works in browser." />
-        <meta name="keywords" content="free image tools, online video tools, screenshot editor, code screenshot, image converter, video captions, text to speech, watermark remover, free online tools" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="robots" content="index, follow" />
+        <meta name="description" content="Browse all 19+ free online tools: screenshot editor, code screenshots, video captions, image converter, and more. No login required." />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="canonical" href="https://tsarr.in/tools" />
-        <link rel="icon" href="/favicon.ico" />
-
-        {/* Open Graph */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://tsarr.in/tools" />
-        <meta property="og:title" content="All 19+ Free Image and Video Tools | tsarr.in" />
-        <meta property="og:description" content="Browse all 19+ free online tools. Screenshot editor, code screenshots, video captions, and more. No login required." />
-        <meta property="og:image" content="https://tsarr.in/images/og-image.png" />
-        <meta property="og:site_name" content="tsarr.in" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="All 19+ Free Image and Video Tools | tsarr.in" />
-        <meta name="twitter:description" content="Browse all 19+ free online tools. No login required." />
-        <meta name="twitter:image" content="https://tsarr.in/images/og-image.png" />
-
-        {/* Structured Data */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(toolsListSchema) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       </Head>
 
-      <div className="min-h-screen bg-white text-gray-900 antialiased">
+      <div className="min-h-screen bg-gray-50 pb-24 lg:pb-0">
         {/* Header */}
-        <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100">
-          <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-            <Link href="/" className="text-lg font-semibold text-gray-900 tracking-tight">
+        <header className="bg-white/95 backdrop-blur-lg border-b border-gray-200/80 sticky top-0 z-50">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+            <Link href="/" className="text-lg font-bold text-gray-900">
               tsarr.in
             </Link>
-            <nav className="flex items-center gap-1">
-              <Link href="/tools" className="px-3 py-2 text-sm text-gray-900 font-medium">
-                Tools
+            <nav className="flex items-center gap-2">
+              <Link href="/projects" className="p-2.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors">
+                <BsFolder2 className="text-lg" />
               </Link>
-              <Link href="/code" className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors hidden sm:block">
-                Code Editor
+              <Link href="/app" className="hidden sm:block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">
+                Dashboard
               </Link>
-              <Link href="/editor" className="ml-3 px-4 py-2 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
+              <Link href="/editor" className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors">
                 Open Editor
               </Link>
             </nav>
           </div>
         </header>
 
-        <main>
-          {/* Hero */}
-          <section className="pt-16 pb-12 px-6 border-b border-gray-100">
-            <div className="max-w-6xl mx-auto">
-              <h1 className="text-4xl font-semibold text-gray-900 tracking-tight mb-4">
-                All Tools
-              </h1>
-              <p className="text-lg text-gray-600 max-w-2xl">
-                19+ free tools for screenshots, images, videos, and more. No login required, 
-                everything runs in your browser.
-              </p>
-            </div>
-          </section>
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+          {/* Hero - Mobile optimized */}
+          <div className="mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">All Tools</h1>
+            <p className="text-gray-600 text-sm sm:text-base">19+ free tools for screenshots, images, videos, and more.</p>
+          </div>
 
-          {/* Tools Grid */}
-          <section className="py-12 px-6">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {toolsData.map((tool, i) => (
+          {/* Search and Filter - Mobile optimized */}
+          <div className="space-y-3 mb-6">
+            {/* Search */}
+            <div className={`relative transition-all ${isSearchFocused ? 'ring-2 ring-indigo-500 rounded-xl' : ''}`}>
+              <BsSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search tools..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+                className="w-full pl-11 pr-10 py-3 bg-white border border-gray-200 rounded-xl text-base focus:outline-none"
+              />
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
+                >
+                  <BsX className="text-lg" />
+                </button>
+              )}
+            </div>
+            
+            {/* Category Pills - Horizontal scroll on mobile */}
+            <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+              {categories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-4 py-2 text-sm font-medium rounded-xl whitespace-nowrap transition-all active:scale-95 ${
+                    selectedCategory === cat
+                      ? "bg-indigo-600 text-white shadow-sm"
+                      : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  {cat === "all" ? "All" : cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Recent Projects - Mobile optimized */}
+          {recentProjects.length > 0 && !searchQuery && selectedCategory === "all" && (
+            <section className="mb-8">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-base font-semibold text-gray-900">Continue editing</h2>
+                <Link href="/projects" className="text-sm text-indigo-600 hover:text-indigo-700 flex items-center gap-1 font-medium">
+                  All <BsArrowRight className="text-xs" />
+                </Link>
+              </div>
+              <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 scrollbar-hide">
+                {recentProjects.slice(0, 5).map((project) => (
                   <Link
-                    key={i}
-                    href={`/tool/${tool.slug}`}
-                    className="group block p-6 rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-lg hover:shadow-gray-100 transition-all"
+                    key={project.id}
+                    href={`${typeRoutes[project.type]}?project=${project.id}`}
+                    className="flex-shrink-0 w-[140px] sm:w-auto group bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all active:scale-[0.98]"
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h2 className="font-semibold text-gray-900 mb-1 group-hover:text-gray-700 transition-colors">
-                          {tool.title}
-                        </h2>
-                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
-                          {tool.category}
-                        </span>
-                      </div>
+                    <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
+                      {project.thumbnail ? (
+                        <img src={project.thumbnail} alt={project.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <BsImage className="text-2xl text-gray-300" />
+                        </div>
+                      )}
                     </div>
-                    <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                      {tool.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {tool.features.slice(0, 3).map((feature, j) => (
-                        <span key={j} className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded border border-gray-100">
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
-                        Learn more
-                      </span>
-                      <BsArrowRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all" />
+                    <div className="p-2.5">
+                      <h3 className="font-medium text-gray-900 text-sm truncate">{project.name}</h3>
                     </div>
                   </Link>
                 ))}
               </div>
-            </div>
+            </section>
+          )}
+
+          {/* Tools Grid - Mobile optimized */}
+          <section>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
+              {selectedCategory === "all" ? "All tools" : selectedCategory} 
+              <span className="text-gray-400 font-normal ml-2">({filteredTools.length})</span>
+            </h2>
+            
+            {filteredTools.length === 0 ? (
+              <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
+                <BsSearch className="text-4xl text-gray-300 mx-auto mb-3" />
+                <h3 className="font-medium text-gray-900 mb-1">No tools found</h3>
+                <p className="text-sm text-gray-500">Try a different search term</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {filteredTools.map((tool, i) => {
+                  const IconComponent = toolIcons[tool.slug] || BsImage;
+                  const colorClass = toolColors[tool.slug] || "bg-gray-500";
+                  
+                  return (
+                    <Link
+                      key={i}
+                      href={tool.href}
+                      className="group bg-white rounded-xl p-4 border border-gray-200 hover:border-indigo-200 hover:shadow-lg transition-all active:scale-[0.98]"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`w-11 h-11 ${colorClass} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm`}>
+                          <IconComponent className="text-white text-lg" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 mb-0.5 group-hover:text-indigo-600 transition-colors">
+                            {tool.title}
+                          </h3>
+                          <p className="text-sm text-gray-500 line-clamp-2">{tool.shortDesc}</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        {tool.features.slice(0, 3).map((feature, j) => (
+                          <span key={j} className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">
+                            {feature}
+                          </span>
+                        ))}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </section>
 
-          {/* CTA */}
-          <section className="py-16 px-6 bg-gray-50 border-t border-gray-100">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-2xl font-semibold text-gray-900 tracking-tight mb-4">
-                Start creating now
-              </h2>
-              <p className="text-gray-600 mb-6">
-                All tools are free and require no login. Pick one and get started.
-              </p>
-              <div className="flex flex-wrap gap-3 justify-center">
-                <Link href="/editor" className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
-                  Screenshot Editor
-                  <BsArrowRight className="w-4 h-4" />
-                </Link>
-                <Link href="/code" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
-                  Code Screenshots
-                </Link>
-              </div>
+          {/* CTA - Mobile optimized */}
+          <section className="mt-10 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 sm:p-8 text-center text-white">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2">Ready to create?</h2>
+            <p className="text-gray-400 mb-5 text-sm sm:text-base">All tools are free. No login required.</p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/editor" className="px-6 py-3 bg-white text-gray-900 font-medium rounded-xl hover:bg-gray-100 transition-colors active:scale-95">
+                Screenshot Editor
+              </Link>
+              <Link href="/code" className="px-6 py-3 bg-gray-700 text-white font-medium rounded-xl hover:bg-gray-600 transition-colors border border-gray-600 active:scale-95">
+                Code Screenshots
+              </Link>
             </div>
           </section>
         </main>
 
-        {/* Footer */}
-        <footer className="border-t border-gray-200 bg-white">
-          <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Footer - Hidden on mobile (using MobileNav instead) */}
+        <footer className="border-t border-gray-200 bg-white mt-12 hidden lg:block">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-sm text-gray-500">
-                © 2025 tsarr.in. Created by{" "}
-                <a href="https://tanishmittal.com/" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-gray-900 transition-colors">
-                  Tanish Mittal
-                </a>
+                © 2025 tsarr.in · <a href="https://tanishmittal.com/" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900">Tanish Mittal</a>
               </p>
               <div className="flex items-center gap-4">
-                <a href="https://github.com/tansihmittal/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600 transition-colors">
-                  <BsGithub className="w-5 h-5" />
-                </a>
-                <a href="https://x.com/glowdopera" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600 transition-colors">
-                  <BsTwitter className="w-5 h-5" />
-                </a>
-                <a href="https://linkedin.com/in/tanishmittal02" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600 transition-colors">
-                  <BsLinkedin className="w-5 h-5" />
-                </a>
+                <a href="https://github.com/tansihmittal/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600"><BsGithub className="w-5 h-5" /></a>
+                <a href="https://x.com/glowdopera" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600"><BsTwitter className="w-5 h-5" /></a>
+                <a href="https://linkedin.com/in/tanishmittal02" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600"><BsLinkedin className="w-5 h-5" /></a>
               </div>
             </div>
           </div>
         </footer>
+
+        {/* Mobile Navigation */}
+        <MobileNav />
       </div>
     </>
   );

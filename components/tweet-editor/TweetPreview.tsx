@@ -4,6 +4,7 @@ import { TfiExport } from "react-icons/tfi";
 import { BsClipboard, BsShare } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { shareImage } from "../../utils/share";
+import ProjectNameHeader from "../common/ProjectNameHeader";
 
 interface Props {
   state: TweetEditorState;
@@ -11,6 +12,9 @@ interface Props {
   onExport: (format: "png" | "jpeg" | "svg", scale?: number) => void;
   onCopy: () => void;
   updateState: (updates: Partial<TweetEditorState>) => void;
+  projectName: string;
+  onProjectNameChange: (name: string) => void;
+  isSaving: boolean;
 }
 
 const TWITTER_CHAR_LIMIT = 280;
@@ -21,7 +25,7 @@ const themeColors = {
   dim: { bg: "#1e1e1e", text: "#e7e9ea", secondary: "#71767b", border: "#2f3336" },
 };
 
-const TweetPreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, updateState }) => {
+const TweetPreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, updateState, projectName, onProjectNameChange, isSaving }) => {
   const colors = themeColors[state.theme];
   const fileInputRef = useRef<HTMLInputElement>(null);
   const charCount = state.tweetText.length;
@@ -87,6 +91,13 @@ const TweetPreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, up
     <div className="flex items-center justify-start flex-col h-full w-full">
       <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
 
+      {/* Project Name */}
+      <ProjectNameHeader
+        name={projectName}
+        onNameChange={onProjectNameChange}
+        isSaving={isSaving}
+      />
+
       {/* Top options */}
       <div className="grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center">
         <div className="dropdown">
@@ -103,13 +114,7 @@ const TweetPreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, up
         </div>
         <OptionButtonOutline title="Copy to Clipboard" onTap={onCopy}><BsClipboard /></OptionButtonOutline>
         <OptionButtonOutline title="Reset" onTap={handleReset}><BiReset /></OptionButtonOutline>
-        <div
-          className="text-white bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 px-4 flex items-center justify-center gap-2.5 rounded-lg transition-all duration-200 hover:from-indigo-600 hover:to-purple-700 cursor-pointer press-effect"
-          onClick={() => shareImage(previewRef.current)}
-        >
-          <BsShare className="text-lg" />
-          <span className="font-medium">Share</span>
-        </div>
+        <OptionButtonOutline title="Share" onTap={() => shareImage(previewRef.current)}><BsShare /></OptionButtonOutline>
       </div>
 
       {/* Editor Canvas Area */}

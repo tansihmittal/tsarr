@@ -906,11 +906,11 @@ const ChartMakerLayout: React.FC = () => {
 
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
-      <section className="container mx-auto px-4 lg:px-0 relative">
-        <div className="grid gap-5 lg:grid-cols-[3fr_1.5fr]">
+      <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
+        <div className="grid gap-4 lg:gap-5 lg:grid-cols-[3fr_1.5fr]">
           {/* Preview Area */}
           <div className="flex flex-col h-full">
             {/* Toolbar */}

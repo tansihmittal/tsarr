@@ -4,6 +4,9 @@ import TextBehindImageEditor from "./TextBehindImageEditor";
 import TextBehindImageControls from "./TextBehindImageControls";
 import { backgroundRemover } from "../../utils/backgroundRemoval";
 import { FONT_FAMILIES } from "../../data/fonts";
+import { useProject } from "@/hooks/useProject";
+import { getProject } from "@/utils/projectStorage";
+import { imageToBase64 } from "@/utils/imageStorage";
 
 export { FONT_FAMILIES };
 
@@ -80,6 +83,17 @@ export const createDefaultLayer = (): TextLayer => ({
 });
 
 const TextBehindImageLayout = () => {
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [projectLoaded, setProjectLoaded] = useState(false);
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  // Project system - Canva-style auto-save
+  const project = useProject({
+    type: "text-behind-image",
+    defaultName: "Untitled Text Behind Image",
+    silentSave: true,
+  });
+
   const [state, setState] = useState<TextBehindImageState>({
     image: null,
     imageWidth: 800,
@@ -96,6 +110,45 @@ const TextBehindImageLayout = () => {
   });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Load project data when project ID is in URL
+  useEffect(() => {
+    if (project.projectId && !projectLoaded) {
+      const savedProject = getProject(project.projectId);
+      if (savedProject?.data) {
+        setState(savedProject.data);
+        setProjectLoaded(true);
+      }
+    }
+  }, [project.projectId, projectLoaded]);
+
+  // Auto-save with debounce (2 seconds after last change)
+  useEffect(() => {
+    if (!state.image) return;
+    
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(async () => {
+      const stateToSave = { ...state };
+      // Convert blob URLs to base64 for persistence
+      if (stateToSave.image && stateToSave.image.startsWith('blob:')) {
+        stateToSave.image = await imageToBase64(stateToSave.image);
+      }
+      if (stateToSave.foregroundImage && stateToSave.foregroundImage.startsWith('blob:')) {
+        stateToSave.foregroundImage = await imageToBase64(stateToSave.foregroundImage);
+      }
+      // Pass canvas element for thumbnail generation
+      project.save(stateToSave, canvasRef.current);
+    }, 2000);
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [state]);
 
   // Preload AI model when page loads for faster processing
   useEffect(() => {
@@ -204,18 +257,21 @@ const TextBehindImageLayout = () => {
   };
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
       {/* Subtle grid pattern overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
-      <section className="container mx-auto px-4 lg:px-0 relative">
-        <div className="grid gap-5 lg:grid-cols-[3fr_1.5fr]">
+      <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
+        <div className="grid gap-4 lg:gap-5 lg:grid-cols-[3fr_1.5fr]">
           <TextBehindImageEditor
             state={state}
             canvasRef={canvasRef}
             updateState={updateState}
             onImageUpload={handleImageUpload}
             updateLayer={updateLayer}
+            projectName={project.projectName}
+            onProjectNameChange={project.setProjectName}
+            isSaving={project.isSaving}
           />
           <TextBehindImageControls
             state={state}

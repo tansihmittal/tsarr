@@ -7,6 +7,7 @@ import { toast } from "react-hot-toast";
 import html2canvas from "html2canvas";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { shareImage } from "../../utils/share";
+import ProjectNameHeader from "../common/ProjectNameHeader";
 
 interface Props {
   state: PolaroidState;
@@ -14,9 +15,12 @@ interface Props {
   updateState: (updates: Partial<PolaroidState>) => void;
   onImageUpload: (imageUrl: string, width: number, height: number) => void;
   onReset: () => void;
+  projectName: string;
+  onProjectNameChange: (name: string) => void;
+  isSaving: boolean;
 }
 
-const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset }: Props) => {
+const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectName, onProjectNameChange, isSaving }: Props) => {
   const handleDownload = async (scale: number = 2) => {
     if (!polaroidRef.current || !state.image) return;
     try {
@@ -318,6 +322,7 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset }: Props) 
 
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
+      <ProjectNameHeader name={projectName} onNameChange={onProjectNameChange} isSaving={isSaving} />
       <div style={{ pointerEvents: state.image ? "auto" : "none" }} className={`grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center ${state.image ? "opacity-100" : "opacity-80"}`}>
         <div className="dropdown">
           <label tabIndex={0}><OptionButtonOutline title="Export Image"><TfiExport /></OptionButtonOutline></label>
@@ -333,13 +338,7 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset }: Props) 
           <OptionButtonOutline title="Reset Image"><BsRepeat className="icon" /></OptionButtonOutline>
         </label>
         <OptionButtonOutline title="Reset Canvas" onTap={onReset}><BiReset className="icon" /></OptionButtonOutline>
-        <div
-          className={`text-white bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 px-4 flex items-center justify-center gap-2.5 rounded-lg transition-all duration-200 ${state.image ? "hover:from-indigo-600 hover:to-purple-700 cursor-pointer press-effect" : "opacity-50 cursor-not-allowed"}`}
-          onClick={() => state.image && shareImage(polaroidRef.current)}
-        >
-          <BsShare className="text-lg" />
-          <span className="font-medium">Share</span>
-        </div>
+        <OptionButtonOutline title="Share" onTap={() => state.image && shareImage(polaroidRef.current)} disabled={!state.image}><BsShare className="icon" /></OptionButtonOutline>
       </div>
 
       {state.image && state.imageWidth > 0 && (

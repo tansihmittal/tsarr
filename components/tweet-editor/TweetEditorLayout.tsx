@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
 import TweetPreview from "./TweetPreview";
@@ -10,6 +10,9 @@ import {
   copyToClipboard,
 } from "../edtior/Editor/downloads";
 import { BackgroundConfig } from "../common/BackgroundPicker";
+import { useProject } from "@/hooks/useProject";
+import { getProject } from "@/utils/projectStorage";
+import { imageToBase64 } from "@/utils/imageStorage";
 
 export interface TweetEditorState {
   displayName: string;
@@ -45,6 +48,16 @@ export interface TweetEditorState {
 
 const TweetEditorLayout: React.FC = () => {
   const previewRef = useRef<HTMLDivElement>(null);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [projectLoaded, setProjectLoaded] = useState(false);
+
+  // Project system - Canva-style auto-save
+  const project = useProject({
+    type: "tweet",
+    defaultName: "Untitled Tweet",
+    silentSave: true,
+  });
+
   const [state, setState] = useState<TweetEditorState>({
     displayName: "Your Name",
     username: "username",
@@ -85,6 +98,39 @@ const TweetEditorLayout: React.FC = () => {
     canvasRoundness: 0,
   });
 
+  // Load project data when project ID is in URL
+  useEffect(() => {
+    if (project.projectId && !projectLoaded) {
+      const savedProject = getProject(project.projectId);
+      if (savedProject?.data) {
+        setState({ ...savedProject.data, date: new Date(savedProject.data.date) });
+        setProjectLoaded(true);
+      }
+    }
+  }, [project.projectId, projectLoaded]);
+
+  // Auto-save with debounce (2 seconds after last change)
+  useEffect(() => {
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(async () => {
+      const stateToSave = { ...state };
+      // Convert blob URL to base64 for persistence (avatar image)
+      if (stateToSave.avatarUrl && stateToSave.avatarUrl.startsWith('blob:')) {
+        stateToSave.avatarUrl = await imageToBase64(stateToSave.avatarUrl);
+      }
+      project.save(stateToSave, previewRef.current);
+    }, 2000);
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [state]);
+
   const updateState = (updates: Partial<TweetEditorState>) => {
     setState((prev) => ({ ...prev, ...updates }));
   };
@@ -105,17 +151,20 @@ const TweetEditorLayout: React.FC = () => {
   };
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
-      <section className="container mx-auto px-4 lg:px-0 relative">
-        <div className="grid gap-5 lg:grid-cols-[3fr_1.5fr]">
+      <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
+        <div className="grid gap-4 lg:gap-5 lg:grid-cols-[3fr_1.5fr]">
           <TweetPreview
             state={state}
             previewRef={previewRef}
             onExport={handleExport}
             onCopy={handleCopy}
             updateState={updateState}
+            projectName={project.projectName}
+            onProjectNameChange={project.setProjectName}
+            isSaving={project.isSaving}
           />
           <TweetControls state={state} updateState={updateState} />
         </div>

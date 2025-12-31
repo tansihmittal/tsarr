@@ -6,11 +6,21 @@ import {
   BsType, BsCameraVideo, BsAspectRatio, BsArrowsFullscreen, BsArrowRepeat,
   BsClipboard, BsBarChartFill, BsGlobe, BsPencilSquare, BsChatSquare,
   BsCardImage, BsEraserFill, BsChevronDown, BsSoundwave, BsLayers,
-  BsPalette, BsDownload, BsPencil, BsPlay,
+  BsPalette, BsDownload, BsPencil, BsPlay, BsFolder2,
 } from "react-icons/bs";
 import { MdSubtitles } from "react-icons/md";
 import { RiSlideshow3Line } from "react-icons/ri";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Project, cacheProjects, getRecentProjects } from "../utils/projectStorage";
+
+const typeRoutes: Record<string, string> = {
+  screenshot: "/editor",
+  code: "/code",
+  tweet: "/tweet",
+  carousel: "/carousel",
+  polaroid: "/polaroid",
+  "text-behind-image": "/text-behind-image",
+};
 
 // Structured Data for SEO
 const websiteSchema = {
@@ -112,6 +122,15 @@ const faqSchema = {
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [recentProjects, setRecentProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    const loadRecent = async () => {
+      await cacheProjects();
+      setRecentProjects(getRecentProjects());
+    };
+    loadRecent();
+  }, []);
 
   const tools = [
     { title: "Screenshot Editor", desc: "Frames, backgrounds, annotations", href: "/editor", icon: <BsImage /> },
@@ -271,6 +290,45 @@ export default function Home() {
               </div>
             </div>
           </section>
+
+          {/* Recent Projects */}
+          {recentProjects.length > 0 && (
+            <section className="pb-16 px-6">
+              <div className="max-w-6xl mx-auto">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900">Continue where you left off</h2>
+                  <Link href="/projects" className="text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center gap-1">
+                    All projects <BsArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {recentProjects.slice(0, 5).map((project) => (
+                    <Link
+                      key={project.id}
+                      href={`${typeRoutes[project.type]}?project=${project.id}`}
+                      className="group bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all"
+                    >
+                      <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
+                        {project.thumbnail ? (
+                          <img src={project.thumbnail} alt={project.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <BsImage className="text-2xl text-gray-300" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <h3 className="font-medium text-gray-900 text-sm truncate">{project.name}</h3>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {new Date(project.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* Features */}
           <section className="py-24 px-6 bg-gray-50 border-y border-gray-100">

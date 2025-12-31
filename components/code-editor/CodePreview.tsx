@@ -2,15 +2,19 @@ import { RefObject, useEffect, useState, ReactNode } from "react";
 import { CodeEditorState } from "./CodeEditorLayout";
 import { themes, languageKeywords, ThemeColors } from "../../data/codeEditor";
 import { TfiExport } from "react-icons/tfi";
-import { BsClipboard, BsRepeat, BsShare } from "react-icons/bs";
+import { BsClipboard, BsShare } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { shareImage } from "../../utils/share";
+import ProjectNameHeader from "../common/ProjectNameHeader";
 
 interface Props {
   state: CodeEditorState;
   previewRef: RefObject<HTMLDivElement>;
   onExport: (format: "png" | "jpeg" | "svg", scale?: number) => void;
   onCopy: () => void;
+  projectName: string;
+  onProjectNameChange: (name: string) => void;
+  isSaving: boolean;
 }
 
 // Syntax highlighter that uses theme colors - processes line by line
@@ -82,7 +86,7 @@ const highlightCode = (code: string, language: string, theme: ThemeColors) => {
 };
 
 
-const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy }) => {
+const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, projectName, onProjectNameChange, isSaving }) => {
   const [highlightedCode, setHighlightedCode] = useState("");
   
   // Get the current theme - fallback to dracula if not found
@@ -252,6 +256,13 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy }) =
 
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
+      {/* Project Name */}
+      <ProjectNameHeader
+        name={projectName}
+        onNameChange={onProjectNameChange}
+        isSaving={isSaving}
+      />
+
       {/* Top options - matching other editors */}
       <div className="grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center">
         <div className="dropdown">
@@ -280,13 +291,9 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy }) =
           <BiReset className="icon" />
         </OptionButtonOutline>
 
-        <div
-          className="text-white bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 px-4 flex items-center justify-center gap-2.5 rounded-lg transition-all duration-200 hover:from-indigo-600 hover:to-purple-700 cursor-pointer press-effect"
-          onClick={() => shareImage(previewRef.current)}
-        >
-          <BsShare className="text-lg" />
-          <span className="font-medium">Share</span>
-        </div>
+        <OptionButtonOutline title="Share" onTap={() => shareImage(previewRef.current)}>
+          <BsShare className="icon" />
+        </OptionButtonOutline>
       </div>
 
       {/* Editor Canvas Area */}

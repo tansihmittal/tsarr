@@ -3,16 +3,18 @@ import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import {
   Project,
-  saveProject,
-  getProject,
+  saveProjectAsync,
+  getProjectAsync,
   generateThumbnail,
   generateId,
+  updateProjectName,
 } from "../utils/projectStorage";
 
 interface UseProjectOptions {
   type: Project["type"];
   defaultName?: string;
   autoSaveInterval?: number; // ms, 0 to disable
+  silentSave?: boolean; // Don't show toast on save
 }
 
 interface UseProjectReturn {
@@ -22,46 +24,50 @@ interface UseProjectReturn {
   isSaving: boolean;
   lastSaved: Date | null;
   hasUnsavedChanges: boolean;
-  save: (data: any, element?: HTMLElement | null) => Promise<void>;
-  saveAs: (name: string, data: any, element?: HTMLElement | null) => Promise<void>;
-  loadProject: () => any | null;
+  save: (data: any, element?: HTMLElement | HTMLCanvasElement | null) => Promise<void>;
+  saveAs: (name: string, data: any, element?: HTMLElement | HTMLCanvasElement | null) => Promise<void>;
+  loadProject: () => Promise<any | null>;
   markChanged: () => void;
   isNewProject: boolean;
 }
 
 export const useProject = (options: UseProjectOptions): UseProjectReturn => {
   const router = useRouter();
-  const { type, defaultName = "Untitled", autoSaveInterval = 30000 } = options;
+  const { type, defaultName = "Untitled", autoSaveInterval = 30000, silentSave = true } = options;
 
   const [projectId, setProjectId] = useState<string | null>(null);
-  const [projectName, setProjectName] = useState(defaultName);
+  const [projectName, setProjectNameState] = useState(defaultName);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isNewProject, setIsNewProject] = useState(true);
 
   const dataRef = useRef<any>(null);
-  const elementRef = useRef<HTMLElement | null>(null);
+  const elementRef = useRef<HTMLElement | HTMLCanvasElement | null>(null);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load project from URL on mount
   useEffect(() => {
-    const { project: projectIdFromUrl } = router.query;
-    
-    if (projectIdFromUrl && typeof projectIdFromUrl === "string") {
-      const existingProject = getProject(projectIdFromUrl);
-      if (existingProject) {
-        setProjectId(existingProject.id);
-        setProjectName(existingProject.name);
-        setIsNewProject(false);
-        setLastSaved(new Date(existingProject.updatedAt));
+    const loadFromUrl = async () => {
+      const { project: projectIdFromUrl } = router.query;
+      
+      if (projectIdFromUrl && typeof projectIdFromUrl === "string") {
+        const existingProject = await getProjectAsync(projectIdFromUrl);
+        if (existingProject) {
+          setProjectId(existingProject.id);
+          setProjectNameState(existingProject.name);
+          setIsNewProject(false);
+          setLastSaved(new Date(existingProject.updatedAt));
+        }
+      } else {
+        // New project
+        setProjectId(null);
+        setProjectNameState(defaultName);
+        setIsNewProject(true);
       }
-    } else {
-      // New project
-      setProjectId(null);
-      setProjectName(defaultName);
-      setIsNewProject(true);
-    }
+    };
+    
+    loadFromUrl();
   }, [router.query, defaultName]);
 
   // Auto-save timer
@@ -92,8 +98,16 @@ export const useProject = (options: UseProjectOptions): UseProjectReturn => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
+  // Set project name with immediate DB update
+  const setProjectName = useCallback(async (name: string) => {
+    setProjectNameState(name);
+    if (projectId) {
+      await updateProjectName(projectId, name);
+    }
+  }, [projectId]);
+
   const save = useCallback(
-    async (data: any, element?: HTMLElement | null) => {
+    async (data: any, element?: HTMLElement | HTMLCanvasElement | null) => {
       setIsSaving(true);
       dataRef.current = data;
       if (element) elementRef.current = element;
@@ -101,7 +115,7 @@ export const useProject = (options: UseProjectOptions): UseProjectReturn => {
       try {
         const thumbnail = await generateThumbnail(elementRef.current);
         
-        const savedProject = saveProject({
+        const savedProject = await saveProjectAsync({
           id: projectId || undefined,
           name: projectName,
           type,
@@ -123,7 +137,10 @@ export const useProject = (options: UseProjectOptions): UseProjectReturn => {
           );
         }
 
-        toast.success("Saved", { duration: 1500 });
+        // Only show toast if not silent (for manual saves)
+        if (!silentSave) {
+          toast.success("Saved", { duration: 1500 });
+        }
       } catch (error) {
         console.error("Save failed:", error);
         toast.error("Failed to save");
@@ -131,21 +148,21 @@ export const useProject = (options: UseProjectOptions): UseProjectReturn => {
         setIsSaving(false);
       }
     },
-    [projectId, projectName, type, router]
+    [projectId, projectName, type, router, silentSave]
   );
 
   const saveAs = useCallback(
-    async (name: string, data: any, element?: HTMLElement | null) => {
+    async (name: string, data: any, element?: HTMLElement | HTMLCanvasElement | null) => {
       setProjectId(null); // Force new project
-      setProjectName(name);
+      setProjectNameState(name);
       await save(data, element);
     },
     [save]
   );
 
-  const loadProject = useCallback((): any | null => {
+  const loadProject = useCallback(async (): Promise<any | null> => {
     if (!projectId) return null;
-    const project = getProject(projectId);
+    const project = await getProjectAsync(projectId);
     return project?.data || null;
   }, [projectId]);
 

@@ -1,10 +1,13 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
 import CarouselPreview from "./CarouselPreview";
 import CarouselControls from "./CarouselControls";
 import { downloadimagePng, downloadimageJpeg, downloadimageSvg, copyToClipboard } from "../edtior/Editor/downloads";
 import { BackgroundConfig } from "../common/BackgroundPicker";
+import { useProject } from "@/hooks/useProject";
+import { getProject } from "@/utils/projectStorage";
+import { imageToBase64 } from "@/utils/imageStorage";
 
 export interface SlideContent {
   id: string;
@@ -70,6 +73,16 @@ const defaultSlides: SlideContent[] = [
 
 const CarouselEditorLayout: React.FC = () => {
   const previewRef = useRef<HTMLDivElement>(null);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [projectLoaded, setProjectLoaded] = useState(false);
+
+  // Project system - Canva-style auto-save
+  const project = useProject({
+    type: "carousel",
+    defaultName: "Untitled Carousel",
+    silentSave: true,
+  });
+
   const [state, setState] = useState<CarouselEditorState>({
     slides: defaultSlides,
     currentSlide: 0,
@@ -106,6 +119,54 @@ const CarouselEditorLayout: React.FC = () => {
     websiteUrlColor: "#6b7280",
   });
 
+  // Load project data when project ID is in URL
+  useEffect(() => {
+    if (project.projectId && !projectLoaded) {
+      const savedProject = getProject(project.projectId);
+      if (savedProject?.data) {
+        setState(savedProject.data);
+        setProjectLoaded(true);
+      }
+    }
+  }, [project.projectId, projectLoaded]);
+
+  // Auto-save with debounce (2 seconds after last change)
+  useEffect(() => {
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(async () => {
+      const stateToSave = { ...state };
+      // Convert blob URLs to base64 for persistence (slide images, app icons, profile image)
+      const slidesWithBase64 = await Promise.all(
+        stateToSave.slides.map(async (slide) => {
+          const updatedSlide = { ...slide };
+          if (updatedSlide.image && updatedSlide.image.startsWith('blob:')) {
+            updatedSlide.image = await imageToBase64(updatedSlide.image);
+          }
+          if (updatedSlide.appIcon && updatedSlide.appIcon.startsWith('blob:')) {
+            updatedSlide.appIcon = await imageToBase64(updatedSlide.appIcon);
+          }
+          return updatedSlide;
+        })
+      );
+      stateToSave.slides = slidesWithBase64;
+      
+      if (stateToSave.profileImage && stateToSave.profileImage.startsWith('blob:')) {
+        stateToSave.profileImage = await imageToBase64(stateToSave.profileImage);
+      }
+      
+      project.save(stateToSave, previewRef.current);
+    }, 2000);
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [state]);
+
   const updateState = (updates: Partial<CarouselEditorState>) => {
     setState((prev) => ({ ...prev, ...updates }));
   };
@@ -135,12 +196,22 @@ const CarouselEditorLayout: React.FC = () => {
   };
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
-      <section className="container mx-auto px-4 lg:px-0 relative">
-        <div className="grid gap-5 lg:grid-cols-[3fr_1.5fr]">
-          <CarouselPreview state={state} previewRef={previewRef} onExport={handleExport} onExportAll={handleExportAll} onCopy={handleCopy} updateState={updateState} />
+      <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
+        <div className="grid gap-4 lg:gap-5 lg:grid-cols-[3fr_1.5fr]">
+          <CarouselPreview 
+            state={state} 
+            previewRef={previewRef} 
+            onExport={handleExport} 
+            onExportAll={handleExportAll} 
+            onCopy={handleCopy} 
+            updateState={updateState}
+            projectName={project.projectName}
+            onProjectNameChange={project.setProjectName}
+            isSaving={project.isSaving}
+          />
           <CarouselControls state={state} updateState={updateState} />
         </div>
       </section>

@@ -122,10 +122,10 @@ const ClipboardSaverLayout: React.FC = () => {
   const selectedFormat = formats.find(f => f.id === outputFormat);
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
-      <section className="container mx-auto px-4 lg:px-0 relative py-8">
+      <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">

@@ -111,27 +111,40 @@ const VideoConverterLayout: React.FC = () => {
           setProgress(pct);
         });
 
-        // Use single-threaded version for stability
-        const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
+        // Check if SharedArrayBuffer is available (required for multi-threading)
+        const supportsMultiThread = typeof SharedArrayBuffer !== "undefined";
+        
+        // Use multi-threaded version if supported, otherwise fall back to single-threaded
+        const baseURL = supportsMultiThread
+          ? "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/umd"
+          : "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
 
-        await ffmpeg.load({
-          coreURL: await toBlobURL(
-            `${baseURL}/ffmpeg-core.js`,
-            "text/javascript"
-          ),
-          wasmURL: await toBlobURL(
-            `${baseURL}/ffmpeg-core.wasm`,
-            "application/wasm"
-          ),
-        });
+        try {
+          console.log(`Loading FFmpeg from: ${baseURL} (multi-thread: ${supportsMultiThread})`);
+          
+          const coreURL = await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript");
+          const wasmURL = await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm");
+          
+          // Multi-threaded version also needs the worker file
+          if (supportsMultiThread) {
+            const workerURL = await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, "text/javascript");
+            await ffmpeg.load({ coreURL, wasmURL, workerURL });
+          } else {
+            await ffmpeg.load({ coreURL, wasmURL });
+          }
+          
+          console.log("FFmpeg loaded successfully");
+        } catch (e) {
+          console.error("Failed to load FFmpeg:", e);
+          throw new Error("Failed to load FFmpeg core files");
+        }
 
         setFfmpegLoaded(true);
         setLoadError(null);
-        console.log("FFmpeg loaded successfully");
       } catch (error) {
         console.error("Failed to load FFmpeg:", error);
         setLoadError(
-          "Failed to load converter. Please refresh or try a different browser."
+          "Failed to load converter. Please refresh the page or try a different browser."
         );
         toast.error("Failed to load video converter");
       }
@@ -198,7 +211,8 @@ const VideoConverterLayout: React.FC = () => {
       console.log("Input file written");
 
       // Build simpler FFmpeg arguments
-      const args: string[] = ["-i", inputName];
+      // Use all available threads for faster encoding
+      const args: string[] = ["-threads", "0", "-i", inputName];
 
       // Trim - put -ss before input for faster seeking
       if (trimStart > 0) {
@@ -308,17 +322,17 @@ const VideoConverterLayout: React.FC = () => {
 
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
-      <section className="container mx-auto px-4 lg:px-0 relative py-8">
+      <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative py-4 sm:py-8">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-primary-content mb-2">
+          <div className="text-center mb-5 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-primary-content mb-1 sm:mb-2">
               Video Converter
             </h1>
-            <p className="text-primary-content/60">
+            <p className="text-primary-content/60 text-sm sm:text-base">
               Convert videos to any format with custom resolution, frame rate &
               more
             </p>
@@ -333,15 +347,15 @@ const VideoConverterLayout: React.FC = () => {
             )}
           </div>
 
-          <div className="grid lg:grid-cols-[2fr_1fr] gap-6">
+          <div className="grid lg:grid-cols-[2fr_1fr] gap-4 lg:gap-6">
             {/* Preview Area */}
-            <div className="bg-base-100 rounded-2xl shadow-xl p-6">
+            <div className="bg-base-100 rounded-2xl shadow-xl p-4 sm:p-6">
               {!video ? (
                 <div
                   onDrop={handleDrop}
                   onDragOver={(e) => e.preventDefault()}
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-base-300 rounded-2xl p-12 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all text-center"
+                  className="border-2 border-dashed border-base-300 rounded-2xl p-8 sm:p-12 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all text-center active:scale-[0.99]"
                 >
                   <input
                     ref={fileInputRef}
@@ -350,58 +364,58 @@ const VideoConverterLayout: React.FC = () => {
                     onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
                     className="hidden"
                   />
-                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                    <BsUpload className="text-4xl text-primary" />
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                    <BsUpload className="text-3xl sm:text-4xl text-primary" />
                   </div>
-                  <h2 className="text-xl font-semibold text-primary-content mb-2">Upload Video</h2>
-                  <p className="text-primary-content/60 mb-2">Drag & drop or click to browse</p>
+                  <h2 className="text-lg sm:text-xl font-semibold text-primary-content mb-2">Upload Video</h2>
+                  <p className="text-primary-content/60 mb-2 text-sm sm:text-base">Drag & drop or tap to browse</p>
                   <p className="text-xs text-primary-content/40">Supports MP4, WebM, AVI, MOV, MKV, and more</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {/* Video Preview */}
                   <div className="relative bg-black rounded-xl overflow-hidden">
                     <video
                       ref={videoRef}
                       src={video.url}
-                      className="w-full max-h-[400px] object-contain"
+                      className="w-full max-h-[300px] sm:max-h-[400px] object-contain"
                       onEnded={() => setIsPlaying(false)}
                     />
                     <button
                       onClick={togglePlay}
-                      className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition-opacity"
+                      className="absolute inset-0 flex items-center justify-center bg-black/30 sm:opacity-0 sm:hover:opacity-100 transition-opacity"
                     >
-                      {isPlaying ? <BsPauseFill className="text-6xl text-white" /> : <BsPlayFill className="text-6xl text-white" />}
+                      {isPlaying ? <BsPauseFill className="text-5xl sm:text-6xl text-white" /> : <BsPlayFill className="text-5xl sm:text-6xl text-white" />}
                     </button>
-                    <button onClick={handleClear} className="absolute top-3 right-3 btn btn-sm btn-circle btn-ghost bg-base-100/80">
+                    <button onClick={handleClear} className="absolute top-2 right-2 sm:top-3 sm:right-3 btn btn-sm btn-circle btn-ghost bg-base-100/80">
                       <BsTrash />
                     </button>
                   </div>
 
                   {/* Video Info */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-                    <div className="bg-base-200 rounded-lg p-3 text-center">
-                      <div className="text-primary-content/60">Duration</div>
-                      <div className="font-semibold text-primary-content">{formatTime(video.duration)}</div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-sm">
+                    <div className="bg-base-200 rounded-lg p-2.5 sm:p-3 text-center">
+                      <div className="text-primary-content/60 text-xs">Duration</div>
+                      <div className="font-semibold text-primary-content text-sm">{formatTime(video.duration)}</div>
                     </div>
-                    <div className="bg-base-200 rounded-lg p-3 text-center">
-                      <div className="text-primary-content/60">Resolution</div>
-                      <div className="font-semibold text-primary-content">{video.width}×{video.height}</div>
+                    <div className="bg-base-200 rounded-lg p-2.5 sm:p-3 text-center">
+                      <div className="text-primary-content/60 text-xs">Resolution</div>
+                      <div className="font-semibold text-primary-content text-sm">{video.width}×{video.height}</div>
                     </div>
-                    <div className="bg-base-200 rounded-lg p-3 text-center">
-                      <div className="text-primary-content/60">Size</div>
-                      <div className="font-semibold text-primary-content">{formatSize(video.size)}</div>
+                    <div className="bg-base-200 rounded-lg p-2.5 sm:p-3 text-center">
+                      <div className="text-primary-content/60 text-xs">Size</div>
+                      <div className="font-semibold text-primary-content text-sm">{formatSize(video.size)}</div>
                     </div>
-                    <div className="bg-base-200 rounded-lg p-3 text-center">
-                      <div className="text-primary-content/60">Format</div>
-                      <div className="font-semibold text-primary-content">{video.name.split(".").pop()?.toUpperCase()}</div>
+                    <div className="bg-base-200 rounded-lg p-2.5 sm:p-3 text-center">
+                      <div className="text-primary-content/60 text-xs">Format</div>
+                      <div className="font-semibold text-primary-content text-sm">{video.name.split(".").pop()?.toUpperCase()}</div>
                     </div>
                   </div>
 
                   {/* Trim Controls */}
-                  <div className="bg-base-200 rounded-lg p-4">
+                  <div className="bg-base-200 rounded-lg p-3 sm:p-4">
                     <label className="text-sm font-medium text-primary-content/70 block mb-2">Trim Video</label>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                       <div className="flex-1">
                         <label className="text-xs text-primary-content/60">Start: {formatTime(trimStart)}</label>
                         <input type="range" min="0" max={video.duration} step="0.1" value={trimStart} onChange={(e) => setTrimStart(Math.min(Number(e.target.value), trimEnd - 1))} className="range range-primary range-sm w-full" />
@@ -417,21 +431,21 @@ const VideoConverterLayout: React.FC = () => {
             </div>
 
             {/* Controls */}
-            <div className="bg-base-100 rounded-2xl shadow-xl p-6 space-y-5">
+            <div className="bg-base-100 rounded-2xl shadow-xl p-4 sm:p-6 space-y-4 sm:space-y-5">
               <h3 className="font-semibold text-primary-content flex items-center gap-2"><BsGear /> Conversion Settings</h3>
 
               {/* Output Format */}
               <div>
                 <label className="text-sm font-medium text-primary-content/70 block mb-2">Output Format</label>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
                   {formats.map((f) => (
                     <button
                       key={f.id}
                       onClick={() => setOutputFormat(f.id)}
-                      className={`p-2 rounded-lg text-center transition-all ${outputFormat === f.id ? "bg-primary text-white ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "bg-base-200 hover:bg-base-300 text-primary-content"}`}
+                      className={`p-1.5 sm:p-2 rounded-lg text-center transition-all active:scale-95 ${outputFormat === f.id ? "bg-primary text-white ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "bg-base-200 hover:bg-base-300 text-primary-content"}`}
                     >
-                      <div className="text-lg">{f.icon}</div>
-                      <div className="text-xs font-semibold">{f.name}</div>
+                      <div className="text-base sm:text-lg">{f.icon}</div>
+                      <div className="text-[10px] sm:text-xs font-semibold">{f.name}</div>
                     </button>
                   ))}
                 </div>
@@ -441,7 +455,7 @@ const VideoConverterLayout: React.FC = () => {
               {!["mp3", "wav"].includes(outputFormat) && (
                 <div>
                   <label className="text-sm font-medium text-primary-content/70 block mb-2">Resolution</label>
-                  <select value={resolution} onChange={(e) => setResolution(e.target.value as Resolution)} className="select select-bordered w-full">
+                  <select value={resolution} onChange={(e) => setResolution(e.target.value as Resolution)} className="select select-bordered w-full text-base">
                     {resolutions.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
                   </select>
                 </div>
@@ -451,7 +465,7 @@ const VideoConverterLayout: React.FC = () => {
               {!["mp3", "wav"].includes(outputFormat) && (
                 <div>
                   <label className="text-sm font-medium text-primary-content/70 block mb-2">Frame Rate</label>
-                  <select value={frameRate} onChange={(e) => setFrameRate(e.target.value as FrameRate)} className="select select-bordered w-full">
+                  <select value={frameRate} onChange={(e) => setFrameRate(e.target.value as FrameRate)} className="select select-bordered w-full text-base">
                     {frameRates.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
                   </select>
                 </div>
@@ -463,15 +477,15 @@ const VideoConverterLayout: React.FC = () => {
                   <label className="text-sm font-medium text-primary-content/70 block mb-2">Quality (CRF: {quality})</label>
                   <input type="range" min="0" max="51" value={quality} onChange={(e) => setQuality(Number(e.target.value))} className="range range-primary w-full" />
                   <div className="flex justify-between text-xs text-primary-content/50 mt-1">
-                    <span>Best (larger file)</span>
-                    <span>Worst (smaller file)</span>
+                    <span>Best</span>
+                    <span>Smallest</span>
                   </div>
                 </div>
               )}
 
               {/* Remove Audio */}
               {!["mp3", "wav"].includes(outputFormat) && (
-                <label className="flex items-center gap-3 cursor-pointer">
+                <label className="flex items-center gap-3 cursor-pointer py-1">
                   <input type="checkbox" checked={removeAudio} onChange={(e) => setRemoveAudio(e.target.checked)} className="checkbox checkbox-primary" />
                   <span className="text-sm text-primary-content">Remove audio track</span>
                 </label>
@@ -481,7 +495,7 @@ const VideoConverterLayout: React.FC = () => {
               <button
                 onClick={handleConvert}
                 disabled={!video || isConverting || !ffmpegLoaded}
-                className="btn btn-primary w-full gap-2"
+                className="btn btn-primary w-full gap-2 h-12"
               >
                 {isConverting ? (
                   <>

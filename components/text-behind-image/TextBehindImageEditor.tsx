@@ -4,6 +4,7 @@ import { TfiExport } from "react-icons/tfi";
 import { BiReset } from "react-icons/bi";
 import { TextBehindImageState, TextLayer } from "./TextBehindImageLayout";
 import { shareImage } from "../../utils/share";
+import ProjectNameHeader from "../common/ProjectNameHeader";
 
 interface Props {
   state: TextBehindImageState;
@@ -11,9 +12,12 @@ interface Props {
   updateState: (updates: Partial<TextBehindImageState>) => void;
   onImageUpload?: (imageUrl: string, width: number, height: number) => void;
   updateLayer?: (layerId: string, updates: Partial<TextLayer>) => void;
+  projectName: string;
+  onProjectNameChange: (name: string) => void;
+  isSaving: boolean;
 }
 
-const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, updateLayer }: Props) => {
+const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, updateLayer, projectName, onProjectNameChange, isSaving }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -575,6 +579,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
 
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
+      <ProjectNameHeader name={projectName} onNameChange={onProjectNameChange} isSaving={isSaving} />
       {/* Top options */}
       <div
         style={{ pointerEvents: state.image ? "auto" : "none" }}
@@ -636,13 +641,13 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
           <BiReset className="icon" />
         </OptionButtonOutline>
 
-        <div
-          className={`text-white bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 px-4 flex items-center justify-center gap-2.5 rounded-lg transition-all duration-200 ${state.image ? "hover:from-indigo-600 hover:to-purple-700 cursor-pointer press-effect" : "opacity-50 cursor-not-allowed"}`}
-          onClick={() => state.image && canvasRef.current && shareImage(canvasRef.current.parentElement)}
+        <OptionButtonOutline 
+          title="Share" 
+          onTap={() => state.image && canvasRef.current && shareImage(canvasRef.current.parentElement)}
+          disabled={!state.image}
         >
-          <BsShare className="text-lg" />
-          <span className="font-medium">Share</span>
-        </div>
+          <BsShare className="icon" />
+        </OptionButtonOutline>
       </div>
 
       {/* Editor Canvas Area */}
