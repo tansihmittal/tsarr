@@ -2,20 +2,81 @@
   "name": "tsarr.in - Free Online Screenshot Editor",
   "short_name": "tsarr.in",
   "description": "Free online screenshot editor with frames, backgrounds, annotations. Create beautiful code screenshots, text behind image effects, video captions, and more.",
-  "start_url": "/",
+  "start_url": "/app",
+  "id": "/app",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#4f46e5",
+  "categories": ["utilities", "productivity", "photo"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/favicon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/favicon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "/images/editor-preview.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Screenshot Editor on Desktop"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Screenshot Editor",
+      "short_name": "Editor",
+      "url": "/editor",
+      "description": "Edit and beautify screenshots",
+      "icons": [{ "src": "/favicon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Code Screenshots",
+      "short_name": "Code",
+      "url": "/code",
+      "description": "Create beautiful code images",
+      "icons": [{ "src": "/favicon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "All Tools",
+      "short_name": "Tools",
+      "url": "/tools",
+      "description": "Browse all available tools",
+      "icons": [{ "src": "/favicon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "share_target": {
+    "action": "/editor",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "image",
+          "accept": ["image/*"]
+        }
+      ]
+    }
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }

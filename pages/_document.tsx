@@ -14,14 +14,21 @@ export default function Document() {
         
         {/* Favicon and App Icons */}
         <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon-192x192.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
         <link rel="manifest" href="/site.webmanifest" />
         
         {/* Theme Color for browsers */}
         <meta name="theme-color" content="#111827" />
         <meta name="msapplication-TileColor" content="#111827" />
+        
+        {/* PWA / Mobile App Meta Tags */}
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="tsarr.in" />
+        <meta name="format-detection" content="telephone=no" />
         
         {/* Fonts */}
         <link
