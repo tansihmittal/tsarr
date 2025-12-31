@@ -94,6 +94,7 @@ const PolaroidLayout = () => {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   const updateState = useCallback((updates: Partial<PolaroidState>) => {

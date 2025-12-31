@@ -159,6 +159,7 @@ const CodeEditorLayout: React.FC = () => {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   const updateState = (key: keyof CodeEditorState, value: any) => {

@@ -281,7 +281,8 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
 
       return canvas;
     },
-    [state, canvasRef, drawTextLayer]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [state, canvasRef]
   );
 
   useEffect(() => {
@@ -349,6 +350,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
     };
 
     img.src = state.image;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, canvasRef, renderCanvas]);
 
   const handleDownload = () => {

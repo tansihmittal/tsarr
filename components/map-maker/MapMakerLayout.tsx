@@ -691,7 +691,8 @@ const MapMakerLayout: React.FC = () => {
     
     setData(newData);
     toast.success(`Imported ${newData.length} data points!`);
-  }, [mapType, region]); // parseFlowData is defined below, so we can't include it here
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapType, region]);
 
   // Parse flow/arc data from CSV/Excel
   const parseFlowData = useCallback((lines: string[], headers: string[], fromIdx: number, toIdx: number) => {

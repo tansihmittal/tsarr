@@ -148,6 +148,7 @@ const TextBehindImageLayout = () => {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   // Preload AI model when page loads for faster processing

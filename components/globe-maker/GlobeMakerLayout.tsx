@@ -1032,6 +1032,7 @@ const GlobeMakerLayout: React.FC = () => {
       .arcDashGap(arcStyle === "dash" ? 0.2 : 0)
       .arcDashAnimateTime(arcStyle === "dash" ? 1500 : arcStyle === "glow" ? 2000 : 0);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globeLoaded, globeStyle, points, arcs, pointStyle, arcStyle, pointColor, arcColor, pointSize, arcAltitude, autoRotate, rotateSpeed, rotateDirection, showAtmosphere, atmosphereColor, atmosphereIntensity]);
 
   // Parse CSV/Excel data

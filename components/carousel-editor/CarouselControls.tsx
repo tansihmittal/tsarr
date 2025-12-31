@@ -41,6 +41,7 @@ const DebouncedInput = memo(({ value, onChange, className, placeholder }: { valu
   const [localValue, setLocalValue] = useState(value);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const isTypingRef = useRef(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (!isTypingRef.current && value !== localValue) setLocalValue(value); }, [value]);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocalValue(e.target.value); isTypingRef.current = true;
@@ -57,6 +58,7 @@ const DebouncedTextarea = memo(({ value, onChange, className, placeholder }: { v
   const [localValue, setLocalValue] = useState(value);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const isTypingRef = useRef(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (!isTypingRef.current && value !== localValue) setLocalValue(value); }, [value]);
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setLocalValue(e.target.value); isTypingRef.current = true;

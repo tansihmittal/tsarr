@@ -146,6 +146,7 @@ const Editor: React.FC<Props> = () => {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedImage,
     currentBackground,
@@ -172,6 +173,7 @@ const Editor: React.FC<Props> = () => {
     if (projectLoaded || selectedImage) {
       project.markChanged();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedImage, currentBackground, scale, borderRadius, canvasRoundness, padding, left, right, tilt, rotate, aspectRatio, currentBoxShadow, noise, watermark, selectedFrame]);
 
   // Share functionality
