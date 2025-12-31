@@ -129,6 +129,7 @@ const TweetEditorLayout: React.FC = () => {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   const updateState = (updates: Partial<TweetEditorState>) => {

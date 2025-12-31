@@ -54,7 +54,7 @@ export const convertImagesToBase64 = async <T extends Record<string, any>>(
   data: T,
   imageKeys: string[]
 ): Promise<T> => {
-  const result = { ...data };
+  const result = { ...data } as Record<string, any>;
 
   for (const key of imageKeys) {
     if (result[key] && typeof result[key] === 'string') {
@@ -62,7 +62,7 @@ export const convertImagesToBase64 = async <T extends Record<string, any>>(
     }
   }
 
-  return result;
+  return result as T;
 };
 
 /**
