@@ -8,26 +8,12 @@
   "lang": "en-US",
   "dir": "ltr",
   "display": "standalone",
-  "display_override": ["tabbed", "window-controls-overlay", "standalone", "minimal-ui"],
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#4f46e5",
   "categories": ["utilities", "productivity", "photo"],
-  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "prefer_related_applications": false,
-  "serviceworker": {
-    "src": "/sw.js",
-    "scope": "/",
-    "type": "classic",
-    "update_via_cache": "none"
-  },
-  "related_applications": [
-    {
-      "platform": "webapp",
-      "url": "https://tsarr.in/site.webmanifest",
-      "id": "/app"
-    }
-  ],
   "icons": [
     {
       "src": "/favicon-192x192.png",
@@ -87,24 +73,6 @@
       "icons": [{ "src": "/favicon-192x192.png", "sizes": "192x192" }]
     }
   ],
-  "file_handlers": [
-    {
-      "action": "/editor",
-      "accept": {
-        "image/png": [".png"],
-        "image/jpeg": [".jpg", ".jpeg"],
-        "image/webp": [".webp"],
-        "image/gif": [".gif"],
-        "image/bmp": [".bmp"]
-      }
-    }
-  ],
-  "protocol_handlers": [
-    {
-      "protocol": "web+tsarr",
-      "url": "/editor?url=%s"
-    }
-  ],
   "share_target": {
     "action": "/editor",
     "method": "POST",
@@ -118,41 +86,6 @@
       ]
     }
   },
-  "launch_handler": {
-    "client_mode": "navigate-existing"
-  },
-  "edge_side_panel": {
-    "preferred_width": 400
-  },
-  "handle_links": "preferred",
-  "scope_extensions": [
-    { "origin": "https://tsarr.in" },
-    { "origin": "https://*.tsarr.in" },
-    { "origin": "https://www.tsarr.in" }
-  ],
-  "tab_strip": {
-    "home_tab": "auto",
-    "new_tab_button": "auto"
-  },
-  "widgets": [
-    {
-      "name": "Quick Tools",
-      "description": "Quick access to tsarr.in tools",
-      "tag": "tsarr-widget",
-      "ms_ac_template": "widget/quick-tools.json",
-      "screenshots": [
-        {
-          "src": "/images/editor-preview.png",
-          "sizes": "1920x1080",
-          "label": "Quick Tools Widget"
-        }
-      ],
-      "icons": [
-        { "src": "/favicon-192x192.png", "sizes": "192x192" }
-      ]
-    }
-  ],
-  "note_taking": {
-    "new_note_url": "/editor"
-  }
+  "related_applications": [],
+  "handle_links": "preferred"
 }
