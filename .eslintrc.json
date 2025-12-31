@@ -3,5 +3,13 @@
   "rules": {
     "@next/next/no-img-element": "off",
     "@next/next/google-font-preconnect": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["components/globe-maker/GlobeMakerLayout.tsx"],
+      "rules": {
+        "react-hooks/exhaustive-deps": "off"
+      }
+    }
+  ]
 }

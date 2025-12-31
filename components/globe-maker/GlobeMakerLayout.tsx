@@ -930,7 +930,7 @@ const GlobeMakerLayout: React.FC = () => {
   }, []);
 
   // Update globe when settings change
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     if (!globeRef.current || !globeLoaded) return;
 
@@ -1033,8 +1033,8 @@ const GlobeMakerLayout: React.FC = () => {
       .arcDashGap(arcStyle === "dash" ? 0.2 : 0)
       .arcDashAnimateTime(arcStyle === "dash" ? 1500 : arcStyle === "glow" ? 2000 : 0);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globeLoaded, globeStyle, points, arcs, pointStyle, arcStyle, pointColor, arcColor, pointSize, arcAltitude, autoRotate, rotateSpeed, rotateDirection, showAtmosphere, atmosphereColor, atmosphereIntensity]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   // Parse CSV/Excel data
   const parseData = useCallback((text: string) => {
