@@ -8,13 +8,20 @@
   "lang": "en-US",
   "dir": "ltr",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "display_override": ["tabbed", "window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#4f46e5",
   "categories": ["utilities", "productivity", "photo"],
   "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://tsarr.in/site.webmanifest",
+      "id": "/app"
+    }
+  ],
   "icons": [
     {
       "src": "/favicon-192x192.png",
@@ -38,14 +45,14 @@
   "screenshots": [
     {
       "src": "/images/editor-preview.png",
-      "sizes": "1280x720",
+      "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide",
       "label": "Screenshot Editor on Desktop"
     },
     {
       "src": "/images/tbi-preview.png",
-      "sizes": "390x844",
+      "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Text Behind Image on Mobile"
@@ -114,8 +121,13 @@
   "handle_links": "preferred",
   "scope_extensions": [
     { "origin": "https://tsarr.in" },
-    { "origin": "https://*.tsarr.in" }
+    { "origin": "https://*.tsarr.in" },
+    { "origin": "https://www.tsarr.in" }
   ],
+  "tab_strip": {
+    "home_tab": "auto",
+    "new_tab_button": "auto"
+  },
   "widgets": [
     {
       "name": "Quick Tools",
@@ -125,7 +137,7 @@
       "screenshots": [
         {
           "src": "/images/editor-preview.png",
-          "sizes": "600x400",
+          "sizes": "1920x1080",
           "label": "Quick Tools Widget"
         }
       ],
