@@ -1,5 +1,5 @@
-// tsarr.in Service Worker v6 - Full Offline Support with AI Models
-const CACHE_VERSION = 'v6';
+// tsarr.in Service Worker v7 - Enhanced PWA with Full Offline Support
+const CACHE_VERSION = 'v7';
 const CACHE_NAME = `tsarr-${CACHE_VERSION}`;
 const STATIC_CACHE = `tsarr-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `tsarr-dynamic-${CACHE_VERSION}`;
@@ -35,36 +35,50 @@ const CACHEABLE_CDN_HOSTS = [
   'huggingface.co',
   'cdn-lfs.huggingface.co',
   'cdn-lfs-us-1.huggingface.co',
-  'staticimgly.com'  // imgly background removal models
+  'staticimgly.com'
 ];
 
 // Install - precache all core assets
 self.addEventListener('install', (event) => {
+  console.log('[SW] Installing service worker v7...');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_URLS))
-      .then(() => self.skipWaiting())
+      .then((cache) => {
+        console.log('[SW] Precaching core assets...');
+        return cache.addAll(PRECACHE_URLS);
+      })
+      .then(() => {
+        console.log('[SW] Precache complete, activating immediately');
+        return self.skipWaiting();
+      })
       .catch((err) => {
         console.error('[SW] Precache failed:', err);
-        self.skipWaiting();
+        return self.skipWaiting();
       })
   );
 });
 
-// Activate - clean old caches and take control
+// Activate - clean old caches and take control immediately
 self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating service worker v7...');
   const currentCaches = [CACHE_NAME, STATIC_CACHE, DYNAMIC_CACHE, MODEL_CACHE];
   event.waitUntil(
     caches.keys()
       .then((keys) => Promise.all(
         keys.filter((key) => key.startsWith('tsarr-') && !currentCaches.includes(key))
-          .map((key) => caches.delete(key))
+          .map((key) => {
+            console.log('[SW] Deleting old cache:', key);
+            return caches.delete(key);
+          })
       ))
-      .then(() => self.clients.claim())
+      .then(() => {
+        console.log('[SW] Taking control of all clients');
+        return self.clients.claim();
+      })
   );
 });
 
-// Fetch handler with smart caching
+// Fetch handler with smart caching strategies
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -121,7 +135,7 @@ function isModelOrWasm(url) {
   return path.endsWith('.onnx') ||
          path.endsWith('.wasm') ||
          path.endsWith('.bin') ||
-         path.endsWith('.json') && (url.hostname.includes('huggingface') || url.hostname.includes('imgly')) ||
+         (path.endsWith('.json') && (url.hostname.includes('huggingface') || url.hostname.includes('imgly'))) ||
          path.includes('/models/') ||
          path.includes('/onnx/');
 }
@@ -185,6 +199,7 @@ async function cacheFirst(request, cacheName) {
     }
     return response;
   } catch (error) {
+    // Return placeholder for images
     if (request.destination === 'image') {
       return new Response(
         '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect fill="#f0f0f0" width="100" height="100"/></svg>',
@@ -205,8 +220,12 @@ async function networkFirstWithOffline(request) {
     }
     return response;
   } catch (error) {
+    console.log('[SW] Network failed, trying cache for:', request.url);
     const cached = await caches.match(request);
     if (cached) return cached;
+    
+    // Return offline page for navigation requests
+    console.log('[SW] Serving offline page');
     return caches.match('/offline.html');
   }
 }
@@ -221,58 +240,190 @@ async function networkFirst(request, cacheName) {
     }
     return response;
   } catch (error) {
-    return caches.match(request);
+    const cached = await caches.match(request);
+    return cached || new Response('Offline', { status: 503 });
   }
 }
 
-// Background sync
+// Background Sync - sync projects when back online
 self.addEventListener('sync', (event) => {
+  console.log('[SW] Background sync triggered:', event.tag);
+  
   if (event.tag === 'sync-projects') {
-    event.waitUntil(Promise.resolve());
+    event.waitUntil(syncProjects());
+  }
+  
+  if (event.tag === 'sync-data') {
+    event.waitUntil(syncData());
   }
 });
 
+async function syncProjects() {
+  console.log('[SW] Syncing projects...');
+  // Notify clients that sync is happening
+  const clients = await self.clients.matchAll();
+  clients.forEach(client => {
+    client.postMessage({ type: 'SYNC_STARTED', tag: 'sync-projects' });
+  });
+  
+  // Projects are stored in IndexedDB, no server sync needed
+  // Just notify completion
+  clients.forEach(client => {
+    client.postMessage({ type: 'SYNC_COMPLETED', tag: 'sync-projects' });
+  });
+}
+
+async function syncData() {
+  console.log('[SW] Syncing data...');
+  // Placeholder for future server sync
+}
+
+// Periodic Background Sync - refresh cache periodically
+self.addEventListener('periodicsync', (event) => {
+  console.log('[SW] Periodic sync triggered:', event.tag);
+  
+  if (event.tag === 'refresh-cache') {
+    event.waitUntil(refreshCache());
+  }
+  
+  if (event.tag === 'update-content') {
+    event.waitUntil(updateContent());
+  }
+});
+
+async function refreshCache() {
+  console.log('[SW] Refreshing cache...');
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    
+    // Re-fetch and update core pages
+    for (const url of PRECACHE_URLS) {
+      try {
+        const response = await fetch(url, { cache: 'no-cache' });
+        if (response.ok) {
+          await cache.put(url, response);
+          console.log('[SW] Refreshed:', url);
+        }
+      } catch (e) {
+        console.log('[SW] Failed to refresh:', url);
+      }
+    }
+    
+    console.log('[SW] Cache refresh complete');
+  } catch (error) {
+    console.error('[SW] Cache refresh failed:', error);
+  }
+}
+
+async function updateContent() {
+  console.log('[SW] Updating content...');
+  // Check for app updates
+  try {
+    const response = await fetch('/site.webmanifest', { cache: 'no-cache' });
+    if (response.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.put('/site.webmanifest', response);
+    }
+  } catch (e) {
+    console.log('[SW] Content update failed');
+  }
+}
+
 // Push notifications
 self.addEventListener('push', (event) => {
+  console.log('[SW] Push notification received');
   const data = event.data?.json() || {};
+  
+  const options = {
+    body: data.body || 'New update available',
+    icon: '/favicon-192x192.png',
+    badge: '/favicon-192x192.png',
+    vibrate: [100, 50, 100],
+    data: {
+      url: data.url || '/app',
+      dateOfArrival: Date.now()
+    },
+    actions: [
+      { action: 'open', title: 'Open App' },
+      { action: 'close', title: 'Dismiss' }
+    ]
+  };
+  
   event.waitUntil(
-    self.registration.showNotification(data.title || 'tsarr.in', {
-      body: data.body || 'New update',
-      icon: '/favicon-192x192.png',
-      badge: '/favicon-192x192.png'
-    })
+    self.registration.showNotification(data.title || 'tsarr.in', options)
   );
 });
 
-// Notification click
+// Notification click handler
 self.addEventListener('notificationclick', (event) => {
+  console.log('[SW] Notification clicked:', event.action);
   event.notification.close();
-  event.waitUntil(clients.openWindow('/app'));
+  
+  if (event.action === 'close') return;
+  
+  const urlToOpen = event.notification.data?.url || '/app';
+  
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((windowClients) => {
+        // Check if app is already open
+        for (const client of windowClients) {
+          if (client.url.includes(self.location.origin) && 'focus' in client) {
+            client.navigate(urlToOpen);
+            return client.focus();
+          }
+        }
+        // Open new window
+        return clients.openWindow(urlToOpen);
+      })
+  );
 });
 
-// Message handler
+// Message handler for client communication
 self.addEventListener('message', (event) => {
   const { type, payload } = event.data || {};
+  console.log('[SW] Message received:', type);
   
   switch (type || event.data) {
     case 'skipWaiting':
       self.skipWaiting();
       break;
+      
     case 'clearCache':
-      caches.keys().then((keys) => keys.forEach((key) => caches.delete(key)));
+      caches.keys().then((keys) => {
+        keys.forEach((key) => caches.delete(key));
+        event.ports?.[0]?.postMessage({ success: true });
+      });
       break;
+      
     case 'clearModelCache':
-      caches.delete(MODEL_CACHE);
+      caches.delete(MODEL_CACHE).then(() => {
+        event.ports?.[0]?.postMessage({ success: true });
+      });
       break;
+      
     case 'getModelCacheSize':
       getModelCacheSize().then((size) => {
         event.ports?.[0]?.postMessage({ size });
       });
       break;
+      
     case 'precacheModels':
       if (payload?.urls) {
-        precacheModels(payload.urls);
+        precacheModels(payload.urls).then(() => {
+          event.ports?.[0]?.postMessage({ success: true });
+        });
       }
+      break;
+      
+    case 'getCacheStatus':
+      getCacheStatus().then((status) => {
+        event.ports?.[0]?.postMessage(status);
+      });
+      break;
+      
+    case 'registerPeriodicSync':
+      registerPeriodicSync(payload?.tag || 'refresh-cache', payload?.minInterval || 24 * 60 * 60 * 1000);
       break;
   }
 });
@@ -313,4 +464,35 @@ async function precacheModels(urls) {
   }
 }
 
-console.log('[SW] Service worker v6 loaded - AI models will be cached for offline use');
+// Get cache status for debugging
+async function getCacheStatus() {
+  const cacheNames = await caches.keys();
+  const status = {};
+  
+  for (const name of cacheNames) {
+    const cache = await caches.open(name);
+    const keys = await cache.keys();
+    status[name] = keys.length;
+  }
+  
+  return {
+    version: CACHE_VERSION,
+    caches: status,
+    timestamp: Date.now()
+  };
+}
+
+// Register periodic sync
+async function registerPeriodicSync(tag, minInterval) {
+  try {
+    const registration = await self.registration;
+    if ('periodicSync' in registration) {
+      await registration.periodicSync.register(tag, { minInterval });
+      console.log('[SW] Periodic sync registered:', tag);
+    }
+  } catch (e) {
+    console.log('[SW] Periodic sync not supported');
+  }
+}
+
+console.log('[SW] Service worker v7 loaded - Full offline support with background sync');

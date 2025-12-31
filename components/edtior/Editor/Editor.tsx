@@ -69,7 +69,11 @@ const Editor: React.FC<Props> = () => {
 
   // Load project data when project ID is in URL
   useEffect(() => {
-    if (project.projectId && !projectLoaded) {
+    // Only load if there's a project ID in URL and we haven't loaded yet
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectIdFromUrl = urlParams.get('project');
+    
+    if (projectIdFromUrl && project.projectId && !projectLoaded) {
       const savedProject = getProject(project.projectId);
       if (savedProject?.data) {
         const data = savedProject.data;
@@ -95,6 +99,9 @@ const Editor: React.FC<Props> = () => {
         if (data.frameUrl) updateData && updateData("frameUrl", data.frameUrl);
         setProjectLoaded(true);
       }
+    } else if (!projectIdFromUrl) {
+      // No project in URL, mark as loaded to prevent loading old data
+      setProjectLoaded(true);
     }
   }, [project.projectId, projectLoaded, updateData]);
 

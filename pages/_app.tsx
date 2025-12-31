@@ -24,12 +24,13 @@ const isPWA = () => {
   if (typeof window === "undefined") return false;
   return (
     window.matchMedia("(display-mode: standalone)").matches ||
+    window.matchMedia("(display-mode: fullscreen)").matches ||
     (window.navigator as any).standalone === true
   );
 };
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [showSplash, setShowSplash] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const [isReady, setIsReady] = useState(false);
 
   // Register service worker for PWA
@@ -42,11 +43,12 @@ export default function App({ Component, pageProps }: AppProps) {
     // Initialize project storage (cache projects from IndexedDB)
     initProjectStorage();
 
-    // Show splash only for installed PWA on initial load
+    // Show splash on initial load (check sessionStorage)
     const hasSeenSplash = sessionStorage.getItem("splashShown");
-    if (isPWA() && !hasSeenSplash) {
+    if (!hasSeenSplash) {
       setShowSplash(true);
     } else {
+      setShowSplash(false);
       setIsReady(true);
     }
   }, []);

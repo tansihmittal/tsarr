@@ -7,13 +7,14 @@
   "scope": "/",
   "lang": "en-US",
   "dir": "ltr",
-  "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone", "minimal-ui"],
   "orientation": "any",
-  "background_color": "#ffffff",
+  "background_color": "#4f46e5",
   "theme_color": "#4f46e5",
   "categories": ["utilities", "productivity", "photo"],
   "prefer_related_applications": false,
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "icons": [
     {
       "src": "/favicon-192x192.png",
@@ -108,5 +109,15 @@
     "client_mode": "navigate-existing"
   },
   "handle_links": "preferred",
-  "related_applications": []
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://tsarr.in/site.webmanifest"
+    }
+  ],
+  "scope_extensions": [
+    {
+      "origin": "https://tsarr.in"
+    }
+  ]
 }

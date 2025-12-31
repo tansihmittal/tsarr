@@ -64,8 +64,9 @@ const DropZone: React.FC<Props> = () => {
     maxSize: 30 * 1024 * 1024,
   });
 
-  const handleFilePickerClick = () => {
-    console.log(filePicker);
+  const handleFilePickerClick = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     filePicker.current?.click();
   };
 
@@ -87,6 +88,8 @@ const DropZone: React.FC<Props> = () => {
       }
     }
     setLoading(false);
+    // Reset input value to allow re-uploading same file
+    e.target.value = '';
   };
 
   // Capture screenshot from URL

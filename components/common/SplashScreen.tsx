@@ -19,14 +19,14 @@ const SplashScreen = ({ onComplete, minDuration = 1500 }: SplashScreenProps) => 
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-600 transition-opacity duration-300 ${
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-indigo-600 transition-opacity duration-300 ${
         fadeOut ? "opacity-0" : "opacity-100"
       }`}
     >
       {/* Logo */}
       <div className="relative mb-6 animate-bounce-slow">
         <div className="w-24 h-24 bg-white rounded-3xl shadow-2xl shadow-indigo-900/30 flex items-center justify-center">
-          <span className="text-4xl font-bold bg-gradient-to-br from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <span className="text-4xl font-bold text-indigo-600">
             ts
           </span>
         </div>
