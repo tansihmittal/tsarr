@@ -4,6 +4,9 @@ export default function Document() {
   return (
     <Html lang="en" data-theme="bumblebee">
       <Head>
+        {/* Service Worker Registration Link - for PWA detection */}
+        <link rel="serviceworker" href="/sw.js" />
+        
         {/* DNS Prefetch for external resources */}
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
@@ -48,20 +51,12 @@ export default function Document() {
         {/* <meta name="msvalidate.01" content="your-bing-verification-code" /> */}
       </Head>
       <body className="antialiased">
-        {/* Early service worker registration for PWA detection */}
+        {/* Immediate service worker registration - must be synchronous for PWABuilder detection */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js', { scope: '/' })
-                    .then(function(registration) {
-                      console.log('SW registered: ', registration.scope);
-                    })
-                    .catch(function(error) {
-                      console.log('SW registration failed: ', error);
-                    });
-                });
+                navigator.serviceWorker.register('/sw.js', { scope: '/' });
               }
             `,
           }}
