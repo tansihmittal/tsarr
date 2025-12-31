@@ -1,11 +1,12 @@
 import { useRef, ChangeEvent, useCallback, useEffect, ReactNode } from "react";
-import { BsClipboard, BsRepeat, BsUpload } from "react-icons/bs";
+import { BsClipboard, BsRepeat, BsUpload, BsShare } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { TfiExport } from "react-icons/tfi";
 import { PolaroidState } from "./types";
 import { toast } from "react-hot-toast";
 import html2canvas from "html2canvas";
 import { FileRejection, useDropzone } from "react-dropzone";
+import { shareImage } from "../../utils/share";
 
 interface Props {
   state: PolaroidState;
@@ -332,6 +333,13 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset }: Props) 
           <OptionButtonOutline title="Reset Image"><BsRepeat className="icon" /></OptionButtonOutline>
         </label>
         <OptionButtonOutline title="Reset Canvas" onTap={onReset}><BiReset className="icon" /></OptionButtonOutline>
+        <div
+          className={`text-white bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 px-4 flex items-center justify-center gap-2.5 rounded-lg transition-all duration-200 ${state.image ? "hover:from-indigo-600 hover:to-purple-700 cursor-pointer press-effect" : "opacity-50 cursor-not-allowed"}`}
+          onClick={() => state.image && shareImage(polaroidRef.current)}
+        >
+          <BsShare className="text-lg" />
+          <span className="font-medium">Share</span>
+        </div>
       </div>
 
       {state.image && state.imageWidth > 0 && (

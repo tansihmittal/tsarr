@@ -1,8 +1,9 @@
 import { useEffect, useRef, RefObject, useCallback, ReactNode, useState } from "react";
-import { BsClipboard, BsRepeat, BsImage } from "react-icons/bs";
+import { BsClipboard, BsRepeat, BsImage, BsShare } from "react-icons/bs";
 import { TfiExport } from "react-icons/tfi";
 import { BiReset } from "react-icons/bi";
 import { TextBehindImageState, TextLayer } from "./TextBehindImageLayout";
+import { shareImage } from "../../utils/share";
 
 interface Props {
   state: TextBehindImageState;
@@ -634,6 +635,14 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
         <OptionButtonOutline title="Reset" onTap={handleReset}>
           <BiReset className="icon" />
         </OptionButtonOutline>
+
+        <div
+          className={`text-white bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 px-4 flex items-center justify-center gap-2.5 rounded-lg transition-all duration-200 ${state.image ? "hover:from-indigo-600 hover:to-purple-700 cursor-pointer press-effect" : "opacity-50 cursor-not-allowed"}`}
+          onClick={() => state.image && canvasRef.current && shareImage(canvasRef.current.parentElement)}
+        >
+          <BsShare className="text-lg" />
+          <span className="font-medium">Share</span>
+        </div>
       </div>
 
       {/* Editor Canvas Area */}

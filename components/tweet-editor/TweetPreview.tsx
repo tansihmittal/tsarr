@@ -1,8 +1,9 @@
 import { RefObject, ReactNode, useRef } from "react";
 import { TweetEditorState } from "./TweetEditorLayout";
 import { TfiExport } from "react-icons/tfi";
-import { BsClipboard } from "react-icons/bs";
+import { BsClipboard, BsShare } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
+import { shareImage } from "../../utils/share";
 
 interface Props {
   state: TweetEditorState;
@@ -102,6 +103,13 @@ const TweetPreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, up
         </div>
         <OptionButtonOutline title="Copy to Clipboard" onTap={onCopy}><BsClipboard /></OptionButtonOutline>
         <OptionButtonOutline title="Reset" onTap={handleReset}><BiReset /></OptionButtonOutline>
+        <div
+          className="text-white bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 px-4 flex items-center justify-center gap-2.5 rounded-lg transition-all duration-200 hover:from-indigo-600 hover:to-purple-700 cursor-pointer press-effect"
+          onClick={() => shareImage(previewRef.current)}
+        >
+          <BsShare className="text-lg" />
+          <span className="font-medium">Share</span>
+        </div>
       </div>
 
       {/* Editor Canvas Area */}

@@ -1,9 +1,10 @@
 import { RefObject, ReactNode } from "react";
 import { CarouselEditorState } from "./CarouselEditorLayout";
 import { TfiExport } from "react-icons/tfi";
-import { BsClipboard, BsChevronLeft, BsChevronRight, BsGlobe } from "react-icons/bs";
+import { BsClipboard, BsChevronLeft, BsChevronRight, BsGlobe, BsShare } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { FiDownload } from "react-icons/fi";
+import { shareImage } from "../../utils/share";
 
 interface Props {
   state: CarouselEditorState;
@@ -110,6 +111,13 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
         <OptionButtonOutline title="Export All" onTap={onExportAll}><FiDownload /></OptionButtonOutline>
         <OptionButtonOutline title="Copy" onTap={onCopy}><BsClipboard /></OptionButtonOutline>
         <OptionButtonOutline title="Reset" onTap={handleReset}><BiReset /></OptionButtonOutline>
+        <div
+          className="text-white bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 px-4 flex items-center justify-center gap-2.5 rounded-lg transition-all duration-200 hover:from-indigo-600 hover:to-purple-700 cursor-pointer press-effect"
+          onClick={() => shareImage(previewRef.current)}
+        >
+          <BsShare className="text-lg" />
+          <span className="font-medium">Share</span>
+        </div>
       </div>
 
       <div className="relative w-full min-h-[500px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden py-8">

@@ -2,8 +2,9 @@ import { RefObject, useEffect, useState, ReactNode } from "react";
 import { CodeEditorState } from "./CodeEditorLayout";
 import { themes, languageKeywords, ThemeColors } from "../../data/codeEditor";
 import { TfiExport } from "react-icons/tfi";
-import { BsClipboard, BsRepeat } from "react-icons/bs";
+import { BsClipboard, BsRepeat, BsShare } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
+import { shareImage } from "../../utils/share";
 
 interface Props {
   state: CodeEditorState;
@@ -278,6 +279,14 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy }) =
         <OptionButtonOutline title="Reset" onTap={handleReset}>
           <BiReset className="icon" />
         </OptionButtonOutline>
+
+        <div
+          className="text-white bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 px-4 flex items-center justify-center gap-2.5 rounded-lg transition-all duration-200 hover:from-indigo-600 hover:to-purple-700 cursor-pointer press-effect"
+          onClick={() => shareImage(previewRef.current)}
+        >
+          <BsShare className="text-lg" />
+          <span className="font-medium">Share</span>
+        </div>
       </div>
 
       {/* Editor Canvas Area */}
