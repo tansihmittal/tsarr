@@ -2,6 +2,28 @@ import { toast } from "react-hot-toast";
 import domtoimage from "dom-to-image";
 import html2canvas from "html2canvas";
 
+export const getImageBlob = async (node: HTMLDivElement | null, scale: number = 2): Promise<Blob | null> => {
+  if (!node) return null;
+
+  try {
+    const deviceScale = window.devicePixelRatio * scale;
+    
+    const canvas = await html2canvas(node, {
+      scale: deviceScale,
+      useCORS: true,
+      allowTaint: true,
+      logging: false,
+    });
+
+    return new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((blob) => resolve(blob), "image/png", 1.0);
+    });
+  } catch (error) {
+    console.error("Get image blob error:", error);
+    return null;
+  }
+};
+
 export const copyToClipboard = async (node: HTMLDivElement | null): Promise<boolean> => {
   if (!node) {
     return false;

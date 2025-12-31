@@ -115,5 +115,26 @@
   "scope_extensions": [
     { "origin": "https://tsarr.in" },
     { "origin": "https://*.tsarr.in" }
-  ]
+  ],
+  "widgets": [
+    {
+      "name": "Quick Tools",
+      "description": "Quick access to tsarr.in tools",
+      "tag": "tsarr-widget",
+      "ms_ac_template": "widget/quick-tools.json",
+      "screenshots": [
+        {
+          "src": "/images/editor-preview.png",
+          "sizes": "600x400",
+          "label": "Quick Tools Widget"
+        }
+      ],
+      "icons": [
+        { "src": "/favicon-192x192.png", "sizes": "192x192" }
+      ]
+    }
+  ],
+  "note_taking": {
+    "new_note_url": "/editor"
+  }
 }

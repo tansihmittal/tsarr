@@ -2,7 +2,7 @@ import { useEditorContext } from "@/context/Editor";
 import Image from "next/image";
 import { ChangeEvent, ReactNode, useRef, useEffect, useState } from "react";
 import { BiReset } from "react-icons/bi";
-import { BsBookmark, BsClipboard, BsRepeat } from "react-icons/bs";
+import { BsBookmark, BsClipboard, BsRepeat, BsShare } from "react-icons/bs";
 import { TfiExport } from "react-icons/tfi";
 import DropZone from "./DropZone";
 import EditorWrapper from "./EditorWrapper";
@@ -12,6 +12,7 @@ import {
   downloadimageJpeg,
   downloadimagePng,
   downloadimageSvg,
+  getImageBlob,
 } from "./downloads";
 import { toast } from "react-hot-toast";
 import DrawingCanvas from "./DrawingCanvas";
@@ -48,7 +49,55 @@ const Editor: React.FC<Props> = () => {
 
   const imageToDownload = useRef<HTMLDivElement | null>(null);
   const [showSavePresetModal, setShowSavePresetModal] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const { presets, savePreset } = useLocalPresets();
+
+  // Share functionality
+  const handleShare = async () => {
+    if (!imageToDownload.current || !selectedImage) return;
+    
+    setIsSharing(true);
+    try {
+      const blob = await getImageBlob(imageToDownload.current, 2);
+      if (!blob) {
+        toast.error("Failed to generate image");
+        setIsSharing(false);
+        return;
+      }
+
+      const file = new File([blob], "tsarr-creation.png", { type: "image/png" });
+      const shareText = "Created with tsarr.in - Free Screenshot Editor ✨";
+      const shareUrl = "https://tsarr.in";
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: "My Creation - tsarr.in",
+          text: shareText,
+          url: shareUrl,
+          files: [file]
+        });
+        toast.success("Shared successfully!");
+      } else if (navigator.share) {
+        await navigator.share({
+          title: "My Creation - tsarr.in",
+          text: shareText,
+          url: shareUrl
+        });
+        toast.success("Link shared!");
+      } else {
+        await navigator.clipboard.write([
+          new ClipboardItem({ "image/png": blob })
+        ]);
+        toast.success("Image copied to clipboard!");
+      }
+    } catch (err: any) {
+      if (err.name !== "AbortError") {
+        toast.error("Share failed");
+      }
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
   // Get current settings for saving as preset
   const getCurrentSettings = (): PresetSettings => ({
@@ -228,6 +277,27 @@ const Editor: React.FC<Props> = () => {
         >
           <FaPencilAlt className={showAnnotations ? "text-primary" : "icon"} />
         </OptionButtonOutline>
+
+        <div
+          className={`text-white bg-gradient-to-r from-indigo-500 to-purple-600 py-2.5 px-4 flex items-center justify-center gap-2.5 rounded-lg transition-all duration-200 ${
+            !selectedImage || isSharing
+              ? "opacity-50 cursor-not-allowed" 
+              : "hover:from-indigo-600 hover:to-purple-700 cursor-pointer press-effect"
+          }`}
+          onClick={selectedImage && !isSharing ? handleShare : undefined}
+        >
+          {isSharing ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span className="font-medium">Sharing...</span>
+            </>
+          ) : (
+            <>
+              <BsShare className="text-lg" />
+              <span className="font-medium">Share</span>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Image Dimensions Display */}
