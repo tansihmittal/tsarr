@@ -1,13 +1,15 @@
 import Head from "next/head";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import {
   BsImage, BsCode, BsType, BsCameraVideo, BsTwitter, BsAspectRatio,
   BsArrowsFullscreen, BsArrowRepeat, BsClipboard, BsBarChartFill,
   BsGlobe, BsCardImage, BsEraserFill, BsSoundwave, BsPencilSquare,
-  BsChatSquare, BsGear
+  BsChatSquare, BsFolder2, BsChevronRight
 } from "react-icons/bs";
 import { MdSubtitles } from "react-icons/md";
 import { RiSlideshow3Line } from "react-icons/ri";
+import { getRecentProjects, Project } from "../utils/projectStorage";
 
 const tools = [
   { title: "Screenshot", desc: "Editor", href: "/editor", icon: BsImage, color: "bg-gradient-to-br from-violet-500 to-purple-600" },
@@ -31,7 +33,22 @@ const tools = [
   { title: "Bubble", desc: "Blaster", href: "/bubble-blaster", icon: BsChatSquare, color: "bg-gradient-to-br from-yellow-500 to-amber-600" },
 ];
 
+const typeRoutes: Record<string, string> = {
+  screenshot: "/editor",
+  code: "/code",
+  tweet: "/tweet",
+  carousel: "/carousel",
+  polaroid: "/polaroid",
+  "text-behind-image": "/text-behind-image",
+};
+
 export default function AppHome() {
+  const [recentProjects, setRecentProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    setRecentProjects(getRecentProjects());
+  }, []);
+
   const greeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
@@ -55,10 +72,10 @@ export default function AppHome() {
               <h1 className="text-2xl font-bold text-gray-900">tsarr.in</h1>
             </div>
             <Link 
-              href="/tools" 
+              href="/projects" 
               className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center"
             >
-              <BsGear className="text-gray-600 text-lg" />
+              <BsFolder2 className="text-gray-600 text-lg" />
             </Link>
           </div>
           <p className="text-gray-500 text-sm">19+ free creative tools</p>
@@ -83,14 +100,46 @@ export default function AppHome() {
                 Code
               </Link>
               <Link 
-                href="/convert" 
+                href="/projects" 
                 className="flex-1 bg-white/20 backdrop-blur rounded-xl py-3 text-center text-sm font-medium hover:bg-white/30 transition-colors"
               >
-                Convert
+                Projects
               </Link>
             </div>
           </div>
         </section>
+
+        {/* Recent Projects */}
+        {recentProjects.length > 0 && (
+          <section className="px-5 mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold text-gray-900">Recent Projects</h2>
+              <Link href="/projects" className="text-indigo-600 text-sm font-medium flex items-center gap-1">
+                View all <BsChevronRight className="text-xs" />
+              </Link>
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+              {recentProjects.slice(0, 4).map((project) => (
+                <Link
+                  key={project.id}
+                  href={`${typeRoutes[project.type]}?project=${project.id}`}
+                  className="flex-shrink-0 w-32"
+                >
+                  <div className="aspect-video bg-white rounded-xl border border-gray-200 overflow-hidden mb-2">
+                    {project.thumbnail ? (
+                      <img src={project.thumbnail} alt={project.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                        <BsFolder2 className="text-gray-300 text-xl" />
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs font-medium text-gray-700 truncate">{project.name}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Tools Grid */}
         <section className="px-5">

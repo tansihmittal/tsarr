@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { BsHouseDoor, BsGrid3X3Gap, BsPencilSquare, BsCode } from "react-icons/bs";
+import { BsHouseDoor, BsGrid3X3Gap, BsPencilSquare, BsFolder2 } from "react-icons/bs";
 
 const MobileNav = () => {
   const router = useRouter();
@@ -8,9 +8,9 @@ const MobileNav = () => {
 
   const navItems = [
     { href: "/app", icon: BsHouseDoor, label: "Home" },
-    { href: "/tools", icon: BsGrid3X3Gap, label: "Tools" },
+    { href: "/projects", icon: BsFolder2, label: "Projects" },
     { href: "/editor", icon: BsPencilSquare, label: "Editor" },
-    { href: "/code", icon: BsCode, label: "Code" },
+    { href: "/tools", icon: BsGrid3X3Gap, label: "Tools" },
   ];
 
   return (
