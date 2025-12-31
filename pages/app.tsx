@@ -11,7 +11,7 @@ import {
 import { MdSubtitles } from "react-icons/md";
 import { RiSlideshow3Line } from "react-icons/ri";
 import { toast } from "react-hot-toast";
-import MobileNav from "@/components/common/MobileNav";
+
 import {
   Project,
   deleteProject,
@@ -329,8 +329,6 @@ export default function AppHome() {
           )}
         </main>
 
-        {/* Mobile Navigation */}
-        <MobileNav />
       </div>
     </>
   );

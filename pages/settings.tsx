@@ -7,7 +7,7 @@ import {
   BsCheckCircle, BsChevronRight, BsMoon, BsSun, BsBell, BsGlobe
 } from "react-icons/bs";
 import { toast } from "react-hot-toast";
-import MobileNav from "@/components/common/MobileNav";
+
 import { getProjects, clearAllProjects, Project } from "../utils/projectStorage";
 
 interface StorageInfo {
@@ -305,8 +305,6 @@ export default function SettingsPage() {
           </div>
         </main>
 
-        {/* Mobile Navigation */}
-        <MobileNav />
 
         {/* Clear Data Confirmation Modal */}
         {showClearConfirm && (

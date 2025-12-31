@@ -11,7 +11,7 @@ import { MdSubtitles } from "react-icons/md";
 import { RiSlideshow3Line } from "react-icons/ri";
 import { toolsData } from "@/data/toolsData";
 import { Project, cacheProjects, getRecentProjects } from "@/utils/projectStorage";
-import MobileNav from "@/components/common/MobileNav";
+
 
 const typeRoutes: Record<string, string> = {
   screenshot: "/editor",
@@ -301,8 +301,7 @@ export default function ToolsPage() {
           </div>
         </footer>
 
-        {/* Mobile Navigation */}
-        <MobileNav />
+
       </div>
     </>
   );

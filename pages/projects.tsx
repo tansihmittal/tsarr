@@ -9,7 +9,7 @@ import {
 } from "react-icons/bs";
 import { RiSlideshow3Line } from "react-icons/ri";
 import { toast } from "react-hot-toast";
-import MobileNav from "@/components/common/MobileNav";
+
 import {
   Project,
   deleteProject,
@@ -397,8 +397,6 @@ export default function ProjectsPage() {
           )}
         </main>
 
-        {/* Mobile Navigation */}
-        <MobileNav />
       </div>
     </>
   );

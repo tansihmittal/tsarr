@@ -930,6 +930,7 @@ const GlobeMakerLayout: React.FC = () => {
   }, []);
 
   // Update globe when settings change
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!globeRef.current || !globeLoaded) return;
 
