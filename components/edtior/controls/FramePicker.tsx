@@ -19,14 +19,14 @@ const FramePicker: React.FC = () => {
 
     return (
         <CustomSelect title="Select Frame" icon={<FiMonitor className="text-[1rem]" />}>
-            <div className="grid grid-cols-2 gap-2 p-[1rem] pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-[1rem] pt-2">
                 {frames.map((frame) => (
                     <div
                         key={frame.id}
                         onClick={() => updateData && updateData("selectedFrame", { name: frame.name, value: frame.value })}
                         className={`flex items-center gap-3 p-3 rounded-md border-2 cursor-pointer transition-all ${selectedFrame.value === frame.value
-                                ? "border-blue-500 bg-blue-50 text-blue-600"
-                                : "border-base-200 hover:border-gray-300 bg-base-100 text-primary-content"
+                            ? "border-blue-500 bg-blue-50 text-blue-600"
+                            : "border-base-200 hover:border-gray-300 bg-base-100 text-primary-content"
                             }`}
                     >
                         <div className="text-xl">{frame.icon}</div>

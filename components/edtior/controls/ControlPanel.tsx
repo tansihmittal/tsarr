@@ -202,11 +202,10 @@ const ControlPanel: React.FC<Props> = () => {
     const isActive = selectedOption == triggerValue;
     return (
       <div
-        className={`flex justify-center items-center gap-2 font-medium px-4 py-2.5 transition-all duration-200 cursor-pointer ${
-          isActive 
-            ? "bg-base-100 rounded-lg shadow-sm text-primary" 
+        className={`flex justify-center items-center gap-2 font-medium px-4 py-2.5 transition-all duration-200 cursor-pointer ${isActive
+            ? "bg-base-100 rounded-lg shadow-sm text-primary"
             : "text-primary-content hover:text-primary"
-        }`}
+          }`}
         onClick={() => setSelectedOption(triggerValue)}
       >
         <span className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}>
@@ -219,7 +218,7 @@ const ControlPanel: React.FC<Props> = () => {
 
   const TileWrapper = ({ children }: { children: ReactNode }) => {
     return (
-      <div className="grid-cols-3 gap-2 grid p-[1rem] pt-2">{children}</div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-[1rem] pt-2">{children}</div>
     );
   };
 
@@ -265,11 +264,10 @@ const ControlPanel: React.FC<Props> = () => {
                       <button
                         key={tool.id}
                         onClick={() => setDrawingTool(tool.id)}
-                        className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 text-sm ${
-                          drawingTool === tool.id
+                        className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 text-sm ${drawingTool === tool.id
                             ? "bg-primary text-primary-content shadow-md shadow-primary/30 scale-105"
                             : "hover:bg-base-200 text-primary-content hover:scale-105"
-                        }`}
+                          }`}
                         title={tool.title}
                       >
                         {tool.icon}
@@ -285,11 +283,10 @@ const ControlPanel: React.FC<Props> = () => {
                         <button
                           key={color}
                           onClick={() => setStrokeColor(color)}
-                          className={`w-7 h-7 rounded-lg transition-all duration-200 ${
-                            strokeColor === color
+                          className={`w-7 h-7 rounded-lg transition-all duration-200 ${strokeColor === color
                               ? "ring-2 ring-primary ring-offset-2 scale-110"
                               : "hover:scale-110 hover:shadow-md"
-                          }`}
+                            }`}
                           style={{ backgroundColor: color }}
                         />
                       ))}
@@ -310,15 +307,13 @@ const ControlPanel: React.FC<Props> = () => {
                         <button
                           key={i}
                           onClick={() => setFillColor(color)}
-                          className={`w-7 h-7 rounded-lg transition-all duration-200 border ${
-                            fillColor === color
+                          className={`w-7 h-7 rounded-lg transition-all duration-200 border ${fillColor === color
                               ? "ring-2 ring-primary ring-offset-2 scale-110"
                               : "hover:scale-110 hover:shadow-md"
-                          } ${
-                            color === "transparent"
+                            } ${color === "transparent"
                               ? "border-dashed border-gray-300"
                               : "border-transparent"
-                          }`}
+                            }`}
                           style={{
                             backgroundColor: color === "transparent" ? "#fff" : color,
                             backgroundImage:
@@ -348,16 +343,15 @@ const ControlPanel: React.FC<Props> = () => {
                           <button
                             key={w}
                             onClick={() => setStrokeWidth(w)}
-                            className={`flex-1 py-2.5 rounded-lg flex items-center justify-center transition-all duration-200 ${
-                              strokeWidth === w
+                            className={`flex-1 py-2.5 rounded-lg flex items-center justify-center transition-all duration-200 ${strokeWidth === w
                                 ? "bg-primary text-primary-content shadow-md shadow-primary/20"
                                 : "bg-base-200 hover:bg-base-300"
-                            }`}
+                              }`}
                           >
                             <div
                               className="rounded-full"
-                              style={{ 
-                                width: w * 3 + 4, 
+                              style={{
+                                width: w * 3 + 4,
                                 height: w + 1,
                                 backgroundColor: strokeWidth === w ? "currentColor" : "#666"
                               }}
@@ -373,11 +367,10 @@ const ControlPanel: React.FC<Props> = () => {
                           <button
                             key={style}
                             onClick={() => setStrokeStyle(style)}
-                            className={`flex-1 py-2.5 rounded-lg flex items-center justify-center transition-all duration-200 ${
-                              strokeStyle === style
+                            className={`flex-1 py-2.5 rounded-lg flex items-center justify-center transition-all duration-200 ${strokeStyle === style
                                 ? "bg-primary text-primary-content shadow-md shadow-primary/20"
                                 : "bg-base-200 hover:bg-base-300"
-                            }`}
+                              }`}
                           >
                             <svg width="20" height="2" viewBox="0 0 20 2">
                               <line
@@ -410,11 +403,10 @@ const ControlPanel: React.FC<Props> = () => {
                         <button
                           key={item.value}
                           onClick={() => setSloppiness(item.value)}
-                          className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
-                            sloppiness === item.value
+                          className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${sloppiness === item.value
                               ? "bg-primary text-primary-content shadow-md shadow-primary/20"
                               : "bg-base-200 hover:bg-base-300"
-                          }`}
+                            }`}
                         >
                           {item.label}
                         </button>
@@ -737,11 +729,11 @@ const ControlPanel: React.FC<Props> = () => {
           <PanelHeading title="Quick Presets" />
           {/* Built-in quick presets */}
           <QuickPresets />
-          
+
           <PanelHeading title="Your Local Presets" />
           {/* User's local presets stored in localStorage */}
           <LocalPresetsSection />
-          
+
           <PanelHeading title="Cloud Presets" />
           {currentUser ? (
             <Presets />
@@ -860,11 +852,11 @@ const QuickPresets: React.FC = () => {
         direction: "135deg",
       });
       updateData("currentBackgroundType", BackgroundType.gradient);
-      
+
       // Reset all values to defaults first, then apply preset settings
       const defaults = getDefaultEditorValues();
       const mergedSettings = { ...defaults, ...preset.settings };
-      
+
       Object.entries(mergedSettings).forEach(([key, value]) => {
         updateData(key, value);
       });
@@ -880,12 +872,12 @@ const QuickPresets: React.FC = () => {
           className="group relative overflow-hidden rounded-xl border border-base-200/80 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-0.5 press-effect stagger-item"
           style={{ animationDelay: `${index * 0.05}s` }}
         >
-          <div 
+          <div
             className="h-20 w-full relative"
             style={{ background: preset.preview }}
           >
             <div className="absolute inset-0 flex items-center justify-center">
-              <div 
+              <div
                 className="w-3/4 h-10 rounded-lg shadow-xl bg-white/95 transition-transform duration-300 group-hover:scale-105"
               />
             </div>

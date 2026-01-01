@@ -244,7 +244,7 @@ const DebouncedInput: React.FC<{
     const newValue = e.target.value;
     setLocalValue(newValue);
     isTypingRef.current = true;
-    
+
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       onChange(newValue);
@@ -470,7 +470,7 @@ const MapMakerLayout: React.FC = () => {
   const [customPresets, setCustomPresets] = useState<MapPreset[]>([]);
   const [newPresetName, setNewPresetName] = useState("");
   const [zoom, setZoom] = useState(1);
-  
+
   // Custom region controls
   const [customCenter, setCustomCenter] = useState<[number, number]>([0, 20]);
   const [customScale, setCustomScale] = useState(150);
@@ -483,10 +483,10 @@ const MapMakerLayout: React.FC = () => {
     direction: "to bottom right",
   });
 
-  const currentRegion = region === "custom" 
+  const currentRegion = region === "custom"
     ? { id: "custom" as MapRegion, name: "Custom", center: customCenter, scale: customScale }
     : regionOptions.find((r) => r.id === region) || regionOptions[0];
-  
+
   // Select appropriate TopoJSON based on region
   const getGeoUrl = () => {
     switch (region) {
@@ -504,7 +504,7 @@ const MapMakerLayout: React.FC = () => {
     if (saved) {
       try {
         setCustomPresets(JSON.parse(saved));
-      } catch {}
+      } catch { }
     }
   }, []);
 
@@ -515,28 +515,28 @@ const MapMakerLayout: React.FC = () => {
       toast.error("Need at least 2 rows (header + data)");
       return;
     }
-    
+
     const headers = lines[0].split(/[,\t]/).map((h) => h.trim().toLowerCase());
-    
+
     // Check if this is flow data (has from/to columns)
     const fromIdx = headers.findIndex(h => ["from", "origin", "source", "start", "from_city", "fromcity"].includes(h));
     const toIdx = headers.findIndex(h => ["to", "destination", "dest", "target", "end", "to_city", "tocity"].includes(h));
-    
+
     if (fromIdx !== -1 && toIdx !== -1) {
       parseFlowData(lines, headers, fromIdx, toIdx);
       return;
     }
-    
+
     const nameIdx = headers.findIndex(h => ["name", "country", "location", "city", "region", "state", "place"].includes(h));
     const valueIdx = headers.findIndex(h => ["value", "amount", "count", "population", "gdp", "data", "number", "total", "sales"].includes(h));
     const lngIdx = headers.findIndex(h => ["lng", "lon", "longitude", "long", "x"].includes(h));
     const latIdx = headers.findIndex(h => ["lat", "latitude", "y"].includes(h));
-    
+
     if (nameIdx === -1) {
       toast.error("Need a 'name', 'country', or 'city' column");
       return;
     }
-    
+
     const newData: MapDataPoint[] = [];
     let citiesDetected = 0;
     const aggregated: Record<string, { value: number; items: string[] }> = {};
@@ -544,14 +544,14 @@ const MapMakerLayout: React.FC = () => {
     const isIndiaRegion = region === "india";
     const isChinaRegion = region === "china";
     const isStateRegion = isUSARegion || isIndiaRegion || isChinaRegion;
-    
+
     for (let i = 1; i < lines.length; i++) {
       const cells = lines[i].split(/[,\t]/).map((c) => c.trim());
       if (!cells[nameIdx]) continue;
-      
+
       const rawName = cells[nameIdx];
       const value = valueIdx !== -1 ? parseFloat(cells[valueIdx]) || 0 : 1;
-      
+
       // For choropleth mode, aggregate cities to countries/states
       if (mapType === "choropleth") {
         // For USA region, aggregate US cities to states
@@ -638,15 +638,15 @@ const MapMakerLayout: React.FC = () => {
           }
         }
       }
-      
+
       const normalizedName = normalizeLocationName(rawName);
-      
+
       const point: MapDataPoint = {
         id: normalizedName,
         name: rawName,
         value,
       };
-      
+
       if (lngIdx !== -1 && latIdx !== -1) {
         const lng = parseFloat(cells[lngIdx]);
         const lat = parseFloat(cells[latIdx]);
@@ -654,17 +654,17 @@ const MapMakerLayout: React.FC = () => {
           point.coordinates = [lng, lat];
         }
       }
-      
+
       if (!point.coordinates) {
         const coords = getLocationCoordinates(rawName);
         if (coords) {
           point.coordinates = coords;
         }
       }
-      
+
       newData.push(point);
     }
-    
+
     // Add aggregated data for choropleth
     if (mapType === "choropleth" && Object.keys(aggregated).length > 0) {
       for (const [name, data] of Object.entries(aggregated)) {
@@ -679,7 +679,7 @@ const MapMakerLayout: React.FC = () => {
         toast.success(`Aggregated ${citiesDetected} cities into ${Object.keys(aggregated).length} ${targetType}`);
       }
     }
-    
+
     if (newData.length === 0) {
       if (citiesDetected > 0) {
         toast.error("Cities detected! Switch to Bubble or Marker map for city data");
@@ -688,7 +688,7 @@ const MapMakerLayout: React.FC = () => {
       toast.error("No valid data found");
       return;
     }
-    
+
     setData(newData);
     toast.success(`Imported ${newData.length} data points!`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -698,18 +698,18 @@ const MapMakerLayout: React.FC = () => {
   const parseFlowData = useCallback((lines: string[], headers: string[], fromIdx: number, toIdx: number) => {
     const valueIdx = headers.findIndex(h => ["value", "amount", "count", "volume", "weight", "flow"].includes(h));
     const labelIdx = headers.findIndex(h => ["label", "name", "route", "description"].includes(h));
-    
+
     const newFlows: FlowData[] = [];
     for (let i = 1; i < lines.length; i++) {
       const cells = lines[i].split(/[,\t]/).map((c) => c.trim());
       const fromCity = cells[fromIdx];
       const toCity = cells[toIdx];
-      
+
       if (!fromCity || !toCity) continue;
-      
+
       const fromCoords = getLocationCoordinates(fromCity);
       const toCoords = getLocationCoordinates(toCity);
-      
+
       const flow: FlowData = {
         id: `flow-${Date.now()}-${i}`,
         from: fromCoords || [0, 0],
@@ -719,15 +719,15 @@ const MapMakerLayout: React.FC = () => {
         value: valueIdx !== -1 ? parseFloat(cells[valueIdx]) || 50 : 50,
         label: labelIdx !== -1 ? cells[labelIdx] : `${fromCity} → ${toCity}`,
       };
-      
+
       newFlows.push(flow);
     }
-    
+
     if (newFlows.length === 0) {
       toast.error("No valid flow data found");
       return;
     }
-    
+
     setFlows(newFlows);
     setMapType("flow");
     toast.success(`Imported ${newFlows.length} flow routes!`);
@@ -774,25 +774,25 @@ const MapMakerLayout: React.FC = () => {
     if (!geoId) return defaultFill;
     // Normalize the geoId for comparison
     const normalizedGeoId = geoId.toLowerCase().trim();
-    
+
     // Try multiple matching strategies
     const item = data.find((d) => {
       const normalizedId = d.id.toLowerCase().trim();
       const normalizedName = d.name.toLowerCase().trim();
-      
+
       // Direct match
       if (normalizedId === normalizedGeoId || normalizedName === normalizedGeoId) return true;
-      
+
       // Check if geoId matches the mapped version
       if (countryMapping[d.id]?.toLowerCase() === normalizedGeoId) return true;
       if (countryMapping[d.name]?.toLowerCase() === normalizedGeoId) return true;
-      
+
       // Check if data id/name maps to geoId
       const mappedFromId = countryMapping[d.id.toUpperCase()];
       const mappedFromName = countryMapping[d.name.toUpperCase()];
       if (mappedFromId?.toLowerCase() === normalizedGeoId) return true;
       if (mappedFromName?.toLowerCase() === normalizedGeoId) return true;
-      
+
       // For US states
       if (region === "usa") {
         const stateFromCode = usStateMap[d.id.toUpperCase()];
@@ -800,7 +800,7 @@ const MapMakerLayout: React.FC = () => {
         if (stateFromCode?.toLowerCase() === normalizedGeoId) return true;
         if (stateFromName?.toLowerCase() === normalizedGeoId) return true;
       }
-      
+
       // For India states
       if (region === "india") {
         const stateFromCode = indiaStateMap[d.id.toUpperCase()];
@@ -812,7 +812,7 @@ const MapMakerLayout: React.FC = () => {
         // Also check partial match for state names (GeoJSON may have different naming)
         if (normalizedGeoId.includes(normalizedId) || normalizedId.includes(normalizedGeoId)) return true;
       }
-      
+
       // For China provinces
       if (region === "china") {
         const provFromCode = chinaProvinceMap[d.id.toUpperCase()];
@@ -824,10 +824,10 @@ const MapMakerLayout: React.FC = () => {
         // Also check partial match for province names
         if (normalizedGeoId.includes(normalizedId) || normalizedId.includes(normalizedGeoId)) return true;
       }
-      
+
       return false;
     });
-    
+
     if (item) return colorScale(item.value);
     return defaultFill;
   };
@@ -971,9 +971,9 @@ const MapMakerLayout: React.FC = () => {
     switch (icon) {
       case "pin":
         return (
-          <g transform={`translate(-${size/2}, -${size})`}>
-            <path d={`M${size/2} 0 C${size*0.2} 0 0 ${size*0.3} 0 ${size*0.5} C0 ${size*0.8} ${size/2} ${size} ${size/2} ${size} C${size/2} ${size} ${size} ${size*0.8} ${size} ${size*0.5} C${size} ${size*0.3} ${size*0.8} 0 ${size/2} 0Z`} {...iconProps} />
-            <circle cx={size/2} cy={size*0.45} r={size*0.2} fill="#fff" />
+          <g transform={`translate(-${size / 2}, -${size})`}>
+            <path d={`M${size / 2} 0 C${size * 0.2} 0 0 ${size * 0.3} 0 ${size * 0.5} C0 ${size * 0.8} ${size / 2} ${size} ${size / 2} ${size} C${size / 2} ${size} ${size} ${size * 0.8} ${size} ${size * 0.5} C${size} ${size * 0.3} ${size * 0.8} 0 ${size / 2} 0Z`} {...iconProps} />
+            <circle cx={size / 2} cy={size * 0.45} r={size * 0.2} fill="#fff" />
           </g>
         );
       case "star":
@@ -985,32 +985,32 @@ const MapMakerLayout: React.FC = () => {
         return <polygon points={starPoints} {...iconProps} />;
       case "heart":
         return (
-          <g transform={`translate(-${size}, -${size*0.9})`}>
-            <path d={`M${size} ${size*0.3} C${size} ${size*0.1} ${size*0.7} 0 ${size*0.5} 0 C${size*0.2} 0 0 ${size*0.3} 0 ${size*0.6} C0 ${size*1.2} ${size} ${size*1.8} ${size} ${size*1.8} C${size} ${size*1.8} ${size*2} ${size*1.2} ${size*2} ${size*0.6} C${size*2} ${size*0.3} ${size*1.8} 0 ${size*1.5} 0 C${size*1.3} 0 ${size} ${size*0.1} ${size} ${size*0.3}Z`} {...iconProps} />
+          <g transform={`translate(-${size}, -${size * 0.9})`}>
+            <path d={`M${size} ${size * 0.3} C${size} ${size * 0.1} ${size * 0.7} 0 ${size * 0.5} 0 C${size * 0.2} 0 0 ${size * 0.3} 0 ${size * 0.6} C0 ${size * 1.2} ${size} ${size * 1.8} ${size} ${size * 1.8} C${size} ${size * 1.8} ${size * 2} ${size * 1.2} ${size * 2} ${size * 0.6} C${size * 2} ${size * 0.3} ${size * 1.8} 0 ${size * 1.5} 0 C${size * 1.3} 0 ${size} ${size * 0.1} ${size} ${size * 0.3}Z`} {...iconProps} />
           </g>
         );
       case "flag":
         return (
-          <g transform={`translate(-${size*0.1}, -${size})`}>
-            <rect x={0} y={0} width={size*0.15} height={size} fill={color} />
-            <path d={`M${size*0.15} 0 L${size} ${size*0.25} L${size*0.15} ${size*0.5}Z`} {...iconProps} />
+          <g transform={`translate(-${size * 0.1}, -${size})`}>
+            <rect x={0} y={0} width={size * 0.15} height={size} fill={color} />
+            <path d={`M${size * 0.15} 0 L${size} ${size * 0.25} L${size * 0.15} ${size * 0.5}Z`} {...iconProps} />
           </g>
         );
       case "building":
         return (
-          <g transform={`translate(-${size/2}, -${size})`}>
-            <rect x={0} y={size*0.2} width={size} height={size*0.8} {...iconProps} />
-            <rect x={size*0.15} y={0} width={size*0.3} height={size*0.3} {...iconProps} />
-            <rect x={size*0.2} y={size*0.4} width={size*0.2} height={size*0.2} fill="#fff" />
-            <rect x={size*0.6} y={size*0.4} width={size*0.2} height={size*0.2} fill="#fff" />
-            <rect x={size*0.2} y={size*0.7} width={size*0.2} height={size*0.2} fill="#fff" />
-            <rect x={size*0.6} y={size*0.7} width={size*0.2} height={size*0.2} fill="#fff" />
+          <g transform={`translate(-${size / 2}, -${size})`}>
+            <rect x={0} y={size * 0.2} width={size} height={size * 0.8} {...iconProps} />
+            <rect x={size * 0.15} y={0} width={size * 0.3} height={size * 0.3} {...iconProps} />
+            <rect x={size * 0.2} y={size * 0.4} width={size * 0.2} height={size * 0.2} fill="#fff" />
+            <rect x={size * 0.6} y={size * 0.4} width={size * 0.2} height={size * 0.2} fill="#fff" />
+            <rect x={size * 0.2} y={size * 0.7} width={size * 0.2} height={size * 0.2} fill="#fff" />
+            <rect x={size * 0.6} y={size * 0.7} width={size * 0.2} height={size * 0.2} fill="#fff" />
           </g>
         );
       case "lightning":
         return (
-          <g transform={`translate(-${size*0.4}, -${size})`}>
-            <polygon points={`${size*0.5},0 0,${size*0.6} ${size*0.35},${size*0.6} ${size*0.2},${size} ${size*0.8},${size*0.4} ${size*0.45},${size*0.4}`} {...iconProps} />
+          <g transform={`translate(-${size * 0.4}, -${size})`}>
+            <polygon points={`${size * 0.5},0 0,${size * 0.6} ${size * 0.35},${size * 0.6} ${size * 0.2},${size} ${size * 0.8},${size * 0.4} ${size * 0.45},${size * 0.4}`} {...iconProps} />
           </g>
         );
       default:
@@ -1040,13 +1040,13 @@ const MapMakerLayout: React.FC = () => {
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
-        <div className="grid gap-4 lg:gap-5 lg:grid-cols-[3fr_1.5fr]">
+        <div className="flex flex-col lg:grid lg:gap-5 lg:grid-cols-[3fr_1.5fr]">
           {/* Preview Area */}
           <div className="flex flex-col h-full">
             {/* Toolbar */}
             <div className="grid grid-cols-2 gap-2 mb-3 lg:flex lg:flex-wrap lg:justify-end">
               <div className="dropdown">
-                <label tabIndex={0}><ToolbarButton icon={<TfiExport />} label="Export" onClick={() => {}} /></label>
+                <label tabIndex={0}><ToolbarButton icon={<TfiExport />} label="Export" onClick={() => { }} /></label>
                 <ul tabIndex={0} className="dropdown-content menu p-2 mt-1 bg-base-100 border-2 rounded-lg min-w-[180px] z-50">
                   <li><a onClick={() => handleExport("png", 1)}>PNG 1x</a></li>
                   <li><a onClick={() => handleExport("png", 2)}>PNG 2x</a></li>
@@ -1132,20 +1132,20 @@ const MapMakerLayout: React.FC = () => {
                       flows.map((f) => {
                         if (f.from[0] === 0 && f.from[1] === 0) return null;
                         if (f.to[0] === 0 && f.to[1] === 0) return null;
-                        
+
                         const midX = (f.from[0] + f.to[0]) / 2;
                         const midY = (f.from[1] + f.to[1]) / 2;
                         const strokeW = Math.max(2, Math.min(f.value / 20, 8));
-                        
+
                         return (
                           <g key={f.id}>
                             {/* Main flow line */}
-                            <Line 
-                              from={f.from} 
-                              to={f.to} 
-                              stroke={flowColor} 
-                              strokeWidth={strokeW} 
-                              strokeLinecap="round" 
+                            <Line
+                              from={f.from}
+                              to={f.to}
+                              stroke={flowColor}
+                              strokeWidth={strokeW}
+                              strokeLinecap="round"
                               strokeOpacity={0.7}
                             />
                             {/* Start point - small circle */}
@@ -1156,11 +1156,11 @@ const MapMakerLayout: React.FC = () => {
                             <Marker coordinates={f.to}>
                               <g>
                                 <circle r={8} fill={flowColor} stroke="#fff" strokeWidth={2} />
-                                <text 
-                                  textAnchor="middle" 
-                                  dominantBaseline="central" 
-                                  fill="#fff" 
-                                  fontSize="10" 
+                                <text
+                                  textAnchor="middle"
+                                  dominantBaseline="central"
+                                  fill="#fff"
+                                  fontSize="10"
                                   fontWeight="bold"
                                 >
                                   ▶
@@ -1171,17 +1171,17 @@ const MapMakerLayout: React.FC = () => {
                             {showLabels && f.label && (
                               <Marker coordinates={[midX, midY]}>
                                 <g>
-                                  <rect 
-                                    x={-40} 
-                                    y={-10} 
-                                    width={80} 
-                                    height={16} 
-                                    fill="white" 
-                                    fillOpacity={0.9} 
+                                  <rect
+                                    x={-40}
+                                    y={-10}
+                                    width={80}
+                                    height={16}
+                                    fill="white"
+                                    fillOpacity={0.9}
                                     rx={3}
                                   />
-                                  <text 
-                                    textAnchor="middle" 
+                                  <text
+                                    textAnchor="middle"
                                     dominantBaseline="central"
                                     className="text-[9px] fill-gray-700 font-medium"
                                   >
@@ -1215,7 +1215,7 @@ const MapMakerLayout: React.FC = () => {
                 {/* Map Type */}
                 <div>
                   <label className="text-sm font-medium text-primary-content/70 block mb-2">Map Type</label>
-                  <div className="grid grid-cols-5 gap-2">
+                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                     {mapTypes.map((t) => (
                       <button key={t.id} onClick={() => setMapType(t.id)} className={`p-2 rounded-lg text-center transition-all ${mapType === t.id ? "bg-primary text-white ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "bg-base-200 hover:bg-base-300 text-primary-content"}`}>
                         <div className="text-lg">{t.icon}</div>
@@ -1228,7 +1228,7 @@ const MapMakerLayout: React.FC = () => {
                 {/* Region */}
                 <div>
                   <label className="text-sm font-medium text-primary-content/70 block mb-2">Region</label>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {regionOptions.map((r) => (
                       <button key={r.id} onClick={() => setRegion(r.id)} className={`py-2 px-1 rounded-lg text-[10px] font-medium transition-all ${region === r.id ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>
                         {r.name}
@@ -1335,7 +1335,7 @@ const MapMakerLayout: React.FC = () => {
                 {/* Color Scheme */}
                 <div>
                   <label className="text-sm font-medium text-primary-content/70 block mb-2">Color Scheme</label>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {(Object.keys(colorSchemes) as (keyof typeof colorSchemes)[]).map((scheme) => (
                       <button key={scheme} onClick={() => setColorScheme(scheme)} className={`p-2 rounded-lg transition-all ${colorScheme === scheme ? "ring-2 ring-primary ring-offset-2" : ""}`}>
                         <div className="flex h-3 rounded overflow-hidden">
@@ -1353,7 +1353,7 @@ const MapMakerLayout: React.FC = () => {
                 {mapType === "marker" && (
                   <div>
                     <label className="text-sm font-medium text-primary-content/70 block mb-2">Default Marker Icon</label>
-                    <div className="grid grid-cols-7 gap-2">
+                    <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
                       {markerIcons.map((ic) => (
                         <button key={ic.id} onClick={() => setMarkerIcon(ic.id)} className={`p-2 rounded-lg text-center transition-all ${markerIcon === ic.id ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>
                           <div className="text-lg">{ic.icon}</div>

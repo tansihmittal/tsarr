@@ -213,7 +213,7 @@ const BoxPlotChart: React.FC<{ datasets: DataSet[]; labels: string[]; labelColor
           const q1 = value * 0.6;
           const q3 = value * 0.9;
           const median = value * 0.75;
-          
+
           return (
             <div key={i} className="flex-1 flex flex-col items-center">
               <div className="relative w-full flex flex-col items-center" style={{ height: `${height}%`, minHeight: "40px" }}>
@@ -221,10 +221,10 @@ const BoxPlotChart: React.FC<{ datasets: DataSet[]; labels: string[]; labelColor
                 <div className="w-px bg-gray-400" style={{ height: "10%" }}></div>
                 <div className="w-8 h-px bg-gray-400"></div>
                 {/* Box */}
-                <div 
+                <div
                   className="w-12 rounded border-2 flex items-center justify-center relative"
-                  style={{ 
-                    backgroundColor: color + "40", 
+                  style={{
+                    backgroundColor: color + "40",
                     borderColor: color,
                     height: "60%",
                   }}
@@ -258,7 +258,7 @@ const RadialBarChart: React.FC<{ datasets: DataSet[]; labels: string[] }> = ({ d
           const radius = 100 - i * 20;
           const circumference = 2 * Math.PI * radius;
           const strokeDasharray = `${(value / 100) * circumference} ${circumference}`;
-          
+
           return (
             <svg key={i} className="absolute inset-0" viewBox="0 0 220 220">
               {/* Background circle */}
@@ -415,7 +415,7 @@ const ChartMakerLayout: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"data" | "style" | "presets">("data");
   const [customPresets, setCustomPresets] = useState<ChartPreset[]>([]);
   const [newPresetName, setNewPresetName] = useState("");
-  
+
   // New style options
   const [gridColor, setGridColor] = useState("#e5e7eb");
   const [titleColor, setTitleColor] = useState("#1f2937");
@@ -437,7 +437,7 @@ const ChartMakerLayout: React.FC = () => {
     if (saved) {
       try {
         setCustomPresets(JSON.parse(saved));
-      } catch {}
+      } catch { }
     }
   }, []);
 
@@ -588,9 +588,9 @@ const ChartMakerLayout: React.FC = () => {
       if (chartType === "bubble") {
         return {
           label: ds.name,
-          data: ds.data.map((val, i) => ({ 
-            x: i + 1, 
-            y: val, 
+          data: ds.data.map((val, i) => ({
+            x: i + 1,
+            y: val,
             r: Math.max(8, Math.min(40, val / 3)) // Better radius scaling
           })),
           backgroundColor: ds.color + "80",
@@ -643,33 +643,33 @@ const ChartMakerLayout: React.FC = () => {
     indexAxis: chartType === "horizontalBar" ? "y" as const : "x" as const,
     animation: animated ? { duration: 750 } : false as const,
     plugins: {
-      legend: { 
-        display: showLegend, 
-        position: "top" as const, 
-        labels: { 
-          usePointStyle: true, 
+      legend: {
+        display: showLegend,
+        position: "top" as const,
+        labels: {
+          usePointStyle: true,
           padding: 20,
           color: legendColor,
           font: { weight: 500 as const },
-        } 
+        }
       },
-      title: { 
-        display: !!title, 
-        text: title, 
-        font: { size: 20, weight: "bold" as const }, 
+      title: {
+        display: !!title,
+        text: title,
+        font: { size: 20, weight: "bold" as const },
         padding: { bottom: 20 },
         color: titleColor,
       },
     },
     scales: ["line", "bar", "horizontalBar", "area", "stackedBar", "stackedArea", "scatter", "bubble", "stepLine", "combo"].includes(chartType) ? {
-      x: { 
-        grid: { display: showGrid, color: gridColor }, 
+      x: {
+        grid: { display: showGrid, color: gridColor },
         ticks: { padding: 10, color: labelColor },
         stacked: ["stackedBar", "stackedArea"].includes(chartType),
       },
-      y: { 
-        grid: { display: showGrid, color: gridColor }, 
-        beginAtZero: true, 
+      y: {
+        grid: { display: showGrid, color: gridColor },
+        beginAtZero: true,
         ticks: { padding: 10, color: labelColor },
         stacked: ["stackedBar", "stackedArea"].includes(chartType),
       },
@@ -694,9 +694,9 @@ const ChartMakerLayout: React.FC = () => {
 
   const handleExport = useCallback(async (format: "png" | "jpeg" | "svg", scale: number = 2) => {
     if (!chartContainerRef.current) return;
-    
+
     const htmlToImage = await import("html-to-image");
-    
+
     try {
       let dataUrl: string;
       if (format === "svg") {
@@ -706,7 +706,7 @@ const ChartMakerLayout: React.FC = () => {
       } else {
         dataUrl = await htmlToImage.toPng(chartContainerRef.current, { pixelRatio: scale, backgroundColor: background.type === "solid" ? background.color1 : undefined });
       }
-      
+
       const a = document.createElement("a");
       a.href = dataUrl;
       a.download = `tsarr-in-chart.${format}`;
@@ -755,8 +755,8 @@ const ChartMakerLayout: React.FC = () => {
       const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
         ? "video/webm;codecs=vp9"
         : MediaRecorder.isTypeSupported("video/webm")
-        ? "video/webm"
-        : "video/mp4";
+          ? "video/webm"
+          : "video/mp4";
 
       // Use MediaRecorder to capture
       const stream = recordCanvas.captureStream(30);
@@ -847,7 +847,7 @@ const ChartMakerLayout: React.FC = () => {
 
   const renderChart = () => {
     const props = { ref: chartRef as React.RefObject<ChartJS<any>>, data: chartData, options: chartOptions };
-    
+
     // Map chart types to actual Chart.js components
     switch (chartType) {
       case "line":
@@ -910,13 +910,13 @@ const ChartMakerLayout: React.FC = () => {
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
-        <div className="grid gap-4 lg:gap-5 lg:grid-cols-[3fr_1.5fr]">
+        <div className="flex flex-col lg:grid lg:gap-5 lg:grid-cols-[3fr_1.5fr]">
           {/* Preview Area */}
           <div className="flex flex-col h-full">
             {/* Toolbar */}
             <div className="grid grid-cols-2 gap-2 mb-3 lg:flex lg:flex-wrap lg:justify-end">
               <div className="dropdown">
-                <label tabIndex={0}><ToolbarButton icon={<TfiExport />} label="Export" onClick={() => {}} /></label>
+                <label tabIndex={0}><ToolbarButton icon={<TfiExport />} label="Export" onClick={() => { }} /></label>
                 <ul tabIndex={0} className="dropdown-content menu p-2 mt-1 bg-base-100 border-2 rounded-lg min-w-[180px] z-50">
                   <li><a onClick={() => handleExport("png", 1)}>PNG 1x</a></li>
                   <li><a onClick={() => handleExport("png", 2)}>PNG 2x</a></li>
@@ -954,7 +954,7 @@ const ChartMakerLayout: React.FC = () => {
                 {/* Chart Type */}
                 <div>
                   <label className="text-sm font-medium text-primary-content/70 block mb-2">Chart Type</label>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {chartTypes.map((t) => (
                       <button key={t.id} onClick={() => setChartType(t.id)} className={`p-2 rounded-lg text-center transition-all ${chartType === t.id ? "bg-primary text-white ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "bg-base-200 hover:bg-base-300 text-primary-content"}`}>
                         <div className="text-lg">{t.icon}</div>
@@ -1015,7 +1015,7 @@ const ChartMakerLayout: React.FC = () => {
                           <input type="text" value={ds.name} onChange={(e) => updateDataset(dsIndex, "name", e.target.value)} className="input input-sm input-bordered flex-1 min-w-0" placeholder="Series name" />
                           <button onClick={() => removeDataset(dsIndex)} className="btn btn-xs btn-ghost text-error"><BsTrash /></button>
                         </div>
-                        <div className="grid grid-cols-6 gap-1">
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-1">
                           {ds.data.map((val, i) => (
                             <input key={i} type="number" value={val} onChange={(e) => updateDataValue(dsIndex, i, Number(e.target.value))} className="input input-xs input-bordered text-center p-1" />
                           ))}

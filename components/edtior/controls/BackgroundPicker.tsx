@@ -53,7 +53,7 @@ const BackgroundPickerWidget: React.FC<Props> = ({ closePicker }) => {
     const updated = { ...customGradient, [name]: value };
     updated.background = `linear-gradient(${updated.direction}, ${updated.color1}, ${updated.color2}${updated.color3 ? `, ${updated.color3}` : ""})`;
     setCustomGradient(updated);
-    
+
     // Apply immediately without closing picker
     if (updateBackground && updateData) {
       updateBackground(updated);
@@ -66,38 +66,35 @@ const BackgroundPickerWidget: React.FC<Props> = ({ closePicker }) => {
   };
 
   return (
-    <div className="absolute right-0 top-full py-2 px-4 bg-base-100 z-20 border-[2px] border-base-200 rounded-md max-h-[70vh] overflow-y-auto w-[380px]">
+    <div className="absolute right-0 top-full py-2 px-4 bg-base-100 z-20 border-[2px] border-base-200 rounded-md max-h-[70vh] overflow-y-auto w-[90vw] sm:w-[380px]">
       {/* Tab selecter */}
       <div className="grid grid-cols-3 bg-base-200 rounded-md p-[0.125rem] mb-3">
         <span
-          className={`cursor-pointer text-center rounded-md inline-block font-medium py-2 px-3 text-sm ${
-            isActive == "gradient" && "bg-base-100"
-          }`}
+          className={`cursor-pointer text-center rounded-md inline-block font-medium py-2 px-3 text-sm ${isActive == "gradient" && "bg-base-100"
+            }`}
           onClick={() => setIsActive("gradient")}
         >
           Gradient
         </span>
         <span
-          className={`cursor-pointer text-center rounded-md inline-block font-medium py-2 px-3 text-sm ${
-            isActive == "solid" && "bg-base-100"
-          }`}
+          className={`cursor-pointer text-center rounded-md inline-block font-medium py-2 px-3 text-sm ${isActive == "solid" && "bg-base-100"
+            }`}
           onClick={() => setIsActive("solid")}
         >
           Solid
         </span>
         <span
-          className={`cursor-pointer text-center rounded-md inline-block font-medium py-2 px-3 text-sm ${
-            isActive == "custom" && "bg-base-100"
-          }`}
+          className={`cursor-pointer text-center rounded-md inline-block font-medium py-2 px-3 text-sm ${isActive == "custom" && "bg-base-100"
+            }`}
           onClick={() => setIsActive("custom")}
         >
           Custom
         </span>
       </div>
-      
+
       {/* Preset gradients */}
       {isActive == "gradient" && (
-        <div className="grid grid-cols-6 gap-[0.1rem]">
+        <div className="grid grid-cols-5 sm:grid-cols-6 gap-[0.1rem]">
           {gradients.map((bg) => (
             <BackgroundTile
               key={bg.id}
@@ -108,10 +105,10 @@ const BackgroundPickerWidget: React.FC<Props> = ({ closePicker }) => {
           ))}
         </div>
       )}
-      
+
       {/* Solid colors */}
       {isActive == "solid" && (
-        <div className="grid grid-cols-6 gap-[0.1rem]">
+        <div className="grid grid-cols-5 sm:grid-cols-6 gap-[0.1rem]">
           {solidGradients.map((bg) => (
             <BackgroundTile
               key={bg.id}
@@ -122,16 +119,16 @@ const BackgroundPickerWidget: React.FC<Props> = ({ closePicker }) => {
           ))}
         </div>
       )}
-      
+
       {/* Custom gradient */}
       {isActive == "custom" && (
         <div className="flex flex-col gap-3">
           {/* Preview */}
-          <div 
+          <div
             className="w-full h-16 rounded-lg border-2 border-base-200"
             style={{ background: customGradient.background }}
           />
-          
+
           {/* Color pickers in a row */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
@@ -171,16 +168,15 @@ const BackgroundPickerWidget: React.FC<Props> = ({ closePicker }) => {
               />
             </div>
           </div>
-          
+
           {/* Direction */}
           <div className="flex gap-1 flex-wrap">
             {directionArray.map((dir) => (
               <span
-                className={`h-9 w-9 p-2 border flex items-center justify-center rounded-md border-base-200 cursor-pointer hover:bg-base-200 ${
-                  customGradient.direction == dir.name
-                    ? "bg-base-200"
-                    : "bg-base-100"
-                }`}
+                className={`h-9 w-9 p-2 border flex items-center justify-center rounded-md border-base-200 cursor-pointer hover:bg-base-200 ${customGradient.direction == dir.name
+                  ? "bg-base-200"
+                  : "bg-base-100"
+                  }`}
                 key={dir.id}
                 onClick={() => onCustomGradientChangeRealtime("direction", dir.name)}
               >
@@ -188,7 +184,7 @@ const BackgroundPickerWidget: React.FC<Props> = ({ closePicker }) => {
               </span>
             ))}
           </div>
-          
+
           <button
             className="btn btn-sm w-full font-medium"
             onClick={() => applyCustomGradient()}

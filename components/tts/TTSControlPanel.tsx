@@ -3,7 +3,7 @@ import { IoMdOptions } from "react-icons/io";
 import { BsInfoCircle, BsCheckCircle, BsMagic } from "react-icons/bs";
 import { useTTSContext } from "@/context/TTS";
 
-interface Props {}
+interface Props { }
 
 const TTSControlPanel: React.FC<Props> = () => {
   const [selectedOption, setSelectedOption] = useState("options");
@@ -37,9 +37,8 @@ const TTSControlPanel: React.FC<Props> = () => {
     const isActive = selectedOption === triggerValue;
     return (
       <div
-        className={`flex justify-center items-center gap-2 font-medium px-4 py-2.5 transition-all duration-200 cursor-pointer ${
-          isActive ? "bg-base-100 rounded-lg shadow-sm text-primary" : "text-primary-content hover:text-primary"
-        }`}
+        className={`flex justify-center items-center gap-2 font-medium px-4 py-2.5 transition-all duration-200 cursor-pointer ${isActive ? "bg-base-100 rounded-lg shadow-sm text-primary" : "text-primary-content hover:text-primary"
+          }`}
         onClick={() => setSelectedOption(triggerValue)}
       >
         <span className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}>{children}</span>
@@ -57,7 +56,7 @@ const TTSControlPanel: React.FC<Props> = () => {
 
   const langNames: Record<string, string> = {
     "en-US": "🇺🇸 US English",
-    "en-GB": "🇬🇧 UK English", 
+    "en-GB": "🇬🇧 UK English",
   };
 
   return (
@@ -75,8 +74,8 @@ const TTSControlPanel: React.FC<Props> = () => {
           <div className="p-4 border-b border-base-200/60">
             {/* Filters */}
             <div className="flex gap-2 mb-3">
-              <select 
-                value={languageFilter} 
+              <select
+                value={languageFilter}
                 onChange={(e) => setLanguageFilter(e.target.value)}
                 className="select select-sm select-bordered flex-1"
               >
@@ -85,8 +84,8 @@ const TTSControlPanel: React.FC<Props> = () => {
                   <option key={lang} value={lang}>{langNames[lang] || lang}</option>
                 ))}
               </select>
-              <select 
-                value={genderFilter} 
+              <select
+                value={genderFilter}
                 onChange={(e) => setGenderFilter(e.target.value)}
                 className="select select-sm select-bordered"
               >
@@ -95,18 +94,17 @@ const TTSControlPanel: React.FC<Props> = () => {
                 <option value="male">Male</option>
               </select>
             </div>
-            
+
             {/* Voice Grid */}
-            <div className="grid grid-cols-2 gap-2 max-h-[280px] overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[280px] overflow-y-auto">
               {filteredVoices.map((voice) => (
                 <button
                   key={voice.id}
                   onClick={() => updateSettings("voice", voice.id)}
-                  className={`p-2.5 rounded-lg border-2 text-left transition-all duration-200 ${
-                    settings.voice === voice.id
+                  className={`p-2.5 rounded-lg border-2 text-left transition-all duration-200 ${settings.voice === voice.id
                       ? "border-primary bg-primary/10"
                       : "border-base-200 hover:border-primary/30"
-                  }`}
+                    }`}
                 >
                   <p className={`text-sm font-medium truncate ${settings.voice === voice.id ? "text-primary" : ""}`}>
                     {voice.name}
@@ -205,11 +203,10 @@ const TTSControlPanel: React.FC<Props> = () => {
                 <button
                   key={profile.id}
                   onClick={() => applyProfile(profile.id)}
-                  className={`p-2.5 rounded-lg border-2 text-center transition-all duration-200 ${
-                    settings.voiceProfile === profile.id
+                  className={`p-2.5 rounded-lg border-2 text-center transition-all duration-200 ${settings.voiceProfile === profile.id
                       ? "border-primary bg-primary/10"
                       : "border-base-200 hover:border-primary/30"
-                  }`}
+                    }`}
                 >
                   <span className="text-xl block mb-0.5">{profile.icon}</span>
                   <p className={`text-[10px] font-medium ${settings.voiceProfile === profile.id ? "text-primary" : ""}`}>
@@ -299,9 +296,8 @@ const TTSControlPanel: React.FC<Props> = () => {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-500">GPU Acceleration</span>
-                <span className={`text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1 ${
-                  deviceInfo.hasWebGPU ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
-                }`}>
+                <span className={`text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1 ${deviceInfo.hasWebGPU ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                  }`}>
                   {deviceInfo.hasWebGPU && <BsCheckCircle className="text-xs" />}
                   {deviceInfo.hasWebGPU ? "WebGPU" : "CPU (WASM)"}
                 </span>

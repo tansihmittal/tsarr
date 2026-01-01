@@ -96,7 +96,7 @@ const LocalPresetsSection: React.FC<LocalPresetsSectionProps> = ({
         </button>
 
         {presets.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {presets.map((preset, index) => (
               <PresetTile
                 key={preset.id}
