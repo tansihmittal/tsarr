@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "in.tsarr.twa",
+      "package_name": "in.tsarr.tm",
       "sha256_cert_fingerprints": [
         "8F:EA:B5:65:FB:54:11:2C:6C:59:A9:7D:6B:F8:10:9F:F1:BF:47:9F:4D:B4:ED:47:C5:FD:DC:B3:41:E6:1C:D3"
       ]
