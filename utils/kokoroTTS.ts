@@ -1,10 +1,10 @@
 /**
  * Kokoro TTS - Multi-threaded Web Worker Pool
  * Uses multiple workers to process sentences in parallel
- * Each worker loads its own model instance
+ * Dynamically scales based on user's hardware
  */
 
-const MAX_WORKERS = 4; // Max parallel workers
+const MAX_WORKERS = 4; // Max parallel workers (limited by GPU/memory)
 let workers: Worker[] = [];
 let workerReady: boolean[] = [];
 let workerBusy: boolean[] = [];
@@ -14,6 +14,16 @@ let activeWorkerCount = 0;
 
 type ProgressCallback = (progress: number, status: string) => void;
 let progressCallback: ProgressCallback | null = null;
+
+/**
+ * Calculate optimal worker count based on hardware
+ */
+function getOptimalWorkerCount(): number {
+  const cpuCores = navigator.hardwareConcurrency || 4;
+  // Use 1 worker per 3 cores, min 1, max 4
+  // More workers = more memory usage (each loads ~200MB model)
+  return Math.min(MAX_WORKERS, Math.max(1, Math.floor(cpuCores / 3)));
+}
 
 function createWorker(index: number): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -47,11 +57,8 @@ export function preloadKokoroModel(): void {
   if (preloadStarted) return;
   preloadStarted = true;
   
-  // Determine optimal worker count based on CPU cores
-  const cpuCores = navigator.hardwareConcurrency || 4;
-  activeWorkerCount = Math.min(MAX_WORKERS, Math.max(2, Math.floor(cpuCores / 3)));
-  
-  console.log(`[TTS] Preloading ${activeWorkerCount} workers (${cpuCores} CPU cores detected)`);
+  activeWorkerCount = getOptimalWorkerCount();
+  console.log(`[TTS] Preloading ${activeWorkerCount} worker(s) (${navigator.hardwareConcurrency || 'unknown'} CPU cores)`);
   
   // Start loading first worker immediately
   createWorker(0).catch(err => console.error("[TTS] Preload error:", err));
@@ -72,11 +79,10 @@ export async function initKokoroWorker(onProgress?: ProgressCallback): Promise<v
   isInitializing = true;
   progressCallback = onProgress || null;
   
-  const cpuCores = navigator.hardwareConcurrency || 4;
-  activeWorkerCount = Math.min(MAX_WORKERS, Math.max(2, Math.floor(cpuCores / 3)));
+  activeWorkerCount = getOptimalWorkerCount();
   
-  onProgress?.(5, `Starting ${activeWorkerCount} TTS workers...`);
-  console.log(`[TTS] Initializing ${activeWorkerCount} workers`);
+  onProgress?.(5, `Starting ${activeWorkerCount} TTS worker${activeWorkerCount > 1 ? 's' : ''}...`);
+  console.log(`[TTS] Initializing ${activeWorkerCount} worker(s)`);
   
   const initStart = performance.now();
   

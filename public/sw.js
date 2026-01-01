@@ -56,9 +56,15 @@ self.addEventListener('activate', (event) => {
 // ============================================
 self.addEventListener('fetch', (event) => {
   const request = event.request;
+  const url = new URL(request.url);
   
   // Only handle GET requests
   if (request.method !== 'GET') {
+    return;
+  }
+  
+  // Skip non-http(s) schemes (chrome-extension, etc.)
+  if (!url.protocol.startsWith('http')) {
     return;
   }
 
@@ -111,9 +117,8 @@ self.addEventListener('fetch', (event) => {
         // Try network
         const networkResponse = await fetch(request);
         
-        // Cache successful responses
-        if (networkResponse.ok) {
-          const url = new URL(request.url);
+        // Cache successful responses (only http/https)
+        if (networkResponse.ok && url.protocol.startsWith('http')) {
           let cacheName = DYNAMIC_CACHE;
           
           // Determine which cache to use
