@@ -34,9 +34,6 @@ yarn-error.log*
 # kiro
 .kiro/
 
-# generated files
-public/firebase-messaging-sw.js
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
