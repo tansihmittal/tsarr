@@ -1,7 +1,7 @@
 // Push notification utilities for tsarr.in
 // Supports both Web Push API and Firebase Cloud Messaging
 
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
+const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 'BDPdzSl1RhT8LgztbrQej6MLCe0gj9TyagpFrnE9PjjDuL25iRvPsVCYy2SpuBfVq8uAMEvx-ZRgCXfVnKNE5fM';
 
 export async function requestNotificationPermission(): Promise<boolean> {
   if (!('Notification' in window)) {
