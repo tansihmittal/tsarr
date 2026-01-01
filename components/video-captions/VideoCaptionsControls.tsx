@@ -1161,7 +1161,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                   onClick={() => updateState({ wordsPerCaption: 0 })}
                   className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
                     state.wordsPerCaption === 0
-                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
+                      ? "bg-primary text-white"
                       : "bg-base-200 hover:bg-base-300 text-primary-content"
                   }`}
                 >
