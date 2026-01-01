@@ -2,6 +2,7 @@
  * Kokoro TTS - Web Worker approach with audio effects
  * Worker uses kokoro-js@1.2.1 from CDN
  * Supports 28 English voices + voice blending + audio effects + intelligent chunking
+ * Optimized with parallel chunk processing for faster generation
  */
 
 let worker: Worker | null = null;
@@ -80,9 +81,9 @@ export interface GenerateSpeechOptions {
 
 /**
  * Intelligent text chunking that preserves sentence order
- * Splits text at natural boundaries while respecting max length
+ * Optimized for faster processing with smaller chunks
  */
-function chunkText(text: string, maxLength: number = 400): string[] {
+function chunkText(text: string, maxLength: number = 300): string[] {
   const chunks: string[] = [];
   
   // First split by paragraphs
@@ -208,7 +209,7 @@ export async function generateSpeech(
   if (!isReady) await initKokoroWorker(onProgress);
   if (!worker) throw new Error("Worker not initialized");
   
-  // Chunk the text for better processing
+  // Chunk the text for better processing (smaller chunks = faster)
   const chunks = chunkText(text.trim());
   
   if (chunks.length === 1) {
@@ -234,19 +235,26 @@ export async function generateSpeech(
     return result;
   }
   
-  // Multiple chunks - generate each and concatenate
+  // Multiple chunks - process in batches for faster generation
   const audioBuffers: ArrayBuffer[] = [];
+  const batchSize = 2; // Process 2 chunks at a time
   
-  for (let i = 0; i < chunks.length; i++) {
+  for (let i = 0; i < chunks.length; i += batchSize) {
+    const batch = chunks.slice(i, Math.min(i + batchSize, chunks.length));
     const chunkProgress = 50 + Math.round((i / chunks.length) * 45);
-    onProgress?.(chunkProgress, `Generating chunk ${i + 1}/${chunks.length}...`);
+    onProgress?.(chunkProgress, `Generating ${i + 1}-${Math.min(i + batchSize, chunks.length)}/${chunks.length}...`);
     
-    const result = await generateSingleChunk(chunks[i], options);
-    const buffer = await result.audioBlob.arrayBuffer();
-    audioBuffers.push(buffer);
+    // Process batch in parallel
+    const batchResults = await Promise.all(
+      batch.map(chunk => generateSingleChunk(chunk, options))
+    );
     
-    // Clean up intermediate URL
-    URL.revokeObjectURL(result.audioUrl);
+    // Collect buffers and clean up URLs
+    for (const result of batchResults) {
+      const buffer = await result.audioBlob.arrayBuffer();
+      audioBuffers.push(buffer);
+      URL.revokeObjectURL(result.audioUrl);
+    }
   }
   
   onProgress?.(97, "Combining audio...");
