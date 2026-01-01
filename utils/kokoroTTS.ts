@@ -113,16 +113,42 @@ export interface GenerateSpeechOptions {
 
 /**
  * Split text into sentences for clean audio generation
+ * Each sentence should be short enough for the model to handle well
  */
 function splitIntoSentences(text: string): string[] {
+  // Split by sentence endings
   const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
-  return sentences.map(s => s.trim()).filter(s => s.length > 0);
+  const result: string[] = [];
+  
+  for (const sentence of sentences) {
+    const trimmed = sentence.trim();
+    if (!trimmed) continue;
+    
+    // If sentence is too long (>200 chars), split by commas or semicolons
+    if (trimmed.length > 200) {
+      const parts = trimmed.split(/[,;]\s*/);
+      let current = "";
+      for (const part of parts) {
+        if (current.length + part.length > 150) {
+          if (current) result.push(current.trim());
+          current = part;
+        } else {
+          current += (current ? ", " : "") + part;
+        }
+      }
+      if (current) result.push(current.trim());
+    } else {
+      result.push(trimmed);
+    }
+  }
+  
+  return result.filter(s => s.length > 0);
 }
 
 /**
- * Concatenate WAV buffers with crossfade
+ * Simple WAV concatenation - just append audio data sequentially
  */
-function concatenateWavWithCrossfade(buffers: ArrayBuffer[], crossfadeMs: number = 30): ArrayBuffer {
+function concatenateWavSimple(buffers: ArrayBuffer[]): ArrayBuffer {
   if (buffers.length === 0) throw new Error("No buffers");
   if (buffers.length === 1) return buffers[0];
   
@@ -132,60 +158,25 @@ function concatenateWavWithCrossfade(buffers: ArrayBuffer[], crossfadeMs: number
   const bitsPerSample = firstView.getUint16(34, true);
   const bytesPerSample = bitsPerSample / 8;
   const blockAlign = numChannels * bytesPerSample;
-  const crossfadeSamples = Math.floor((crossfadeMs / 1000) * sampleRate);
   
-  const audioDataArrays: Int16Array[] = buffers.map(buf => new Int16Array(buf.slice(44)));
-  
-  let totalSamples = audioDataArrays[0].length;
-  for (let i = 1; i < audioDataArrays.length; i++) {
-    totalSamples += audioDataArrays[i].length - crossfadeSamples;
+  // Calculate total data size
+  let totalDataSize = 0;
+  for (const buffer of buffers) {
+    totalDataSize += buffer.byteLength - 44; // Subtract header size
   }
   
-  const outputSamples = new Int16Array(totalSamples);
-  let writePos = 0;
-  
-  for (let i = 0; i < audioDataArrays.length; i++) {
-    const samples = audioDataArrays[i];
-    
-    if (i === 0) {
-      for (let j = 0; j < samples.length; j++) {
-        if (j >= samples.length - crossfadeSamples) {
-          const fadePos = j - (samples.length - crossfadeSamples);
-          const fadeOut = 1 - (fadePos / crossfadeSamples);
-          outputSamples[writePos + j] = Math.round(samples[j] * fadeOut);
-        } else {
-          outputSamples[writePos + j] = samples[j];
-        }
-      }
-      writePos += samples.length - crossfadeSamples;
-    } else {
-      for (let j = 0; j < samples.length; j++) {
-        if (j < crossfadeSamples) {
-          const fadeIn = j / crossfadeSamples;
-          const newSample = Math.round(samples[j] * fadeIn);
-          outputSamples[writePos + j] = Math.max(-32768, Math.min(32767, outputSamples[writePos + j] + newSample));
-        } else if (i < audioDataArrays.length - 1 && j >= samples.length - crossfadeSamples) {
-          const fadePos = j - (samples.length - crossfadeSamples);
-          const fadeOut = 1 - (fadePos / crossfadeSamples);
-          outputSamples[writePos + j] = Math.round(samples[j] * fadeOut);
-        } else {
-          outputSamples[writePos + j] = samples[j];
-        }
-      }
-      writePos += samples.length - crossfadeSamples;
-    }
-  }
-  
-  const dataSize = outputSamples.length * bytesPerSample;
-  const wavBuffer = new ArrayBuffer(44 + dataSize);
+  // Create output buffer
+  const wavBuffer = new ArrayBuffer(44 + totalDataSize);
   const view = new DataView(wavBuffer);
+  const uint8 = new Uint8Array(wavBuffer);
   
   const writeStr = (offset: number, str: string) => {
     for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
   };
   
+  // Write WAV header
   writeStr(0, "RIFF");
-  view.setUint32(4, 36 + dataSize, true);
+  view.setUint32(4, 36 + totalDataSize, true);
   writeStr(8, "WAVE");
   writeStr(12, "fmt ");
   view.setUint32(16, 16, true);
@@ -196,10 +187,15 @@ function concatenateWavWithCrossfade(buffers: ArrayBuffer[], crossfadeMs: number
   view.setUint16(32, blockAlign, true);
   view.setUint16(34, bitsPerSample, true);
   writeStr(36, "data");
-  view.setUint32(40, dataSize, true);
+  view.setUint32(40, totalDataSize, true);
   
-  const outputView = new Int16Array(wavBuffer, 44);
-  outputView.set(outputSamples.slice(0, outputView.length));
+  // Copy audio data from each buffer
+  let offset = 44;
+  for (const buffer of buffers) {
+    const audioData = new Uint8Array(buffer, 44);
+    uint8.set(audioData, offset);
+    offset += audioData.length;
+  }
   
   return wavBuffer;
 }
@@ -257,9 +253,7 @@ export async function generateSpeech(
 ): Promise<{ audioBlob: Blob; audioUrl: string }> {
   const totalStart = performance.now();
   const trimmedText = text.trim();
-  console.log(`[TTS] Starting multi-threaded generation for ${trimmedText.length} chars`);
-  
-  progressCallback = onProgress || null;
+  console.log(`[TTS] Starting generation for ${trimmedText.length} chars`);
   
   if (!workerReady.some(r => r)) {
     const initStart = performance.now();
@@ -267,11 +261,15 @@ export async function generateSpeech(
     console.log(`[TTS] ⏱️ Workers init: ${((performance.now() - initStart) / 1000).toFixed(2)}s`);
   }
   
-  // For short texts, use single worker
-  if (trimmedText.length <= 250) {
+  // Always split into sentences for best quality
+  const sentences = splitIntoSentences(trimmedText);
+  console.log(`[TTS] Split into ${sentences.length} sentence(s), using ${activeWorkerCount} worker(s)`);
+  
+  // Single sentence - just generate directly
+  if (sentences.length === 1) {
     onProgress?.(92, "Generating speech...");
     const genStart = performance.now();
-    const buffer = await generateWithWorker(0, trimmedText, options);
+    const buffer = await generateWithWorker(0, sentences[0], options);
     console.log(`[TTS] ⏱️ Generation: ${((performance.now() - genStart) / 1000).toFixed(2)}s`);
     
     const audioBlob = new Blob([buffer], { type: "audio/wav" });
@@ -285,11 +283,7 @@ export async function generateSpeech(
     return { audioBlob, audioUrl };
   }
   
-  // Split into sentences
-  const sentences = splitIntoSentences(trimmedText);
-  console.log(`[TTS] Split into ${sentences.length} sentences, using ${activeWorkerCount} workers`);
-  
-  // Process sentences in parallel using worker pool
+  // Multiple sentences - process in parallel
   const audioBuffers: ArrayBuffer[] = new Array(sentences.length);
   let completed = 0;
   
@@ -302,7 +296,6 @@ export async function generateSpeech(
       while (nextSentence < sentences.length) {
         const workerIdx = getAvailableWorker();
         if (workerIdx === -1) {
-          // No available worker, wait a bit
           await new Promise(r => setTimeout(r, 50));
           continue;
         }
@@ -310,7 +303,7 @@ export async function generateSpeech(
         const sentenceIdx = nextSentence++;
         const sentence = sentences[sentenceIdx];
         
-        console.log(`[TTS] Worker ${workerIdx} processing sentence ${sentenceIdx + 1}/${sentences.length}`);
+        console.log(`[TTS] Worker ${workerIdx}: sentence ${sentenceIdx + 1}/${sentences.length} (${sentence.length} chars)`);
         
         generateWithWorker(workerIdx, sentence, options)
           .then(buffer => {
@@ -318,7 +311,7 @@ export async function generateSpeech(
             completed++;
             
             const pct = 50 + Math.round((completed / sentences.length) * 45);
-            onProgress?.(pct, `Generated ${completed}/${sentences.length} sentences`);
+            onProgress?.(pct, `Generated ${completed}/${sentences.length}`);
             
             if (completed === sentences.length) {
               resolve();
@@ -328,7 +321,6 @@ export async function generateSpeech(
       }
     };
     
-    // Start processing with all available workers
     for (let i = 0; i < activeWorkerCount; i++) {
       processNext();
     }
@@ -336,10 +328,10 @@ export async function generateSpeech(
   
   console.log(`[TTS] ⏱️ Parallel generation: ${((performance.now() - genStart) / 1000).toFixed(2)}s`);
   
-  // Concatenate in order
+  // Concatenate audio in order
   onProgress?.(97, "Combining audio...");
   const concatStart = performance.now();
-  const combinedBuffer = concatenateWavWithCrossfade(audioBuffers);
+  const combinedBuffer = concatenateWavSimple(audioBuffers);
   console.log(`[TTS] ⏱️ Concatenation: ${(performance.now() - concatStart).toFixed(0)}ms`);
   
   const audioBlob = new Blob([combinedBuffer], { type: "audio/wav" });
