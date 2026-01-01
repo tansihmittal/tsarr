@@ -7,6 +7,7 @@ export default function AdminNotifications() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [apiKey, setApiKey] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -18,18 +19,47 @@ export default function AdminNotifications() {
   useEffect(() => {
     const storedKey = sessionStorage.getItem("admin_api_key");
     if (storedKey) {
-      setApiKey(storedKey);
-      setIsAuthenticated(true);
+      // Verify the stored key is still valid
+      verifyApiKey(storedKey).then(valid => {
+        if (valid) {
+          setApiKey(storedKey);
+          setIsAuthenticated(true);
+        } else {
+          sessionStorage.removeItem("admin_api_key");
+        }
+      });
     }
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const verifyApiKey = async (key: string): Promise<boolean> => {
+    try {
+      const response = await fetch("/api/admin/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apiKey: key }),
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Store the password as the API key
-    sessionStorage.setItem("admin_api_key", password);
-    setApiKey(password);
-    setIsAuthenticated(true);
-    toast.success("Logged in!");
+    setIsLoggingIn(true);
+    
+    const isValid = await verifyApiKey(password);
+    
+    if (isValid) {
+      sessionStorage.setItem("admin_api_key", password);
+      setApiKey(password);
+      setIsAuthenticated(true);
+      toast.success("Logged in!");
+    } else {
+      toast.error("Invalid API key");
+    }
+    
+    setIsLoggingIn(false);
   };
 
   const handleLogout = () => {
@@ -119,10 +149,17 @@ export default function AdminNotifications() {
               />
               <button
                 type="submit"
-                disabled={!password.trim()}
-                className="w-full py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!password.trim() || isLoggingIn}
+                className="w-full py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Login
+                {isLoggingIn ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  "Login"
+                )}
               </button>
             </form>
           </div>
