@@ -264,7 +264,7 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, pro
       />
 
       {/* Top options - matching other editors */}
-      <div className="grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center">
+      <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
         <div className="dropdown">
           <label tabIndex={0}>
             <OptionButtonOutline title="Export Image">
@@ -283,7 +283,7 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, pro
           </ul>
         </div>
 
-        <OptionButtonOutline title="Copy to Clipboard" onTap={onCopy}>
+        <OptionButtonOutline title="Copy" onTap={onCopy}>
           <BsClipboard className="icon" />
         </OptionButtonOutline>
 

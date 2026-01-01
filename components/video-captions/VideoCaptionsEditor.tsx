@@ -475,7 +475,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
       {/* Top options */}
       <div
         style={{ pointerEvents: state.videoUrl ? "auto" : "none" }}
-        className={`grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center ${
+        className={`flex flex-wrap gap-2 w-full mb-3 justify-end ${
           state.videoUrl ? "opacity-100" : "opacity-80"
         }`}
       >

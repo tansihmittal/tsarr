@@ -323,7 +323,7 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
       <ProjectNameHeader name={projectName} onNameChange={onProjectNameChange} isSaving={isSaving} />
-      <div style={{ pointerEvents: state.image ? "auto" : "none" }} className={`grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center ${state.image ? "opacity-100" : "opacity-80"}`}>
+      <div style={{ pointerEvents: state.image ? "auto" : "none" }} className={`flex flex-wrap gap-2 w-full mb-3 justify-end ${state.image ? "opacity-100" : "opacity-80"}`}>
         <div className="dropdown">
           <label tabIndex={0}><OptionButtonOutline title="Export Image"><TfiExport /></OptionButtonOutline></label>
           <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md">
@@ -332,7 +332,7 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
             <li onClick={() => handleDownload(4)}><a>Export as PNG 4x</a></li>
           </ul>
         </div>
-        <OptionButtonOutline title="Copy to Clipboard" onTap={handleCopyToClipboard} disabled={!state.image}><BsClipboard className="icon" /></OptionButtonOutline>
+        <OptionButtonOutline title="Copy" onTap={handleCopyToClipboard} disabled={!state.image}><BsClipboard className="icon" /></OptionButtonOutline>
         <label htmlFor="polaroid-image-reset">
           <input type="file" hidden accept="image/*" id="polaroid-image-reset" onChange={handleFileChange} />
           <OptionButtonOutline title="Reset Image"><BsRepeat className="icon" /></OptionButtonOutline>

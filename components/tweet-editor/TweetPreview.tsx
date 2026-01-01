@@ -99,7 +99,7 @@ const TweetPreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, up
       />
 
       {/* Top options */}
-      <div className="grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center">
+      <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
         <div className="dropdown">
           <label tabIndex={0}>
             <OptionButtonOutline title="Export Image"><TfiExport /></OptionButtonOutline>
@@ -112,7 +112,7 @@ const TweetPreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, up
             <li onClick={() => onExport("jpeg", 2)}><a>Export as JPEG</a></li>
           </ul>
         </div>
-        <OptionButtonOutline title="Copy to Clipboard" onTap={onCopy}><BsClipboard /></OptionButtonOutline>
+        <OptionButtonOutline title="Copy" onTap={onCopy}><BsClipboard /></OptionButtonOutline>
         <OptionButtonOutline title="Reset" onTap={handleReset}><BiReset /></OptionButtonOutline>
         <OptionButtonOutline title="Share" onTap={() => shareImage(previewRef.current)}><BsShare /></OptionButtonOutline>
       </div>

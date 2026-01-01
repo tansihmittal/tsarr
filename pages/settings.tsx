@@ -4,11 +4,19 @@ import { useState, useEffect } from "react";
 import {
   BsArrowLeft, BsTrash, BsDownload, BsCloudUpload, BsShieldCheck,
   BsInfoCircle, BsGear, BsFolder2, BsImage, BsExclamationTriangle,
-  BsCheckCircle, BsChevronRight, BsMoon, BsSun, BsBell, BsGlobe
+  BsCheckCircle, BsChevronRight, BsMoon, BsSun, BsBell, BsGlobe, BsBellSlash
 } from "react-icons/bs";
 import { toast } from "react-hot-toast";
 
 import { getProjects, clearAllProjects, Project } from "../utils/projectStorage";
+import { 
+  requestNotificationPermission, 
+  isNotificationSupported, 
+  getNotificationPermission,
+  showLocalNotification,
+  getRandomReminder,
+  initFirebaseMessaging
+} from "../utils/notifications";
 
 interface StorageInfo {
   used: number;
@@ -26,9 +34,14 @@ export default function SettingsPage() {
   });
   const [isClearing, setIsClearing] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported'>('default');
+  const [notificationsSupported, setNotificationsSupported] = useState(false);
 
   useEffect(() => {
     calculateStorage();
+    // Check notification support
+    setNotificationsSupported(isNotificationSupported());
+    setNotificationPermission(getNotificationPermission());
   }, []);
 
   const calculateStorage = async () => {
@@ -259,6 +272,92 @@ export default function SettingsPage() {
               </button>
             </div>
           </section>
+
+          {/* Notifications Section */}
+          {notificationsSupported && (
+            <section className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+              <div className="p-4 border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+                    <BsBell className="text-amber-600 text-lg" />
+                  </div>
+                  <div>
+                    <h2 className="font-semibold text-gray-900">Notifications</h2>
+                    <p className="text-sm text-gray-500">Get creative reminders</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="divide-y divide-gray-100">
+                <div className="p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {notificationPermission === 'granted' ? (
+                      <BsBell className="text-emerald-500 text-lg" />
+                    ) : (
+                      <BsBellSlash className="text-gray-400 text-lg" />
+                    )}
+                    <div>
+                      <p className="font-medium text-gray-900">Push Notifications</p>
+                      <p className="text-sm text-gray-500">
+                        {notificationPermission === 'granted' 
+                          ? 'Enabled - you\'ll receive creative reminders'
+                          : notificationPermission === 'denied'
+                          ? 'Blocked - enable in browser settings'
+                          : 'Get reminders to create designs'}
+                      </p>
+                    </div>
+                  </div>
+                  {notificationPermission !== 'denied' && (
+                    <button
+                      onClick={async () => {
+                        const granted = await requestNotificationPermission();
+                        setNotificationPermission(granted ? 'granted' : 'denied');
+                        if (granted) {
+                          // Initialize FCM and register token
+                          const token = await initFirebaseMessaging();
+                          if (token) {
+                            toast.success('Notifications enabled!');
+                          } else {
+                            toast.success('Notifications enabled (local only)');
+                          }
+                        }
+                      }}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                        notificationPermission === 'granted'
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                      }`}
+                    >
+                      {notificationPermission === 'granted' ? 'Enabled' : 'Enable'}
+                    </button>
+                  )}
+                </div>
+
+                {notificationPermission === 'granted' && (
+                  <button
+                    onClick={() => {
+                      const reminder = getRandomReminder();
+                      showLocalNotification(reminder.title, {
+                        body: reminder.body,
+                        data: { url: '/app' },
+                      });
+                      toast.success('Test notification sent!');
+                    }}
+                    className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors active:bg-gray-100"
+                  >
+                    <div className="flex items-center gap-3">
+                      <BsBell className="text-gray-500 text-lg" />
+                      <div className="text-left">
+                        <p className="font-medium text-gray-900">Test Notification</p>
+                        <p className="text-sm text-gray-500">Send a sample creative reminder</p>
+                      </div>
+                    </div>
+                    <BsChevronRight className="text-gray-400" />
+                  </button>
+                )}
+              </div>
+            </section>
+          )}
 
           {/* About Section */}
           <section className="bg-white rounded-2xl border border-gray-200 overflow-hidden">

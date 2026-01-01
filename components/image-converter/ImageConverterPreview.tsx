@@ -70,9 +70,9 @@ const ImageConverterPreview: React.FC<Props> = ({ state, canvasRef, onExport, on
   if (!state.originalImage) {
     return (
       <div className="flex items-center justify-start flex-col h-full w-full">
-        <div className="grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center opacity-80" style={{ pointerEvents: "none" }}>
+        <div className="flex flex-wrap gap-2 w-full mb-3 justify-end opacity-80" style={{ pointerEvents: "none" }}>
           <div className="dropdown"><label tabIndex={0}><OptionButtonOutline title="Export Image" disabled><TfiExport /></OptionButtonOutline></label></div>
-          <OptionButtonOutline title="Copy to Clipboard" disabled><BsClipboard /></OptionButtonOutline>
+          <OptionButtonOutline title="Copy" disabled><BsClipboard /></OptionButtonOutline>
           <label><OptionButtonOutline title="Reset Image" disabled><BsRepeat /></OptionButtonOutline></label>
           <OptionButtonOutline title="Reset Canvas" disabled><BiReset /></OptionButtonOutline>
         </div>
@@ -104,14 +104,14 @@ const ImageConverterPreview: React.FC<Props> = ({ state, canvasRef, onExport, on
 
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
-      <div className="grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center">
+      <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
         <div className="dropdown">
           <label tabIndex={0}><OptionButtonOutline title="Export Image"><TfiExport /></OptionButtonOutline></label>
           <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50">
             <li onClick={onExport}><a>Convert to {state.outputFormat.toUpperCase()}</a></li>
           </ul>
         </div>
-        <OptionButtonOutline title="Copy to Clipboard" onTap={onCopy}><BsClipboard /></OptionButtonOutline>
+        <OptionButtonOutline title="Copy" onTap={onCopy}><BsClipboard /></OptionButtonOutline>
         <label htmlFor="converter-change"><input type="file" hidden accept="image/*" id="converter-change" onChange={handleFileInput} /><OptionButtonOutline title="Reset Image"><BsRepeat /></OptionButtonOutline></label>
         <OptionButtonOutline title="Reset Canvas" onTap={handleReset}><BiReset /></OptionButtonOutline>
       </div>

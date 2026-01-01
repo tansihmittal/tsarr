@@ -109,7 +109,7 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
         isSaving={isSaving}
       />
 
-      <div className="grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center">
+      <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
         <div className="dropdown">
           <label tabIndex={0}><OptionButtonOutline title="Export"><TfiExport /></OptionButtonOutline></label>
           <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50">

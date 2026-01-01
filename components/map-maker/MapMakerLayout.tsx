@@ -1022,7 +1022,7 @@ const MapMakerLayout: React.FC = () => {
     if (!showLegend || mapType === "marker") return null;
     const colors = colorSchemes[colorScheme];
     return (
-      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg hidden lg:block">
         <div className="text-xs font-semibold text-gray-700 mb-2">Legend</div>
         <div className="flex items-center gap-1">
           <span className="text-[10px] text-gray-500">{minValue.toLocaleString()}</span>
@@ -1044,7 +1044,7 @@ const MapMakerLayout: React.FC = () => {
           {/* Preview Area */}
           <div className="flex flex-col h-full">
             {/* Toolbar */}
-            <div className="grid grid-cols-2 gap-2 mb-3 lg:flex lg:flex-wrap lg:justify-end">
+            <div className="flex flex-wrap gap-2 mb-3 justify-end">
               <div className="dropdown">
                 <label tabIndex={0}><ToolbarButton icon={<TfiExport />} label="Export" onClick={() => { }} /></label>
                 <ul tabIndex={0} className="dropdown-content menu p-2 mt-1 bg-base-100 border-2 rounded-lg min-w-[180px] z-50">
@@ -1055,7 +1055,7 @@ const MapMakerLayout: React.FC = () => {
                   <li><a onClick={() => handleExport("svg")}>SVG</a></li>
                 </ul>
               </div>
-              <ToolbarButton icon={<BsClipboard />} label="Copy to Clipboard" onClick={handleCopyToClipboard} />
+              <ToolbarButton icon={<BsClipboard />} label="Copy" onClick={handleCopyToClipboard} />
               <ToolbarButton icon={<BiReset />} label="Reset" onClick={resetAll} />
             </div>
 

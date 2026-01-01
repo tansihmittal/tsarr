@@ -312,7 +312,7 @@ const BubbleBlasterPreview = ({
       {/* Top options - matching screenshot editor */}
       <div
         style={{ pointerEvents: state.image ? "auto" : "none" }}
-        className={`grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center ${
+        className={`flex flex-wrap gap-2 w-full mb-3 justify-end ${
           state.image ? "opacity-100" : "opacity-80"
         }`}
       >
@@ -339,7 +339,7 @@ const BubbleBlasterPreview = ({
         </div>
 
         <OptionButtonOutline
-          title="Copy to Clipboard"
+          title="Copy"
           onClick={handleCopyToClipboard}
           disabled={!state.image}
         >

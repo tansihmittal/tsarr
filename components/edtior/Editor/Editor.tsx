@@ -349,7 +349,7 @@ const Editor: React.FC<Props> = () => {
       {/* Top options */}
       <div
         style={{ pointerEvents: selectedImage ? "auto" : "none" }}
-        className={`grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center ${
+        className={`flex flex-wrap gap-2 w-full mb-3 justify-end ${
           selectedImage ? "opacity-100" : "opacity-80"
         }`}
       >
@@ -382,7 +382,7 @@ const Editor: React.FC<Props> = () => {
         </div>
 
         <OptionButtonOutline
-          title="Copy to Clipboard"
+          title="Copy"
           onTap={() => copyToClipboard(imageToDownload.current)}
           disabled={!selectedImage}
         >

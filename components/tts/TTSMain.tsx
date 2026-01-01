@@ -206,7 +206,7 @@ const TTSMain: React.FC<Props> = () => {
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
       {/* Top options */}
-      <div className="grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center">
+      <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
         <OptionButton title={isGenerating ? "Generating..." : "Generate"} onTap={handleGenerate} disabled={isGenerating || !text.trim()} loading={isGenerating}>
           <HiOutlineSpeakerWave />
         </OptionButton>

@@ -1,16 +1,18 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { 
   BsArrowRight, BsGithub, BsTwitter, BsLinkedin, BsSearch, BsFolder2, BsImage, 
   BsCode, BsType, BsCameraVideo, BsCardImage, BsAspectRatio, BsArrowsFullscreen,
   BsArrowRepeat, BsClipboard, BsBarChartFill, BsGlobe, BsEraserFill, BsSoundwave,
-  BsPencilSquare, BsChatSquare, BsX
+  BsPencilSquare, BsChatSquare, BsX, BsFire
 } from "react-icons/bs";
 import { MdSubtitles } from "react-icons/md";
 import { RiSlideshow3Line } from "react-icons/ri";
 import { toolsData } from "@/data/toolsData";
 import { Project, cacheProjects, getRecentProjects } from "@/utils/projectStorage";
+import { sortToolsByUsage, trackToolUsage, getToolUsage } from "@/utils/toolUsage";
 
 
 const typeRoutes: Record<string, string> = {
@@ -84,10 +86,13 @@ const toolsListSchema = {
 };
 
 export default function ToolsPage() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [recentProjects, setRecentProjects] = useState<Project[]>([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [sortedTools, setSortedTools] = useState(toolsData);
+  const [hasUsageData, setHasUsageData] = useState(false);
 
   useEffect(() => {
     const loadRecent = async () => {
@@ -95,11 +100,24 @@ export default function ToolsPage() {
       setRecentProjects(getRecentProjects());
     };
     loadRecent();
+    
+    // Sort tools by usage on client side
+    const usage = getToolUsage();
+    const hasUsage = Object.keys(usage).length > 0;
+    setHasUsageData(hasUsage);
+    if (hasUsage) {
+      setSortedTools(sortToolsByUsage(toolsData));
+    }
   }, []);
+
+  const handleToolClick = (slug: string, href: string) => {
+    trackToolUsage(slug);
+    router.push(href);
+  };
 
   const categories = ["all", ...Array.from(new Set(toolsData.map(t => t.category)))];
   
-  const filteredTools = toolsData.filter(tool => {
+  const filteredTools = sortedTools.filter(tool => {
     const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tool.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || tool.category === selectedCategory;
@@ -223,8 +241,13 @@ export default function ToolsPage() {
           {/* Tools Grid - Mobile optimized */}
           <section>
             <h2 className="text-base font-semibold text-gray-900 mb-3">
-              {selectedCategory === "all" ? "All tools" : selectedCategory} 
+              {selectedCategory === "all" ? (hasUsageData ? "Your tools" : "All tools") : selectedCategory} 
               <span className="text-gray-400 font-normal ml-2">({filteredTools.length})</span>
+              {hasUsageData && selectedCategory === "all" && !searchQuery && (
+                <span className="ml-2 text-xs font-normal text-orange-500 inline-flex items-center gap-1">
+                  <BsFire /> Sorted by your usage
+                </span>
+              )}
             </h2>
             
             {filteredTools.length === 0 ? (
@@ -238,16 +261,23 @@ export default function ToolsPage() {
                 {filteredTools.map((tool, i) => {
                   const IconComponent = toolIcons[tool.slug] || BsImage;
                   const colorClass = toolColors[tool.slug] || "bg-gray-500";
+                  const usage = getToolUsage()[tool.slug];
+                  const isFrequent = usage && usage.count >= 3;
                   
                   return (
-                    <Link
+                    <div
                       key={i}
-                      href={tool.href}
-                      className="group bg-white rounded-xl p-4 border border-gray-200 hover:border-indigo-200 hover:shadow-lg transition-all active:scale-[0.98]"
+                      onClick={() => handleToolClick(tool.slug, tool.href)}
+                      className="group bg-white rounded-xl p-4 border border-gray-200 hover:border-indigo-200 hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer"
                     >
                       <div className="flex items-start gap-3">
-                        <div className={`w-11 h-11 ${colorClass} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm`}>
+                        <div className={`w-11 h-11 ${colorClass} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm relative`}>
                           <IconComponent className="text-white text-lg" />
+                          {isFrequent && (
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                              <BsFire className="text-white text-[8px]" />
+                            </div>
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-gray-900 mb-0.5 group-hover:text-indigo-600 transition-colors">
@@ -263,7 +293,7 @@ export default function ToolsPage() {
                           </span>
                         ))}
                       </div>
-                    </Link>
+                    </div>
                   );
                 })}
               </div>

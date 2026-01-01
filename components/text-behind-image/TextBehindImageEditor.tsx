@@ -585,7 +585,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
       {/* Top options */}
       <div
         style={{ pointerEvents: state.image ? "auto" : "none" }}
-        className={`grid grid-cols-2 gap-2 w-full mb-3 lg:flex lg:justify-end lg:items-center ${
+        className={`flex flex-wrap gap-2 w-full mb-3 justify-end ${
           state.image ? "opacity-100" : "opacity-80"
         }`}
       >
@@ -618,7 +618,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
         </div>
 
         <OptionButtonOutline
-          title="Copy to Clipboard"
+          title="Copy"
           onTap={handleCopyToClipboard}
           disabled={!state.image}
         >

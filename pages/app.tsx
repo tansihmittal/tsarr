@@ -1,12 +1,13 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import {
   BsImage, BsCode, BsType, BsCameraVideo, BsTwitter, BsAspectRatio,
   BsArrowsFullscreen, BsArrowRepeat, BsClipboard, BsBarChartFill,
   BsGlobe, BsCardImage, BsEraserFill, BsSoundwave, BsPencilSquare,
   BsChatSquare, BsPlus, BsSearch, BsThreeDotsVertical, BsTrash,
-  BsFiles, BsPencil, BsFolder2, BsArrowRight, BsGrid3X3Gap, BsX
+  BsFiles, BsPencil, BsFolder2, BsArrowRight, BsGrid3X3Gap, BsX, BsFire
 } from "react-icons/bs";
 import { MdSubtitles } from "react-icons/md";
 import { RiSlideshow3Line } from "react-icons/ri";
@@ -21,16 +22,17 @@ import {
   getProjects,
   getRecentProjects,
 } from "../utils/projectStorage";
+import { trackToolUsage, sortToolsByUsage, getToolUsage } from "../utils/toolUsage";
 
-const tools = [
-  { title: "Screenshot", href: "/editor", icon: BsImage, color: "bg-violet-500", desc: "Frames & backgrounds" },
-  { title: "Code", href: "/code", icon: BsCode, color: "bg-emerald-500", desc: "Syntax highlighting" },
-  { title: "Text Behind", href: "/text-behind-image", icon: BsType, color: "bg-pink-500", desc: "AI background removal" },
-  { title: "Captions", href: "/captions", icon: MdSubtitles, color: "bg-blue-500", desc: "Video subtitles" },
-  { title: "Tweet", href: "/tweet", icon: BsTwitter, color: "bg-sky-500", desc: "Tweet screenshots" },
-  { title: "Carousel", href: "/carousel", icon: RiSlideshow3Line, color: "bg-orange-500", desc: "Multi-slide posts" },
-  { title: "Polaroid", href: "/polaroid", icon: BsCardImage, color: "bg-amber-500", desc: "Vintage effects" },
-  { title: "Resize", href: "/resize", icon: BsArrowsFullscreen, color: "bg-lime-500", desc: "Image dimensions" },
+const allTools = [
+  { title: "Screenshot", href: "/editor", icon: BsImage, color: "bg-violet-500", desc: "Frames & backgrounds", slug: "screenshot-editor" },
+  { title: "Code", href: "/code", icon: BsCode, color: "bg-emerald-500", desc: "Syntax highlighting", slug: "code-screenshots" },
+  { title: "Text Behind", href: "/text-behind-image", icon: BsType, color: "bg-pink-500", desc: "AI background removal", slug: "text-behind-image" },
+  { title: "Captions", href: "/captions", icon: MdSubtitles, color: "bg-blue-500", desc: "Video subtitles", slug: "video-captions" },
+  { title: "Tweet", href: "/tweet", icon: BsTwitter, color: "bg-sky-500", desc: "Tweet screenshots", slug: "tweet-editor" },
+  { title: "Carousel", href: "/carousel", icon: RiSlideshow3Line, color: "bg-orange-500", desc: "Multi-slide posts", slug: "carousel-editor" },
+  { title: "Polaroid", href: "/polaroid", icon: BsCardImage, color: "bg-amber-500", desc: "Vintage effects", slug: "polaroid-generator" },
+  { title: "Resize", href: "/resize", icon: BsArrowsFullscreen, color: "bg-lime-500", desc: "Image dimensions", slug: "image-resizer" },
 ];
 
 const typeRoutes: Record<string, string> = {
@@ -70,6 +72,7 @@ const typeIcons: Record<string, any> = {
 };
 
 export default function AppHome() {
+  const router = useRouter();
   const [recentProjects, setRecentProjects] = useState<Project[]>([]);
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -77,9 +80,16 @@ export default function AppHome() {
   const [renameId, setRenameId] = useState<string | null>(null);
   const [renameName, setRenameName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [tools, setTools] = useState(allTools);
 
   useEffect(() => {
     loadProjects();
+    
+    // Sort tools by usage
+    const usage = getToolUsage();
+    if (Object.keys(usage).length > 0) {
+      setTools(sortToolsByUsage(allTools));
+    }
   }, []);
 
   const loadProjects = async () => {
@@ -116,6 +126,11 @@ export default function AppHome() {
     setRenameId(id);
     setRenameName(name);
     setMenuOpen(null);
+  };
+
+  const handleToolClick = (slug: string, href: string) => {
+    trackToolUsage(slug);
+    router.push(href);
   };
 
   const submitRename = async () => {
@@ -226,18 +241,25 @@ export default function AppHome() {
             <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 lg:grid-cols-8 scrollbar-hide">
               {tools.map((tool, i) => {
                 const Icon = tool.icon;
+                const usage = getToolUsage()[tool.slug];
+                const isFrequent = usage && usage.count >= 3;
                 return (
-                  <Link
+                  <div
                     key={i}
-                    href={tool.href}
-                    className="flex-shrink-0 w-[100px] sm:w-auto group flex flex-col items-center p-3 sm:p-4 bg-white rounded-xl border border-gray-200 hover:border-indigo-200 hover:shadow-md transition-all active:scale-95"
+                    onClick={() => handleToolClick(tool.slug, tool.href)}
+                    className="flex-shrink-0 w-[100px] sm:w-auto group flex flex-col items-center p-3 sm:p-4 bg-white rounded-xl border border-gray-200 hover:border-indigo-200 hover:shadow-md transition-all active:scale-95 cursor-pointer"
                   >
-                    <div className={`w-11 h-11 sm:w-12 sm:h-12 ${tool.color} rounded-xl flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-sm`}>
+                    <div className={`w-11 h-11 sm:w-12 sm:h-12 ${tool.color} rounded-xl flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-sm relative`}>
                       <Icon className="text-white text-lg sm:text-xl" />
+                      {isFrequent && (
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                          <BsFire className="text-white text-[8px]" />
+                        </div>
+                      )}
                     </div>
                     <span className="text-xs sm:text-sm font-medium text-gray-900 text-center">{tool.title}</span>
                     <span className="text-[10px] sm:text-xs text-gray-500 text-center mt-0.5 hidden sm:block">{tool.desc}</span>
-                  </Link>
+                  </div>
                 );
               })}
             </div>
