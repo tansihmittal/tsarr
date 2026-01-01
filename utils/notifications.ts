@@ -43,9 +43,14 @@ export async function initFirebaseMessaging(): Promise<string | null> {
     
     if (!permission) return null;
     
-    // Get FCM token
+    // Register the Firebase messaging service worker first
+    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    await navigator.serviceWorker.ready;
+    
+    // Get FCM token with the registered service worker
     const token = await getToken(messaging, {
       vapidKey: VAPID_PUBLIC_KEY,
+      serviceWorkerRegistration: registration,
     });
     
     if (token) {
