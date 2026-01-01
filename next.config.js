@@ -63,6 +63,10 @@ const nextConfig = {
             key: "Cache-Control",
             value: "public, max-age=3600",
           },
+          {
+            key: "Access-Control-Allow-Origin",
+            value: "*",
+          },
         ],
       },
       {
@@ -96,8 +100,8 @@ const nextConfig = {
         ],
       },
       {
-        // Apply COEP/COOP only to pages that need SharedArrayBuffer (not to sw.js or manifest)
-        source: "/((?!sw\\.js|site\\.webmanifest).*)",
+        // Apply COEP/COOP only to pages that need SharedArrayBuffer (not to sw.js, manifest, or assetlinks)
+        source: "/((?!sw\\.js|site\\.webmanifest|\\.well-known/).*)",
         headers: [
           {
             key: "Cross-Origin-Embedder-Policy",
