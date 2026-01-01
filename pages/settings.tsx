@@ -332,29 +332,6 @@ export default function SettingsPage() {
                     </button>
                   )}
                 </div>
-
-                {notificationPermission === 'granted' && (
-                  <button
-                    onClick={() => {
-                      const reminder = getRandomReminder();
-                      showLocalNotification(reminder.title, {
-                        body: reminder.body,
-                        data: { url: '/app' },
-                      });
-                      toast.success('Test notification sent!');
-                    }}
-                    className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors active:bg-gray-100"
-                  >
-                    <div className="flex items-center gap-3">
-                      <BsBell className="text-gray-500 text-lg" />
-                      <div className="text-left">
-                        <p className="font-medium text-gray-900">Test Notification</p>
-                        <p className="text-sm text-gray-500">Send a sample creative reminder</p>
-                      </div>
-                    </div>
-                    <BsChevronRight className="text-gray-400" />
-                  </button>
-                )}
               </div>
             </section>
           )}
