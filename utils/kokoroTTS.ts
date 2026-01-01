@@ -1,307 +1,230 @@
 /**
- * Kokoro TTS - Web Worker approach with audio effects
- * Worker uses kokoro-js@1.2.1 from CDN
- * Supports 28 English voices + voice blending + audio effects + intelligent chunking
- * Optimized with parallel chunk processing for faster generation
+ * Kokoro TTS - Multi-threaded Web Worker Pool
+ * Uses multiple workers to process sentences in parallel
+ * Each worker loads its own model instance
  */
 
-let worker: Worker | null = null;
-let isReady = false;
+const MAX_WORKERS = 4; // Max parallel workers
+let workers: Worker[] = [];
+let workerReady: boolean[] = [];
+let workerBusy: boolean[] = [];
 let isInitializing = false;
+let preloadStarted = false;
+let activeWorkerCount = 0;
 
 type ProgressCallback = (progress: number, status: string) => void;
 let progressCallback: ProgressCallback | null = null;
-let resolveInit: (() => void) | null = null;
-let rejectInit: ((err: Error) => void) | null = null;
-let resolveGenerate: ((result: { audioBlob: Blob; audioUrl: string }) => void) | null = null;
-let rejectGenerate: ((err: Error) => void) | null = null;
 
-function handleWorkerMessage(e: MessageEvent) {
-  const { status, ...data } = e.data;
-
-  switch (status) {
-    case "device":
-      progressCallback?.(20, `Using ${data.device.toUpperCase()} acceleration`);
-      break;
-
-    case "ready":
-      isReady = true;
-      isInitializing = false;
-      progressCallback?.(90, "Model ready!");
-      resolveInit?.();
-      resolveInit = null;
-      break;
-
-    case "complete":
-      const audioBlob = new Blob([data.audioData], { type: "audio/wav" });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      progressCallback?.(100, "Done!");
-      resolveGenerate?.({ audioBlob, audioUrl });
-      resolveGenerate = null;
-      break;
-
-    case "error":
-      const error = new Error(data.error);
-      isInitializing = false;
-      if (rejectInit) { rejectInit(error); rejectInit = null; }
-      if (rejectGenerate) { rejectGenerate(error); rejectGenerate = null; }
-      break;
-  }
+function createWorker(index: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker("/workers/kokoro-worker.js", { type: "module" });
+    workers[index] = worker;
+    workerReady[index] = false;
+    workerBusy[index] = false;
+    
+    const initHandler = (e: MessageEvent) => {
+      const { status, ...data } = e.data;
+      if (status === "device") {
+        console.log(`[TTS Worker ${index}] Using ${data.device} acceleration`);
+      } else if (status === "ready") {
+        workerReady[index] = true;
+        console.log(`[TTS Worker ${index}] Ready`);
+        resolve();
+      } else if (status === "error") {
+        reject(new Error(data.error));
+      }
+    };
+    
+    worker.onmessage = initHandler;
+    worker.onerror = (e) => reject(new Error(e.message || "Worker failed"));
+  });
 }
 
-export function initKokoroWorker(onProgress?: ProgressCallback): Promise<void> {
-  if (isReady) return Promise.resolve();
+/**
+ * Preload workers in the background
+ */
+export function preloadKokoroModel(): void {
+  if (preloadStarted) return;
+  preloadStarted = true;
+  
+  // Determine optimal worker count based on CPU cores
+  const cpuCores = navigator.hardwareConcurrency || 4;
+  activeWorkerCount = Math.min(MAX_WORKERS, Math.max(2, Math.floor(cpuCores / 3)));
+  
+  console.log(`[TTS] Preloading ${activeWorkerCount} workers (${cpuCores} CPU cores detected)`);
+  
+  // Start loading first worker immediately
+  createWorker(0).catch(err => console.error("[TTS] Preload error:", err));
+}
+
+export async function initKokoroWorker(onProgress?: ProgressCallback): Promise<void> {
+  if (workers.length > 0 && workerReady.some(r => r)) return;
   if (isInitializing) {
-    progressCallback = onProgress || null;
-    return new Promise((resolve, reject) => {
-      const check = setInterval(() => { if (isReady) { clearInterval(check); resolve(); } }, 100);
-      setTimeout(() => { clearInterval(check); if (!isReady) reject(new Error("Timeout")); }, 180000);
+    // Wait for initialization
+    return new Promise((resolve) => {
+      const check = setInterval(() => {
+        if (workerReady.some(r => r)) { clearInterval(check); resolve(); }
+      }, 100);
+      setTimeout(() => { clearInterval(check); resolve(); }, 180000);
     });
   }
+  
   isInitializing = true;
   progressCallback = onProgress || null;
-  return new Promise((resolve, reject) => {
-    resolveInit = resolve;
-    rejectInit = reject;
-    onProgress?.(5, "Starting worker...");
-    worker = new Worker("/workers/kokoro-worker.js", { type: "module" });
-    worker.onmessage = handleWorkerMessage;
-    worker.onerror = (e) => { console.error("Worker error:", e); isInitializing = false; reject(new Error(e.message || "Worker failed")); };
-  });
+  
+  const cpuCores = navigator.hardwareConcurrency || 4;
+  activeWorkerCount = Math.min(MAX_WORKERS, Math.max(2, Math.floor(cpuCores / 3)));
+  
+  onProgress?.(5, `Starting ${activeWorkerCount} TTS workers...`);
+  console.log(`[TTS] Initializing ${activeWorkerCount} workers`);
+  
+  const initStart = performance.now();
+  
+  try {
+    // Initialize all workers in parallel
+    await Promise.all(
+      Array.from({ length: activeWorkerCount }, (_, i) => createWorker(i))
+    );
+    
+    console.log(`[TTS] All ${activeWorkerCount} workers ready in ${((performance.now() - initStart) / 1000).toFixed(2)}s`);
+    onProgress?.(90, "All workers ready!");
+  } catch (err) {
+    console.error("[TTS] Worker init error:", err);
+    throw err;
+  } finally {
+    isInitializing = false;
+  }
 }
 
 export interface GenerateSpeechOptions {
   voice?: string;
-  voice2?: string;      // Secondary voice for blending
-  blendRatio?: number;  // 0-1, how much of voice2 to blend
+  voice2?: string;
+  blendRatio?: number;
   speed?: number;
-  pitch?: number;       // Pitch shift in semitones (-12 to +12)
-  reverb?: number;      // Reverb amount 0-1
+  pitch?: number;
+  reverb?: number;
 }
 
 /**
- * Intelligent text chunking that preserves sentence order
- * Optimized for faster processing with smaller chunks
+ * Split text into sentences for clean audio generation
  */
-function chunkText(text: string, maxLength: number = 300): string[] {
-  const chunks: string[] = [];
-  
-  // First split by paragraphs
-  const paragraphs = text.split(/\n\n+/).filter(p => p.trim());
-  
-  for (const paragraph of paragraphs) {
-    // If paragraph is short enough, add it directly
-    if (paragraph.length <= maxLength) {
-      chunks.push(paragraph.trim());
-      continue;
-    }
-    
-    // Split by sentences (preserve punctuation)
-    const sentences = paragraph.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [paragraph];
-    let currentChunk = "";
-    
-    for (const sentence of sentences) {
-      const trimmedSentence = sentence.trim();
-      
-      // If adding this sentence would exceed max length
-      if (currentChunk.length + trimmedSentence.length + 1 > maxLength) {
-        // Save current chunk if not empty
-        if (currentChunk.trim()) {
-          chunks.push(currentChunk.trim());
-        }
-        
-        // If single sentence is too long, split by clauses
-        if (trimmedSentence.length > maxLength) {
-          const clauses = trimmedSentence.split(/[,;:]\s*/);
-          let clauseChunk = "";
-          
-          for (const clause of clauses) {
-            if (clauseChunk.length + clause.length + 2 > maxLength) {
-              if (clauseChunk.trim()) chunks.push(clauseChunk.trim());
-              clauseChunk = clause;
-            } else {
-              clauseChunk += (clauseChunk ? ", " : "") + clause;
-            }
-          }
-          if (clauseChunk.trim()) chunks.push(clauseChunk.trim());
-          currentChunk = "";
-        } else {
-          currentChunk = trimmedSentence;
-        }
-      } else {
-        currentChunk += (currentChunk ? " " : "") + trimmedSentence;
-      }
-    }
-    
-    // Don't forget the last chunk
-    if (currentChunk.trim()) {
-      chunks.push(currentChunk.trim());
-    }
-  }
-  
-  return chunks.filter(c => c.length > 0);
+function splitIntoSentences(text: string): string[] {
+  const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
+  return sentences.map(s => s.trim()).filter(s => s.length > 0);
 }
 
 /**
- * Concatenate multiple WAV buffers into one
+ * Concatenate WAV buffers with crossfade
  */
-function concatenateWavBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
-  if (buffers.length === 0) throw new Error("No buffers to concatenate");
+function concatenateWavWithCrossfade(buffers: ArrayBuffer[], crossfadeMs: number = 30): ArrayBuffer {
+  if (buffers.length === 0) throw new Error("No buffers");
   if (buffers.length === 1) return buffers[0];
   
-  // Get sample rate from first buffer
   const firstView = new DataView(buffers[0]);
   const sampleRate = firstView.getUint32(24, true);
   const numChannels = firstView.getUint16(22, true);
   const bitsPerSample = firstView.getUint16(34, true);
+  const bytesPerSample = bitsPerSample / 8;
+  const blockAlign = numChannels * bytesPerSample;
+  const crossfadeSamples = Math.floor((crossfadeMs / 1000) * sampleRate);
   
-  // Calculate total data size (skip 44-byte headers)
-  let totalDataSize = 0;
-  for (const buffer of buffers) {
-    totalDataSize += buffer.byteLength - 44;
+  const audioDataArrays: Int16Array[] = buffers.map(buf => new Int16Array(buf.slice(44)));
+  
+  let totalSamples = audioDataArrays[0].length;
+  for (let i = 1; i < audioDataArrays.length; i++) {
+    totalSamples += audioDataArrays[i].length - crossfadeSamples;
   }
   
-  // Create new buffer
-  const newBuffer = new ArrayBuffer(44 + totalDataSize);
-  const view = new DataView(newBuffer);
-  const uint8 = new Uint8Array(newBuffer);
+  const outputSamples = new Int16Array(totalSamples);
+  let writePos = 0;
   
-  // Write WAV header
+  for (let i = 0; i < audioDataArrays.length; i++) {
+    const samples = audioDataArrays[i];
+    
+    if (i === 0) {
+      for (let j = 0; j < samples.length; j++) {
+        if (j >= samples.length - crossfadeSamples) {
+          const fadePos = j - (samples.length - crossfadeSamples);
+          const fadeOut = 1 - (fadePos / crossfadeSamples);
+          outputSamples[writePos + j] = Math.round(samples[j] * fadeOut);
+        } else {
+          outputSamples[writePos + j] = samples[j];
+        }
+      }
+      writePos += samples.length - crossfadeSamples;
+    } else {
+      for (let j = 0; j < samples.length; j++) {
+        if (j < crossfadeSamples) {
+          const fadeIn = j / crossfadeSamples;
+          const newSample = Math.round(samples[j] * fadeIn);
+          outputSamples[writePos + j] = Math.max(-32768, Math.min(32767, outputSamples[writePos + j] + newSample));
+        } else if (i < audioDataArrays.length - 1 && j >= samples.length - crossfadeSamples) {
+          const fadePos = j - (samples.length - crossfadeSamples);
+          const fadeOut = 1 - (fadePos / crossfadeSamples);
+          outputSamples[writePos + j] = Math.round(samples[j] * fadeOut);
+        } else {
+          outputSamples[writePos + j] = samples[j];
+        }
+      }
+      writePos += samples.length - crossfadeSamples;
+    }
+  }
+  
+  const dataSize = outputSamples.length * bytesPerSample;
+  const wavBuffer = new ArrayBuffer(44 + dataSize);
+  const view = new DataView(wavBuffer);
+  
   const writeStr = (offset: number, str: string) => {
     for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
   };
   
-  const bytesPerSample = bitsPerSample / 8;
-  const blockAlign = numChannels * bytesPerSample;
-  const byteRate = sampleRate * blockAlign;
-  
   writeStr(0, "RIFF");
-  view.setUint32(4, 36 + totalDataSize, true);
+  view.setUint32(4, 36 + dataSize, true);
   writeStr(8, "WAVE");
   writeStr(12, "fmt ");
   view.setUint32(16, 16, true);
   view.setUint16(20, 1, true);
   view.setUint16(22, numChannels, true);
   view.setUint32(24, sampleRate, true);
-  view.setUint32(28, byteRate, true);
+  view.setUint32(28, sampleRate * blockAlign, true);
   view.setUint16(32, blockAlign, true);
   view.setUint16(34, bitsPerSample, true);
   writeStr(36, "data");
-  view.setUint32(40, totalDataSize, true);
+  view.setUint32(40, dataSize, true);
   
-  // Copy audio data from all buffers
-  let offset = 44;
-  for (const buffer of buffers) {
-    const data = new Uint8Array(buffer, 44);
-    uint8.set(data, offset);
-    offset += data.length;
-  }
+  const outputView = new Int16Array(wavBuffer, 44);
+  outputView.set(outputSamples.slice(0, outputView.length));
   
-  return newBuffer;
+  return wavBuffer;
 }
 
-export async function generateSpeech(
-  text: string,
-  options: GenerateSpeechOptions = {},
-  onProgress?: ProgressCallback
-): Promise<{ audioBlob: Blob; audioUrl: string }> {
-  progressCallback = onProgress || null;
-  if (!isReady) await initKokoroWorker(onProgress);
-  if (!worker) throw new Error("Worker not initialized");
-  
-  // Chunk the text for better processing (smaller chunks = faster)
-  const chunks = chunkText(text.trim());
-  
-  if (chunks.length === 1) {
-    // Single chunk - generate and apply effects
-    onProgress?.(92, "Generating speech...");
-    const result = await generateSingleChunk(chunks[0], options);
-    
-    // Apply audio effects (pitch/reverb) if needed
-    if (options.pitch || options.reverb) {
-      onProgress?.(97, "Applying effects...");
-      try {
-        const processed = await applyAudioEffects(result.audioBlob, {
-          pitch: options.pitch || 0,
-          reverb: options.reverb || 0,
-        });
-        URL.revokeObjectURL(result.audioUrl);
-        return processed;
-      } catch (err) {
-        console.error("Effects error:", err);
-        return result; // Fall back to original if effects fail
-      }
-    }
-    return result;
-  }
-  
-  // Multiple chunks - process in batches for faster generation
-  const audioBuffers: ArrayBuffer[] = [];
-  const batchSize = 2; // Process 2 chunks at a time
-  
-  for (let i = 0; i < chunks.length; i += batchSize) {
-    const batch = chunks.slice(i, Math.min(i + batchSize, chunks.length));
-    const chunkProgress = 50 + Math.round((i / chunks.length) * 45);
-    onProgress?.(chunkProgress, `Generating ${i + 1}-${Math.min(i + batchSize, chunks.length)}/${chunks.length}...`);
-    
-    // Process batch in parallel
-    const batchResults = await Promise.all(
-      batch.map(chunk => generateSingleChunk(chunk, options))
-    );
-    
-    // Collect buffers and clean up URLs
-    for (const result of batchResults) {
-      const buffer = await result.audioBlob.arrayBuffer();
-      audioBuffers.push(buffer);
-      URL.revokeObjectURL(result.audioUrl);
-    }
-  }
-  
-  onProgress?.(97, "Combining audio...");
-  
-  // Concatenate all chunks
-  const combinedBuffer = concatenateWavBuffers(audioBuffers);
-  
-  // Apply effects if needed
-  let finalBlob = new Blob([combinedBuffer], { type: "audio/wav" });
-  let finalUrl = URL.createObjectURL(finalBlob);
-  
-  if (options.pitch || options.reverb) {
-    try {
-      const processed = await applyAudioEffects(finalBlob, {
-        pitch: options.pitch || 0,
-        reverb: options.reverb || 0,
-      });
-      URL.revokeObjectURL(finalUrl);
-      return processed;
-    } catch (err) {
-      // Fall back to original if effects fail
-    }
-  }
-  
-  return { audioBlob: finalBlob, audioUrl: finalUrl };
-}
-
-function generateSingleChunk(
+/**
+ * Generate audio for a single sentence using a specific worker
+ */
+function generateWithWorker(
+  workerIndex: number,
   text: string,
   options: GenerateSpeechOptions
-): Promise<{ audioBlob: Blob; audioUrl: string }> {
+): Promise<ArrayBuffer> {
   return new Promise((resolve, reject) => {
+    const worker = workers[workerIndex];
+    workerBusy[workerIndex] = true;
+    
     const handler = (e: MessageEvent) => {
       const { status, ...data } = e.data;
       if (status === "complete") {
-        worker!.removeEventListener("message", handler);
-        const audioBlob = new Blob([data.audioData], { type: "audio/wav" });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        resolve({ audioBlob, audioUrl });
+        worker.removeEventListener("message", handler);
+        workerBusy[workerIndex] = false;
+        resolve(data.audioData);
       } else if (status === "error") {
-        worker!.removeEventListener("message", handler);
+        worker.removeEventListener("message", handler);
+        workerBusy[workerIndex] = false;
         reject(new Error(data.error));
       }
     };
     
-    worker!.addEventListener("message", handler);
-    worker!.postMessage({ 
+    worker.addEventListener("message", handler);
+    worker.postMessage({
       text,
       voice: options.voice || "af_heart",
       voice2: options.voice2,
@@ -309,6 +232,143 @@ function generateSingleChunk(
       speed: options.speed || 1.0,
     });
   });
+}
+
+/**
+ * Get next available worker index
+ */
+function getAvailableWorker(): number {
+  for (let i = 0; i < activeWorkerCount; i++) {
+    if (workerReady[i] && !workerBusy[i]) return i;
+  }
+  return -1;
+}
+
+export async function generateSpeech(
+  text: string,
+  options: GenerateSpeechOptions = {},
+  onProgress?: ProgressCallback
+): Promise<{ audioBlob: Blob; audioUrl: string }> {
+  const totalStart = performance.now();
+  const trimmedText = text.trim();
+  console.log(`[TTS] Starting multi-threaded generation for ${trimmedText.length} chars`);
+  
+  progressCallback = onProgress || null;
+  
+  if (!workerReady.some(r => r)) {
+    const initStart = performance.now();
+    await initKokoroWorker(onProgress);
+    console.log(`[TTS] ⏱️ Workers init: ${((performance.now() - initStart) / 1000).toFixed(2)}s`);
+  }
+  
+  // For short texts, use single worker
+  if (trimmedText.length <= 250) {
+    onProgress?.(92, "Generating speech...");
+    const genStart = performance.now();
+    const buffer = await generateWithWorker(0, trimmedText, options);
+    console.log(`[TTS] ⏱️ Generation: ${((performance.now() - genStart) / 1000).toFixed(2)}s`);
+    
+    const audioBlob = new Blob([buffer], { type: "audio/wav" });
+    const audioUrl = URL.createObjectURL(audioBlob);
+    
+    if (options.pitch || options.reverb) {
+      return await applyEffectsAndReturn({ audioBlob, audioUrl }, options, totalStart, onProgress);
+    }
+    
+    console.log(`[TTS] ✅ Total time: ${((performance.now() - totalStart) / 1000).toFixed(2)}s`);
+    return { audioBlob, audioUrl };
+  }
+  
+  // Split into sentences
+  const sentences = splitIntoSentences(trimmedText);
+  console.log(`[TTS] Split into ${sentences.length} sentences, using ${activeWorkerCount} workers`);
+  
+  // Process sentences in parallel using worker pool
+  const audioBuffers: ArrayBuffer[] = new Array(sentences.length);
+  let completed = 0;
+  
+  const genStart = performance.now();
+  
+  await new Promise<void>((resolve, reject) => {
+    let nextSentence = 0;
+    
+    const processNext = async () => {
+      while (nextSentence < sentences.length) {
+        const workerIdx = getAvailableWorker();
+        if (workerIdx === -1) {
+          // No available worker, wait a bit
+          await new Promise(r => setTimeout(r, 50));
+          continue;
+        }
+        
+        const sentenceIdx = nextSentence++;
+        const sentence = sentences[sentenceIdx];
+        
+        console.log(`[TTS] Worker ${workerIdx} processing sentence ${sentenceIdx + 1}/${sentences.length}`);
+        
+        generateWithWorker(workerIdx, sentence, options)
+          .then(buffer => {
+            audioBuffers[sentenceIdx] = buffer;
+            completed++;
+            
+            const pct = 50 + Math.round((completed / sentences.length) * 45);
+            onProgress?.(pct, `Generated ${completed}/${sentences.length} sentences`);
+            
+            if (completed === sentences.length) {
+              resolve();
+            }
+          })
+          .catch(reject);
+      }
+    };
+    
+    // Start processing with all available workers
+    for (let i = 0; i < activeWorkerCount; i++) {
+      processNext();
+    }
+  });
+  
+  console.log(`[TTS] ⏱️ Parallel generation: ${((performance.now() - genStart) / 1000).toFixed(2)}s`);
+  
+  // Concatenate in order
+  onProgress?.(97, "Combining audio...");
+  const concatStart = performance.now();
+  const combinedBuffer = concatenateWavWithCrossfade(audioBuffers);
+  console.log(`[TTS] ⏱️ Concatenation: ${(performance.now() - concatStart).toFixed(0)}ms`);
+  
+  const audioBlob = new Blob([combinedBuffer], { type: "audio/wav" });
+  const audioUrl = URL.createObjectURL(audioBlob);
+  
+  if (options.pitch || options.reverb) {
+    return await applyEffectsAndReturn({ audioBlob, audioUrl }, options, totalStart, onProgress);
+  }
+  
+  console.log(`[TTS] ✅ Total time: ${((performance.now() - totalStart) / 1000).toFixed(2)}s`);
+  return { audioBlob, audioUrl };
+}
+
+async function applyEffectsAndReturn(
+  result: { audioBlob: Blob; audioUrl: string },
+  options: GenerateSpeechOptions,
+  totalStart: number,
+  onProgress?: ProgressCallback
+): Promise<{ audioBlob: Blob; audioUrl: string }> {
+  onProgress?.(97, "Applying effects...");
+  try {
+    const effectStart = performance.now();
+    const processed = await applyAudioEffects(result.audioBlob, {
+      pitch: options.pitch || 0,
+      reverb: options.reverb || 0,
+    });
+    console.log(`[TTS] ⏱️ Effects: ${((performance.now() - effectStart) / 1000).toFixed(2)}s`);
+    URL.revokeObjectURL(result.audioUrl);
+    console.log(`[TTS] ✅ Total time: ${((performance.now() - totalStart) / 1000).toFixed(2)}s`);
+    return processed;
+  } catch (err) {
+    console.error("Effects error:", err);
+    console.log(`[TTS] ✅ Total time: ${((performance.now() - totalStart) / 1000).toFixed(2)}s`);
+    return result;
+  }
 }
 
 // Apply audio effects using Web Audio API
@@ -485,5 +545,11 @@ export function getKokoroVoices() {
   ];
 }
 
-export function isKokoroLoaded(): boolean { return isReady; }
-export function terminateKokoro(): void { worker?.terminate(); worker = null; isReady = false; isInitializing = false; }
+export function isKokoroLoaded(): boolean { return workerReady.some(r => r); }
+export function terminateKokoro(): void { 
+  workers.forEach(w => w?.terminate()); 
+  workers = []; 
+  workerReady = []; 
+  workerBusy = [];
+  preloadStarted = false;
+}

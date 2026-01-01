@@ -4,7 +4,7 @@ import { BsPlay, BsPause, BsStop } from "react-icons/bs";
 import { HiOutlineSpeakerWave } from "react-icons/hi2";
 import { toast } from "react-hot-toast";
 import { useTTSContext } from "@/context/TTS";
-import { generateSpeech } from "@/utils/kokoroTTS";
+import { generateSpeech, preloadKokoroModel } from "@/utils/kokoroTTS";
 
 interface Props {}
 
@@ -18,6 +18,11 @@ const TTSMain: React.FC<Props> = () => {
   } = useTTSContext();
 
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+
+  // Preload TTS model on mount for faster generation
+  useEffect(() => {
+    preloadKokoroModel();
+  }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
