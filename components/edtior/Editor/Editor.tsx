@@ -1,4 +1,5 @@
 import { useEditorContext } from "@/context/Editor";
+import ToolbarButton from "../../common/ToolbarButton";
 import Image from "next/image";
 import { ChangeEvent, ReactNode, useRef, useEffect, useState } from "react";
 import { BiReset } from "react-icons/bi";
@@ -314,31 +315,6 @@ const Editor: React.FC<Props> = () => {
     }
   };
 
-  const OptionButtonOutline = ({
-    title,
-    onTap,
-    children,
-    disabled,
-  }: {
-    children: ReactNode;
-    title: string;
-    onTap?: () => void;
-    disabled?: boolean;
-  }) => {
-    return (
-      <div
-        className={`text-primary-content bg-base-100 py-2.5 px-4 flex items-center justify-center gap-2.5 border border-base-200 rounded-lg transition-all duration-200 ${
-          disabled 
-            ? "opacity-50 cursor-not-allowed" 
-            : "hover:bg-base-200/50 hover:border-primary/20 hover:shadow-sm cursor-pointer press-effect"
-        }`}
-        onClick={disabled ? undefined : onTap}
-      >
-        <span className="text-lg">{children}</span>
-        <span className="font-medium">{title}</span>
-      </div>
-    );
-  };
 
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
@@ -358,9 +334,9 @@ const Editor: React.FC<Props> = () => {
       >
         <div className="dropdown">
           <label tabIndex={0}>
-            <OptionButtonOutline title="Export Image">
+            <ToolbarButton title="Export Image">
               <TfiExport />
-            </OptionButtonOutline>
+            </ToolbarButton>
           </label>
           <ul
             tabIndex={0}
@@ -384,13 +360,13 @@ const Editor: React.FC<Props> = () => {
           </ul>
         </div>
 
-        <OptionButtonOutline
+        <ToolbarButton
           title="Copy"
           onTap={() => copyToClipboard(imageToDownload.current)}
           disabled={!selectedImage}
         >
           <BsClipboard className="icon" />
-        </OptionButtonOutline>
+        </ToolbarButton>
 
         <label htmlFor="selected-image-reset">
           <input
@@ -400,30 +376,30 @@ const Editor: React.FC<Props> = () => {
             id="selected-image-reset"
             onChange={(e) => handleImageChange(e)}
           />
-          <OptionButtonOutline title="Reset Image">
+          <ToolbarButton title="Reset Image">
             <BsRepeat className="icon" />
-          </OptionButtonOutline>
+          </ToolbarButton>
         </label>
 
-        <OptionButtonOutline title="Reset Canvas" onTap={handleReset}>
+        <ToolbarButton title="Reset Canvas" onTap={handleReset}>
           <BiReset className="icon" />
-        </OptionButtonOutline>
+        </ToolbarButton>
 
-        <OptionButtonOutline
+        <ToolbarButton
           title="Save Preset"
           onTap={() => setShowSavePresetModal(true)}
         >
           <BsBookmark className="icon" />
-        </OptionButtonOutline>
+        </ToolbarButton>
 
-        <OptionButtonOutline
+        <ToolbarButton
           title={showAnnotations ? "Close Drawing" : "Draw/Annotate"}
           onTap={() => updateData && updateData("showAnnotations", !showAnnotations)}
         >
           <FaPencilAlt className={showAnnotations ? "text-primary" : "icon"} />
-        </OptionButtonOutline>
+        </ToolbarButton>
 
-        <OptionButtonOutline
+        <ToolbarButton
           title={isSharing ? "Sharing..." : "Share"}
           onTap={handleShare}
           disabled={!selectedImage || isSharing}
@@ -433,7 +409,7 @@ const Editor: React.FC<Props> = () => {
           ) : (
             <BsShare className="icon" />
           )}
-        </OptionButtonOutline>
+        </ToolbarButton>
       </div>
 
       {/* Image Dimensions Display */}

@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
+import SharedToolbarButton from "../common/ToolbarButton";
 import BackgroundPicker, { BackgroundConfig } from "../common/BackgroundPicker";
 import {
   BsClipboard,
@@ -1562,12 +1563,6 @@ const GlobeMakerLayout: React.FC = () => {
     });
   }, [points, arcs, globeStyle, background, showAtmosphere, atmosphereColor, pointSize, pointColor, pointStyle, arcColor, arcStyle, arcAltitude, autoRotate, rotateSpeed, rotateDirection]);
 
-  const ToolbarButton = ({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) => (
-    <button onClick={onClick} className="flex items-center gap-2 px-4 py-2.5 bg-base-100 border border-base-200 rounded-lg transition-all hover:bg-base-200/50 hover:border-primary/20 hover:shadow-sm">
-      <span className="text-lg">{icon}</span>
-      <span className="font-medium text-primary-content">{label}</span>
-    </button>
-  );
 
   return (
     <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
@@ -1580,7 +1575,7 @@ const GlobeMakerLayout: React.FC = () => {
             {/* Toolbar */}
             <div className="flex flex-wrap gap-2 mb-3 justify-end">
               <div className="dropdown">
-                <label tabIndex={0}><ToolbarButton icon={<TfiExport />} label="Export" onClick={() => {}} /></label>
+                <label tabIndex={0}><SharedToolbarButton title="Export"><TfiExport /></SharedToolbarButton></label>
                 <ul tabIndex={0} className="dropdown-content menu p-2 mt-1 bg-base-100 border-2 rounded-lg min-w-[180px] z-50">
                   <li className="menu-title"><span>Images</span></li>
                   <li><a onClick={() => handleExport("png")}>PNG</a></li>
@@ -1592,8 +1587,8 @@ const GlobeMakerLayout: React.FC = () => {
                   <li><a onClick={handleExportHtml}><BsCode className="inline mr-1" /> HTML Code</a></li>
                 </ul>
               </div>
-              <ToolbarButton icon={<BsClipboard />} label="Copy" onClick={handleCopyToClipboard} />
-              <ToolbarButton icon={<BiReset />} label="Reset" onClick={resetAll} />
+              <SharedToolbarButton title="Copy" onTap={handleCopyToClipboard}><BsClipboard /></SharedToolbarButton>
+              <SharedToolbarButton title="Reset" onTap={resetAll}><BiReset /></SharedToolbarButton>
             </div>
 
             {/* Globe Container */}

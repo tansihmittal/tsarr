@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
+import SharedToolbarButton from "../common/ToolbarButton";
 import BackgroundPicker, { BackgroundConfig } from "../common/BackgroundPicker";
 import {
   ComposableMap,
@@ -959,12 +960,6 @@ const MapMakerLayout: React.FC = () => {
     }
   }, []);
 
-  const ToolbarButton = ({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) => (
-    <button onClick={onClick} className="flex items-center gap-2 px-4 py-2.5 bg-base-100 border border-base-200 rounded-lg transition-all hover:bg-base-200/50 hover:border-primary/20 hover:shadow-sm">
-      <span className="text-lg">{icon}</span>
-      <span className="font-medium text-primary-content">{label}</span>
-    </button>
-  );
 
   const renderMarkerIcon = (icon: MarkerIcon = markerIcon, size: number = markerSize, color: string = markerColor) => {
     const iconProps = { fill: color, stroke: "#fff", strokeWidth: 1 };
@@ -1046,7 +1041,7 @@ const MapMakerLayout: React.FC = () => {
             {/* Toolbar */}
             <div className="flex flex-wrap gap-2 mb-3 justify-end">
               <div className="dropdown">
-                <label tabIndex={0}><ToolbarButton icon={<TfiExport />} label="Export" onClick={() => { }} /></label>
+                <label tabIndex={0}><SharedToolbarButton title="Export"><TfiExport /></SharedToolbarButton></label>
                 <ul tabIndex={0} className="dropdown-content menu p-2 mt-1 bg-base-100 border-2 rounded-lg min-w-[180px] z-50">
                   <li><a onClick={() => handleExport("png", 1)}>PNG 1x</a></li>
                   <li><a onClick={() => handleExport("png", 2)}>PNG 2x</a></li>
@@ -1055,8 +1050,8 @@ const MapMakerLayout: React.FC = () => {
                   <li><a onClick={() => handleExport("svg")}>SVG</a></li>
                 </ul>
               </div>
-              <ToolbarButton icon={<BsClipboard />} label="Copy" onClick={handleCopyToClipboard} />
-              <ToolbarButton icon={<BiReset />} label="Reset" onClick={resetAll} />
+              <SharedToolbarButton title="Copy" onTap={handleCopyToClipboard}><BsClipboard /></SharedToolbarButton>
+              <SharedToolbarButton title="Reset" onTap={resetAll}><BiReset /></SharedToolbarButton>
             </div>
 
             {/* Map Container */}

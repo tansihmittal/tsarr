@@ -1,4 +1,5 @@
-import { RefObject, ReactNode } from "react";
+import { RefObject } from "react";
+import ToolbarButton from "../common/ToolbarButton";
 import { CarouselEditorState } from "./CarouselEditorLayout";
 import { TfiExport } from "react-icons/tfi";
 import { BsClipboard, BsChevronLeft, BsChevronRight, BsGlobe, BsShare } from "react-icons/bs";
@@ -22,12 +23,6 @@ interface Props {
 const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExportAll, onCopy, updateState, projectName, onProjectNameChange, isSaving }) => {
   const currentSlideData = state.slides[state.currentSlide];
 
-  const OptionButtonOutline = ({ title, onTap, children }: { children: ReactNode; title: string; onTap?: () => void }) => (
-    <div className="text-primary-content bg-base-100 py-2.5 px-4 flex items-center justify-center gap-2.5 border border-base-200 rounded-lg transition-all duration-200 hover:bg-base-200/50 hover:border-primary/20 hover:shadow-sm cursor-pointer press-effect" onClick={onTap}>
-      <span className="text-lg">{children}</span>
-      <span className="font-medium">{title}</span>
-    </div>
-  );
 
   const handleReset = () => window.location.reload();
   const goToPrevSlide = () => { if (state.currentSlide > 0) updateState({ currentSlide: state.currentSlide - 1 }); };
@@ -111,7 +106,7 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
 
       <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
         <div className="dropdown">
-          <label tabIndex={0}><OptionButtonOutline title="Export"><TfiExport /></OptionButtonOutline></label>
+          <label tabIndex={0}><ToolbarButton title="Export"><TfiExport /></ToolbarButton></label>
           <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50">
             <li onClick={() => onExport("png", 1)}><a>PNG 1x</a></li>
             <li onClick={() => onExport("png", 2)}><a>PNG 2x</a></li>
@@ -119,10 +114,10 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
             <li onClick={() => onExport("jpeg", 2)}><a>JPEG</a></li>
           </ul>
         </div>
-        <OptionButtonOutline title="Export All" onTap={onExportAll}><FiDownload /></OptionButtonOutline>
-        <OptionButtonOutline title="Copy" onTap={onCopy}><BsClipboard /></OptionButtonOutline>
-        <OptionButtonOutline title="Reset" onTap={handleReset}><BiReset /></OptionButtonOutline>
-        <OptionButtonOutline title="Share" onTap={() => shareImage(previewRef.current)}><BsShare /></OptionButtonOutline>
+        <ToolbarButton title="Export All" onTap={onExportAll}><FiDownload /></ToolbarButton>
+        <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>
+        <ToolbarButton title="Reset" onTap={handleReset}><BiReset /></ToolbarButton>
+        <ToolbarButton title="Share" onTap={() => shareImage(previewRef.current)}><BsShare /></ToolbarButton>
       </div>
 
       <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden py-8">

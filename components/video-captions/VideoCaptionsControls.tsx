@@ -1,4 +1,7 @@
 import { ReactNode, useState, useEffect } from "react";
+import ControlPanelHeading from "../common/ControlPanelHeading";
+import ControlPanelRow from "../common/ControlPanelRow";
+import ControlTabButton from "../common/ControlTabButton";
 import { toast } from "react-hot-toast";
 import {
   BsPlus,
@@ -591,39 +594,8 @@ const STYLE_PRESETS = [
   },
 ];
 
-const Control = ({
-  title,
-  value,
-  children,
-  onTap,
-}: {
-  title: string;
-  value?: string | number | null;
-  children: ReactNode;
-  onTap?: () => void;
-}) => (
-  <div
-    className="control-item flex justify-between items-center p-[1rem] border-b border-base-200/60 cursor-pointer overflow-hidden group"
-    onClick={onTap}
-  >
-    <div className="flex justify-between items-center gap-2 shrink-0">
-      <span className="text-primary-content font-medium">{title}</span>
-      {value != null && (
-        <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium text-gray-600 transition-colors group-hover:bg-primary/10 group-hover:text-primary">
-          {value}
-        </span>
-      )}
-    </div>
-    <div className="flex items-center overflow-hidden">{children}</div>
-  </div>
-);
-
-const PanelHeading = ({ title }: { title: string }) => (
-  <h2 className="text-[0.75rem] uppercase tracking-wider font-semibold px-4 py-3 bg-gradient-to-r from-base-200/80 to-base-200/40 text-gray-600 border-b border-base-200/50 flex items-center gap-2">
-    <span className="w-1 h-4 bg-primary rounded-full"></span>
-    {title}
-  </h2>
-);
+const PanelHeading = ControlPanelHeading;
+const Control = ControlPanelRow;
 
 const VideoCaptionsControls = ({
   state,
@@ -1117,29 +1089,13 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     };
   };
 
-  const TabButton = ({ id, icon, label }: { id: string; icon: ReactNode; label: string }) => (
-    <div
-      className={`flex justify-center items-center gap-2 font-medium px-4 py-2.5 transition-all duration-200 cursor-pointer ${
-        selectedTab === id
-          ? "bg-base-100 rounded-lg shadow-sm text-primary"
-          : "text-primary-content hover:text-primary"
-      }`}
-      onClick={() => setSelectedTab(id)}
-    >
-      <span className={`transition-transform duration-200 ${selectedTab === id ? "scale-110" : ""}`}>
-        {icon}
-      </span>
-      <span>{label}</span>
-    </div>
-  );
-
   return (
     <section className={`flex flex-col transition-opacity duration-300 ${state.videoUrl ? "opacity-100" : "opacity-90"}`}>
       {/* Tab Buttons */}
       <div className="grid grid-cols-3 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <TabButton id="captions" icon={<MdSubtitles />} label="Captions" />
-        <TabButton id="style" icon={<MdStyle />} label="Style" />
-        <TabButton id="presets" icon={<BsBookmarkFill />} label="Presets" />
+        <ControlTabButton title="Captions" isActive={selectedTab === "captions"} onClick={() => setSelectedTab("captions")}><MdSubtitles /></ControlTabButton>
+        <ControlTabButton title="Style" isActive={selectedTab === "style"} onClick={() => setSelectedTab("style")}><MdStyle /></ControlTabButton>
+        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BsBookmarkFill /></ControlTabButton>
       </div>
 
       {/* Captions Panel */}

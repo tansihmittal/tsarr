@@ -2,6 +2,8 @@ import { useRef, useState } from "react";
 import { ImageConverterState } from "./ImageConverterLayout";
 import { BsUpload, BsClipboard, BsDownload, BsFileEarmarkImage } from "react-icons/bs";
 import { toast } from "react-hot-toast";
+import ControlPanelHeading from "../common/ControlPanelHeading";
+import ControlPanelRow from "../common/ControlPanelRow";
 
 interface Props {
   state: ImageConverterState;
@@ -45,17 +47,8 @@ const ImageConverterControls: React.FC<Props> = ({ state, updateState, onImageUp
     } catch { toast.error("Failed to paste"); }
   };
 
-  const PanelHeading = ({ title }: { title: string }) => (
-    <h2 className="text-[0.75rem] uppercase tracking-wider font-semibold px-4 py-3 bg-gradient-to-r from-base-200/80 to-base-200/40 text-gray-600 border-b border-base-200/50 flex items-center gap-2">
-      <span className="w-1 h-4 bg-primary rounded-full"></span>{title}
-    </h2>
-  );
-
-  const Control = ({ title, children }: { title: string; children?: React.ReactNode }) => (
-    <div className="flex items-center justify-between py-3 px-4 border-b border-base-200/60">
-      <span className="text-primary-content font-medium text-sm">{title}</span>{children}
-    </div>
-  );
+  const PanelHeading = ControlPanelHeading;
+  const Control = ControlPanelRow;
 
   const formatSize = (bytes: number) => bytes < 1024 ? `${bytes} B` : bytes < 1024 * 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   const selectedFormat = allFormats.find(f => f.id === state.outputFormat);
@@ -69,7 +62,7 @@ const ImageConverterControls: React.FC<Props> = ({ state, updateState, onImageUp
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-110px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <PanelHeading title="Image" />
         <div className="p-4 border-b border-base-200/60">
           <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />

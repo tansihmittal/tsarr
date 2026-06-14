@@ -1,9 +1,10 @@
-import { RefObject, useEffect, useCallback, useState, ReactNode } from "react";
+import { RefObject, useEffect, useCallback, useState } from "react";
 import { ImageConverterState } from "./ImageConverterLayout";
 import { TfiExport } from "react-icons/tfi";
 import { BsClipboard, BsUpload, BsRepeat } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { toast } from "react-hot-toast";
+import ToolbarButton from "../common/ToolbarButton";
 
 interface Props {
   state: ImageConverterState;
@@ -15,13 +16,6 @@ interface Props {
 
 const ImageConverterPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCopy, onImageUpload }) => {
   const [isDragging, setIsDragging] = useState(false);
-
-  const OptionButtonOutline = ({ title, onTap, children, disabled }: { children: ReactNode; title: string; onTap?: () => void; disabled?: boolean }) => (
-    <div className={`text-primary-content bg-base-100 py-2.5 px-4 flex items-center justify-center gap-2.5 border border-base-200 rounded-lg transition-all duration-200 ${disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-base-200/50 hover:border-primary/20 hover:shadow-sm cursor-pointer press-effect"}`} onClick={disabled ? undefined : onTap}>
-      <span className="text-lg">{children}</span>
-      <span className="font-medium">{title}</span>
-    </div>
-  );
 
   const handleReset = () => { if (confirm("Reset all changes?")) window.location.reload(); };
   const handleDrop = useCallback((e: React.DragEvent) => { e.preventDefault(); setIsDragging(false); const file = e.dataTransfer.files[0]; if (file?.type.startsWith("image/")) onImageUpload(file); }, [onImageUpload]);
@@ -71,10 +65,10 @@ const ImageConverterPreview: React.FC<Props> = ({ state, canvasRef, onExport, on
     return (
       <div className="flex items-center justify-start flex-col h-full w-full">
         <div className="flex flex-wrap gap-2 w-full mb-3 justify-end opacity-80" style={{ pointerEvents: "none" }}>
-          <div className="dropdown"><label tabIndex={0}><OptionButtonOutline title="Export Image" disabled><TfiExport /></OptionButtonOutline></label></div>
-          <OptionButtonOutline title="Copy" disabled><BsClipboard /></OptionButtonOutline>
-          <label><OptionButtonOutline title="Reset Image" disabled><BsRepeat /></OptionButtonOutline></label>
-          <OptionButtonOutline title="Reset Canvas" disabled><BiReset /></OptionButtonOutline>
+          <div className="dropdown"><label tabIndex={0}><ToolbarButton title="Export Image" disabled><TfiExport /></ToolbarButton></label></div>
+          <ToolbarButton title="Copy" disabled><BsClipboard /></ToolbarButton>
+          <label><ToolbarButton title="Reset Image" disabled><BsRepeat /></ToolbarButton></label>
+          <ToolbarButton title="Reset Canvas" disabled><BiReset /></ToolbarButton>
         </div>
         <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
           <div className={`p-6 sm:p-8 bg-base-100 relative z-20 rounded-2xl shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-primary" : ""}`} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
@@ -106,14 +100,14 @@ const ImageConverterPreview: React.FC<Props> = ({ state, canvasRef, onExport, on
     <div className="flex items-center justify-start flex-col h-full w-full">
       <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
         <div className="dropdown">
-          <label tabIndex={0}><OptionButtonOutline title="Export Image"><TfiExport /></OptionButtonOutline></label>
+          <label tabIndex={0}><ToolbarButton title="Export Image"><TfiExport /></ToolbarButton></label>
           <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50">
             <li onClick={onExport}><a>Convert to {state.outputFormat.toUpperCase()}</a></li>
           </ul>
         </div>
-        <OptionButtonOutline title="Copy" onTap={onCopy}><BsClipboard /></OptionButtonOutline>
-        <label htmlFor="converter-change"><input type="file" hidden accept="image/*" id="converter-change" onChange={handleFileInput} /><OptionButtonOutline title="Reset Image"><BsRepeat /></OptionButtonOutline></label>
-        <OptionButtonOutline title="Reset Canvas" onTap={handleReset}><BiReset /></OptionButtonOutline>
+        <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>
+        <label htmlFor="converter-change"><input type="file" hidden accept="image/*" id="converter-change" onChange={handleFileInput} /><ToolbarButton title="Reset Image"><BsRepeat /></ToolbarButton></label>
+        <ToolbarButton title="Reset Canvas" onTap={handleReset}><BiReset /></ToolbarButton>
       </div>
       <div className="flex justify-between mb-2 w-full">
         <span className="text-xs text-gray-500 bg-base-200 px-3 py-1 rounded-full">{state.originalFormat} • {formatSize(state.originalSize)}</span>

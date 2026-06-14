@@ -1,4 +1,5 @@
 import { useEffect, useRef, RefObject, useCallback, ReactNode, useState } from "react";
+import ToolbarButton from "../common/ToolbarButton";
 import { BsClipboard, BsRepeat, BsImage, BsShare } from "react-icons/bs";
 import { TfiExport } from "react-icons/tfi";
 import { BiReset } from "react-icons/bi";
@@ -556,31 +557,6 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
     return () => window.removeEventListener("paste", handlePaste);
   }, [updateState, onImageUpload]);
 
-  // Option button component matching screenshot editor style
-  const OptionButtonOutline = ({
-    title,
-    onTap,
-    children,
-    disabled,
-  }: {
-    children: ReactNode;
-    title: string;
-    onTap?: () => void;
-    disabled?: boolean;
-  }) => (
-    <div
-      className={`text-primary-content bg-base-100 py-2.5 px-4 flex items-center justify-center gap-2.5 border border-base-200 rounded-lg transition-all duration-200 ${
-        disabled
-          ? "opacity-50 cursor-not-allowed"
-          : "hover:bg-base-200/50 hover:border-primary/20 hover:shadow-sm cursor-pointer press-effect"
-      }`}
-      onClick={disabled ? undefined : onTap}
-    >
-      <span className="text-lg">{children}</span>
-      <span className="font-medium">{title}</span>
-    </div>
-  );
-
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
       <ProjectNameHeader name={projectName} onNameChange={onProjectNameChange} isSaving={isSaving} />
@@ -593,9 +569,9 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
       >
         <div className="dropdown">
           <label tabIndex={0}>
-            <OptionButtonOutline title="Export Image">
+            <ToolbarButton title="Export Image">
               <TfiExport />
-            </OptionButtonOutline>
+            </ToolbarButton>
           </label>
           <ul
             tabIndex={0}
@@ -619,13 +595,13 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
           </ul>
         </div>
 
-        <OptionButtonOutline
+        <ToolbarButton
           title="Copy"
           onTap={handleCopyToClipboard}
           disabled={!state.image}
         >
           <BsClipboard className="icon" />
-        </OptionButtonOutline>
+        </ToolbarButton>
 
         <label htmlFor="image-upload-reset">
           <input
@@ -636,22 +612,22 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
             ref={fileInputRef}
             onChange={handleImageUpload}
           />
-          <OptionButtonOutline title="Change Image">
+          <ToolbarButton title="Change Image">
             <BsRepeat className="icon" />
-          </OptionButtonOutline>
+          </ToolbarButton>
         </label>
 
-        <OptionButtonOutline title="Reset" onTap={handleReset}>
+        <ToolbarButton title="Reset" onTap={handleReset}>
           <BiReset className="icon" />
-        </OptionButtonOutline>
+        </ToolbarButton>
 
-        <OptionButtonOutline 
+        <ToolbarButton 
           title="Share" 
           onTap={() => state.image && canvasRef.current && shareImage(canvasRef.current.parentElement)}
           disabled={!state.image}
         >
           <BsShare className="icon" />
-        </OptionButtonOutline>
+        </ToolbarButton>
       </div>
 
       {/* Editor Canvas Area */}

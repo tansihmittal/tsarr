@@ -8,6 +8,8 @@ import {
 } from "react-icons/bs";
 import { BiRefresh, BiSelectMultiple, BiPointer, BiPencil } from "react-icons/bi";
 import { BubbleBlasterState, BubbleRegion } from "./BubbleBlasterLayout";
+import ControlPanelHeading from "../common/ControlPanelHeading";
+import ControlPanelRow from "../common/ControlPanelRow";
 
 interface Props {
   state: BubbleBlasterState;
@@ -22,39 +24,8 @@ interface Props {
   workingCanvasRef: RefObject<HTMLCanvasElement>;
 }
 
-const Control = ({
-  title,
-  value,
-  children,
-  onTap,
-}: {
-  title: string;
-  value?: string | number | null;
-  children: ReactNode;
-  onTap?: () => void;
-}) => (
-  <div
-    className="control-item flex justify-between items-center p-[1rem] border-b border-base-200/60 cursor-pointer overflow-hidden group"
-    onClick={onTap}
-  >
-    <div className="flex justify-between items-center gap-2 shrink-0">
-      <span className="text-primary-content font-medium">{title}</span>
-      {value != null && (
-        <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium text-gray-600 transition-colors group-hover:bg-primary/10 group-hover:text-primary">
-          {value}
-        </span>
-      )}
-    </div>
-    <div className="flex items-center overflow-hidden">{children}</div>
-  </div>
-);
-
-const PanelHeading = ({ title }: { title: string }) => (
-  <h2 className="text-[0.75rem] uppercase tracking-wider font-semibold px-4 py-3 bg-gradient-to-r from-base-200/80 to-base-200/40 text-gray-600 border-b border-base-200/50 flex items-center gap-2">
-    <span className="w-1 h-4 bg-primary rounded-full"></span>
-    {title}
-  </h2>
-);
+const PanelHeading = ControlPanelHeading;
+const Control = ControlPanelRow;
 
 const BubbleBlasterControls = ({
   state,

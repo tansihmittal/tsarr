@@ -1,4 +1,5 @@
-import { useRef, ChangeEvent, useCallback, useEffect, ReactNode } from "react";
+import { useRef, ChangeEvent, useCallback, useEffect } from "react";
+import ToolbarButton from "../common/ToolbarButton";
 import { BsClipboard, BsRepeat, BsUpload, BsShare } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { TfiExport } from "react-icons/tfi";
@@ -310,35 +311,26 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
     }
   };
 
-  const OptionButtonOutline = ({ title, onTap, children, disabled }: { children: ReactNode; title: string; onTap?: () => void; disabled?: boolean }) => (
-    <div
-      className={`text-primary-content bg-base-100 py-2.5 px-4 flex items-center justify-center gap-2.5 border border-base-200 rounded-lg transition-all duration-200 ${disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-base-200/50 hover:border-primary/20 hover:shadow-sm cursor-pointer press-effect"}`}
-      onClick={disabled ? undefined : onTap}
-    >
-      <span className="text-lg">{children}</span>
-      <span className="font-medium">{title}</span>
-    </div>
-  );
 
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
       <ProjectNameHeader name={projectName} onNameChange={onProjectNameChange} isSaving={isSaving} />
       <div style={{ pointerEvents: state.image ? "auto" : "none" }} className={`flex flex-wrap gap-2 w-full mb-3 justify-end ${state.image ? "opacity-100" : "opacity-80"}`}>
         <div className="dropdown">
-          <label tabIndex={0}><OptionButtonOutline title="Export Image"><TfiExport /></OptionButtonOutline></label>
+          <label tabIndex={0}><ToolbarButton title="Export Image"><TfiExport /></ToolbarButton></label>
           <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md">
             <li onClick={() => handleDownload(1)}><a>Export as PNG 1x</a></li>
             <li onClick={() => handleDownload(2)}><a>Export as PNG 2x</a></li>
             <li onClick={() => handleDownload(4)}><a>Export as PNG 4x</a></li>
           </ul>
         </div>
-        <OptionButtonOutline title="Copy" onTap={handleCopyToClipboard} disabled={!state.image}><BsClipboard className="icon" /></OptionButtonOutline>
+        <ToolbarButton title="Copy" onTap={handleCopyToClipboard} disabled={!state.image}><BsClipboard className="icon" /></ToolbarButton>
         <label htmlFor="polaroid-image-reset">
           <input type="file" hidden accept="image/*" id="polaroid-image-reset" onChange={handleFileChange} />
-          <OptionButtonOutline title="Reset Image"><BsRepeat className="icon" /></OptionButtonOutline>
+          <ToolbarButton title="Reset Image"><BsRepeat className="icon" /></ToolbarButton>
         </label>
-        <OptionButtonOutline title="Reset Canvas" onTap={onReset}><BiReset className="icon" /></OptionButtonOutline>
-        <OptionButtonOutline title="Share" onTap={() => state.image && shareImage(polaroidRef.current)} disabled={!state.image}><BsShare className="icon" /></OptionButtonOutline>
+        <ToolbarButton title="Reset Canvas" onTap={onReset}><BiReset className="icon" /></ToolbarButton>
+        <ToolbarButton title="Share" onTap={() => state.image && shareImage(polaroidRef.current)} disabled={!state.image}><BsShare className="icon" /></ToolbarButton>
       </div>
 
       {state.image && state.imageWidth > 0 && (

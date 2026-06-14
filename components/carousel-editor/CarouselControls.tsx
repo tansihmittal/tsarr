@@ -1,4 +1,7 @@
 import { useState, useRef, useEffect, memo } from "react";
+import ControlPanelHeading from "../common/ControlPanelHeading";
+import ControlPanelRow from "../common/ControlPanelRow";
+import ControlTabButton from "../common/ControlTabButton";
 import { CarouselEditorState, SlideContent } from "./CarouselEditorLayout";
 import { BiSlideshow, BiPlus, BiTrash, BiUser, BiChevronRight } from "react-icons/bi";
 import { IoMdOptions } from "react-icons/io";
@@ -279,34 +282,16 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
     toast.success(`Applied "${preset.name}" preset`);
   };
 
-  const PanelHeading = ({ title }: { title: string }) => (
-    <h2 className="text-[0.75rem] uppercase tracking-wider font-semibold px-4 py-3 bg-gradient-to-r from-base-200/80 to-base-200/40 text-gray-600 border-b border-base-200/50 flex items-center gap-2">
-      <span className="w-1 h-4 bg-primary rounded-full"></span>{title}
-    </h2>
-  );
-
-  const Control = ({ title, children, onTap }: { title: string; children?: React.ReactNode; onTap?: () => void }) => (
-    <div className={`flex items-center justify-between py-3 px-4 border-b border-base-200/60 ${onTap ? "cursor-pointer hover:bg-base-200/30" : ""}`} onClick={onTap}>
-      <span className="text-primary-content font-medium text-sm">{title}</span>{children}
-    </div>
-  );
-
-  const OptionButton = ({ title, children, tabKey }: { children: React.ReactNode; title: string; tabKey: string }) => {
-    const isActive = selectedTab === tabKey;
-    return (
-      <div className={`flex justify-center items-center gap-2 font-medium px-3 py-2.5 transition-all duration-200 cursor-pointer ${isActive ? "bg-base-100 rounded-lg shadow-sm text-primary" : "text-primary-content hover:text-primary"}`} onClick={() => setSelectedTab(tabKey)}>
-        <span className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}>{children}</span><span className="text-sm">{title}</span>
-      </div>
-    );
-  };
+  const PanelHeading = ControlPanelHeading;
+  const Control = ControlPanelRow;
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
       <div className="grid grid-cols-4 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <OptionButton title="Slides" tabKey="slides"><BiSlideshow /></OptionButton>
-        <OptionButton title="Profile" tabKey="profile"><BiUser /></OptionButton>
-        <OptionButton title="Style" tabKey="style"><IoMdOptions /></OptionButton>
-        <OptionButton title="Presets" tabKey="presets"><BsBookmarkFill /></OptionButton>
+        <ControlTabButton title="Slides" isActive={selectedTab === "slides"} onClick={() => setSelectedTab("slides")}><BiSlideshow /></ControlTabButton>
+        <ControlTabButton title="Profile" isActive={selectedTab === "profile"} onClick={() => setSelectedTab("profile")}><BiUser /></ControlTabButton>
+        <ControlTabButton title="Style" isActive={selectedTab === "style"} onClick={() => setSelectedTab("style")}><IoMdOptions /></ControlTabButton>
+        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BsBookmarkFill /></ControlTabButton>
       </div>
 
       <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">

@@ -12,6 +12,7 @@ import { BiReset } from "react-icons/bi";
 import { TfiExport } from "react-icons/tfi";
 import { BubbleBlasterState } from "./BubbleBlasterLayout";
 import { toast } from "react-hot-toast";
+import ToolbarButton from "../common/ToolbarButton";
 
 interface Props {
   state: BubbleBlasterState;
@@ -280,30 +281,6 @@ const BubbleBlasterPreview = ({
     return () => window.removeEventListener("paste", handlePaste);
   }, [onImageUpload]);
 
-  const OptionButtonOutline = ({
-    title,
-    onClick,
-    children,
-    disabled,
-  }: {
-    children: ReactNode;
-    title: string;
-    onClick?: () => void;
-    disabled?: boolean;
-  }) => (
-    <div
-      className={`text-primary-content bg-base-100 py-2.5 px-4 flex items-center justify-center gap-2.5 border border-base-200 rounded-lg transition-all duration-200 ${
-        disabled
-          ? "opacity-50 cursor-not-allowed"
-          : "hover:bg-base-200/50 hover:border-primary/20 hover:shadow-sm cursor-pointer press-effect"
-      }`}
-      onClick={disabled ? undefined : onClick}
-    >
-      <span className="text-lg">{children}</span>
-      <span className="font-medium">{title}</span>
-    </div>
-  );
-
   const selectedCount = state.bubbles.filter((b) => b.isSelected).length;
   const processedCount = state.bubbles.filter((b) => b.isProcessed).length;
 
@@ -318,9 +295,9 @@ const BubbleBlasterPreview = ({
       >
         <div className="dropdown">
           <label tabIndex={0}>
-            <OptionButtonOutline title="Export Image" disabled={!state.image}>
+            <ToolbarButton title="Export Image" disabled={!state.image}>
               <TfiExport />
-            </OptionButtonOutline>
+            </ToolbarButton>
           </label>
           <ul
             tabIndex={0}
@@ -338,13 +315,13 @@ const BubbleBlasterPreview = ({
           </ul>
         </div>
 
-        <OptionButtonOutline
+        <ToolbarButton
           title="Copy"
-          onClick={handleCopyToClipboard}
+          onTap={handleCopyToClipboard}
           disabled={!state.image}
         >
           <BsClipboard className="icon" />
-        </OptionButtonOutline>
+        </ToolbarButton>
 
         <label htmlFor="bubble-image-change">
           <input
@@ -355,14 +332,14 @@ const BubbleBlasterPreview = ({
             ref={fileInputRef}
             onChange={handleImageUpload}
           />
-          <OptionButtonOutline title="Change Image">
+          <ToolbarButton title="Change Image">
             <BsRepeat className="icon" />
-          </OptionButtonOutline>
+          </ToolbarButton>
         </label>
 
-        <OptionButtonOutline title="Reset" onClick={handleReset}>
+        <ToolbarButton title="Reset" onTap={handleReset}>
           <BiReset className="icon" />
-        </OptionButtonOutline>
+        </ToolbarButton>
       </div>
 
       {/* Canvas area */}

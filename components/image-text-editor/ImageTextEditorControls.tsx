@@ -1,4 +1,7 @@
 import { RefObject, ChangeEvent, ReactNode, useState } from "react";
+import ControlPanelHeading from "../common/ControlPanelHeading";
+import ControlPanelRow from "../common/ControlPanelRow";
+import ControlTabButton from "../common/ControlTabButton";
 import {
   BsChevronRight,
   BsLayers,
@@ -24,41 +27,8 @@ interface Props {
   startEditing: (regionId: string) => void;
 }
 
-// Reusable Control component
-const Control = ({
-  title,
-  value,
-  children,
-  onTap,
-}: {
-  title: string;
-  value?: string | number | null;
-  children: ReactNode;
-  onTap?: () => void;
-}) => (
-  <div
-    className="control-item flex justify-between items-center p-[1rem] border-b border-base-200/60 cursor-pointer overflow-hidden group"
-    onClick={onTap}
-  >
-    <div className="flex justify-between items-center gap-2 shrink-0">
-      <span className="text-primary-content font-medium">{title}</span>
-      {value != null && (
-        <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium text-gray-600 transition-colors group-hover:bg-primary/10 group-hover:text-primary">
-          {value}
-        </span>
-      )}
-    </div>
-    <div className="flex items-center overflow-hidden">{children}</div>
-  </div>
-);
-
-// Panel heading
-const PanelHeading = ({ title }: { title: string }) => (
-  <h2 className="text-[0.75rem] uppercase tracking-wider font-semibold px-4 py-3 bg-gradient-to-r from-base-200/80 to-base-200/40 text-gray-600 border-b border-base-200/50 flex items-center gap-2">
-    <span className="w-1 h-4 bg-primary rounded-full"></span>
-    {title}
-  </h2>
-);
+const PanelHeading = ControlPanelHeading;
+const Control = ControlPanelRow;
 
 const ImageTextEditorControls = ({
   state,
@@ -88,32 +58,6 @@ const ImageTextEditorControls = ({
     reader.readAsDataURL(file);
   };
 
-  const OptionButton = ({
-    title,
-    children,
-  }: {
-    children: ReactNode;
-    title: string;
-  }) => {
-    const triggerValue = title.toLowerCase();
-    const isActive = selectedOption === triggerValue;
-    return (
-      <div
-        className={`flex justify-center items-center gap-2 font-medium px-4 py-2.5 transition-all duration-200 cursor-pointer ${
-          isActive
-            ? "bg-base-100 rounded-lg shadow-sm text-primary"
-            : "text-primary-content hover:text-primary"
-        }`}
-        onClick={() => setSelectedOption(triggerValue)}
-      >
-        <span className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}>
-          {children}
-        </span>
-        <span>{title}</span>
-      </div>
-    );
-  };
-
   const modifiedCount = state.textRegions.filter((r) => r.isModified).length;
 
   return (
@@ -124,12 +68,8 @@ const ImageTextEditorControls = ({
     >
       {/* Top Buttons Container */}
       <div className="grid grid-cols-2 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <OptionButton title="Options">
-          <IoMdOptions />
-        </OptionButton>
-        <OptionButton title="Text">
-          <BsLayers />
-        </OptionButton>
+        <ControlTabButton title="Options" isActive={selectedOption === "options"} onClick={() => setSelectedOption("options")}><IoMdOptions /></ControlTabButton>
+        <ControlTabButton title="Text" isActive={selectedOption === "text"} onClick={() => setSelectedOption("text")}><BsLayers /></ControlTabButton>
       </div>
 
       {/* Options Panel */}

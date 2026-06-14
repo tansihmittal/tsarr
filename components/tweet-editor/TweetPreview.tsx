@@ -1,4 +1,5 @@
-import { RefObject, ReactNode, useRef } from "react";
+import { RefObject, useRef } from "react";
+import ToolbarButton from "../common/ToolbarButton";
 import { TweetEditorState } from "./TweetEditorLayout";
 import { TfiExport } from "react-icons/tfi";
 import { BsClipboard, BsShare } from "react-icons/bs";
@@ -49,15 +50,6 @@ const TweetPreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, up
     }
   };
 
-  const OptionButtonOutline = ({ title, onTap, children }: { children: ReactNode; title: string; onTap?: () => void }) => (
-    <div
-      className="text-primary-content bg-base-100 py-2.5 px-4 flex items-center justify-center gap-2.5 border border-base-200 rounded-lg transition-all duration-200 hover:bg-base-200/50 hover:border-primary/20 hover:shadow-sm cursor-pointer press-effect"
-      onClick={onTap}
-    >
-      <span className="text-lg">{children}</span>
-      <span className="font-medium">{title}</span>
-    </div>
-  );
 
   const handleReset = () => window.location.reload();
   const handleAvatarClick = () => fileInputRef.current?.click();
@@ -102,7 +94,7 @@ const TweetPreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, up
       <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
         <div className="dropdown">
           <label tabIndex={0}>
-            <OptionButtonOutline title="Export Image"><TfiExport /></OptionButtonOutline>
+            <ToolbarButton title="Export Image"><TfiExport /></ToolbarButton>
           </label>
           <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50">
             <li onClick={() => onExport("png", 1)}><a>Export as PNG 1x</a></li>
@@ -112,9 +104,9 @@ const TweetPreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, up
             <li onClick={() => onExport("jpeg", 2)}><a>Export as JPEG</a></li>
           </ul>
         </div>
-        <OptionButtonOutline title="Copy" onTap={onCopy}><BsClipboard /></OptionButtonOutline>
-        <OptionButtonOutline title="Reset" onTap={handleReset}><BiReset /></OptionButtonOutline>
-        <OptionButtonOutline title="Share" onTap={() => shareImage(previewRef.current)}><BsShare /></OptionButtonOutline>
+        <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>
+        <ToolbarButton title="Reset" onTap={handleReset}><BiReset /></ToolbarButton>
+        <ToolbarButton title="Share" onTap={() => shareImage(previewRef.current)}><BsShare /></ToolbarButton>
       </div>
 
       {/* Editor Canvas Area */}

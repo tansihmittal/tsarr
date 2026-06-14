@@ -1,4 +1,5 @@
-import { RefObject, useEffect, useState, ReactNode } from "react";
+import { RefObject, useEffect, useState } from "react";
+import ToolbarButton from "../common/ToolbarButton";
 import { CodeEditorState } from "./CodeEditorLayout";
 import { themes, languageKeywords, ThemeColors } from "../../data/codeEditor";
 import { TfiExport } from "react-icons/tfi";
@@ -125,30 +126,6 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, pro
   const borderStyle = getBorderStyle(state.borderStyle, theme.isDark);
   const shadowValue = getShadowValue(state.shadowStyle);
 
-  // Option button component matching other editors
-  const OptionButtonOutline = ({
-    title,
-    onTap,
-    children,
-    disabled,
-  }: {
-    children: ReactNode;
-    title: string;
-    onTap?: () => void;
-    disabled?: boolean;
-  }) => (
-    <div
-      className={`text-primary-content bg-base-100 py-2.5 px-4 flex items-center justify-center gap-2.5 border border-base-200 rounded-lg transition-all duration-200 ${
-        disabled
-          ? "opacity-50 cursor-not-allowed"
-          : "hover:bg-base-200/50 hover:border-primary/20 hover:shadow-sm cursor-pointer press-effect"
-      }`}
-      onClick={disabled ? undefined : onTap}
-    >
-      <span className="text-lg">{children}</span>
-      <span className="font-medium">{title}</span>
-    </div>
-  );
 
   const handleReset = () => {
     // Reset code to default
@@ -267,9 +244,9 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, pro
       <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
         <div className="dropdown">
           <label tabIndex={0}>
-            <OptionButtonOutline title="Export Image">
+            <ToolbarButton title="Export Image">
               <TfiExport />
-            </OptionButtonOutline>
+            </ToolbarButton>
           </label>
           <ul
             tabIndex={0}
@@ -283,17 +260,17 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, pro
           </ul>
         </div>
 
-        <OptionButtonOutline title="Copy" onTap={onCopy}>
+        <ToolbarButton title="Copy" onTap={onCopy}>
           <BsClipboard className="icon" />
-        </OptionButtonOutline>
+        </ToolbarButton>
 
-        <OptionButtonOutline title="Reset" onTap={handleReset}>
+        <ToolbarButton title="Reset" onTap={handleReset}>
           <BiReset className="icon" />
-        </OptionButtonOutline>
+        </ToolbarButton>
 
-        <OptionButtonOutline title="Share" onTap={() => shareImage(previewRef.current)}>
+        <ToolbarButton title="Share" onTap={() => shareImage(previewRef.current)}>
           <BsShare className="icon" />
-        </OptionButtonOutline>
+        </ToolbarButton>
       </div>
 
       {/* Editor Canvas Area */}

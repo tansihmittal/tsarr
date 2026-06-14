@@ -1,4 +1,7 @@
 import { useState, useRef, ChangeEvent, ReactNode } from "react";
+import ControlPanelHeading from "../common/ControlPanelHeading";
+import ControlPanelRow from "../common/ControlPanelRow";
+import ControlTabButton from "../common/ControlTabButton";
 import { IoMdOptions } from "react-icons/io";
 import { BsBookmarkFill } from "react-icons/bs";
 import { MdFilterVintage } from "react-icons/md";
@@ -85,36 +88,9 @@ const PolaroidControls = ({ state, updateState }: Props) => {
     });
   };
 
-  const OptionButton = ({ title, children }: { children: ReactNode; title: string }) => {
-    const triggerValue = title.toLowerCase();
-    const isActive = selectedTab === triggerValue;
-    return (
-      <div
-        className={`flex justify-center items-center gap-2 font-medium px-4 py-2.5 transition-all duration-200 cursor-pointer ${isActive ? "bg-base-100 rounded-lg shadow-sm text-primary" : "text-primary-content hover:text-primary"}`}
-        onClick={() => setSelectedTab(triggerValue)}
-      >
-        <span className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}>{children}</span>
-        <span>{title}</span>
-      </div>
-    );
-  };
 
-  const PanelHeading = ({ title }: { title: string }) => (
-    <h2 className="text-[0.75rem] uppercase tracking-wider font-semibold px-4 py-3 bg-gradient-to-r from-base-200/80 to-base-200/40 text-gray-600 border-b border-base-200/50 flex items-center gap-2">
-      <span className="w-1 h-4 bg-primary rounded-full"></span>
-      {title}
-    </h2>
-  );
-
-  const Control = ({ title, value, children, onTap }: { title: string; value?: string; children?: ReactNode; onTap?: () => void }) => (
-    <div className={`flex items-center justify-between py-3 px-4 border-b border-base-200/60 ${onTap ? "cursor-pointer hover:bg-base-200/30" : ""}`} onClick={onTap}>
-      <div className="flex items-center gap-2">
-        <span className="text-primary-content font-medium">{title}</span>
-        {value && <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium text-gray-600">{value}</span>}
-      </div>
-      {children}
-    </div>
-  );
+  const PanelHeading = ControlPanelHeading;
+  const Control = ControlPanelRow;
 
   const RangeControl = ({ label, value, min, max, step = 1, unit = "", onChange }: { label: string; value: number; min: number; max: number; step?: number; unit?: string; onChange: (value: number) => void }) => (
     <div className="p-4 border-b border-base-200/60">
@@ -129,9 +105,9 @@ const PolaroidControls = ({ state, updateState }: Props) => {
   return (
     <section style={{ pointerEvents: state.image ? "auto" : "none" }} className={`flex flex-col transition-opacity duration-300 ${state.image ? "opacity-100" : "opacity-90"}`}>
       <div className="grid grid-cols-3 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <OptionButton title="Options"><IoMdOptions /></OptionButton>
-        <OptionButton title="Filters"><MdFilterVintage /></OptionButton>
-        <OptionButton title="Presets"><BsBookmarkFill /></OptionButton>
+        <ControlTabButton title="Options" isActive={selectedTab === "options"} onClick={() => setSelectedTab("options")}><IoMdOptions /></ControlTabButton>
+        <ControlTabButton title="Filters" isActive={selectedTab === "filters"} onClick={() => setSelectedTab("filters")}><MdFilterVintage /></ControlTabButton>
+        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BsBookmarkFill /></ControlTabButton>
       </div>
 
       <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:max-h-[calc(100vh-150px)] lg:overflow-y-auto scrollbar-hide animate-fade-in">

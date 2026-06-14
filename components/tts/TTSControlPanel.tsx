@@ -1,4 +1,6 @@
-import { ReactNode, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
+import ControlPanelHeading from "../common/ControlPanelHeading";
+import ControlTabButton from "../common/ControlTabButton";
 import { IoMdOptions } from "react-icons/io";
 import { BsInfoCircle, BsCheckCircle, BsMagic } from "react-icons/bs";
 import { useTTSContext } from "@/context/TTS";
@@ -26,26 +28,7 @@ const TTSControlPanel: React.FC<Props> = () => {
     });
   }, [voices, languageFilter, genderFilter]);
 
-  const PanelHeading = ({ title }: { title: string }) => (
-    <div className="px-4 py-3 border-b border-base-200/60 bg-base-200/30">
-      <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{title}</span>
-    </div>
-  );
-
-  const OptionButton = ({ title, children }: { children: ReactNode; title: string }) => {
-    const triggerValue = title.toLowerCase();
-    const isActive = selectedOption === triggerValue;
-    return (
-      <div
-        className={`flex justify-center items-center gap-2 font-medium px-4 py-2.5 transition-all duration-200 cursor-pointer ${isActive ? "bg-base-100 rounded-lg shadow-sm text-primary" : "text-primary-content hover:text-primary"
-          }`}
-        onClick={() => setSelectedOption(triggerValue)}
-      >
-        <span className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}>{children}</span>
-        <span>{title}</span>
-      </div>
-    );
-  };
+  const PanelHeading = ControlPanelHeading;
 
   const quickTemplates = [
     "Hello! Welcome to our text-to-speech demo.",
@@ -62,9 +45,9 @@ const TTSControlPanel: React.FC<Props> = () => {
   return (
     <section className="flex flex-col transition-opacity duration-300">
       <div className="grid grid-cols-3 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <OptionButton title="Options"><IoMdOptions /></OptionButton>
-        <OptionButton title="Effects"><BsMagic /></OptionButton>
-        <OptionButton title="Info"><BsInfoCircle /></OptionButton>
+        <ControlTabButton title="Options" isActive={selectedOption === "options"} onClick={() => setSelectedOption("options")}><IoMdOptions /></ControlTabButton>
+        <ControlTabButton title="Effects" isActive={selectedOption === "effects"} onClick={() => setSelectedOption("effects")}><BsMagic /></ControlTabButton>
+        <ControlTabButton title="Info" isActive={selectedOption === "info"} onClick={() => setSelectedOption("info")}><BsInfoCircle /></ControlTabButton>
       </div>
 
       {selectedOption === "options" ? (

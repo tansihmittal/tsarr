@@ -1,4 +1,5 @@
-import { RefObject, useEffect, useState, ReactNode, useMemo, useRef } from "react";
+import { RefObject, useEffect, useState, useMemo, useRef } from "react";
+import ToolbarButton from "../common/ToolbarButton";
 import { BsPlayFill, BsPauseFill, BsUpload } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { VideoCaptionsState, Caption, CaptionStyle } from "./VideoCaptionsLayout";
@@ -446,30 +447,6 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
     }
   };
 
-  const OptionButtonOutline = ({
-    title,
-    onTap,
-    children,
-    disabled,
-  }: {
-    children: ReactNode;
-    title: string;
-    onTap?: () => void;
-    disabled?: boolean;
-  }) => (
-    <div
-      className={`text-primary-content bg-base-100 py-2.5 px-4 flex items-center justify-center gap-2.5 border border-base-200 rounded-lg transition-all duration-200 ${
-        disabled
-          ? "opacity-50 cursor-not-allowed"
-          : "hover:bg-base-200/50 hover:border-primary/20 hover:shadow-sm cursor-pointer press-effect"
-      }`}
-      onClick={disabled ? undefined : onTap}
-    >
-      <span className="text-lg">{children}</span>
-      <span className="font-medium">{title}</span>
-    </div>
-  );
-
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
       {/* Top options */}
@@ -487,14 +464,14 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
             id="video-upload-change"
             onChange={handleFileChange}
           />
-          <OptionButtonOutline title="Change Video">
+          <ToolbarButton title="Change Video">
             <BsUpload className="icon" />
-          </OptionButtonOutline>
+          </ToolbarButton>
         </label>
 
-        <OptionButtonOutline title="Reset" onTap={handleReset}>
+        <ToolbarButton title="Reset" onTap={handleReset}>
           <BiReset className="icon" />
-        </OptionButtonOutline>
+        </ToolbarButton>
       </div>
 
       {/* Editor Area */}

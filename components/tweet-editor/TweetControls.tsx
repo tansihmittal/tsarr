@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect, useCallback, memo, ChangeEvent } from "react";
 import { TweetEditorState } from "./TweetEditorLayout";
+import ControlPanelHeading from "../common/ControlPanelHeading";
+import ControlPanelRow from "../common/ControlPanelRow";
+import ControlTabButton from "../common/ControlTabButton";
 import { BiMessageRounded, BiReset, BiChevronRight, BiLink } from "react-icons/bi";
 import { IoMdOptions } from "react-icons/io";
 import { BsBookmarkFill, BsBookmark, BsTrash } from "react-icons/bs";
@@ -281,42 +284,15 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
     updateState({ date: newDate });
   };
 
-  const PanelHeading = ({ title }: { title: string }) => (
-    <h2 className="text-[0.75rem] uppercase tracking-wider font-semibold px-4 py-3 bg-gradient-to-r from-base-200/80 to-base-200/40 text-gray-600 border-b border-base-200/50 flex items-center gap-2">
-      <span className="w-1 h-4 bg-primary rounded-full"></span>
-      {title}
-    </h2>
-  );
-
-  const Control = ({ title, children, onTap }: { title: string; children?: React.ReactNode; onTap?: () => void }) => (
-    <div className={`flex items-center justify-between py-3 px-4 border-b border-base-200/60 ${onTap ? "cursor-pointer hover:bg-base-200/30" : ""}`} onClick={onTap}>
-      <span className="text-primary-content font-medium text-sm">{title}</span>
-      {children}
-    </div>
-  );
-
-  const OptionButton = ({ title, children }: { children: React.ReactNode; title: string }) => {
-    const triggerValue = title.toLowerCase();
-    const isActive = selectedTab === triggerValue;
-    return (
-      <div
-        className={`flex justify-center items-center gap-2 font-medium px-4 py-2.5 transition-all duration-200 cursor-pointer ${
-          isActive ? "bg-base-100 rounded-lg shadow-sm text-primary" : "text-primary-content hover:text-primary"
-        }`}
-        onClick={() => setSelectedTab(triggerValue)}
-      >
-        <span className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}>{children}</span>
-        <span>{title}</span>
-      </div>
-    );
-  };
+  const PanelHeading = ControlPanelHeading;
+  const Control = ControlPanelRow;
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
       <div className="grid grid-cols-3 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <OptionButton title="Content"><BiMessageRounded /></OptionButton>
-        <OptionButton title="Style"><IoMdOptions /></OptionButton>
-        <OptionButton title="Presets"><BsBookmarkFill /></OptionButton>
+        <ControlTabButton title="Content" isActive={selectedTab === "content"} onClick={() => setSelectedTab("content")}><BiMessageRounded /></ControlTabButton>
+        <ControlTabButton title="Style" isActive={selectedTab === "style"} onClick={() => setSelectedTab("style")}><IoMdOptions /></ControlTabButton>
+        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BsBookmarkFill /></ControlTabButton>
       </div>
 
       <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">

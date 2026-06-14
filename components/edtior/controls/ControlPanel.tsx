@@ -1,4 +1,5 @@
 import { ChangeEvent, ReactNode, useState } from "react";
+import ControlTabButton from "../../common/ControlTabButton";
 import { BiChevronRight, BiReset, BiTrash, BiText, BiEraser } from "react-icons/bi";
 import {
   BsAspectRatio,
@@ -190,31 +191,6 @@ const ControlPanel: React.FC<Props> = () => {
     }
   };
 
-  // elements
-  const OptionButton = ({
-    title,
-    children,
-  }: {
-    children: ReactNode;
-    title: string;
-  }) => {
-    const triggerValue = title.toLocaleLowerCase();
-    const isActive = selectedOption == triggerValue;
-    return (
-      <div
-        className={`flex justify-center items-center gap-2 font-medium px-4 py-2.5 transition-all duration-200 cursor-pointer ${isActive
-            ? "bg-base-100 rounded-lg shadow-sm text-primary"
-            : "text-primary-content hover:text-primary"
-          }`}
-        onClick={() => setSelectedOption(triggerValue)}
-      >
-        <span className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}>
-          {children}
-        </span>
-        <span>{title}</span>
-      </div>
-    );
-  };
 
   const TileWrapper = ({ children }: { children: ReactNode }) => {
     return (
@@ -239,12 +215,8 @@ const ControlPanel: React.FC<Props> = () => {
     >
       {/* Top Buttons Container */}
       <div className="grid grid-cols-2 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <OptionButton title="Options">
-          <IoMdOptions />
-        </OptionButton>
-        <OptionButton title="Presets">
-          <BsBookmarkFill />
-        </OptionButton>
+        <ControlTabButton title="Options" isActive={selectedOption === "options"} onClick={() => setSelectedOption("options")}><IoMdOptions /></ControlTabButton>
+        <ControlTabButton title="Presets" isActive={selectedOption === "presets"} onClick={() => setSelectedOption("presets")}><BsBookmarkFill /></ControlTabButton>
       </div>
 
       {/* options panel wrapper */}
