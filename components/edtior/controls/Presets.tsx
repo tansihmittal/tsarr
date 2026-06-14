@@ -1,122 +1,102 @@
 import { useAuthContext } from "@/context/User";
-import { db } from "@/firebase.config";
-import {
-  DocumentData,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { getCloudPresets, deleteCloudPreset, CloudPreset } from "@/utils/supabaseStorage";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import BackgroundTile from "./BackgroundTile";
 import { useEditorContext } from "@/context/Editor";
-import { EditorProps, PresetProps } from "@/interface";
-import {
-  BsTrash,
-  BsTrash2Fill,
-  BsTrash3,
-  BsTrash3Fill,
-  BsTrashFill,
-} from "react-icons/bs";
+import { PresetProps } from "@/interface";
+import { BsTrash3Fill, BsPerson } from "react-icons/bs";
 
-interface Props {}
-
-const Presets: React.FC<Props> = () => {
-  const [presetsData, setPresetsData] = useState<DocumentData>([]);
+const Presets: React.FC = () => {
+  const [presetsData, setPresetsData] = useState<CloudPreset[]>([]);
   const [loading, setLoading] = useState(true);
-  const { currentUser } = useAuthContext();
+  const { currentUser, openAuthModal } = useAuthContext();
   const { updatePreset } = useEditorContext();
-  const isMounted = useRef<boolean>(true);
+  const isMounted = useRef(true);
 
-  const getUserPresets = useCallback(async () => {
+  const fetchPresets = useCallback(async () => {
+    if (!currentUser) {
+      if (isMounted.current) setLoading(false);
+      return;
+    }
     try {
-      if (currentUser) {
-        const presetRef = collection(db, "presets");
-        const q = query(presetRef, where("user", "==", currentUser.uid));
-
-        //   fetch data and save in state
-        await getDocs(q).then((snapshot) => setPresetsData(snapshot.docs));
-        setLoading(false);
-      }
-    } catch (error) {
-      toast.error("oops, cannot get your presets right now");
-      setLoading(false);
+      const data = await getCloudPresets();
+      if (isMounted.current) setPresetsData(data);
+    } catch {
+      toast.error("Couldn't load your presets");
+    } finally {
+      if (isMounted.current) setLoading(false);
     }
   }, [currentUser]);
 
-  const deletePreset = (id: string) => {
-    const docRef = doc(db, "presets", id);
-
-    deleteDoc(docRef)
-      .then(() => {
-        toast("Deleted Successfully");
-        setPresetsData(presetsData.filter((e: any) => e.id != id));
-      })
-      .catch(() => {
-        toast("oops! something went wrong");
-      });
-  };
-
   useEffect(() => {
-    if (isMounted.current) getUserPresets();
-
+    if (isMounted.current) fetchPresets();
     return () => {
       isMounted.current = false;
     };
-  }, [getUserPresets]);
+  }, [fetchPresets]);
 
-  const LoadingBlock = ({ title }: { title: string }) => {
-    return (
-      <div className="h-[90px] flex items-center justify-center w-full">
-        <span className="text-primary-content capitalize">{title}</span>
-      </div>
-    );
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteCloudPreset(id);
+      toast.success("Deleted");
+      setPresetsData((prev) => prev.filter((p) => p.id !== id));
+    } catch {
+      toast.error("Couldn't delete preset");
+    }
   };
 
-  const PresetBlock = ({
-    title,
-    children,
-  }: {
-    title: string;
-    children?: ReactNode;
-  }) => {
+  const LoadingBlock = ({ title }: { title: string }) => (
+    <div className="h-[90px] flex items-center justify-center w-full">
+      <span className="text-primary-content capitalize">{title}</span>
+    </div>
+  );
+
+  const PresetBlock = ({ title, children }: { title: string; children?: ReactNode }) => (
+    <div>
+      <div className="h-[90px] relative cursor-pointer">{children}</div>
+      <div className="flex items-center justify-center w-full">
+        <span className="bg-base-100 px-4 py-2 text-primary-content rounded-md capitalize text-center">
+          {title}
+        </span>
+      </div>
+    </div>
+  );
+
+  if (loading) return <LoadingBlock title="Loading" />;
+
+  if (!currentUser) {
     return (
-      <div>
-        <div className="h-[90px] relative cursor-pointer">{children}</div>
-        <div className="flex items-center justify-center w-full">
-          <span className="bg-base-100 px-4 py-2 text-primary-content rounded-md capitalize text-center">
-            {title}
-          </span>
-        </div>
+      <div className="flex flex-col items-center justify-center gap-3 py-6 px-4 text-center">
+        <BsPerson className="text-3xl text-primary-content/30" />
+        <p className="text-sm text-primary-content/50">Sign in to save and load cloud presets</p>
+        <button
+          onClick={openAuthModal}
+          className="btn btn-sm btn-primary rounded-lg"
+        >
+          Sign In
+        </button>
       </div>
     );
-  };
-
-  if (loading) {
-    return <LoadingBlock title="Loading" />;
   }
 
   return (
     <>
       {presetsData.length > 0 ? (
         <div className="grid sm:grid-cols-2 w-full p-2 gap-2">
-          {presetsData.map((e: DocumentData) => {
-            const data: PresetProps = e.data();
-
+          {presetsData.map((preset) => {
+            const data = preset.data as PresetProps;
             return (
-              <PresetBlock key={e.id} title={data.presetName}>
+              <PresetBlock key={preset.id} title={preset.preset_name}>
                 <>
                   <BackgroundTile
                     onTap={() => updatePreset && updatePreset(data)}
-                    background={data.currentBackground.background || "white"}
-                    size={"100%"}
+                    background={data.currentBackground?.background || "white"}
+                    size="100%"
                   />
                   <button
                     className="absolute bottom-2 right-2 bg-base-100 p-2 rounded-md hover:scale-110 transition-transform"
-                    onClick={() => deletePreset(e.id)}
+                    onClick={() => handleDelete(preset.id)}
                   >
                     <BsTrash3Fill className="text-error text-lg" />
                   </button>
@@ -126,7 +106,7 @@ const Presets: React.FC<Props> = () => {
           })}
         </div>
       ) : (
-        <LoadingBlock title="No Presets Found" />
+        <LoadingBlock title="No presets found" />
       )}
     </>
   );

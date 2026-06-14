@@ -5,6 +5,7 @@ import { BiReset } from "react-icons/bi";
 import { TextBehindImageState, TextLayer } from "./TextBehindImageLayout";
 import { shareImage } from "../../utils/share";
 import ProjectNameHeader from "../common/ProjectNameHeader";
+import { toast } from "react-hot-toast";
 
 interface Props {
   state: TextBehindImageState;
@@ -353,14 +354,15 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, canvasRef, renderCanvas]);
 
-  const handleDownload = () => {
+  const handleDownload = (overrideScale?: number, overrideFormat?: string) => {
     if (!canvasRef.current || !state.image) return;
 
     const exportCanvas = document.createElement("canvas");
     const ctx = exportCanvas.getContext("2d");
     if (!ctx) return;
 
-    const scale = state.exportScale;
+    const scale = overrideScale ?? state.exportScale;
+    const exportFormat = overrideFormat ?? state.exportFormat;
     const width = state.imageWidth * scale;
     const height = state.imageHeight * scale;
 
@@ -433,14 +435,14 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
 
           // Export
           const mimeType =
-            state.exportFormat === "jpeg"
+            exportFormat === "jpeg"
               ? "image/jpeg"
-              : state.exportFormat === "webp"
+              : exportFormat === "webp"
                 ? "image/webp"
                 : "image/png";
 
           const link = document.createElement("a");
-          link.download = `tsarr-in-text-behind-image-${scale}x.${state.exportFormat}`;
+          link.download = `tsarr-in-text-behind-image-${scale}x.${exportFormat}`;
           link.href = exportCanvas.toDataURL(mimeType, 0.95);
           link.click();
         };
@@ -458,14 +460,14 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
         ctx.drawImage(img, 0, 0, width, height);
 
         const mimeType =
-          state.exportFormat === "jpeg"
+          exportFormat === "jpeg"
             ? "image/jpeg"
-            : state.exportFormat === "webp"
+            : exportFormat === "webp"
               ? "image/webp"
               : "image/png";
 
         const link = document.createElement("a");
-        link.download = `tsarr-in-text-behind-image-${scale}x.${state.exportFormat}`;
+        link.download = `tsarr-in-text-behind-image-${scale}x.${exportFormat}`;
         link.href = exportCanvas.toDataURL(mimeType, 0.95);
         link.click();
       }
@@ -485,11 +487,11 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
         await navigator.clipboard.write([
           new ClipboardItem({ "image/png": blob }),
         ]);
-        alert("Image copied to clipboard!");
+        toast.success("Copied to clipboard!");
       }
     } catch (err) {
       console.error("Failed to copy:", err);
-      alert("Failed to copy to clipboard");
+      toast.error("Failed to copy to clipboard");
     }
   };
 
@@ -599,19 +601,19 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
             tabIndex={0}
             className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50"
           >
-            <li onClick={() => { updateState({ exportScale: 1 }); handleDownload(); }}>
+            <li onClick={() => handleDownload(1, "png")}>
               <a>Export as PNG 1x</a>
             </li>
-            <li onClick={() => { updateState({ exportScale: 2 }); handleDownload(); }}>
+            <li onClick={() => handleDownload(2, "png")}>
               <a>Export as PNG 2x</a>
             </li>
-            <li onClick={() => { updateState({ exportScale: 4 }); handleDownload(); }}>
+            <li onClick={() => handleDownload(4, "png")}>
               <a>Export as PNG 4x</a>
             </li>
-            <li onClick={() => { updateState({ exportFormat: "jpeg", exportScale: 2 }); handleDownload(); }}>
+            <li onClick={() => handleDownload(2, "jpeg")}>
               <a>Export as JPEG</a>
             </li>
-            <li onClick={() => { updateState({ exportFormat: "webp", exportScale: 2 }); handleDownload(); }}>
+            <li onClick={() => handleDownload(2, "webp")}>
               <a>Export as WebP</a>
             </li>
           </ul>

@@ -32,7 +32,7 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
         bgColor = state.backgroundColor;
       } else {
         // For gradients, we let html2canvas capture it naturally
-        bgColor = undefined as any;
+        bgColor = null;
       }
 
       const canvas = await html2canvas(polaroidRef.current, {
@@ -60,7 +60,7 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
       } else if (state.backgroundType === "solid") {
         bgColor = state.backgroundColor;
       } else {
-        bgColor = undefined as any;
+        bgColor = null;
       }
 
       const canvas = await html2canvas(polaroidRef.current, {

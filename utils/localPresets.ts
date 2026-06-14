@@ -68,7 +68,7 @@ export function saveLocalPreset(
     const newPreset: LocalPreset = {
       id: existingIndex >= 0 ? presets[existingIndex].id : generateId(),
       name: trimmedName,
-      createdAt: Date.now(),
+      createdAt: existingIndex >= 0 ? presets[existingIndex].createdAt : Date.now(),
       settings,
     };
 

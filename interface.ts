@@ -108,8 +108,13 @@ export interface UserDetails {
 
 export interface UserAuthProps {
   currentUser: UserDetails | null;
+  isLoading: boolean;
   loginWithGoogle: () => void;
+  loginWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string) => Promise<void>;
+  loginWithMagicLink: (email: string) => Promise<void>;
   logout: () => void;
+  openAuthModal: () => void;
 }
 
 /**

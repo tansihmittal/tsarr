@@ -9,6 +9,7 @@ import {
   generateId,
   updateProjectName,
 } from "../utils/projectStorage";
+import { syncToCloudIfLoggedIn } from "../utils/supabaseStorage";
 
 interface UseProjectOptions {
   type: Project["type"];
@@ -136,6 +137,9 @@ export const useProject = (options: UseProjectOptions): UseProjectReturn => {
         setHasUnsavedChanges(false);
         setIsNewProject(false);
 
+        // Sync to cloud in background (silently skips if not logged in)
+        syncToCloudIfLoggedIn(savedProject);
+
         // Update URL without reload
         if (!router.query.project) {
           router.replace(
@@ -161,11 +165,39 @@ export const useProject = (options: UseProjectOptions): UseProjectReturn => {
 
   const saveAs = useCallback(
     async (name: string, data: any, element?: HTMLElement | HTMLCanvasElement | null) => {
-      setProjectId(null); // Force new project
       setProjectNameState(name);
-      await save(data, element);
+      setIsSaving(true);
+      try {
+        const thumbnail = await generateThumbnail(element || null);
+        const savedProject = await saveProjectAsync({
+          id: undefined, // Force new project, bypassing stale projectId closure
+          name,
+          type,
+          thumbnail,
+          data,
+        });
+        setProjectId(savedProject.id);
+        setLastSaved(new Date());
+        setHasUnsavedChanges(false);
+        setIsNewProject(false);
+
+        // Sync to cloud in background
+        syncToCloudIfLoggedIn(savedProject);
+
+        router.replace(
+          { pathname: router.pathname, query: { project: savedProject.id } },
+          undefined,
+          { shallow: true }
+        );
+        if (!silentSave) toast.success("Saved", { duration: 1500 });
+      } catch (error) {
+        console.error("Save failed:", error);
+        toast.error("Failed to save");
+      } finally {
+        setIsSaving(false);
+      }
     },
-    [save]
+    [type, router, silentSave]
   );
 
   const loadProject = useCallback(async (): Promise<any | null> => {

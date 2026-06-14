@@ -21,7 +21,7 @@ import SaveLocalPresetModal from "@/components/common/SaveLocalPresetModal";
 import { useLocalPresets } from "@/hooks/useLocalPresets";
 import { PresetSettings } from "@/interface";
 import { useProject } from "@/hooks/useProject";
-import { getProject } from "@/utils/projectStorage";
+import { getProjectAsync } from "@/utils/projectStorage";
 import { imageToBase64 } from "@/utils/imageStorage";
 import ProjectNameHeader from "@/components/common/ProjectNameHeader";
 
@@ -78,31 +78,32 @@ const Editor: React.FC<Props> = () => {
   useEffect(() => {
     // Only load if there's a project ID in URL and we haven't loaded yet
     if (hasProjectInUrl && project.projectId && !projectLoaded) {
-      const savedProject = getProject(project.projectId);
-      if (savedProject?.data) {
-        const data = savedProject.data;
-        // Restore editor state from saved project
-        if (data.selectedImage) updateData && updateData("selectedImage", data.selectedImage);
-        if (data.imageDimensions) updateData && updateData("imageDimensions", data.imageDimensions);
-        if (data.currentBackground) updateData && updateData("currentBackground", data.currentBackground);
-        if (data.currentBackgroundType) updateData && updateData("currentBackgroundType", data.currentBackgroundType);
-        if (data.scale !== undefined) updateData && updateData("scale", data.scale);
-        if (data.borderRadius !== undefined) updateData && updateData("borderRadius", data.borderRadius);
-        if (data.canvasRoundness !== undefined) updateData && updateData("canvasRoundness", data.canvasRoundness);
-        if (data.padding !== undefined) updateData && updateData("padding", data.padding);
-        if (data.left !== undefined) updateData && updateData("left", data.left);
-        if (data.right !== undefined) updateData && updateData("right", data.right);
-        if (data.tilt) updateData && updateData("tilt", data.tilt);
-        if (data.rotate !== undefined) updateData && updateData("rotate", data.rotate);
-        if (data.aspectRatio) updateData && updateData("aspectRatio", data.aspectRatio);
-        if (data.currentBoxShadow) updateData && updateData("currentBoxShadow", data.currentBoxShadow);
-        if (data.noise !== undefined) updateData && updateData("noise", data.noise);
-        if (data.watermark) updateData && updateData("watermark", data.watermark);
-        if (data.selectedFrame) updateData && updateData("selectedFrame", data.selectedFrame);
-        if (data.frameTitle) updateData && updateData("frameTitle", data.frameTitle);
-        if (data.frameUrl) updateData && updateData("frameUrl", data.frameUrl);
-        setProjectLoaded(true);
-      }
+      getProjectAsync(project.projectId).then(savedProject => {
+        if (savedProject?.data) {
+          const data = savedProject.data;
+          // Restore editor state from saved project
+          if (data.selectedImage) updateData && updateData("selectedImage", data.selectedImage);
+          if (data.imageDimensions) updateData && updateData("imageDimensions", data.imageDimensions);
+          if (data.currentBackground) updateData && updateData("currentBackground", data.currentBackground);
+          if (data.currentBackgroundType) updateData && updateData("currentBackgroundType", data.currentBackgroundType);
+          if (data.scale !== undefined) updateData && updateData("scale", data.scale);
+          if (data.borderRadius !== undefined) updateData && updateData("borderRadius", data.borderRadius);
+          if (data.canvasRoundness !== undefined) updateData && updateData("canvasRoundness", data.canvasRoundness);
+          if (data.padding !== undefined) updateData && updateData("padding", data.padding);
+          if (data.left !== undefined) updateData && updateData("left", data.left);
+          if (data.right !== undefined) updateData && updateData("right", data.right);
+          if (data.tilt) updateData && updateData("tilt", data.tilt);
+          if (data.rotate !== undefined) updateData && updateData("rotate", data.rotate);
+          if (data.aspectRatio) updateData && updateData("aspectRatio", data.aspectRatio);
+          if (data.currentBoxShadow) updateData && updateData("currentBoxShadow", data.currentBoxShadow);
+          if (data.noise !== undefined) updateData && updateData("noise", data.noise);
+          if (data.watermark) updateData && updateData("watermark", data.watermark);
+          if (data.selectedFrame) updateData && updateData("selectedFrame", data.selectedFrame);
+          if (data.frameTitle) updateData && updateData("frameTitle", data.frameTitle);
+          if (data.frameUrl) updateData && updateData("frameUrl", data.frameUrl);
+          setProjectLoaded(true);
+        }
+      });
     } else if (!hasProjectInUrl) {
       // No project in URL, mark as loaded to prevent loading old data
       setProjectLoaded(true);
@@ -268,16 +269,17 @@ const Editor: React.FC<Props> = () => {
         if (items[i].type.indexOf("image") !== -1) {
           const blob = items[i].getAsFile();
           if (blob) {
+            if (selectedImage && selectedImage.startsWith("blob:")) URL.revokeObjectURL(selectedImage);
             const fileUrl = URL.createObjectURL(blob);
             updateData && updateData("selectedImage", fileUrl);
-            
+
             // Get image dimensions
             const img = new window.Image();
             img.onload = () => {
               updateData && updateData("imageDimensions", { width: img.width, height: img.height });
             };
             img.src = fileUrl;
-            
+
             toast.success("Image pasted from clipboard!");
           }
           break;
@@ -287,14 +289,15 @@ const Editor: React.FC<Props> = () => {
 
     window.addEventListener("paste", handlePaste);
     return () => window.removeEventListener("paste", handlePaste);
-  }, [updateData]);
+  }, [updateData, selectedImage]);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (selectedImage && selectedImage.startsWith("blob:")) URL.revokeObjectURL(selectedImage);
       const fileUrl = URL.createObjectURL(file);
       updateData && updateData("selectedImage", fileUrl);
-      
+
       // Get image dimensions
       const img = new window.Image();
       img.onload = () => {

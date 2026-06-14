@@ -99,14 +99,7 @@ const VideoConverterLayout: React.FC = () => {
         const ffmpeg = new FFmpeg();
         ffmpegRef.current = ffmpeg;
 
-        // Log all FFmpeg events for debugging
-        ffmpeg.on("log", ({ message }: { message: string }) => {
-          console.log("[FFmpeg]", message);
-        });
-
-        ffmpeg.on("progress", ({ progress, time }: { progress: number; time: number }) => {
-          console.log("[FFmpeg Progress]", progress, time);
-          // Progress can be NaN or negative sometimes, handle it
+        ffmpeg.on("progress", ({ progress }: { progress: number; time: number }) => {
           const pct = Math.max(0, Math.min(100, Math.round(progress * 100)));
           setProgress(pct);
         });
@@ -120,22 +113,16 @@ const VideoConverterLayout: React.FC = () => {
           : "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
 
         try {
-          console.log(`Loading FFmpeg from: ${baseURL} (multi-thread: ${supportsMultiThread})`);
-          
           const coreURL = await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript");
           const wasmURL = await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm");
-          
-          // Multi-threaded version also needs the worker file
+
           if (supportsMultiThread) {
             const workerURL = await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, "text/javascript");
             await ffmpeg.load({ coreURL, wasmURL, workerURL });
           } else {
             await ffmpeg.load({ coreURL, wasmURL });
           }
-          
-          console.log("FFmpeg loaded successfully");
         } catch (e) {
-          console.error("Failed to load FFmpeg:", e);
           throw new Error("Failed to load FFmpeg core files");
         }
 
@@ -152,6 +139,14 @@ const VideoConverterLayout: React.FC = () => {
     loadFFmpeg();
   }, []);
 
+
+  // Revoke video blob URL when it changes or on unmount (handles both new uploads and page exit)
+  useEffect(() => {
+    const url = video?.url;
+    return () => {
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [video?.url]);
 
   const handleFileUpload = useCallback((file: File) => {
     if (!file.type.startsWith("video/") && !file.type.startsWith("audio/")) {
@@ -177,6 +172,7 @@ const VideoConverterLayout: React.FC = () => {
     };
     videoEl.onerror = () => {
       setIsLoading(false);
+      URL.revokeObjectURL(url);
       toast.error("Failed to load video");
     };
     videoEl.src = url;
@@ -206,9 +202,7 @@ const VideoConverterLayout: React.FC = () => {
       const inputName = `input.${inputExt}`;
       const outputName = `output.${outputFormat}`;
 
-      console.log("Writing input file...");
       await ffmpeg.writeFile(inputName, await fetchFile(video.file));
-      console.log("Input file written");
 
       // Build simpler FFmpeg arguments
       // Use all available threads for faster encoding
@@ -261,13 +255,8 @@ const VideoConverterLayout: React.FC = () => {
 
       args.push("-y", outputName); // -y to overwrite
 
-      console.log("FFmpeg args:", args.join(" "));
-      
-      const result = await ffmpeg.exec(args);
-      console.log("FFmpeg exec result:", result);
-
+      await ffmpeg.exec(args);
       const data = await ffmpeg.readFile(outputName);
-      console.log("Output file size:", (data as Uint8Array).length);
       
       // eslint-disable-next-line
       const blob = new Blob([data as any], { 

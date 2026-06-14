@@ -38,7 +38,10 @@ const ClipboardSaverLayout: React.FC = () => {
           const url = URL.createObjectURL(blob);
           const img = new Image();
           img.onload = () => {
-            setImage({ src: url, width: img.width, height: img.height });
+            setImage(prev => {
+              if (prev?.src && prev.src.startsWith("blob:")) URL.revokeObjectURL(prev.src);
+              return { src: url, width: img.width, height: img.height };
+            });
             toast.success("Image pasted from clipboard!");
           };
           img.src = url;
@@ -64,7 +67,10 @@ const ClipboardSaverLayout: React.FC = () => {
             const url = URL.createObjectURL(blob);
             const img = new Image();
             img.onload = () => {
-              setImage({ src: url, width: img.width, height: img.height });
+              setImage(prev => {
+                if (prev?.src && prev.src.startsWith("blob:")) URL.revokeObjectURL(prev.src);
+                return { src: url, width: img.width, height: img.height };
+              });
               toast.success("Image pasted!");
             };
             img.src = url;

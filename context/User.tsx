@@ -1,91 +1,134 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged,
-} from "firebase/auth";
-import { auth, db } from "@/firebase.config";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/utils/supabase";
 import { UserAuthProps, UserDetails } from "@/interface";
 import { toast } from "react-hot-toast";
-import { doc, setDoc } from "firebase/firestore";
+import AuthModal from "@/components/common/AuthModal";
 
 const AuthContext = createContext<UserAuthProps>({
-  loginWithGoogle: () => {},
-  logout: () => {},
   currentUser: null,
+  isLoading: true,
+  loginWithGoogle: () => {},
+  loginWithEmail: async () => {},
+  signUpWithEmail: async () => {},
+  loginWithMagicLink: async () => {},
+  logout: () => {},
+  openAuthModal: () => {},
 });
 
-const AuthContextProvider = ({ children }: any) => {
+const mapSupabaseUser = (user: User): UserDetails => ({
+  uid: user.id,
+  email: user.email,
+  displayName:
+    user.user_metadata?.full_name ||
+    user.user_metadata?.name ||
+    user.email?.split("@")[0] ||
+    null,
+  photoUrl: user.user_metadata?.avatar_url || null,
+});
+
+const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<UserDetails | null>(null);
-  const provider = new GoogleAuthProvider();
+  const [isLoading, setIsLoading] = useState(true);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
-  const loginWithGoogle = () => {
+  useEffect(() => {
+    // Hydrate from existing session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ? mapSupabaseUser(session.user) : null);
+      setIsLoading(false);
+    });
+
+    // Listen for auth events
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      const mappedUser = session?.user ? mapSupabaseUser(session.user) : null;
+      setUser(mappedUser);
+      setIsLoading(false);
+
+      // Welcome toast only on an actual new sign-in, not session restoration at page load
+      if (event === "SIGNED_IN" && mappedUser) {
+        const firstName = mappedUser.displayName?.split(" ")[0] || mappedUser.email?.split("@")[0];
+        toast.success(`Welcome${firstName ? `, ${firstName}` : ""}!`);
+        setAuthModalOpen(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const loginWithGoogle = async () => {
     try {
-      signInWithPopup(auth, provider)
-        .then(({ user }) => {
-          const docRef = doc(db, "users", user.uid);
-
-          // save the user in db
-          setDoc(docRef, {
-            displayName: user.displayName,
-            email: user.email,
-            photoUrl: user.photoURL,
-          })
-            .then(() => {
-              toast("Logged in successfully");
-            })
-            .catch(() => {
-              toast.error("Couldn't save user in database!");
-            });
-
-          // after saving the user
-        })
-        .catch(() => {
-          toast.error("Cannot authorise user!");
-        });
-    } catch (error) {
-      toast.error("Something went wrong!");
+      // Redirect back to the exact page the user was on (strip fragment to avoid double-hash)
+      const returnTo =
+        typeof window !== "undefined"
+          ? window.location.origin + window.location.pathname + window.location.search
+          : undefined;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: returnTo },
+      });
+      if (error) throw error;
+    } catch {
+      toast.error("Google sign-in failed");
     }
   };
 
-  const logout = () => {
-    auth.signOut().then(() => {
-      setUser(null);
-      toast("Logged out successfully");
-    });
+  const loginWithEmail = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    toast.success("Signed in!");
+    setAuthModalOpen(false);
   };
 
-  const getCurrentUser = () => {
-    onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser({
-          email: currentUser.email,
-          displayName: currentUser.displayName,
-          photoUrl: currentUser.photoURL,
-          uid: currentUser.uid,
-        });
-      } else {
-        setUser(null);
-      }
-    });
+  const signUpWithEmail = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
+    toast.success("Account created! Check your email to verify.");
+    setAuthModalOpen(false);
   };
 
-  useEffect(() => {
-    const subscribe = getCurrentUser();
-    return () => subscribe;
-  }, []);
+  const loginWithMagicLink = async (email: string) => {
+    const { error } = await supabase.auth.signInWithOtp({ email });
+    if (error) throw error;
+    toast.success("Magic link sent! Check your inbox.");
+    setAuthModalOpen(false);
+  };
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    toast.success("Logged out");
+  };
+
+  const openAuthModal = () => setAuthModalOpen(true);
 
   return (
     <AuthContext.Provider
-      value={{ currentUser: user, loginWithGoogle, logout }}
+      value={{
+        currentUser: user,
+        isLoading,
+        loginWithGoogle,
+        loginWithEmail,
+        signUpWithEmail,
+        loginWithMagicLink,
+        logout,
+        openAuthModal,
+      }}
     >
       {children}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        loginWithGoogle={loginWithGoogle}
+        loginWithEmail={loginWithEmail}
+        signUpWithEmail={signUpWithEmail}
+      />
     </AuthContext.Provider>
   );
 };
 
-const useAuthContext = () => {
-  return useContext(AuthContext);
-};
+const useAuthContext = () => useContext(AuthContext);
 
 export { AuthContextProvider, useAuthContext };

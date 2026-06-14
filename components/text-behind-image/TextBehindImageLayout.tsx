@@ -5,7 +5,7 @@ import TextBehindImageControls from "./TextBehindImageControls";
 import { backgroundRemover } from "../../utils/backgroundRemoval";
 import { FONT_FAMILIES } from "../../data/fonts";
 import { useProject } from "@/hooks/useProject";
-import { getProject } from "@/utils/projectStorage";
+import { getProjectAsync } from "@/utils/projectStorage";
 import { imageToBase64 } from "@/utils/imageStorage";
 
 export { FONT_FAMILIES };
@@ -114,13 +114,30 @@ const TextBehindImageLayout = () => {
   // Load project data when project ID is in URL
   useEffect(() => {
     if (project.projectId && !projectLoaded) {
-      const savedProject = getProject(project.projectId);
-      if (savedProject?.data) {
-        setState(savedProject.data);
-        setProjectLoaded(true);
-      }
+      getProjectAsync(project.projectId).then((savedProject) => {
+        if (savedProject?.data) {
+          setState(savedProject.data);
+          setProjectLoaded(true);
+        }
+      });
     }
   }, [project.projectId, projectLoaded]);
+
+  // Revoke image blob URL when it changes or on unmount
+  useEffect(() => {
+    const url = state.image;
+    return () => {
+      if (url && url.startsWith("blob:")) URL.revokeObjectURL(url);
+    };
+  }, [state.image]);
+
+  // Revoke foreground blob URL when it changes or on unmount
+  useEffect(() => {
+    const url = state.foregroundImage;
+    return () => {
+      if (url && url.startsWith("blob:")) URL.revokeObjectURL(url);
+    };
+  }, [state.foregroundImage]);
 
   // Auto-save with debounce (2 seconds after last change)
   useEffect(() => {

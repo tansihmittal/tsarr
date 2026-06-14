@@ -4,7 +4,7 @@ import { PolaroidState } from "./types";
 import PolaroidPreview from "./PolaroidPreview";
 import PolaroidControls from "./PolaroidControls";
 import { useProject } from "@/hooks/useProject";
-import { getProject } from "@/utils/projectStorage";
+import { getProjectAsync } from "@/utils/projectStorage";
 import { imageToBase64 } from "@/utils/imageStorage";
 
 const PolaroidLayout = () => {
@@ -64,11 +64,12 @@ const PolaroidLayout = () => {
   // Load project data when project ID is in URL
   useEffect(() => {
     if (project.projectId && !projectLoaded) {
-      const savedProject = getProject(project.projectId);
-      if (savedProject?.data) {
-        setState(savedProject.data);
-        setProjectLoaded(true);
-      }
+      getProjectAsync(project.projectId).then(savedProject => {
+        if (savedProject?.data) {
+          setState(savedProject.data);
+          setProjectLoaded(true);
+        }
+      });
     }
   }, [project.projectId, projectLoaded]);
 
@@ -102,12 +103,10 @@ const PolaroidLayout = () => {
   }, []);
 
   const handleImageUpload = useCallback((imageUrl: string, width: number, height: number) => {
-    setState((prev) => ({
-      ...prev,
-      image: imageUrl,
-      imageWidth: width,
-      imageHeight: height,
-    }));
+    setState((prev) => {
+      if (prev.image && prev.image.startsWith("blob:")) URL.revokeObjectURL(prev.image);
+      return { ...prev, image: imageUrl, imageWidth: width, imageHeight: height };
+    });
   }, []);
 
   const handleReset = useCallback(() => {

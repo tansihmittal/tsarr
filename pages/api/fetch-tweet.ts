@@ -80,9 +80,6 @@ export default async function handler(
 
     const data = await response.json();
 
-    // Log the response to debug (remove in production)
-    console.log("Tweet API response:", JSON.stringify(data, null, 2));
-
     // Extract tweet data from syndication response
     // The syndication API uses different field names
     const tweetData: TweetData = {

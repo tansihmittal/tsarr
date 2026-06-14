@@ -25,7 +25,7 @@ const DropZone: React.FC<Props> = () => {
       const errors = rejectedFiles[0]?.errors;
 
       if (errors && errors?.length > 0) {
-        errors.map((e) => console.log(e));
+        errors.forEach((e) => console.error(e));
         errors.map((e) =>
           e.code == "file-invalid-type"
             ? toast("oops! Try uploading images.")

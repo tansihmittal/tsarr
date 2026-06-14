@@ -1,4 +1,5 @@
 import { ReactNode, useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 import {
   BsPlus,
   BsTrash,
@@ -797,7 +798,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       URL.revokeObjectURL(url);
       setIsExportingVideo(false);
       setExportProgress(100);
-      alert("GIF export creates a WebM file. Use an online converter to convert to GIF if needed.");
+      toast("GIF export creates a WebM file — use an online converter to convert to GIF.", { duration: 5000 });
     };
 
     // Get caption at specific time
@@ -933,7 +934,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         stream.addTrack(audioTrack);
       }
     } catch (e) {
-      console.log("Could not capture audio:", e);
+      console.error("Could not capture audio:", e);
     }
 
     // Determine mime type based on format

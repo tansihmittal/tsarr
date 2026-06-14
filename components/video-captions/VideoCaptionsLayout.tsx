@@ -131,6 +131,14 @@ const VideoCaptionsLayout = () => {
     }));
   }, []);
 
+  // Revoke video blob URL when it changes or on unmount
+  useEffect(() => {
+    const url = state.videoUrl;
+    return () => {
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [state.videoUrl]);
+
   const handleVideoUpload = useCallback((file: File) => {
     const url = URL.createObjectURL(file);
     updateState({

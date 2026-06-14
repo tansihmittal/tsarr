@@ -5,7 +5,8 @@ import { useRouter } from "next/router";
 import {
   BsPlus, BsThreeDotsVertical, BsTrash, BsFiles, BsPencil,
   BsImage, BsCode, BsTwitter, BsCardImage, BsType,
-  BsGrid3X3Gap, BsList, BsSearch, BsFolder2Open, BsArrowLeft, BsX
+  BsGrid3X3Gap, BsList, BsSearch, BsFolder2Open, BsArrowLeft, BsX,
+  BsCloudDownload, BsPerson
 } from "react-icons/bs";
 import { RiSlideshow3Line } from "react-icons/ri";
 import { toast } from "react-hot-toast";
@@ -18,7 +19,14 @@ import {
   getStorageUsage,
   cacheProjects,
   getProjects,
+  saveProjectAsync,
 } from "../utils/projectStorage";
+import {
+  getCloudProjects,
+  deleteProjectFromCloud,
+  pushLocalToCloud,
+} from "../utils/supabaseStorage";
+import { useAuthContext } from "@/context/User";
 
 const typeIcons: Record<string, any> = {
   screenshot: BsImage,
@@ -58,6 +66,7 @@ const typeColors: Record<string, string> = {
 
 export default function ProjectsPage() {
   const router = useRouter();
+  const { currentUser, openAuthModal } = useAuthContext();
   const [projects, setProjects] = useState<Project[]>([]);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
@@ -68,6 +77,7 @@ export default function ProjectsPage() {
   const [renameName, setRenameName] = useState("");
   const [storage, setStorage] = useState({ used: 0, total: 0, percentage: 0 });
   const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     loadProjects();
@@ -80,6 +90,44 @@ export default function ProjectsPage() {
     const storageInfo = await getStorageUsage();
     setStorage(storageInfo);
     setIsLoading(false);
+  };
+
+  const handleSyncFromCloud = async () => {
+    if (!currentUser) { openAuthModal(); return; }
+    setIsSyncing(true);
+    try {
+      const cloudProjects = await getCloudProjects();
+      const localProjects = getProjects();
+      const localIds = new Map(localProjects.map((p) => [p.id, p]));
+      let merged = 0;
+      for (const cp of cloudProjects) {
+        const local = localIds.get(cp.id);
+        if (!local || cp.updatedAt > local.updatedAt) {
+          await saveProjectAsync(cp);
+          merged++;
+        }
+      }
+      await loadProjects();
+      toast.success(merged > 0 ? `Synced ${merged} project${merged > 1 ? "s" : ""} from cloud` : "Already up to date");
+    } catch {
+      toast.error("Sync failed");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handlePushToCloud = async () => {
+    if (!currentUser) { openAuthModal(); return; }
+    setIsSyncing(true);
+    try {
+      const localProjects = getProjects();
+      await pushLocalToCloud(localProjects);
+      toast.success(`Backed up ${localProjects.length} project${localProjects.length !== 1 ? "s" : ""} to cloud`);
+    } catch {
+      toast.error("Backup failed");
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   const filteredProjects = projects
@@ -96,6 +144,9 @@ export default function ProjectsPage() {
   const handleDelete = async (id: string) => {
     if (confirm("Delete this project?")) {
       await deleteProject(id);
+      if (currentUser) {
+        deleteProjectFromCloud(id).catch(() => {}); // best-effort
+      }
       await loadProjects();
       toast.success("Deleted");
     }
@@ -174,13 +225,34 @@ export default function ProjectsPage() {
                 <p className="text-xs text-gray-500">{projects.length} designs</p>
               </div>
             </div>
-            <Link
-              href="/tools"
-              className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors"
-            >
-              <BsPlus className="text-lg" />
-              <span className="hidden sm:inline">Create</span>
-            </Link>
+            <div className="flex items-center gap-2">
+              {currentUser ? (
+                <button
+                  onClick={handleSyncFromCloud}
+                  disabled={isSyncing}
+                  className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  title="Pull latest projects from cloud"
+                >
+                  <BsCloudDownload className={isSyncing ? "animate-bounce" : ""} />
+                  <span className="hidden sm:inline">{isSyncing ? "Syncing…" : "Sync"}</span>
+                </button>
+              ) : (
+                <button
+                  onClick={openAuthModal}
+                  className="flex items-center gap-1.5 px-3 py-2 bg-violet-600 text-white rounded-xl text-sm font-medium hover:bg-violet-700 transition-colors"
+                >
+                  <BsPerson />
+                  <span className="hidden sm:inline">Sign in to sync</span>
+                </button>
+              )}
+              <Link
+                href="/tools"
+                className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors"
+              >
+                <BsPlus className="text-lg" />
+                <span className="hidden sm:inline">Create</span>
+              </Link>
+            </div>
           </div>
         </header>
 

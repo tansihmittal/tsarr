@@ -6,7 +6,7 @@ import CarouselControls from "./CarouselControls";
 import { downloadimagePng, downloadimageJpeg, downloadimageSvg, copyToClipboard } from "../edtior/Editor/downloads";
 import { BackgroundConfig } from "../common/BackgroundPicker";
 import { useProject } from "@/hooks/useProject";
-import { getProject } from "@/utils/projectStorage";
+import { getProjectAsync } from "@/utils/projectStorage";
 import { imageToBase64 } from "@/utils/imageStorage";
 
 export interface SlideContent {
@@ -122,11 +122,12 @@ const CarouselEditorLayout: React.FC = () => {
   // Load project data when project ID is in URL
   useEffect(() => {
     if (project.projectId && !projectLoaded) {
-      const savedProject = getProject(project.projectId);
-      if (savedProject?.data) {
-        setState(savedProject.data);
-        setProjectLoaded(true);
-      }
+      getProjectAsync(project.projectId).then(savedProject => {
+        if (savedProject?.data) {
+          setState(savedProject.data);
+          setProjectLoaded(true);
+        }
+      });
     }
   }, [project.projectId, projectLoaded]);
 
