@@ -2,11 +2,11 @@ import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { 
-  BsArrowRight, BsGithub, BsTwitter, BsLinkedin, BsSearch, BsFolder2, BsImage, 
+import {
+  BsArrowRight, BsGithub, BsTwitter, BsLinkedin, BsSearch, BsFolder2, BsImage,
   BsCode, BsType, BsCameraVideo, BsCardImage, BsAspectRatio, BsArrowsFullscreen,
   BsArrowRepeat, BsClipboard, BsBarChartFill, BsGlobe, BsEraserFill, BsSoundwave,
-  BsPencilSquare, BsChatSquare, BsX, BsFire
+  BsPencilSquare, BsChatSquare, BsX, BsFire, BsScissors, BsQrCode, BsPalette
 } from "react-icons/bs";
 import { MdSubtitles } from "react-icons/md";
 import { RiSlideshow3Line } from "react-icons/ri";
@@ -45,6 +45,9 @@ const toolIcons: Record<string, any> = {
   "text-to-speech": BsSoundwave,
   "image-text-editor": BsPencilSquare,
   "bubble-blaster": BsChatSquare,
+  "background-remover": BsScissors,
+  "qr-code-generator": BsQrCode,
+  "color-palette-extractor": BsPalette,
 };
 
 // Unique color for each tool by slug
@@ -68,6 +71,9 @@ const toolColors: Record<string, string> = {
   "text-to-speech": "bg-fuchsia-500",
   "image-text-editor": "bg-slate-500",
   "bubble-blaster": "bg-stone-500",
+  "background-remover": "bg-blue-600",
+  "qr-code-generator": "bg-gray-800",
+  "color-palette-extractor": "bg-gradient-to-r from-red-400 via-yellow-400 to-purple-500",
 };
 
 const toolsListSchema = {

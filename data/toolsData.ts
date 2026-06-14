@@ -544,5 +544,89 @@ export const toolsData: ToolData[] = [
       "Educational manga content"
     ],
     keywords: ["bubble blaster", "manga text remover", "speech bubble cleaner", "comic text remover", "scanlation tool", "manga editor"]
+  },
+  {
+    slug: "background-remover",
+    title: "Background Remover",
+    shortDesc: "AI background removal",
+    description: "Remove image backgrounds instantly with AI. Download as transparent PNG or add a custom background color.",
+    longDescription: "Instantly remove backgrounds from any image using the isnet AI model running entirely in your browser. No data is uploaded to any server — your images stay private. Upload a photo, click Remove Background, and get a clean transparent PNG in seconds. Optionally replace the background with white, black, or any custom color. Perfect for product photos, profile pictures, and creative compositions.",
+    metaDescription: "Remove image backgrounds instantly with AI. Free online background remover, transparent PNG export, no login required.",
+    href: "/background-remover",
+    category: "AI Tools",
+    features: [
+      "AI-powered background removal (isnet model)",
+      "Runs entirely in your browser — private",
+      "Download as transparent PNG",
+      "Replace background with custom colors",
+      "Side-by-side before/after preview",
+      "Supports any image format",
+      "No watermarks or account required"
+    ],
+    useCases: [
+      "Product photography for e-commerce",
+      "Profile picture cleanup",
+      "Social media graphics",
+      "Compositing and creative design",
+      "Removing distracting backgrounds",
+      "Creating stickers and cutouts"
+    ],
+    keywords: ["background remover", "remove background", "transparent PNG", "AI background remover", "photo background eraser", "background removal tool"]
+  },
+  {
+    slug: "qr-code-generator",
+    title: "QR Code Generator",
+    shortDesc: "URLs, text, WiFi & more",
+    description: "Generate QR codes for URLs, text, email, phone numbers, and WiFi credentials. Customize colors and download as PNG.",
+    longDescription: "Create QR codes for any purpose — websites, contact info, WiFi networks, email addresses, or plain text. Customize the foreground and background colors to match your brand, adjust the size and quiet zone margin, and choose the error correction level. Download your QR code as a high-resolution PNG or copy it directly to the clipboard. All generation happens locally in your browser.",
+    metaDescription: "Free online QR code generator. Create QR codes for URLs, WiFi, email, text. Custom colors, high resolution PNG export. No login required.",
+    href: "/qr-code",
+    category: "Utilities",
+    features: [
+      "Presets for URL, text, email, phone, WiFi",
+      "Custom foreground and background colors",
+      "Adjustable size (128–1024px)",
+      "Configurable quiet zone margin",
+      "Error correction levels L / M / Q / H",
+      "Download as PNG or copy to clipboard",
+      "Instant preview as you type"
+    ],
+    useCases: [
+      "Sharing website URLs",
+      "Business cards and flyers",
+      "Restaurant menus",
+      "WiFi network sharing",
+      "Event check-in codes",
+      "Product packaging"
+    ],
+    keywords: ["qr code generator", "qr code maker", "free qr code", "wifi qr code", "url qr code", "custom qr code"]
+  },
+  {
+    slug: "color-palette-extractor",
+    title: "Color Palette Extractor",
+    shortDesc: "Extract colors from images",
+    description: "Extract dominant color palettes from any image. Copy hex codes, view RGB values, and export your palette as a PNG.",
+    longDescription: "Discover the hidden color story in any image. Upload a photo and the Color Palette Extractor uses k-means clustering to find the most dominant colors. Control how many colors to extract (2–12), copy any hex code with a single click, and export the full palette as a PNG swatch sheet. Great for designers, artists, and developers who want to derive brand palettes or match colors from real-world photos.",
+    metaDescription: "Extract dominant colors from any image as a color palette. Copy hex codes, view RGB values, export palette PNG. Free online tool.",
+    href: "/color-palette",
+    category: "Utilities",
+    features: [
+      "K-means color clustering algorithm",
+      "2–12 dominant colors",
+      "One-click hex code copy",
+      "RGB values displayed",
+      "Visual color strip preview",
+      "Export palette as PNG swatch",
+      "Fully browser-based, no uploads"
+    ],
+    useCases: [
+      "Extracting brand colors from logos",
+      "Finding palette inspiration from photos",
+      "Matching colors for UI design",
+      "Creating cohesive social media themes",
+      "Color-matching for print design",
+      "Art and illustration reference"
+    ],
+    keywords: ["color palette extractor", "image color picker", "dominant colors", "palette from image", "color extractor", "color palette generator"]
   }
 ];
