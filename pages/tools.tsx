@@ -6,7 +6,7 @@ import {
   BsArrowRight, BsGithub, BsTwitter, BsLinkedin, BsSearch, BsFolder2, BsImage,
   BsCode, BsType, BsCameraVideo, BsCardImage, BsAspectRatio, BsArrowsFullscreen,
   BsArrowRepeat, BsClipboard, BsBarChartFill, BsGlobe, BsEraserFill, BsSoundwave,
-  BsPencilSquare, BsChatSquare, BsX, BsFire, BsScissors, BsQrCode, BsPalette
+  BsPencilSquare, BsChatSquare, BsX, BsFire, BsScissors, BsQrCode, BsPalette, BsPinMap
 } from "react-icons/bs";
 import { MdSubtitles } from "react-icons/md";
 import { RiSlideshow3Line } from "react-icons/ri";
@@ -52,6 +52,7 @@ const toolIcons: Record<string, any> = {
   "background-remover": BsScissors,
   "qr-code-generator": BsQrCode,
   "color-palette-extractor": BsPalette,
+  "image-map-pro": BsPinMap,
 };
 
 const toolsListSchema = {

@@ -628,5 +628,33 @@ export const toolsData: ToolData[] = [
       "Art and illustration reference"
     ],
     keywords: ["color palette extractor", "image color picker", "dominant colors", "palette from image", "color extractor", "color palette generator"]
+  },
+  {
+    slug: "image-map-pro",
+    title: "Image Map Pro",
+    shortDesc: "Interactive image maps with AI hotspot detection",
+    description: "Create interactive image maps with clickable hotspot areas. Use AI to automatically detect regions, or draw them manually. Add tooltips, links, and custom styles.",
+    longDescription: "Image Map Pro is a full-featured interactive image map editor. Upload any image and add clickable hotspot areas — rectangles, circles, or custom polygons. Each hotspot can have a tooltip, link, description, and custom hover styles. Use the AI Detect Regions feature to automatically identify interesting areas in your image using GPT-4o-mini vision, then fine-tune them to your needs. Export hotspot data as JSON or embed the interactive map anywhere.",
+    metaDescription: "Create interactive image maps with clickable hotspots. AI auto-detects regions. Add tooltips, links, and custom styles. Free online tool.",
+    href: "/image-map-pro",
+    category: "Image Editing",
+    features: [
+      "Full image map editor with rect, circle, polygon hotspots",
+      "AI-powered region detection with GPT-4o-mini vision",
+      "Tooltips, links, and custom descriptions per hotspot",
+      "Hover styles and animations",
+      "Save and manage multiple projects",
+      "Export hotspot JSON for embedding",
+      "Drag-and-drop image upload"
+    ],
+    useCases: [
+      "Interactive product demos",
+      "Annotated infographics",
+      "Clickable floor plans and maps",
+      "Educational diagrams",
+      "Interactive e-commerce product images",
+      "Real estate virtual tours"
+    ],
+    keywords: ["image map", "image map creator", "clickable image", "hotspot creator", "interactive image", "image annotation tool"]
   }
 ];

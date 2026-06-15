@@ -11,6 +11,20 @@ const nextConfig = {
       asyncWebAssembly: true,
     };
 
+    // Force all @radix-ui packages to resolve from the canonical top-level location,
+    // preventing broken nested node_modules from being picked up.
+    const path = require("path");
+    const radixPackages = [
+      "react-compose-refs", "react-context", "react-use-callback-ref",
+      "react-use-layout-effect", "react-use-effect-event", "primitive",
+      "react-primitive", "react-slot", "react-id", "rect",
+    ];
+    radixPackages.forEach((pkg) => {
+      config.resolve.alias[`@radix-ui/${pkg}`] = path.resolve(
+        __dirname, `node_modules/@radix-ui/${pkg}`
+      );
+    });
+
     // Browser-only fallbacks
     if (!isServer) {
       config.resolve.fallback = {
