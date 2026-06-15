@@ -8,8 +8,8 @@ interface Props {
 
 const CustomSelect: React.FC<Props> = ({ children, title, icon }) => {
   return (
-    <div className="bg-base-100 rounded-md border-[2px] border-base-200 absolute z-20 right-0 top-full">
-      <div className="bg-base-200 py-2 px-4 text-[0.7rem] font-medium flex items-start gap-2">
+    <div className="bg-white rounded-md border-[2px] border-[#E5E7EB] absolute z-20 right-0 top-full">
+      <div className="bg-[#F9FAFB] py-2 px-4 text-[0.7rem] font-medium flex items-start gap-2">
         {icon}
         <span>{title}</span>
       </div>

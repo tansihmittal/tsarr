@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 // local
 import { EditorContextProvider } from "@/context/Editor";
 import { AuthContextProvider } from "@/context/User";
-import SavePresetModal from "@/components/common/SavePresetModal";
 import MobileNav from "@/components/common/MobileNav";
 import { InstallPrompt, OfflineIndicator } from "@/components/common/PWAPrompts";
 import SplashScreen from "@/components/common/SplashScreen";
@@ -85,7 +84,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 icon: "👏",
               }}
             />
-            <SavePresetModal />
+
           </>
         )}
       </AuthContextProvider>

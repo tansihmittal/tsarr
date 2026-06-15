@@ -1,25 +1,32 @@
 import { ReactNode } from "react";
+import { Badge } from "../ui/badge";
+import { Separator } from "../ui/separator";
 
 interface Props {
   title: string;
   value?: string;
   children?: ReactNode;
   onTap?: () => void;
+  noBorder?: boolean;
 }
 
-const ControlPanelRow: React.FC<Props> = ({ title, value, children, onTap }) => (
-  <div
-    className={`flex items-center justify-between py-3 px-4 border-b border-base-200/60 ${onTap ? "cursor-pointer hover:bg-base-200/30" : ""}`}
-    onClick={onTap}
-  >
-    <div className="flex items-center gap-2">
-      <span className="text-primary-content font-medium text-sm">{title}</span>
-      {value && (
-        <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium text-gray-600">{value}</span>
-      )}
+const ControlPanelRow: React.FC<Props> = ({ title, value, children, onTap, noBorder }) => (
+  <>
+    <div
+      className={`flex items-center justify-between py-3 px-4 ${onTap ? "cursor-pointer hover:bg-[#F9FAFB]" : ""} transition-colors`}
+      onClick={onTap}
+      style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
+    >
+      <div className="flex items-center gap-2">
+        <span className="text-[#0A0A0A] font-medium text-sm">{title}</span>
+        {value && (
+          <Badge size="sm">{value}</Badge>
+        )}
+      </div>
+      {children}
     </div>
-    {children}
-  </div>
+    {!noBorder && <Separator />}
+  </>
 );
 
 export default ControlPanelRow;

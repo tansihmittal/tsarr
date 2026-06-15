@@ -14,6 +14,8 @@ import {
 import { IoMdOptions } from "react-icons/io";
 import { BiRefresh } from "react-icons/bi";
 import { ImageTextEditorState, TextRegion } from "./ImageTextEditorLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface Props {
   state: ImageTextEditorState;
@@ -67,15 +69,15 @@ const ImageTextEditorControls = ({
       }`}
     >
       {/* Top Buttons Container */}
-      <div className="grid grid-cols-2 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
+      <div className="grid grid-cols-2 bg-[#F9FAFB] rounded-[14px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
         <ControlTabButton title="Options" isActive={selectedOption === "options"} onClick={() => setSelectedOption("options")}><IoMdOptions /></ControlTabButton>
         <ControlTabButton title="Text" isActive={selectedOption === "text"} onClick={() => setSelectedOption("text")}><BsLayers /></ControlTabButton>
       </div>
 
       {/* Options Panel */}
       {selectedOption === "options" ? (
-        <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
-          <div className="relative rounded-xl">
+        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+          <div className="relative rounded-[14px]">
             {/* Upload Section */}
             <PanelHeading title="Image" />
             <label htmlFor="image-upload">
@@ -137,13 +139,13 @@ const ImageTextEditorControls = ({
         </div>
       ) : (
         /* Text Regions Panel */
-        <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Detected Text" />
 
           {/* Instructions */}
-          <div className="p-3 bg-primary/5 border-b border-base-200/50">
+          <div className="p-3 bg-[#EFF6FF] border-b border-[#E5E7EB]/50">
             <p className="text-xs text-gray-600">
-              <strong>Tip:</strong> Click directly on text in the image to edit it, 
+              <strong>Tip:</strong> Click directly on text in the image to edit it,
               or click the edit button below.
             </p>
           </div>
@@ -198,8 +200,8 @@ const TextRegionItem = ({
 }: TextRegionItemProps) => {
   return (
     <div
-      className={`border rounded-xl overflow-hidden bg-base-100 transition-all ${
-        isSelected ? "border-primary ring-2 ring-primary/20" : "border-base-200/80"
+      className={`border rounded-[14px] overflow-hidden bg-white transition-all ${
+        isSelected ? "border-[#2563EB] ring-2 ring-[#2563EB]/20" : "border-[#E5E7EB]"
       } ${region.isModified ? "bg-green-50/50" : ""}`}
       onClick={onSelect}
     >
@@ -248,19 +250,20 @@ const TextRegionItem = ({
             value={region.newText}
             onChange={(e) => onUpdate({ newText: e.target.value })}
             onClick={(e) => e.stopPropagation()}
-            className="flex-1 px-3 py-2 bg-base-200/50 border-0 rounded-lg focus:ring-2 focus:ring-primary text-sm"
+            className="flex-1 px-3 py-2 bg-[#EFF6FF] border-0 rounded-[10px] focus:ring-2 focus:ring-[#2563EB] text-sm outline-none"
             placeholder="Type new text..."
           />
-          <button
+          <Button
+            size="icon"
             onClick={(e) => {
               e.stopPropagation();
               onEdit();
             }}
-            className="p-2 bg-primary text-white rounded-lg hover:bg-primary-focus transition-colors"
+            className="bg-[#2563EB] text-white hover:bg-[#1D4ED8] rounded-[10px] h-9 w-9"
             title="Edit on image"
           >
             <BsPencil className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
 
         {/* Reset button if modified */}

@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { cn } from "../../lib/utils";
 
 interface Props {
   title: string;
@@ -8,17 +9,23 @@ interface Props {
 }
 
 const ControlTabButton: React.FC<Props> = ({ title, isActive, onClick, children }) => (
-  <div
-    className={`flex justify-center items-center gap-2 font-medium px-3 py-2.5 transition-all duration-200 cursor-pointer ${
-      isActive ? "bg-base-100 rounded-lg shadow-sm text-primary" : "text-primary-content hover:text-primary"
-    }`}
+  <button
     onClick={onClick}
+    className={cn(
+      "flex justify-center items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer",
+      isActive
+        ? "bg-white shadow-sm text-[#0A0A0A]"
+        : "text-[#4B5563] hover:text-[#0A0A0A] hover:bg-white/60"
+    )}
+    style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
   >
     {children && (
-      <span className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}>{children}</span>
+      <span className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}>
+        {children}
+      </span>
     )}
-    <span className="text-sm">{title}</span>
-  </div>
+    {title}
+  </button>
 );
 
 export default ControlTabButton;

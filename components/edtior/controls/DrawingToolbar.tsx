@@ -10,6 +10,8 @@ import {
   BsTrash,
 } from "react-icons/bs";
 import { BiText } from "react-icons/bi";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 
 type Tool = "select" | "pen" | "line" | "arrow" | "rectangle" | "ellipse" | "text";
 
@@ -42,7 +44,7 @@ const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
   ];
 
   return (
-    <div className="bg-base-100 border-2 border-base-200 rounded-lg p-2 mb-3">
+    <div className="bg-white border-2 border-[#E5E7EB] rounded-[10px] p-2 mb-3">
       {/* Tools row */}
       <div className="flex items-center justify-center gap-1 mb-2">
         {tools.map((tool) => (
@@ -51,15 +53,15 @@ const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
             onClick={() => setCurrentTool(tool.id)}
             className={`p-2.5 rounded-md transition-all ${
               currentTool === tool.id
-                ? "bg-primary text-white shadow-md"
-                : "bg-base-200 hover:bg-base-300 text-primary-content"
+                ? "bg-[#2563EB] text-white shadow-md"
+                : "bg-[#F9FAFB] hover:bg-[#F3F4F6] text-[#0A0A0A]"
             }`}
             title={tool.title}
           >
             {tool.icon}
           </button>
         ))}
-        <div className="w-px h-6 bg-base-300 mx-1" />
+        <div className="w-px h-6 bg-[#E5E7EB] mx-1" />
         <button
           onClick={onClear}
           className="p-2.5 rounded-md bg-red-100 hover:bg-red-200 text-red-600 transition-all"
@@ -72,7 +74,7 @@ const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
       {/* Color and width row */}
       <div className="flex items-center justify-center gap-3">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-primary-content">Color:</span>
+          <span className="text-xs text-[#0A0A0A]">Color:</span>
           <input
             type="color"
             value={strokeColor}
@@ -81,16 +83,15 @@ const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
           />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-primary-content">Size:</span>
-          <input
-            type="range"
-            min="1"
-            max="10"
-            value={strokeWidth}
-            onChange={(e) => setStrokeWidth(Number(e.target.value))}
-            className="range range-xs w-16"
+          <span className="text-xs text-[#0A0A0A]">Size:</span>
+          <Slider
+            min={1}
+            max={10}
+            value={[strokeWidth]}
+            onValueChange={([v]) => setStrokeWidth(v)}
+            className="w-16"
           />
-          <span className="text-xs text-primary-content w-4">{strokeWidth}</span>
+          <span className="text-xs text-[#0A0A0A] w-4">{strokeWidth}</span>
         </div>
       </div>
     </div>

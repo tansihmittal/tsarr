@@ -2,6 +2,9 @@ import { useState, useCallback, useRef } from "react";
 import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
 import { BsUpload, BsDownload, BsClipboard, BsImage } from "react-icons/bs";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
 
 interface Color {
   hex: string;
@@ -224,6 +227,7 @@ const ColorPaletteLayout: React.FC = () => {
   return (
     <main
       className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0"
+      style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
       onPaste={handlePaste}
     >
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
@@ -234,34 +238,31 @@ const ColorPaletteLayout: React.FC = () => {
           <div className="flex flex-col gap-3 py-4">
             {palette.length > 0 && (
               <div className="flex items-center justify-end">
-                <button
-                  onClick={exportPalette}
-                  className="btn btn-sm btn-primary gap-2"
-                >
+                <Button size="sm" onClick={exportPalette} className="gap-2">
                   <BsDownload className="w-3.5 h-3.5" />
                   Export Palette
-                </button>
+                </Button>
               </div>
             )}
 
             {!imageUrl ? (
               <div
-                className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-base-300 bg-base-200/40 min-h-[420px] cursor-pointer hover:border-primary/50 transition-colors"
+                className="flex flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-[#E5E7EB] bg-[#F9FAFB]/40 min-h-[420px] cursor-pointer hover:border-[#2563EB]/50 transition-colors"
                 onDrop={handleDrop}
                 onDragOver={(e) => e.preventDefault()}
                 onClick={() => fileInputRef.current?.click()}
               >
-                <BsImage className="w-12 h-12 text-base-content/20 mb-4" />
-                <p className="text-base-content/50 text-sm mb-1">
+                <BsImage className="w-12 h-12 text-[#4B5563]/20 mb-4" />
+                <p className="text-[#4B5563]/50 text-sm mb-1">
                   Drop image here or click to upload
                 </p>
-                <p className="text-base-content/30 text-xs">
+                <p className="text-[#4B5563]/30 text-xs">
                   Or paste (Ctrl/Cmd+V) anywhere
                 </p>
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                <div className="rounded-2xl overflow-hidden border border-base-300 bg-base-200/40 flex items-center justify-center min-h-[240px]">
+                <div className="rounded-[20px] overflow-hidden border border-[#E5E7EB] bg-[#F9FAFB]/40 flex items-center justify-center min-h-[240px]">
                   <img
                     ref={imgRef}
                     src={imageUrl}
@@ -272,8 +273,8 @@ const ColorPaletteLayout: React.FC = () => {
 
                 {isProcessing ? (
                   <div className="flex items-center justify-center gap-2 py-8">
-                    <span className="loading loading-spinner loading-md text-primary" />
-                    <span className="text-sm text-base-content/60">
+                    <span className="loading loading-spinner loading-md text-[#2563EB]" />
+                    <span className="text-sm text-[#4B5563]/60">
                       Extracting colors…
                     </span>
                   </div>
@@ -281,7 +282,7 @@ const ColorPaletteLayout: React.FC = () => {
                   palette.length > 0 && (
                     <div className="flex flex-col gap-3">
                       {/* Color strip */}
-                      <div className="flex rounded-2xl overflow-hidden h-16 shadow-md">
+                      <div className="flex rounded-[20px] overflow-hidden h-16 shadow-md">
                         {palette.map((color) => (
                           <div
                             key={color.hex}
@@ -303,22 +304,22 @@ const ColorPaletteLayout: React.FC = () => {
                         {palette.map((color) => (
                           <button
                             key={color.hex}
-                            className="group relative rounded-xl overflow-hidden border border-base-300 shadow-sm hover:shadow-md transition-shadow"
+                            className="group relative rounded-[14px] overflow-hidden border border-[#E5E7EB] shadow-sm hover:shadow-md transition-shadow"
                             onClick={() => copyHex(color.hex)}
                           >
                             <div
                               className="h-16"
                               style={{ backgroundColor: color.hex }}
                             />
-                            <div className="p-2 bg-base-100 flex items-center justify-between">
-                              <span className="text-xs font-mono font-medium text-base-content/80">
+                            <div className="p-2 bg-white flex items-center justify-between">
+                              <span className="text-xs font-mono font-medium text-[#0A0A0A]/80">
                                 {color.hex.toUpperCase()}
                               </span>
                               <BsClipboard
                                 className={`w-3 h-3 transition-colors ${
                                   copiedHex === color.hex
-                                    ? "text-success"
-                                    : "text-base-content/30 group-hover:text-base-content/60"
+                                    ? "text-green-500"
+                                    : "text-[#4B5563]/30 group-hover:text-[#4B5563]/60"
                                 }`}
                               />
                             </div>
@@ -327,8 +328,8 @@ const ColorPaletteLayout: React.FC = () => {
                       </div>
 
                       {/* RGB values */}
-                      <div className="bg-base-200/60 rounded-2xl p-4 backdrop-blur-sm">
-                        <p className="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-3">
+                      <div className="bg-[#F9FAFB]/60 rounded-[20px] p-4 backdrop-blur-sm">
+                        <p className="text-xs font-semibold text-[#4B5563]/50 uppercase tracking-wider mb-3">
                           RGB Values
                         </p>
                         <div className="space-y-1.5">
@@ -338,13 +339,13 @@ const ColorPaletteLayout: React.FC = () => {
                               className="flex items-center gap-3"
                             >
                               <div
-                                className="w-5 h-5 rounded-full flex-shrink-0 border border-base-300"
+                                className="w-5 h-5 rounded-full flex-shrink-0 border border-[#E5E7EB]"
                                 style={{ backgroundColor: color.hex }}
                               />
-                              <span className="text-xs font-mono text-base-content/60">
+                              <span className="text-xs font-mono text-[#4B5563]/60">
                                 {color.hex.toUpperCase()}
                               </span>
-                              <span className="text-xs font-mono text-base-content/40 ml-auto">
+                              <span className="text-xs font-mono text-[#4B5563]/40 ml-auto">
                                 rgb({color.rgb.r}, {color.rgb.g}, {color.rgb.b})
                               </span>
                             </div>
@@ -371,59 +372,61 @@ const ColorPaletteLayout: React.FC = () => {
               }}
             />
 
-            <div className="bg-base-200/60 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-3">
+            <div className="bg-[#F9FAFB]/60 rounded-[20px] p-4 backdrop-blur-sm">
+              <p className="text-xs font-semibold text-[#4B5563]/50 uppercase tracking-wider mb-3">
                 Image
               </p>
-              <button
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => fileInputRef.current?.click()}
-                className="btn btn-sm btn-outline w-full gap-2"
+                className="w-full gap-2"
               >
                 <BsUpload className="w-3.5 h-3.5" />
                 Upload Image
-              </button>
+              </Button>
               {imageUrl && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => {
                     setImageUrl("");
                     setPalette([]);
                   }}
-                  className="btn btn-sm btn-ghost w-full mt-2 text-error/70 hover:text-error"
+                  className="w-full mt-2 text-red-500/70 hover:text-red-500"
                 >
                   Clear
-                </button>
+                </Button>
               )}
             </div>
 
-            <div className="bg-base-200/60 rounded-2xl p-4 backdrop-blur-sm">
+            <div className="bg-[#F9FAFB]/60 rounded-[20px] p-4 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-semibold text-base-content/50 uppercase tracking-wider">
+                <Label className="text-xs font-semibold text-[#4B5563]/50 uppercase tracking-wider">
                   Number of Colors
-                </p>
-                <span className="text-xs font-mono text-base-content/70">
+                </Label>
+                <span className="text-xs font-mono text-[#4B5563]/70">
                   {numColors}
                 </span>
               </div>
-              <input
-                type="range"
+              <Slider
                 min={2}
                 max={12}
                 step={1}
-                value={numColors}
-                onChange={(e) => setNumColors(Number(e.target.value))}
-                className="range range-xs range-primary"
+                value={[numColors]}
+                onValueChange={([v]) => setNumColors(v)}
               />
-              <div className="flex justify-between text-xs text-base-content/40 mt-1">
+              <div className="flex justify-between text-xs text-[#4B5563]/40 mt-1">
                 <span>2</span>
                 <span>12</span>
               </div>
             </div>
 
             {imageUrl && (
-              <button
+              <Button
                 onClick={() => extractColors(imageUrl, numColors)}
                 disabled={isProcessing}
-                className="btn btn-primary w-full gap-2"
+                className="w-full gap-2"
               >
                 {isProcessing ? (
                   <>
@@ -433,15 +436,15 @@ const ColorPaletteLayout: React.FC = () => {
                 ) : (
                   "Re-extract Colors"
                 )}
-              </button>
+              </Button>
             )}
 
             {palette.length > 0 && (
-              <div className="bg-base-200/60 rounded-2xl p-4 backdrop-blur-sm">
-                <p className="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-3">
+              <div className="bg-[#F9FAFB]/60 rounded-[20px] p-4 backdrop-blur-sm">
+                <p className="text-xs font-semibold text-[#4B5563]/50 uppercase tracking-wider mb-3">
                   Tips
                 </p>
-                <ul className="space-y-1.5 text-xs text-base-content/50">
+                <ul className="space-y-1.5 text-xs text-[#4B5563]/50">
                   <li>• Click any color card to copy its hex</li>
                   <li>• Click the color strip to copy too</li>
                   <li>• Export saves as PNG palette</li>

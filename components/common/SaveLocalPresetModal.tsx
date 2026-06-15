@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { validatePresetName, presetNameExists } from "@/utils/localPresets";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 interface SaveLocalPresetModalProps {
   isOpen: boolean;
@@ -75,104 +79,92 @@ const SaveLocalPresetModal: React.FC<SaveLocalPresetModalProps> = ({
     setShowOverwriteConfirm(false);
   };
 
-  if (!isOpen) return null;
-
   return (
-    <>
-      <input
-        type="checkbox"
-        id="save-local-preset-modal"
-        className="modal-toggle"
-        checked={isOpen}
-        readOnly
-      />
-      <label className="modal cursor-pointer backdrop-blur-sm bg-black/20" onClick={handleClose}>
-        <label
-          className="modal-box relative rounded-2xl shadow-2xl animate-fade-in-scale border border-base-200/50"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {!showOverwriteConfirm ? (
-            <>
-              <h3 className="font-bold text-xl mb-2 text-gray-800">Save as Local Preset</h3>
-              <p className="text-sm text-gray-500 mb-4">Your preset will be saved locally in your browser</p>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleClose(); }}>
+      <DialogContent className="rounded-[20px] shadow-2xl border border-[#E5E7EB]">
+        {!showOverwriteConfirm ? (
+          <>
+            <DialogHeader>
+              <DialogTitle className="font-bold text-xl text-gray-800">Save as Local Preset</DialogTitle>
+              <DialogDescription className="text-sm text-gray-500">
+                Your preset will be saved locally in your browser
+              </DialogDescription>
+            </DialogHeader>
 
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text font-medium text-gray-600">
-                    Preset Name
-                  </span>
-                </label>
-                <input
-                  value={presetName}
-                  onChange={(e) => {
-                    setPresetName(e.target.value);
-                    setError(null);
-                  }}
-                  type="text"
-                  placeholder="e.g., My Instagram Style"
-                  className={`input input-bordered w-full rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all ${
-                    error ? "input-error border-red-400" : ""
-                  }`}
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSave();
-                    }
-                  }}
-                />
-                {error && (
-                  <label className="label">
-                    <span className="label-text-alt text-red-500 font-medium">{error}</span>
-                  </label>
-                )}
-              </div>
+            <div className="space-y-1.5">
+              <Label className="font-medium text-gray-600">Preset Name</Label>
+              <Input
+                value={presetName}
+                onChange={(e) => {
+                  setPresetName(e.target.value);
+                  setError(null);
+                }}
+                type="text"
+                placeholder="e.g., My Instagram Style"
+                className={`w-full rounded-[10px] focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all ${
+                  error ? "border-red-400" : ""
+                }`}
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSave();
+                  }
+                }}
+              />
+              {error && (
+                <p className="text-xs text-red-500 font-medium">{error}</p>
+              )}
+            </div>
 
-              <div className="modal-action mt-6">
-                <button
-                  className="btn btn-primary rounded-xl font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all"
-                  onClick={handleSave}
-                >
-                  Save Preset
-                </button>
-                <button
-                  className="btn btn-ghost font-medium rounded-xl hover:bg-base-200"
-                  onClick={handleClose}
-                >
-                  Cancel
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="flex items-center gap-3 mb-4">
+            <DialogFooter className="mt-6 flex gap-2">
+              <Button
+                className="rounded-[10px] font-semibold shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all"
+                onClick={handleSave}
+              >
+                Save Preset
+              </Button>
+              <Button
+                variant="ghost"
+                className="font-medium rounded-[10px] hover:bg-[#F9FAFB]"
+                onClick={handleClose}
+              >
+                Cancel
+              </Button>
+            </DialogFooter>
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <div className="flex items-center gap-3 mb-1">
                 <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
                   <span className="text-amber-600 text-xl">⚠</span>
                 </div>
-                <h3 className="font-bold text-xl text-gray-800">Overwrite Preset?</h3>
+                <DialogTitle className="font-bold text-xl text-gray-800">Overwrite Preset?</DialogTitle>
               </div>
-              <p className="text-gray-600 mb-6">
-                A preset named <span className="font-semibold text-primary">&quot;{presetName.trim()}&quot;</span> already exists. Do you want to overwrite it with your current settings?
-              </p>
+              <DialogDescription className="text-gray-600">
+                A preset named <span className="font-semibold text-[#2563EB]">&quot;{presetName.trim()}&quot;</span> already exists. Do you want to overwrite it with your current settings?
+              </DialogDescription>
+            </DialogHeader>
 
-              <div className="modal-action">
-                <button
-                  className="btn btn-warning rounded-xl font-semibold"
-                  onClick={handleConfirmOverwrite}
-                >
-                  Overwrite
-                </button>
-                <button
-                  className="btn btn-ghost font-medium rounded-xl hover:bg-base-200"
-                  onClick={handleCancelOverwrite}
-                >
-                  Keep Both
-                </button>
-              </div>
-            </>
-          )}
-        </label>
-      </label>
-    </>
+            <DialogFooter className="flex gap-2">
+              <Button
+                className="rounded-[10px] font-semibold bg-amber-500 hover:bg-amber-600 text-white"
+                onClick={handleConfirmOverwrite}
+              >
+                Overwrite
+              </Button>
+              <Button
+                variant="ghost"
+                className="font-medium rounded-[10px] hover:bg-[#F9FAFB]"
+                onClick={handleCancelOverwrite}
+              >
+                Keep Both
+              </Button>
+            </DialogFooter>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -16,21 +16,22 @@ const EditorWrapper: React.FC<Props> = ({ children, imageRef }) => {
   } = useEditorContext();
 
   // Determine if background is a gradient/url or solid color
-  const isGradientOrImage = background?.startsWith('linear-gradient') || 
-                            background?.startsWith('radial-gradient') || 
+  const isGradientOrImage = background?.startsWith('linear-gradient') ||
+                            background?.startsWith('radial-gradient') ||
                             background?.startsWith('url(');
 
   return (
     <div
       ref={imageRef}
       style={{
-        ...(isGradientOrImage 
-          ? { backgroundImage: background } 
+        ...(isGradientOrImage
+          ? { backgroundImage: background }
           : { backgroundColor: background }),
         backgroundSize: "cover",
         padding: `${selectedImage ? padding + "px" : "16px"}`,
         aspectRatio: `${aspectRatio.value}`,
         borderRadius: `${canvasRoundness}px`,
+        fontFamily: "'IBM Plex Sans', sans-serif",
       }}
       className={`
         flex justify-center items-center relative overflow-hidden

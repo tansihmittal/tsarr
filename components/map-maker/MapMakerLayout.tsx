@@ -31,6 +31,13 @@ import {
 import { TfiExport } from "react-icons/tfi";
 import { BiReset } from "react-icons/bi";
 import { countryNameMap, usStateMap, indiaStateMap, chinaProvinceMap, normalizeLocationName, getLocationCoordinates, getCountryFromCity, isCity, getStateFromCity, isUSCity, isUSState, normalizeStateName, getIndiaStateFromCity, isIndiaCity, isIndiaState, getChinaProvinceFromCity, isChinaCity, isChinaProvince } from "@/data/mapData";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 // Map TopoJSON URLs
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -254,7 +261,7 @@ const DebouncedInput: React.FC<{
   };
 
   return (
-    <input
+    <Input
       type={type}
       value={localValue}
       onChange={handleChange}
@@ -317,32 +324,40 @@ const DataPointRow: React.FC<{
   };
 
   return (
-    <div className="p-2 bg-base-200 rounded-lg space-y-1">
+    <div className="p-2 bg-[#F9FAFB] rounded-[10px] space-y-1">
       <div className="flex items-center gap-2">
-        <input
+        <Input
           type="text"
           value={localName}
           onChange={(e) => handleNameChange(e.target.value)}
-          className="input input-xs input-bordered flex-1 min-w-0"
+          className="h-7 text-xs px-2 flex-1 min-w-0"
           placeholder="City, State, or Country"
         />
-        <input
+        <Input
           type="number"
           value={localValue}
           onChange={(e) => handleValueChange(e.target.value)}
-          className="input input-xs input-bordered w-16"
+          className="h-7 text-xs px-2 w-16"
           placeholder="Value"
         />
         {mapType === "marker" && (
-          <select
+          <Select
             value={point.icon || markerIcon}
-            onChange={(e) => onUpdate(index, { icon: e.target.value as MarkerIcon })}
-            className="select select-xs select-bordered w-16"
+            onValueChange={(v) => onUpdate(index, { icon: v as MarkerIcon })}
           >
-            {markerIcons.map((ic) => <option key={ic.id} value={ic.id}>{ic.name}</option>)}
-          </select>
+            <SelectTrigger className="h-7 text-xs w-20">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {markerIcons.map((ic) => (
+                <SelectItem key={ic.id} value={ic.id}>{ic.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
-        <button onClick={() => onRemove(index)} className="btn btn-xs btn-ghost text-error"><BsTrash /></button>
+        <Button size="sm" variant="ghost" className="h-7 text-xs px-2 text-red-500" onClick={() => onRemove(index)}>
+          <BsTrash />
+        </Button>
       </div>
       {mapType !== "choropleth" && (
         <div className="text-[10px] pl-1">
@@ -409,31 +424,33 @@ const FlowRow: React.FC<{
   };
 
   return (
-    <div className="p-2 bg-base-200 rounded-lg space-y-2">
+    <div className="p-2 bg-[#F9FAFB] rounded-[10px] space-y-2">
       <div className="flex items-center gap-2">
-        <input
+        <Input
           type="text"
           value={localFromCity}
           onChange={(e) => handleFromCityChange(e.target.value)}
-          className="input input-xs input-bordered flex-1"
+          className="h-7 text-xs px-2 flex-1"
           placeholder="From city (e.g. Tokyo)"
         />
         <span className="text-gray-400">→</span>
-        <input
+        <Input
           type="text"
           value={localToCity}
           onChange={(e) => handleToCityChange(e.target.value)}
-          className="input input-xs input-bordered flex-1"
+          className="h-7 text-xs px-2 flex-1"
           placeholder="To city (e.g. London)"
         />
-        <input
+        <Input
           type="number"
           value={localValue}
           onChange={(e) => { setLocalValue(e.target.value); debouncedUpdate({ value: parseFloat(e.target.value) || 0 }); }}
-          className="input input-xs input-bordered w-16"
+          className="h-7 text-xs px-2 w-16"
           placeholder="Value"
         />
-        <button onClick={() => onRemove(index)} className="btn btn-xs btn-ghost text-error"><BsTrash /></button>
+        <Button size="sm" variant="ghost" className="h-7 text-xs px-2 text-red-500" onClick={() => onRemove(index)}>
+          <BsTrash />
+        </Button>
       </div>
       <div className="text-[10px] text-gray-500">
         {flow.from[0] !== 0 && flow.to[0] !== 0 ? (
@@ -1017,7 +1034,7 @@ const MapMakerLayout: React.FC = () => {
     if (!showLegend || mapType === "marker") return null;
     const colors = colorSchemes[colorScheme];
     return (
-      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg hidden lg:block">
+      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-[10px] p-3 shadow-lg hidden lg:block">
         <div className="text-xs font-semibold text-gray-700 mb-2">Legend</div>
         <div className="flex items-center gap-1">
           <span className="text-[10px] text-gray-500">{minValue.toLocaleString()}</span>
@@ -1031,7 +1048,7 @@ const MapMakerLayout: React.FC = () => {
   };
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
@@ -1040,22 +1057,24 @@ const MapMakerLayout: React.FC = () => {
           <div className="flex flex-col h-full">
             {/* Toolbar */}
             <div className="flex flex-wrap gap-2 mb-3 justify-end">
-              <div className="dropdown">
-                <label tabIndex={0}><SharedToolbarButton title="Export"><TfiExport /></SharedToolbarButton></label>
-                <ul tabIndex={0} className="dropdown-content menu p-2 mt-1 bg-base-100 border-2 rounded-lg min-w-[180px] z-50">
-                  <li><a onClick={() => handleExport("png", 1)}>PNG 1x</a></li>
-                  <li><a onClick={() => handleExport("png", 2)}>PNG 2x</a></li>
-                  <li><a onClick={() => handleExport("png", 4)}>PNG 4x</a></li>
-                  <li><a onClick={() => handleExport("jpeg", 2)}>JPEG 2x</a></li>
-                  <li><a onClick={() => handleExport("svg")}>SVG</a></li>
-                </ul>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <span><SharedToolbarButton title="Export"><TfiExport /></SharedToolbarButton></span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="min-w-[180px] z-50">
+                  <DropdownMenuItem onClick={() => handleExport("png", 1)}>PNG 1x</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("png", 2)}>PNG 2x</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("png", 4)}>PNG 4x</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("jpeg", 2)}>JPEG 2x</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("svg")}>SVG</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <SharedToolbarButton title="Copy" onTap={handleCopyToClipboard}><BsClipboard /></SharedToolbarButton>
               <SharedToolbarButton title="Reset" onTap={resetAll}><BiReset /></SharedToolbarButton>
             </div>
 
             {/* Map Container */}
-            <div className="relative flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
+            <div className="relative flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#EFF6FF] border border-[#E5E7EB] overflow-hidden">
               <div
                 ref={mapContainerRef}
                 className="w-full h-full flex flex-col items-center justify-center relative"
@@ -1196,10 +1215,10 @@ const MapMakerLayout: React.FC = () => {
           </div>
 
           {/* Controls Panel */}
-          <div className="bg-base-100 rounded-2xl shadow-lg p-5 h-fit max-h-[85vh] overflow-y-auto">
-            <div className="grid grid-cols-3 bg-base-200 rounded-lg p-1 mb-5">
+          <div className="bg-white rounded-[20px] shadow-lg p-5 h-fit max-h-[85vh] overflow-y-auto">
+            <div className="grid grid-cols-3 bg-[#F9FAFB] rounded-[10px] p-1 mb-5">
               {(["data", "style", "presets"] as const).map((tab) => (
-                <button key={tab} onClick={() => setActiveTab(tab)} className={`py-2 px-3 text-sm font-medium rounded-md capitalize transition-all ${activeTab === tab ? "bg-base-100 shadow-sm" : "hover:bg-base-100/50"}`}>
+                <button key={tab} onClick={() => setActiveTab(tab)} className={`py-2 px-3 text-sm font-medium rounded-md capitalize transition-all ${activeTab === tab ? "bg-white shadow-sm" : "hover:bg-white/50"}`}>
                   {tab}
                 </button>
               ))}
@@ -1209,10 +1228,10 @@ const MapMakerLayout: React.FC = () => {
               <div className="space-y-5">
                 {/* Map Type */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Map Type</label>
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Map Type</Label>
                   <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                     {mapTypes.map((t) => (
-                      <button key={t.id} onClick={() => setMapType(t.id)} className={`p-2 rounded-lg text-center transition-all ${mapType === t.id ? "bg-primary text-white ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "bg-base-200 hover:bg-base-300 text-primary-content"}`}>
+                      <button key={t.id} onClick={() => setMapType(t.id)} className={`p-2 rounded-[10px] text-center transition-all ${mapType === t.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2 ring-offset-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6] text-[#0A0A0A]"}`}>
                         <div className="text-lg">{t.icon}</div>
                         <div className="text-[9px] font-semibold">{t.name}</div>
                       </button>
@@ -1222,10 +1241,10 @@ const MapMakerLayout: React.FC = () => {
 
                 {/* Region */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Region</label>
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Region</Label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {regionOptions.map((r) => (
-                      <button key={r.id} onClick={() => setRegion(r.id)} className={`py-2 px-1 rounded-lg text-[10px] font-medium transition-all ${region === r.id ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>
+                      <button key={r.id} onClick={() => setRegion(r.id)} className={`py-2 px-1 rounded-[10px] text-[10px] font-medium transition-all ${region === r.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"}`}>
                         {r.name}
                       </button>
                     ))}
@@ -1234,43 +1253,43 @@ const MapMakerLayout: React.FC = () => {
 
                 {/* Custom Region Controls */}
                 {region === "custom" && (
-                  <div className="p-3 bg-base-200 rounded-lg space-y-3">
+                  <div className="p-3 bg-[#F9FAFB] rounded-[10px] space-y-3">
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="text-[10px] text-primary-content/70 block mb-1">Center Lng</label>
-                        <input type="number" value={customCenter[0]} onChange={(e) => setCustomCenter([parseFloat(e.target.value) || 0, customCenter[1]])} className="input input-xs input-bordered w-full" />
+                        <Label className="text-[10px] text-[#4B5563] block mb-1">Center Lng</Label>
+                        <Input type="number" value={customCenter[0]} onChange={(e) => setCustomCenter([parseFloat(e.target.value) || 0, customCenter[1]])} className="h-7 text-xs px-2 w-full" />
                       </div>
                       <div>
-                        <label className="text-[10px] text-primary-content/70 block mb-1">Center Lat</label>
-                        <input type="number" value={customCenter[1]} onChange={(e) => setCustomCenter([customCenter[0], parseFloat(e.target.value) || 0])} className="input input-xs input-bordered w-full" />
+                        <Label className="text-[10px] text-[#4B5563] block mb-1">Center Lat</Label>
+                        <Input type="number" value={customCenter[1]} onChange={(e) => setCustomCenter([customCenter[0], parseFloat(e.target.value) || 0])} className="h-7 text-xs px-2 w-full" />
                       </div>
                     </div>
                     <div>
-                      <label className="text-[10px] text-primary-content/70 block mb-1">Scale: {customScale}</label>
-                      <input type="range" min="50" max="2000" value={customScale} onChange={(e) => setCustomScale(parseInt(e.target.value))} className="range range-primary range-xs" />
+                      <Label className="text-[10px] text-[#4B5563] block mb-1">Scale: {customScale}</Label>
+                      <Slider min={50} max={2000} value={[customScale]} onValueChange={([v]) => setCustomScale(v)} />
                     </div>
                   </div>
                 )}
 
                 {/* Title */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Map Title</label>
-                  <DebouncedInput value={title} onChange={setTitle} className="input input-bordered w-full input-sm" placeholder="Enter title" />
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Map Title</Label>
+                  <DebouncedInput value={title} onChange={setTitle} className="h-9 text-xs" placeholder="Enter title" />
                 </div>
 
                 {/* Zoom */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Zoom: {zoom.toFixed(1)}x</label>
-                  <input type="range" min="0.5" max="4" step="0.1" value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} className="range range-primary range-sm" />
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Zoom: {zoom.toFixed(1)}x</Label>
+                  <Slider min={0.5} max={4} step={0.1} value={[zoom]} onValueChange={([v]) => setZoom(v)} />
                 </div>
 
                 {/* Import Data */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Import Data</label>
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Import Data</Label>
                   <div className="flex gap-2">
                     <input ref={fileInputRef} type="file" accept=".csv,.tsv,.txt" onChange={handleFileUpload} className="hidden" />
-                    <button onClick={() => fileInputRef.current?.click()} className="btn btn-sm btn-outline flex-1 gap-1"><BsUpload /> CSV</button>
-                    <button onClick={() => toast("Paste from Excel (Ctrl+V)", { icon: "📋" })} className="btn btn-sm btn-outline flex-1 gap-1"><BsTable /> Paste</button>
+                    <Button size="sm" variant="secondary" className="flex-1 gap-1" onClick={() => fileInputRef.current?.click()}><BsUpload /> CSV</Button>
+                    <Button size="sm" variant="secondary" className="flex-1 gap-1" onClick={() => toast("Paste from Excel (Ctrl+V)", { icon: "📋" })}><BsTable /> Paste</Button>
                   </div>
                   <div className="text-[10px] text-gray-500 mt-2 space-y-1">
                     <p><strong>Points:</strong> name, value, lng, lat</p>
@@ -1283,8 +1302,8 @@ const MapMakerLayout: React.FC = () => {
                 {mapType !== "flow" && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-medium text-primary-content/70">Data Points ({data.length})</label>
-                      <button onClick={addDataPoint} className="btn btn-xs btn-ghost gap-1"><BsPlus /> Add</button>
+                      <Label className="text-sm font-medium text-[#4B5563]">Data Points ({data.length})</Label>
+                      <Button size="sm" variant="ghost" className="h-7 text-xs px-2 gap-1" onClick={addDataPoint}><BsPlus /> Add</Button>
                     </div>
                     <div className="space-y-2 max-h-[200px] overflow-y-auto">
                       {data.map((d, i) => (
@@ -1306,8 +1325,8 @@ const MapMakerLayout: React.FC = () => {
                 {mapType === "flow" && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-medium text-primary-content/70">Flow Routes ({flows.length})</label>
-                      <button onClick={addFlow} className="btn btn-xs btn-ghost gap-1"><BsPlus /> Add</button>
+                      <Label className="text-sm font-medium text-[#4B5563]">Flow Routes ({flows.length})</Label>
+                      <Button size="sm" variant="ghost" className="h-7 text-xs px-2 gap-1" onClick={addFlow}><BsPlus /> Add</Button>
                     </div>
                     <div className="space-y-2 max-h-[200px] overflow-y-auto">
                       {flows.map((f, i) => (
@@ -1329,10 +1348,10 @@ const MapMakerLayout: React.FC = () => {
               <div className="space-y-5">
                 {/* Color Scheme */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Color Scheme</label>
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Color Scheme</Label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {(Object.keys(colorSchemes) as (keyof typeof colorSchemes)[]).map((scheme) => (
-                      <button key={scheme} onClick={() => setColorScheme(scheme)} className={`p-2 rounded-lg transition-all ${colorScheme === scheme ? "ring-2 ring-primary ring-offset-2" : ""}`}>
+                      <button key={scheme} onClick={() => setColorScheme(scheme)} className={`p-2 rounded-[10px] transition-all ${colorScheme === scheme ? "ring-2 ring-[#2563EB] ring-offset-2" : ""}`}>
                         <div className="flex h-3 rounded overflow-hidden">
                           {colorSchemes[scheme].slice(0, 4).map((c, i) => (
                             <div key={i} className="flex-1" style={{ backgroundColor: c }} />
@@ -1347,10 +1366,10 @@ const MapMakerLayout: React.FC = () => {
                 {/* Marker Icon (for marker type) */}
                 {mapType === "marker" && (
                   <div>
-                    <label className="text-sm font-medium text-primary-content/70 block mb-2">Default Marker Icon</label>
+                    <Label className="text-sm font-medium text-[#4B5563] block mb-2">Default Marker Icon</Label>
                     <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
                       {markerIcons.map((ic) => (
-                        <button key={ic.id} onClick={() => setMarkerIcon(ic.id)} className={`p-2 rounded-lg text-center transition-all ${markerIcon === ic.id ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>
+                        <button key={ic.id} onClick={() => setMarkerIcon(ic.id)} className={`p-2 rounded-[10px] text-center transition-all ${markerIcon === ic.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"}`}>
                           <div className="text-lg">{ic.icon}</div>
                         </button>
                       ))}
@@ -1361,36 +1380,36 @@ const MapMakerLayout: React.FC = () => {
                 {/* Marker Size */}
                 {mapType === "marker" && (
                   <div>
-                    <label className="text-sm font-medium text-primary-content/70 block mb-2">Marker Size: {markerSize}px</label>
-                    <input type="range" min="4" max="20" value={markerSize} onChange={(e) => setMarkerSize(parseInt(e.target.value))} className="range range-primary range-sm" />
+                    <Label className="text-sm font-medium text-[#4B5563] block mb-2">Marker Size: {markerSize}px</Label>
+                    <Slider min={4} max={20} value={[markerSize]} onValueChange={([v]) => setMarkerSize(v)} />
                   </div>
                 )}
 
                 {/* Background */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Background</label>
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Background</Label>
                   <BackgroundPicker background={background} onBackgroundChange={setBackground} showTilt={false} />
                 </div>
 
                 {/* Colors */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-primary-content/70 block mb-1">Default Fill</label>
+                    <Label className="text-xs text-[#4B5563] block mb-1">Default Fill</Label>
                     <input type="color" value={defaultFill} onChange={(e) => setDefaultFill(e.target.value)} className="w-full h-8 rounded cursor-pointer" />
                   </div>
                   <div>
-                    <label className="text-xs text-primary-content/70 block mb-1">Stroke</label>
+                    <Label className="text-xs text-[#4B5563] block mb-1">Stroke</Label>
                     <input type="color" value={strokeColor} onChange={(e) => setStrokeColor(e.target.value)} className="w-full h-8 rounded cursor-pointer" />
                   </div>
                   {mapType === "marker" && (
                     <div>
-                      <label className="text-xs text-primary-content/70 block mb-1">Marker</label>
+                      <Label className="text-xs text-[#4B5563] block mb-1">Marker</Label>
                       <input type="color" value={markerColor} onChange={(e) => setMarkerColor(e.target.value)} className="w-full h-8 rounded cursor-pointer" />
                     </div>
                   )}
                   {mapType === "flow" && (
                     <div>
-                      <label className="text-xs text-primary-content/70 block mb-1">Flow</label>
+                      <Label className="text-xs text-[#4B5563] block mb-1">Flow</Label>
                       <input type="color" value={flowColor} onChange={(e) => setFlowColor(e.target.value)} className="w-full h-8 rounded cursor-pointer" />
                     </div>
                   )}
@@ -1398,32 +1417,32 @@ const MapMakerLayout: React.FC = () => {
 
                 {/* Stroke Width */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Stroke Width: {strokeWidth}</label>
-                  <input type="range" min="0" max="2" step="0.1" value={strokeWidth} onChange={(e) => setStrokeWidth(parseFloat(e.target.value))} className="range range-primary range-sm" />
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Stroke Width: {strokeWidth}</Label>
+                  <Slider min={0} max={2} step={0.1} value={[strokeWidth]} onValueChange={([v]) => setStrokeWidth(v)} />
                 </div>
 
                 {/* Padding & Border Radius */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-primary-content/70 block mb-1">Padding: {padding}px</label>
-                    <input type="range" min="0" max="80" value={padding} onChange={(e) => setPadding(parseInt(e.target.value))} className="range range-primary range-xs" />
+                    <Label className="text-xs text-[#4B5563] block mb-1">Padding: {padding}px</Label>
+                    <Slider min={0} max={80} value={[padding]} onValueChange={([v]) => setPadding(v)} />
                   </div>
                   <div>
-                    <label className="text-xs text-primary-content/70 block mb-1">Radius: {borderRadius}px</label>
-                    <input type="range" min="0" max="40" value={borderRadius} onChange={(e) => setBorderRadius(parseInt(e.target.value))} className="range range-primary range-xs" />
+                    <Label className="text-xs text-[#4B5563] block mb-1">Radius: {borderRadius}px</Label>
+                    <Slider min={0} max={40} value={[borderRadius]} onValueChange={([v]) => setBorderRadius(v)} />
                   </div>
                 </div>
 
                 {/* Toggles */}
                 <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={showLabels} onChange={(e) => setShowLabels(e.target.checked)} className="checkbox checkbox-primary checkbox-sm" />
-                    <span className="text-sm">Labels</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={showLegend} onChange={(e) => setShowLegend(e.target.checked)} className="checkbox checkbox-primary checkbox-sm" />
-                    <span className="text-sm">Legend</span>
-                  </label>
+                  <div className="flex items-center gap-2">
+                    <Switch checked={showLabels} onCheckedChange={setShowLabels} id="show-labels" />
+                    <Label htmlFor="show-labels" className="text-sm cursor-pointer">Labels</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch checked={showLegend} onCheckedChange={setShowLegend} id="show-legend" />
+                    <Label htmlFor="show-legend" className="text-sm cursor-pointer">Legend</Label>
+                  </div>
                 </div>
               </div>
             )}
@@ -1432,28 +1451,28 @@ const MapMakerLayout: React.FC = () => {
               <div className="space-y-5">
                 {/* Save Custom Preset */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Save Current as Preset</label>
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Save Current as Preset</Label>
                   <div className="flex gap-2">
-                    <input type="text" value={newPresetName} onChange={(e) => setNewPresetName(e.target.value)} className="input input-bordered input-sm flex-1" placeholder="Preset name" />
-                    <button onClick={saveAsPreset} className="btn btn-sm btn-primary gap-1"><BsBookmark /> Save</button>
+                    <Input type="text" value={newPresetName} onChange={(e) => setNewPresetName(e.target.value)} className="h-9 text-xs flex-1" placeholder="Preset name" />
+                    <Button size="sm" className="gap-1" onClick={saveAsPreset}><BsBookmark /> Save</Button>
                   </div>
                 </div>
 
                 {/* Custom Presets */}
                 {customPresets.length > 0 && (
                   <div>
-                    <label className="text-sm font-medium text-primary-content/70 block mb-2">Your Presets</label>
+                    <Label className="text-sm font-medium text-[#4B5563] block mb-2">Your Presets</Label>
                     <div className="grid grid-cols-2 gap-2">
                       {customPresets.map((p) => (
                         <div key={p.id} className="relative group">
-                          <button onClick={() => loadPreset(p)} className="w-full p-3 bg-base-200 rounded-lg text-left hover:bg-base-300 transition-all">
+                          <button onClick={() => loadPreset(p)} className="w-full p-3 bg-[#F9FAFB] rounded-[10px] text-left hover:bg-[#F3F4F6] transition-all">
                             <div className="flex items-center gap-2">
-                              <BsBookmarkFill className="text-primary" />
+                              <BsBookmarkFill className="text-[#2563EB]" />
                               <span className="text-sm font-medium truncate">{p.name}</span>
                             </div>
                             <div className="text-[10px] text-gray-500 mt-1">{p.mapType} • {p.region}</div>
                           </button>
-                          <button onClick={() => deleteCustomPreset(p.id)} className="absolute top-1 right-1 btn btn-xs btn-ghost text-error opacity-0 group-hover:opacity-100"><BsTrash /></button>
+                          <Button size="sm" variant="ghost" className="absolute top-1 right-1 h-7 text-xs px-2 text-red-500 opacity-0 group-hover:opacity-100" onClick={() => deleteCustomPreset(p.id)}><BsTrash /></Button>
                         </div>
                       ))}
                     </div>
@@ -1462,10 +1481,10 @@ const MapMakerLayout: React.FC = () => {
 
                 {/* Default Presets */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Templates</label>
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Templates</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {defaultPresets.map((p) => (
-                      <button key={p.id} onClick={() => loadPreset(p)} className="p-3 bg-base-200 rounded-lg text-left hover:bg-base-300 transition-all">
+                      <button key={p.id} onClick={() => loadPreset(p)} className="p-3 bg-[#F9FAFB] rounded-[10px] text-left hover:bg-[#F3F4F6] transition-all">
                         <div className="flex items-center gap-2">
                           <BsGlobe className="text-gray-500" />
                           <span className="text-sm font-medium truncate">{p.name}</span>

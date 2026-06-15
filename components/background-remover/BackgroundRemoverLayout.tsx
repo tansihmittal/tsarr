@@ -11,6 +11,7 @@ import {
   BsArrowLeftRight,
 } from "react-icons/bs";
 import { MdOutlineAutoFixHigh } from "react-icons/md";
+import { Button } from "@/components/ui/button";
 
 type BgOption = "transparent" | "white" | "black" | "custom";
 
@@ -134,6 +135,7 @@ const BackgroundRemoverLayout: React.FC = () => {
     <main
       className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0"
       onPaste={handlePaste}
+      style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
     >
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
@@ -145,63 +147,64 @@ const BackgroundRemoverLayout: React.FC = () => {
             <div className="flex items-center gap-2 mb-1">
               <button
                 onClick={() => setView("split")}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                className={`px-3 py-1 rounded-[10px] text-xs font-medium transition-colors ${
                   view === "split"
-                    ? "bg-base-300 text-base-content"
-                    : "text-base-content/50 hover:text-base-content"
+                    ? "bg-[#F3F4F6] text-[#0A0A0A]"
+                    : "text-[#4B5563] hover:text-[#0A0A0A]"
                 }`}
               >
                 Split
               </button>
               <button
                 onClick={() => setView("original")}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                className={`px-3 py-1 rounded-[10px] text-xs font-medium transition-colors ${
                   view === "original"
-                    ? "bg-base-300 text-base-content"
-                    : "text-base-content/50 hover:text-base-content"
+                    ? "bg-[#F3F4F6] text-[#0A0A0A]"
+                    : "text-[#4B5563] hover:text-[#0A0A0A]"
                 }`}
               >
                 Original
               </button>
               <button
                 onClick={() => setView("result")}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                className={`px-3 py-1 rounded-[10px] text-xs font-medium transition-colors ${
                   view === "result"
-                    ? "bg-base-300 text-base-content"
-                    : "text-base-content/50 hover:text-base-content"
+                    ? "bg-[#F3F4F6] text-[#0A0A0A]"
+                    : "text-[#4B5563] hover:text-[#0A0A0A]"
                 }`}
               >
                 Result
               </button>
               {resultUrl && (
-                <button
+                <Button
                   onClick={handleDownload}
-                  className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-content text-xs font-medium rounded-lg hover:opacity-90 transition-opacity"
+                  size="sm"
+                  className="ml-auto gap-1.5"
                 >
                   <BsDownload className="w-3.5 h-3.5" />
                   Download PNG
-                </button>
+                </Button>
               )}
             </div>
 
             {!originalUrl ? (
               <div
-                className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-base-300 bg-base-200/40 min-h-[420px] cursor-pointer hover:border-primary/50 transition-colors"
+                className="flex flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-[#E5E7EB] bg-[#EFF6FF] min-h-[420px] cursor-pointer hover:border-[#2563EB]/50 transition-colors"
                 onDrop={handleDrop}
                 onDragOver={(e) => e.preventDefault()}
                 onClick={() => fileInputRef.current?.click()}
               >
-                <BsImage className="w-12 h-12 text-base-content/20 mb-4" />
-                <p className="text-base-content/50 text-sm mb-1">
+                <BsImage className="w-12 h-12 text-[#4B5563]/20 mb-4" />
+                <p className="text-[#4B5563] text-sm mb-1">
                   Drop image here or click to upload
                 </p>
-                <p className="text-base-content/30 text-xs">
+                <p className="text-[#4B5563]/60 text-xs">
                   Or paste (Ctrl/Cmd+V) anywhere
                 </p>
               </div>
             ) : view === "split" ? (
               <div className="grid grid-cols-2 gap-3">
-                <div className="relative rounded-2xl overflow-hidden bg-base-200/40 border border-base-300 min-h-[320px] flex items-center justify-center">
+                <div className="relative rounded-[20px] overflow-hidden bg-[#EFF6FF] border border-[#E5E7EB] min-h-[320px] flex items-center justify-center">
                   <span className="absolute top-2 left-2 text-xs font-medium bg-black/40 text-white px-2 py-0.5 rounded-md z-10">
                     Original
                   </span>
@@ -212,7 +215,7 @@ const BackgroundRemoverLayout: React.FC = () => {
                   />
                 </div>
                 <div
-                  className="relative rounded-2xl overflow-hidden border border-base-300 min-h-[320px] flex items-center justify-center"
+                  className="relative rounded-[20px] overflow-hidden border border-[#E5E7EB] min-h-[320px] flex items-center justify-center"
                   style={{
                     background:
                       bgColor === "transparent"
@@ -231,18 +234,18 @@ const BackgroundRemoverLayout: React.FC = () => {
                     />
                   ) : isProcessing ? (
                     <div className="text-center px-4">
-                      <div className="loading loading-spinner loading-md text-primary mb-3" />
-                      <p className="text-xs text-base-content/60">{progress}</p>
+                      <div className="loading loading-spinner loading-md text-[#2563EB] mb-3" />
+                      <p className="text-xs text-[#4B5563]">{progress}</p>
                     </div>
                   ) : (
-                    <p className="text-xs text-base-content/30">
+                    <p className="text-xs text-[#4B5563]/60">
                       Result will appear here
                     </p>
                   )}
                 </div>
               </div>
             ) : view === "original" ? (
-              <div className="rounded-2xl overflow-hidden bg-base-200/40 border border-base-300 min-h-[420px] flex items-center justify-center">
+              <div className="rounded-[20px] overflow-hidden bg-[#EFF6FF] border border-[#E5E7EB] min-h-[420px] flex items-center justify-center">
                 <img
                   src={originalUrl}
                   alt="Original"
@@ -251,7 +254,7 @@ const BackgroundRemoverLayout: React.FC = () => {
               </div>
             ) : (
               <div
-                className="rounded-2xl overflow-hidden border border-base-300 min-h-[420px] flex items-center justify-center"
+                className="rounded-[20px] overflow-hidden border border-[#E5E7EB] min-h-[420px] flex items-center justify-center"
                 style={{
                   background:
                     bgColor === "transparent"
@@ -266,7 +269,7 @@ const BackgroundRemoverLayout: React.FC = () => {
                     className="max-w-full max-h-[500px] object-contain"
                   />
                 ) : (
-                  <p className="text-xs text-base-content/30">No result yet</p>
+                  <p className="text-xs text-[#4B5563]/60">No result yet</p>
                 )}
               </div>
             )}
@@ -286,35 +289,39 @@ const BackgroundRemoverLayout: React.FC = () => {
             />
 
             {/* Upload */}
-            <div className="bg-base-200/60 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-3">
+            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
+              <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider mb-3">
                 Image
               </p>
-              <button
+              <Button
                 onClick={() => fileInputRef.current?.click()}
-                className="btn btn-sm btn-outline w-full gap-2"
+                size="sm"
+                variant="secondary"
+                className="w-full gap-2"
               >
                 <BsUpload className="w-3.5 h-3.5" />
                 Upload Image
-              </button>
+              </Button>
               {originalUrl && (
-                <button
+                <Button
                   onClick={() => {
                     setOriginalUrl("");
                     setResultUrl("");
                   }}
-                  className="btn btn-sm btn-ghost w-full mt-2 text-error/70 hover:text-error"
+                  size="sm"
+                  variant="ghost"
+                  className="w-full mt-2 text-red-400 hover:text-red-600"
                 >
                   Clear
-                </button>
+                </Button>
               )}
             </div>
 
             {/* Remove BG button */}
-            <button
+            <Button
               onClick={handleRemove}
               disabled={!originalUrl || isProcessing}
-              className="btn btn-primary gap-2 w-full"
+              className="gap-2 w-full"
             >
               {isProcessing ? (
                 <>
@@ -327,25 +334,25 @@ const BackgroundRemoverLayout: React.FC = () => {
                   Remove Background
                 </>
               )}
-            </button>
+            </Button>
 
             {/* Background color */}
-            <div className="bg-base-200/60 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-3">
+            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
+              <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider mb-3">
                 Background
               </p>
               <div className="grid grid-cols-2 gap-2 mb-3">
                 {(["transparent", "white", "black", "custom"] as BgOption[]).map(
                   (opt) => (
-                    <button
+                    <Button
                       key={opt}
+                      size="sm"
+                      variant={bgOption === opt ? "default" : "secondary"}
+                      className="capitalize"
                       onClick={() => setBgOption(opt)}
-                      className={`btn btn-sm capitalize ${
-                        bgOption === opt ? "btn-primary" : "btn-outline"
-                      }`}
                     >
                       {opt}
-                    </button>
+                    </Button>
                   )
                 )}
               </div>
@@ -355,9 +362,9 @@ const BackgroundRemoverLayout: React.FC = () => {
                     type="color"
                     value={customColor}
                     onChange={(e) => setCustomColor(e.target.value)}
-                    className="w-10 h-8 rounded cursor-pointer border border-base-300"
+                    className="w-10 h-8 rounded cursor-pointer border border-[#E5E7EB]"
                   />
-                  <span className="text-xs font-mono text-base-content/70">
+                  <span className="text-xs font-mono text-[#4B5563]">
                     {customColor.toUpperCase()}
                   </span>
                 </div>
@@ -366,13 +373,13 @@ const BackgroundRemoverLayout: React.FC = () => {
 
             {/* Download */}
             {resultUrl && (
-              <button
+              <Button
                 onClick={handleDownload}
-                className="btn btn-success gap-2 w-full"
+                className="gap-2 w-full bg-green-600 hover:bg-green-700"
               >
                 <BsDownload className="w-4 h-4" />
                 Download PNG
-              </button>
+              </Button>
             )}
           </div>
         </div>

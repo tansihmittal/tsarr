@@ -2,6 +2,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { BsArrowRight, BsGithub, BsTwitter, BsLinkedin, BsCheck } from "react-icons/bs";
 import { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface ToolLandingPageProps {
   title: string;
@@ -39,20 +41,23 @@ export default function ToolLandingPage({
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
 
-      <div className="min-h-screen bg-white text-gray-900 antialiased">
+      <div
+        className="min-h-screen bg-white text-[#0A0A0A] antialiased"
+        style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
+      >
         {/* Header */}
-        <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100">
+        <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-[#E5E7EB]">
           <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-            <Link href="/" className="text-lg font-semibold text-gray-900 tracking-tight">
+            <Link href="/" className="text-lg font-semibold text-[#0A0A0A] tracking-tight">
               tsarr.in
             </Link>
             <nav className="flex items-center gap-1">
-              <Link href="/tools" className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors">
-                Tools
-              </Link>
-              <Link href={href} className="ml-3 px-4 py-2 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
-                Open {title}
-              </Link>
+              <Button variant="ghost" asChild className="text-sm text-[#4B5563] hover:text-[#0A0A0A]">
+                <Link href="/tools">Tools</Link>
+              </Button>
+              <Button asChild className="ml-3 text-sm font-medium rounded-[10px]">
+                <Link href={href}>Open {title}</Link>
+              </Button>
             </nav>
           </div>
         </header>
@@ -61,64 +66,66 @@ export default function ToolLandingPage({
           {/* Hero */}
           <section className="pt-16 pb-12 px-6">
             <div className="max-w-6xl mx-auto">
-              <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-                <Link href="/" className="hover:text-gray-700">Home</Link>
+              <div className="flex items-center gap-2 text-sm text-[#4B5563] mb-6">
+                <Link href="/" className="hover:text-[#0A0A0A]">Home</Link>
                 <span>/</span>
-                <Link href="/tools" className="hover:text-gray-700">Tools</Link>
+                <Link href="/tools" className="hover:text-[#0A0A0A]">Tools</Link>
                 <span>/</span>
-                <span className="text-gray-900">{title}</span>
+                <span className="text-[#0A0A0A]">{title}</span>
               </div>
-              
+
               <div className="flex items-start gap-6 mb-8">
-                <div className="w-16 h-16 flex items-center justify-center bg-gray-100 text-gray-700 rounded-2xl flex-shrink-0">
+                <div className="w-16 h-16 flex items-center justify-center bg-[#F9FAFB] text-[#4B5563] rounded-[20px] flex-shrink-0">
                   {icon}
                 </div>
                 <div>
-                  <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded mb-2 inline-block">
+                  <Badge variant="outline" className="text-xs font-medium text-[#4B5563] bg-[#F9FAFB] px-2 py-0.5 rounded mb-2 inline-block">
                     {category}
-                  </span>
-                  <h1 className="text-4xl font-semibold text-gray-900 tracking-tight mb-2">
+                  </Badge>
+                  <h1 className="text-4xl font-semibold text-[#0A0A0A] tracking-tight mb-2">
                     {title}
                   </h1>
-                  <p className="text-lg text-gray-600">
+                  <p className="text-lg text-[#4B5563]">
                     {description}
                   </p>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Link href={href} className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
-                  Open {title}
-                  <BsArrowRight className="w-4 h-4" />
-                </Link>
-                <Link href="/tools" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
-                  View All Tools
-                </Link>
+                <Button asChild className="text-sm font-medium rounded-[10px]">
+                  <Link href={href} className="inline-flex items-center gap-2">
+                    Open {title}
+                    <BsArrowRight className="w-4 h-4" />
+                  </Link>
+                </Button>
+                <Button variant="secondary" asChild className="text-sm font-medium rounded-[10px]">
+                  <Link href="/tools">View All Tools</Link>
+                </Button>
               </div>
             </div>
           </section>
 
           {/* About */}
-          <section className="py-12 px-6 bg-gray-50 border-y border-gray-100">
+          <section className="py-12 px-6 bg-[#F9FAFB] border-y border-[#E5E7EB]">
             <div className="max-w-6xl mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 <div>
-                  <h2 className="text-2xl font-semibold text-gray-900 tracking-tight mb-4">
+                  <h2 className="text-2xl font-semibold text-[#0A0A0A] tracking-tight mb-4">
                     About this tool
                   </h2>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-[#4B5563] leading-relaxed">
                     {longDescription}
                   </p>
                 </div>
                 <div>
-                  <h2 className="text-2xl font-semibold text-gray-900 tracking-tight mb-4">
+                  <h2 className="text-2xl font-semibold text-[#0A0A0A] tracking-tight mb-4">
                     Features
                   </h2>
                   <ul className="space-y-3">
                     {features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-3">
                         <BsCheck className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-600">{feature}</span>
+                        <span className="text-[#4B5563]">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -130,13 +137,13 @@ export default function ToolLandingPage({
           {/* Use Cases */}
           <section className="py-12 px-6">
             <div className="max-w-6xl mx-auto">
-              <h2 className="text-2xl font-semibold text-gray-900 tracking-tight mb-6">
+              <h2 className="text-2xl font-semibold text-[#0A0A0A] tracking-tight mb-6">
                 Use cases
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {useCases.map((useCase, i) => (
-                  <div key={i} className="p-4 rounded-xl border border-gray-200 bg-white">
-                    <p className="text-gray-700">{useCase}</p>
+                  <div key={i} className="p-4 rounded-[14px] border border-[#E5E7EB] bg-white">
+                    <p className="text-[#4B5563]">{useCase}</p>
                   </div>
                 ))}
               </div>
@@ -145,9 +152,9 @@ export default function ToolLandingPage({
 
           {/* Related Tools */}
           {relatedTools.length > 0 && (
-            <section className="py-12 px-6 bg-gray-50 border-t border-gray-100">
+            <section className="py-12 px-6 bg-[#F9FAFB] border-t border-[#E5E7EB]">
               <div className="max-w-6xl mx-auto">
-                <h2 className="text-2xl font-semibold text-gray-900 tracking-tight mb-6">
+                <h2 className="text-2xl font-semibold text-[#0A0A0A] tracking-tight mb-6">
                   Related tools
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -155,12 +162,12 @@ export default function ToolLandingPage({
                     <Link
                       key={i}
                       href={tool.href}
-                      className="group flex items-center gap-3 p-4 rounded-xl border border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm transition-all"
+                      className="group flex items-center gap-3 p-4 rounded-[14px] border border-[#E5E7EB] bg-white hover:border-gray-300 hover:shadow-sm transition-all"
                     >
-                      <div className="w-10 h-10 flex items-center justify-center bg-gray-100 text-gray-600 rounded-lg group-hover:bg-gray-900 group-hover:text-white transition-colors flex-shrink-0">
+                      <div className="w-10 h-10 flex items-center justify-center bg-[#F9FAFB] text-[#4B5563] rounded-[10px] group-hover:bg-[#0A0A0A] group-hover:text-white transition-colors flex-shrink-0">
                         {tool.icon}
                       </div>
-                      <span className="font-medium text-gray-900">{tool.title}</span>
+                      <span className="font-medium text-[#0A0A0A]">{tool.title}</span>
                     </Link>
                   ))}
                 </div>
@@ -169,40 +176,46 @@ export default function ToolLandingPage({
           )}
 
           {/* CTA */}
-          <section className="py-16 px-6 bg-gray-900 text-white">
+          <section className="py-16 px-6 bg-[#0A0A0A] text-white">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-2xl font-semibold tracking-tight mb-4">
                 Ready to try {title}?
               </h2>
-              <p className="text-gray-400 mb-6">
+              <p className="text-[#4B5563] mb-6">
                 Free to use, no login required. Start creating in seconds.
               </p>
-              <Link href={href} className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors">
-                Open {title}
-                <BsArrowRight className="w-4 h-4" />
-              </Link>
+              <Button
+                asChild
+                variant="secondary"
+                className="text-sm font-medium rounded-[10px] bg-white text-[#0A0A0A] hover:bg-gray-100"
+              >
+                <Link href={href} className="inline-flex items-center gap-2">
+                  Open {title}
+                  <BsArrowRight className="w-4 h-4" />
+                </Link>
+              </Button>
             </div>
           </section>
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-gray-200 bg-white">
+        <footer className="border-t border-[#E5E7EB] bg-white">
           <div className="max-w-6xl mx-auto px-6 py-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-[#4B5563]">
                 © 2025 tsarr.in. Created by{" "}
-                <a href="https://tanishmittal.com/" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <a href="https://tanishmittal.com/" target="_blank" rel="noopener noreferrer" className="text-[#0A0A0A] hover:text-gray-900 transition-colors">
                   Tanish Mittal
                 </a>
               </p>
               <div className="flex items-center gap-4">
-                <a href="https://github.com/tansihmittal/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600 transition-colors">
+                <a href="https://github.com/tansihmittal/" target="_blank" rel="noopener noreferrer" className="text-[#4B5563]/60 hover:text-[#4B5563] transition-colors">
                   <BsGithub className="w-5 h-5" />
                 </a>
-                <a href="https://x.com/glowdopera" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600 transition-colors">
+                <a href="https://x.com/glowdopera" target="_blank" rel="noopener noreferrer" className="text-[#4B5563]/60 hover:text-[#4B5563] transition-colors">
                   <BsTwitter className="w-5 h-5" />
                 </a>
-                <a href="https://linkedin.com/in/tanishmittal02" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600 transition-colors">
+                <a href="https://linkedin.com/in/tanishmittal02" target="_blank" rel="noopener noreferrer" className="text-[#4B5563]/60 hover:text-[#4B5563] transition-colors">
                   <BsLinkedin className="w-5 h-5" />
                 </a>
               </div>

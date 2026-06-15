@@ -91,7 +91,7 @@ const ImageTextEditorLayout = () => {
     return new Promise((resolve) => {
       const img = new Image();
       img.crossOrigin = "anonymous";
-      
+
       img.onload = () => {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
@@ -116,19 +116,19 @@ const ImageTextEditorLayout = () => {
 
         // Collect all pixel colors and their frequencies
         const colorMap: Map<string, { r: number; g: number; b: number; count: number; brightness: number }> = new Map();
-        
+
         for (let i = 0; i < pixels.length; i += 4) {
           const r = pixels[i];
           const g = pixels[i + 1];
           const b = pixels[i + 2];
           const brightness = (r * 299 + g * 587 + b * 114) / 1000; // Perceived brightness
-          
+
           // Quantize colors to reduce noise (group similar colors)
           const qr = Math.round(r / 16) * 16;
           const qg = Math.round(g / 16) * 16;
           const qb = Math.round(b / 16) * 16;
           const key = `${qr},${qg},${qb}`;
-          
+
           if (colorMap.has(key)) {
             const existing = colorMap.get(key)!;
             existing.count++;
@@ -142,10 +142,10 @@ const ImageTextEditorLayout = () => {
 
         // Sort by frequency and find the most common dark and light colors
         const colors = Array.from(colorMap.values()).sort((a, b) => b.count - a.count);
-        
+
         // Background is usually the most common color
         const bgCandidate = colors[0] || { r: 128, g: 128, b: 128, brightness: 128 };
-        
+
         // Text color is the most common color that contrasts with background
         let textCandidate = { r: 255, g: 255, b: 255, brightness: 255 };
         for (const color of colors) {
@@ -155,10 +155,10 @@ const ImageTextEditorLayout = () => {
             break;
           }
         }
-        
+
         // If no contrasting color found, use white or black based on bg brightness
         if (textCandidate.brightness === 255) {
-          textCandidate = bgCandidate.brightness > 128 
+          textCandidate = bgCandidate.brightness > 128
             ? { r: 30, g: 30, b: 30, brightness: 30 }
             : { r: 255, g: 255, b: 255, brightness: 255 };
         }
@@ -190,7 +190,7 @@ const ImageTextEditorLayout = () => {
 
     try {
       console.log("Creating Tesseract worker...");
-      
+
       // Create worker with proper configuration for v7
       worker = await createWorker("eng", OEM.LSTM_ONLY, {
         logger: (m) => {
@@ -258,7 +258,7 @@ const ImageTextEditorLayout = () => {
       // In Tesseract.js v7, lines and words should be available
       if (data.lines && data.lines.length > 0) {
         console.log(`Found ${data.lines.length} lines`);
-        
+
         for (const line of data.lines) {
           if (!line.text || !line.text.trim()) continue;
           if (line.confidence < OCR_CONFIG.MIN_CONFIDENCE) continue;
@@ -294,7 +294,7 @@ const ImageTextEditorLayout = () => {
       } else if (data.words && data.words.length > 0) {
         // Fallback to words if lines aren't available
         console.log(`Found ${data.words.length} words, grouping into lines`);
-        
+
         // Group words by Y position to form lines
         const lineGroups: Record<number, TesseractWord[]> = {};
         const lineThreshold = 15;
@@ -304,7 +304,7 @@ const ImageTextEditorLayout = () => {
           if (word.confidence < OCR_CONFIG.MIN_CONFIDENCE) continue;
 
           const wordY = Math.round(word.bbox.y0 / lineThreshold) * lineThreshold;
-          
+
           if (!lineGroups[wordY]) {
             lineGroups[wordY] = [];
           }
@@ -361,10 +361,10 @@ const ImageTextEditorLayout = () => {
       } else if (data.text && data.text.trim()) {
         // Last resort: parse raw text and estimate positions
         console.log("Falling back to text-based parsing");
-        
+
         const text = data.text.trim();
         const lines = text.split('\n').filter(l => l.trim());
-        
+
         // Get image dimensions
         const img = new Image();
         await new Promise<void>((resolve) => {
@@ -372,15 +372,15 @@ const ImageTextEditorLayout = () => {
           img.onerror = () => resolve();
           img.src = imageUrl;
         });
-        
+
         const imgWidth = img.width || state.imageWidth;
         const imgHeight = img.height || state.imageHeight;
         const lineHeight = Math.round(imgHeight / (lines.length + 2));
         const fontSize = Math.max(OCR_CONFIG.MIN_FONT_SIZE, Math.round(lineHeight * 0.7));
-        
+
         lines.forEach((lineText, index) => {
           if (!lineText.trim()) return;
-          
+
           regions.push({
             id: crypto.randomUUID(),
             text: lineText.trim(),
@@ -401,7 +401,7 @@ const ImageTextEditorLayout = () => {
             isModified: false,
           });
         });
-        
+
         console.log("Created regions from text lines:", regions.length);
       }
 
@@ -409,7 +409,7 @@ const ImageTextEditorLayout = () => {
 
       // Detect colors for each region
       updateState({ processingProgress: "Detecting text colors...", processingPercent: 92 });
-      
+
       for (const region of regions) {
         try {
           const colors = await sampleRegionColors(imageUrl, region);
@@ -432,8 +432,8 @@ const ImageTextEditorLayout = () => {
       updateState({
         textRegions: regions,
         isProcessing: false,
-        processingProgress: regions.length > 0 
-          ? `Found ${regions.length} text region${regions.length > 1 ? "s" : ""}` 
+        processingProgress: regions.length > 0
+          ? `Found ${regions.length} text region${regions.length > 1 ? "s" : ""}`
           : ERROR_MESSAGES.NO_TEXT,
         processingPercent: 100,
         dominantTextColor,
@@ -486,14 +486,14 @@ const ImageTextEditorLayout = () => {
     setState((prev) => ({
       ...prev,
       textRegions: prev.textRegions.map((region) =>
-        region.id === regionId 
-          ? { 
-              ...region, 
+        region.id === regionId
+          ? {
+              ...region,
               ...updates,
-              isModified: updates.newText !== undefined 
-                ? updates.newText !== region.text 
+              isModified: updates.newText !== undefined
+                ? updates.newText !== region.text
                 : region.isModified
-            } 
+            }
           : region
       ),
     }));
@@ -574,7 +574,7 @@ const ImageTextEditorLayout = () => {
   }, [state.image, state.isProcessing, extractText]);
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">

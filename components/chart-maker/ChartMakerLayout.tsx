@@ -30,6 +30,18 @@ import {
 } from "react-icons/bs";
 import { TfiExport } from "react-icons/tfi";
 import { BiReset } from "react-icons/bi";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 ChartJS.register(
   CategoryScale, LinearScale, PointElement, LineElement, BarElement,
@@ -180,7 +192,7 @@ const TreemapChart: React.FC<{ datasets: DataSet[]; labels: string[] }> = ({ dat
         return (
           <div
             key={i}
-            className="rounded-lg flex items-center justify-center text-white font-bold text-sm p-2"
+            className="rounded-[10px] flex items-center justify-center text-white font-bold text-sm p-2"
             style={{
               backgroundColor: colors[i % colors.length],
               flexBasis: `${Math.max(percentage * 2, 15)}%`,
@@ -211,9 +223,6 @@ const BoxPlotChart: React.FC<{ datasets: DataSet[]; labels: string[]; labelColor
         {labels.map((label, i) => {
           const value = data[i];
           const height = (value / maxValue) * 100;
-          const q1 = value * 0.6;
-          const q3 = value * 0.9;
-          const median = value * 0.75;
 
           return (
             <div key={i} className="flex-1 flex flex-col items-center">
@@ -901,7 +910,7 @@ const ChartMakerLayout: React.FC = () => {
 
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
@@ -910,23 +919,31 @@ const ChartMakerLayout: React.FC = () => {
           <div className="flex flex-col h-full">
             {/* Toolbar */}
             <div className="flex flex-wrap gap-2 mb-3 justify-end">
-              <div className="dropdown">
-                <label tabIndex={0}><SharedToolbarButton title="Export"><TfiExport /></SharedToolbarButton></label>
-                <ul tabIndex={0} className="dropdown-content menu p-2 mt-1 bg-base-100 border-2 rounded-lg min-w-[180px] z-50">
-                  <li><a onClick={() => handleExport("png", 1)}>PNG 1x</a></li>
-                  <li><a onClick={() => handleExport("png", 2)}>PNG 2x</a></li>
-                  <li><a onClick={() => handleExport("png", 4)}>PNG 4x</a></li>
-                  <li><a onClick={() => handleExport("jpeg", 2)}>JPEG 2x</a></li>
-                  <li><a onClick={() => handleExport("svg")}>SVG</a></li>
-                  <li className="border-t border-base-200 mt-1 pt-1"><a onClick={handleExportAnimated} className={isExportingGif ? "opacity-50 pointer-events-none" : ""}>🎬 Animated WebM</a></li>
-                </ul>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <span><SharedToolbarButton title="Export"><TfiExport /></SharedToolbarButton></span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="min-w-[180px] z-50">
+                  <DropdownMenuItem onClick={() => handleExport("png", 1)}>PNG 1x</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("png", 2)}>PNG 2x</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("png", 4)}>PNG 4x</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("jpeg", 2)}>JPEG 2x</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("svg")}>SVG</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleExportAnimated}
+                    className={isExportingGif ? "opacity-50 pointer-events-none" : ""}
+                  >
+                    Animated WebM
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <SharedToolbarButton title="Copy" onTap={handleCopyToClipboard}><BsClipboard /></SharedToolbarButton>
               <SharedToolbarButton title="Reset" onTap={resetAll}><BiReset /></SharedToolbarButton>
             </div>
 
             {/* Chart Container */}
-            <div className="relative flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
+            <div className="relative flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F3F4F6] border border-[#E5E7EB] overflow-hidden">
               <div ref={chartContainerRef} className="w-full h-full flex items-center justify-center" style={{ background: background.background, padding: `${padding}px`, borderRadius: `${borderRadius}px` }}>
                 <div className="w-full h-full max-w-[800px] max-h-[500px]">{renderChart()}</div>
               </div>
@@ -934,11 +951,15 @@ const ChartMakerLayout: React.FC = () => {
           </div>
 
           {/* Controls Panel */}
-          <div className="bg-base-100 rounded-2xl shadow-lg p-5 h-fit max-h-[85vh] overflow-y-auto">
+          <div className="bg-white rounded-[20px] shadow-lg p-5 h-fit max-h-[85vh] overflow-y-auto">
             {/* Tabs */}
-            <div className="grid grid-cols-3 bg-base-200 rounded-lg p-1 mb-5">
+            <div className="grid grid-cols-3 bg-[#F9FAFB] rounded-[10px] p-1 mb-5">
               {(["data", "style", "presets"] as const).map((tab) => (
-                <button key={tab} onClick={() => setActiveTab(tab)} className={`py-2 px-3 text-sm font-medium rounded-md capitalize transition-all ${activeTab === tab ? "bg-base-100 shadow-sm" : "hover:bg-base-100/50"}`}>
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`py-2 px-3 text-sm font-medium rounded-md capitalize transition-all ${activeTab === tab ? "bg-white shadow-sm" : "hover:bg-white/50"}`}
+                >
                   {tab}
                 </button>
               ))}
@@ -948,10 +969,14 @@ const ChartMakerLayout: React.FC = () => {
               <div className="space-y-5">
                 {/* Chart Type */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Chart Type</label>
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Chart Type</Label>
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {chartTypes.map((t) => (
-                      <button key={t.id} onClick={() => setChartType(t.id)} className={`p-2 rounded-lg text-center transition-all ${chartType === t.id ? "bg-primary text-white ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "bg-base-200 hover:bg-base-300 text-primary-content"}`}>
+                      <button
+                        key={t.id}
+                        onClick={() => setChartType(t.id)}
+                        className={`p-2 rounded-[10px] text-center transition-all ${chartType === t.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2 ring-offset-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6] text-[#0A0A0A]"}`}
+                      >
                         <div className="text-lg">{t.icon}</div>
                         <div className="text-[10px] font-semibold">{t.name}</div>
                       </button>
@@ -960,33 +985,42 @@ const ChartMakerLayout: React.FC = () => {
                 </div>
 
                 {/* Title */}
-                <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Chart Title</label>
-                  <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="input input-bordered w-full" placeholder="Enter title" />
+                <div className="space-y-1.5">
+                  <Label className="text-sm font-medium text-[#4B5563]">Chart Title</Label>
+                  <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Enter title" />
                 </div>
 
                 {/* Import Data */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Import Data</label>
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Import Data</Label>
                   <div className="flex gap-2">
                     <input ref={fileInputRef} type="file" accept=".csv,.tsv,.txt" onChange={handleFileUpload} className="hidden" />
-                    <button onClick={() => fileInputRef.current?.click()} className="btn btn-sm btn-outline flex-1 gap-1"><BsUpload /> CSV</button>
-                    <button onClick={() => toast("Paste from Excel (Ctrl+V)", { icon: "📋" })} className="btn btn-sm btn-outline flex-1 gap-1"><BsTable /> Paste</button>
+                    <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="flex-1 gap-1">
+                      <BsUpload /> CSV
+                    </Button>
+                    <Button variant="secondary" size="sm" onClick={() => toast("Paste from Excel (Ctrl+V)", { icon: "📋" })} className="flex-1 gap-1">
+                      <BsTable /> Paste
+                    </Button>
                   </div>
                 </div>
 
                 {/* Labels */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="text-sm font-medium text-primary-content/70">Labels ({labels.length})</label>
-                    <button onClick={addLabel} className="btn btn-xs btn-primary gap-1"><BsPlus /></button>
+                    <Label className="text-sm font-medium text-[#4B5563]">Labels ({labels.length})</Label>
+                    <Button size="sm" className="h-7 text-xs px-2 gap-1" onClick={addLabel}><BsPlus /></Button>
                   </div>
-                  <div className="bg-base-200 rounded-lg p-2 max-h-[120px] overflow-y-auto">
+                  <div className="bg-[#F9FAFB] rounded-[10px] p-2 max-h-[120px] overflow-y-auto">
                     <div className="grid grid-cols-3 gap-1">
                       {labels.map((label, i) => (
-                        <div key={i} className="flex items-center bg-base-100 rounded px-1">
-                          <input type="text" value={label} onChange={(e) => updateLabel(i, e.target.value)} className="input input-xs flex-1 bg-transparent border-0 p-1 min-w-0" />
-                          <button onClick={() => removeLabel(i)} className="text-error/60 hover:text-error p-0.5"><BsTrash size={10} /></button>
+                        <div key={i} className="flex items-center bg-white rounded px-1">
+                          <input
+                            type="text"
+                            value={label}
+                            onChange={(e) => updateLabel(i, e.target.value)}
+                            className="flex-1 bg-transparent border-0 p-1 min-w-0 text-xs outline-none"
+                          />
+                          <button onClick={() => removeLabel(i)} className="text-red-400/60 hover:text-red-500 p-0.5"><BsTrash size={10} /></button>
                         </div>
                       ))}
                     </div>
@@ -996,23 +1030,36 @@ const ChartMakerLayout: React.FC = () => {
                 {/* Data Series */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="text-sm font-medium text-primary-content/70">Data Series ({datasets.length})</label>
-                    <button onClick={addDataset} className="btn btn-xs btn-primary gap-1"><BsPlus /></button>
+                    <Label className="text-sm font-medium text-[#4B5563]">Data Series ({datasets.length})</Label>
+                    <Button size="sm" className="h-7 text-xs px-2 gap-1" onClick={addDataset}><BsPlus /></Button>
                   </div>
                   <div className="space-y-3">
                     {datasets.map((ds, dsIndex) => (
-                      <div key={dsIndex} className="bg-base-200 rounded-lg p-3 space-y-2">
+                      <div key={dsIndex} className="bg-[#F9FAFB] rounded-[10px] p-3 space-y-2">
                         <div className="flex items-center gap-2">
                           <div className="flex flex-col gap-1">
                             <input type="color" value={ds.color} onChange={(e) => updateDataset(dsIndex, "color", e.target.value)} className="w-6 h-6 rounded cursor-pointer" title="Fill Color" />
                             <input type="color" value={ds.borderColor} onChange={(e) => updateDataset(dsIndex, "borderColor", e.target.value)} className="w-6 h-6 rounded cursor-pointer" title="Line/Border Color" />
                           </div>
-                          <input type="text" value={ds.name} onChange={(e) => updateDataset(dsIndex, "name", e.target.value)} className="input input-sm input-bordered flex-1 min-w-0" placeholder="Series name" />
-                          <button onClick={() => removeDataset(dsIndex)} className="btn btn-xs btn-ghost text-error"><BsTrash /></button>
+                          <Input
+                            value={ds.name}
+                            onChange={(e) => updateDataset(dsIndex, "name", e.target.value)}
+                            className="h-9 text-xs flex-1 min-w-0"
+                            placeholder="Series name"
+                          />
+                          <Button variant="ghost" size="sm" className="h-7 text-xs px-2 text-red-500" onClick={() => removeDataset(dsIndex)}>
+                            <BsTrash />
+                          </Button>
                         </div>
                         <div className="grid grid-cols-3 sm:grid-cols-6 gap-1">
                           {ds.data.map((val, i) => (
-                            <input key={i} type="number" value={val} onChange={(e) => updateDataValue(dsIndex, i, Number(e.target.value))} className="input input-xs input-bordered text-center p-1" />
+                            <input
+                              key={i}
+                              type="number"
+                              value={val}
+                              onChange={(e) => updateDataValue(dsIndex, i, Number(e.target.value))}
+                              className="w-full text-center p-1 text-xs border border-[#E5E7EB] rounded-md bg-white outline-none focus:border-[#2563EB]"
+                            />
                           ))}
                         </div>
                       </div>
@@ -1027,8 +1074,8 @@ const ChartMakerLayout: React.FC = () => {
                 {/* Legend Preview - Show series with colors */}
                 {datasets.length > 0 && (
                   <div>
-                    <label className="text-sm font-medium text-primary-content/70 block mb-2">Data Series Legend</label>
-                    <div className="bg-base-200 rounded-lg p-3 space-y-2">
+                    <Label className="text-sm font-medium text-[#4B5563] block mb-2">Data Series Legend</Label>
+                    <div className="bg-[#F9FAFB] rounded-[10px] p-3 space-y-2">
                       {datasets.map((ds, i) => (
                         <div key={i} className="flex items-center gap-2">
                           <div className="w-4 h-4 rounded" style={{ backgroundColor: ds.color, border: `2px solid ${ds.borderColor}` }} />
@@ -1040,55 +1087,55 @@ const ChartMakerLayout: React.FC = () => {
                 )}
 
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Background</label>
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Background</Label>
                   <BackgroundPicker background={background} onBackgroundChange={setBackground} showTilt={false} />
                 </div>
 
                 {/* Colors Section */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Colors</label>
-                  <div className="space-y-3 bg-base-200 rounded-lg p-3">
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Colors</Label>
+                  <div className="space-y-3 bg-[#F9FAFB] rounded-[10px] p-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-primary-content">Title Color</span>
+                      <span className="text-sm text-[#0A0A0A]">Title Color</span>
                       <input type="color" value={titleColor} onChange={(e) => setTitleColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0" />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-primary-content">Label Color</span>
+                      <span className="text-sm text-[#0A0A0A]">Label Color</span>
                       <input type="color" value={labelColor} onChange={(e) => setLabelColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0" />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-primary-content">Legend Color</span>
+                      <span className="text-sm text-[#0A0A0A]">Legend Color</span>
                       <input type="color" value={legendColor} onChange={(e) => setLegendColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0" />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-primary-content">Grid Color</span>
+                      <span className="text-sm text-[#0A0A0A]">Grid Color</span>
                       <input type="color" value={gridColor} onChange={(e) => setGridColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0" />
                     </div>
                   </div>
                 </div>
 
-                <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Padding: {padding}px</label>
-                  <input type="range" min="0" max="100" value={padding} onChange={(e) => setPadding(Number(e.target.value))} className="range range-primary range-sm w-full" />
+                <div className="space-y-1.5">
+                  <Label className="text-sm font-medium text-[#4B5563]">Padding: {padding}px</Label>
+                  <Slider min={0} max={100} value={[padding]} onValueChange={([v]) => setPadding(v)} />
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Border Radius: {borderRadius}px</label>
-                  <input type="range" min="0" max="50" value={borderRadius} onChange={(e) => setBorderRadius(Number(e.target.value))} className="range range-primary range-sm w-full" />
+                <div className="space-y-1.5">
+                  <Label className="text-sm font-medium text-[#4B5563]">Border Radius: {borderRadius}px</Label>
+                  <Slider min={0} max={50} value={[borderRadius]} onValueChange={([v]) => setBorderRadius(v)} />
                 </div>
                 <div className="space-y-3">
-                  <label className="text-sm font-medium text-primary-content/70 block">Options</label>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" checked={showLegend} onChange={(e) => setShowLegend(e.target.checked)} className="checkbox checkbox-primary checkbox-sm" />
-                    <span className="text-sm text-primary-content">Show Legend</span>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" checked={showGrid} onChange={(e) => setShowGrid(e.target.checked)} className="checkbox checkbox-primary checkbox-sm" />
-                    <span className="text-sm text-primary-content">Show Grid Lines</span>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" checked={animated} onChange={(e) => setAnimated(e.target.checked)} className="checkbox checkbox-primary checkbox-sm" />
-                    <span className="text-sm text-primary-content">Enable Animations</span>
-                  </label>
+                  <Label className="text-sm font-medium text-[#4B5563] block">Options</Label>
+                  <div className="flex items-center gap-3">
+                    <Switch checked={showLegend} onCheckedChange={setShowLegend} />
+                    <span className="text-sm text-[#0A0A0A]">Show Legend</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Switch checked={showGrid} onCheckedChange={setShowGrid} />
+                    <span className="text-sm text-[#0A0A0A]">Show Grid Lines</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Switch checked={animated} onCheckedChange={setAnimated} />
+                    <span className="text-sm text-[#0A0A0A]">Enable Animations</span>
+                  </div>
                 </div>
               </div>
             )}
@@ -1097,24 +1144,39 @@ const ChartMakerLayout: React.FC = () => {
               <div className="space-y-5">
                 {/* Save Current as Preset */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Save Current Chart</label>
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Save Current Chart</Label>
                   <div className="flex gap-2">
-                    <input type="text" value={newPresetName} onChange={(e) => setNewPresetName(e.target.value)} className="input input-sm input-bordered flex-1" placeholder="Preset name" />
-                    <button onClick={saveAsPreset} className="btn btn-sm btn-primary gap-1"><BsBookmark /> Save</button>
+                    <Input
+                      value={newPresetName}
+                      onChange={(e) => setNewPresetName(e.target.value)}
+                      className="h-9 text-xs flex-1"
+                      placeholder="Preset name"
+                    />
+                    <Button size="sm" onClick={saveAsPreset} className="gap-1"><BsBookmark /> Save</Button>
                   </div>
                 </div>
 
                 {/* Custom Presets */}
                 {customPresets.length > 0 && (
                   <div>
-                    <label className="text-sm font-medium text-primary-content/70 block mb-2">Your Presets</label>
+                    <Label className="text-sm font-medium text-[#4B5563] block mb-2">Your Presets</Label>
                     <div className="grid grid-cols-2 gap-2">
                       {customPresets.map((p) => (
                         <div key={p.id} className="relative group">
-                          <button onClick={() => loadPreset(p)} className="btn btn-sm btn-outline w-full justify-start gap-1 pr-8">
-                            <BsBookmarkFill className="text-primary" /> {p.name}
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => loadPreset(p)}
+                            className="w-full justify-start gap-1 pr-8"
+                          >
+                            <BsBookmarkFill className="text-[#2563EB]" /> {p.name}
+                          </Button>
+                          <button
+                            onClick={() => deleteCustomPreset(p.id)}
+                            className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <BsTrash size={12} />
                           </button>
-                          <button onClick={() => deleteCustomPreset(p.id)} className="absolute right-1 top-1/2 -translate-y-1/2 btn btn-xs btn-ghost text-error opacity-0 group-hover:opacity-100"><BsTrash /></button>
                         </div>
                       ))}
                     </div>
@@ -1123,12 +1185,18 @@ const ChartMakerLayout: React.FC = () => {
 
                 {/* Default Presets */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Templates</label>
+                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Templates</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {defaultPresets.map((p) => (
-                      <button key={p.id} onClick={() => loadPreset(p)} className="btn btn-sm btn-outline justify-start gap-1">
+                      <Button
+                        key={p.id}
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => loadPreset(p)}
+                        className="justify-start gap-1"
+                      >
                         {chartTypes.find(t => t.id === p.chartType)?.icon} {p.name}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>

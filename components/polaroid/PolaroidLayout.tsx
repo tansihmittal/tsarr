@@ -76,7 +76,7 @@ const PolaroidLayout = () => {
   // Auto-save with debounce (2 seconds after last change)
   useEffect(() => {
     if (!state.image) return;
-    
+
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current);
     }
@@ -153,10 +153,10 @@ const PolaroidLayout = () => {
   }, []);
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
-      <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
+      <section className="max-w-screen-xl mx-auto px-3 sm:px-4 lg:px-6 relative">
         <div className="flex flex-col lg:grid lg:gap-5 lg:grid-cols-[3fr_1.5fr]">
           <PolaroidPreview
             state={state}

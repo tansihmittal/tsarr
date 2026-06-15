@@ -33,7 +33,7 @@ export default function Document() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Bebas+Neue&family=Anton&family=Oswald:wght@200;300;400;500;600;700&family=Lobster&family=Pacifico&family=Dancing+Script:wght@400;500;600;700&family=Permanent+Marker&family=Bangers&family=Abril+Fatface&family=Alfa+Slab+One&family=Caveat:wght@400;500;600;700&family=Indie+Flower&family=Shadows+Into+Light&family=Patrick+Hand&family=Gloria+Hallelujah&display=swap"
+          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Bebas+Neue&family=Anton&family=Oswald:wght@200;300;400;500;600;700&family=Lobster&family=Pacifico&family=Dancing+Script:wght@400;500;600;700&family=Permanent+Marker&family=Bangers&family=Abril+Fatface&family=Alfa+Slab+One&family=Caveat:wght@400;500;600;700&family=Indie+Flower&family=Shadows+Into+Light&family=Patrick+Hand&family=Gloria+Hallelujah&display=swap"
           rel="stylesheet"
         />
         

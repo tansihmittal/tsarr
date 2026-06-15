@@ -6,6 +6,12 @@ import { BsClipboard, BsShare } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { shareImage } from "../../utils/share";
 import ProjectNameHeader from "../common/ProjectNameHeader";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface Props {
   state: TweetEditorState;
@@ -92,25 +98,27 @@ const TweetPreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, up
 
       {/* Top options */}
       <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
-        <div className="dropdown">
-          <label tabIndex={0}>
-            <ToolbarButton title="Export Image"><TfiExport /></ToolbarButton>
-          </label>
-          <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50">
-            <li onClick={() => onExport("png", 1)}><a>Export as PNG 1x</a></li>
-            <li onClick={() => onExport("png", 2)}><a>Export as PNG 2x</a></li>
-            <li onClick={() => onExport("png", 4)}><a>Export as PNG 4x</a></li>
-            <li onClick={() => onExport("svg", 2)}><a>Export as SVG</a></li>
-            <li onClick={() => onExport("jpeg", 2)}><a>Export as JPEG</a></li>
-          </ul>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span>
+              <ToolbarButton title="Export Image"><TfiExport /></ToolbarButton>
+            </span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-[200px] z-50">
+            <DropdownMenuItem onClick={() => onExport("png", 1)}>Export as PNG 1x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("png", 2)}>Export as PNG 2x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("png", 4)}>Export as PNG 4x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("svg", 2)}>Export as SVG</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("jpeg", 2)}>Export as JPEG</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>
         <ToolbarButton title="Reset" onTap={handleReset}><BiReset /></ToolbarButton>
         <ToolbarButton title="Share" onTap={() => shareImage(previewRef.current)}><BsShare /></ToolbarButton>
       </div>
 
       {/* Editor Canvas Area */}
-      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden py-8">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 border border-[#E5E7EB]/80 overflow-hidden py-8">
         <div
           ref={previewRef}
           className="flex flex-col items-center justify-center relative"

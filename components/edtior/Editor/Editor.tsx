@@ -25,16 +25,22 @@ import { useProject } from "@/hooks/useProject";
 import { getProjectAsync } from "@/utils/projectStorage";
 import { imageToBase64 } from "@/utils/imageStorage";
 import ProjectNameHeader from "@/components/common/ProjectNameHeader";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface Props {}
 
 const Editor: React.FC<Props> = () => {
-  const { 
-    updateData, 
-    resetChanges, 
-    selectedImage, 
-    noise, 
-    watermark, 
+  const {
+    updateData,
+    resetChanges,
+    selectedImage,
+    noise,
+    watermark,
     showAnnotations,
     currentBackground,
     currentBackgroundType,
@@ -138,7 +144,7 @@ const Editor: React.FC<Props> = () => {
   useEffect(() => {
     // Only auto-save if there's an image (actual content to save)
     if (!selectedImage) return;
-    
+
     // Clear previous timeout
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current);
@@ -192,7 +198,7 @@ const Editor: React.FC<Props> = () => {
   // Share functionality
   const handleShare = async () => {
     if (!imageToDownload.current || !selectedImage) return;
-    
+
     setIsSharing(true);
     try {
       const blob = await getImageBlob(imageToDownload.current, 2);
@@ -332,33 +338,32 @@ const Editor: React.FC<Props> = () => {
           selectedImage ? "opacity-100" : "opacity-80"
         }`}
       >
-        <div className="dropdown">
-          <label tabIndex={0}>
-            <ToolbarButton title="Export Image">
-              <TfiExport />
-            </ToolbarButton>
-          </label>
-          <ul
-            tabIndex={0}
-            className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md"
-          >
-            <li onClick={() => downloadimagePng(imageToDownload.current, 1)}>
-              <a>Export as PNG 1x</a>
-            </li>
-            <li onClick={() => downloadimagePng(imageToDownload.current, 2)}>
-              <a>Export as PNG 2x</a>
-            </li>
-            <li onClick={() => downloadimagePng(imageToDownload.current, 4)}>
-              <a>Export as PNG 4x</a>
-            </li>
-            <li onClick={() => downloadimageSvg(imageToDownload.current, 2)}>
-              <a>Export as SVG</a>
-            </li>
-            <li onClick={() => downloadimageJpeg(imageToDownload.current, 2)}>
-              <a>Export as JPEG</a>
-            </li>
-          </ul>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span>
+              <ToolbarButton title="Export Image">
+                <TfiExport />
+              </ToolbarButton>
+            </span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="min-w-[262px]" align="end">
+            <DropdownMenuItem onClick={() => downloadimagePng(imageToDownload.current, 1)}>
+              Export as PNG 1x
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimagePng(imageToDownload.current, 2)}>
+              Export as PNG 2x
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimagePng(imageToDownload.current, 4)}>
+              Export as PNG 4x
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimageSvg(imageToDownload.current, 2)}>
+              Export as SVG
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimageJpeg(imageToDownload.current, 2)}>
+              Export as JPEG
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <ToolbarButton
           title="Copy"
@@ -396,7 +401,7 @@ const Editor: React.FC<Props> = () => {
           title={showAnnotations ? "Close Drawing" : "Draw/Annotate"}
           onTap={() => updateData && updateData("showAnnotations", !showAnnotations)}
         >
-          <FaPencilAlt className={showAnnotations ? "text-primary" : "icon"} />
+          <FaPencilAlt className={showAnnotations ? "text-[#2563EB]" : "icon"} />
         </ToolbarButton>
 
         <ToolbarButton
@@ -415,14 +420,14 @@ const Editor: React.FC<Props> = () => {
       {/* Image Dimensions Display */}
       {selectedImage && imageDimensions.width > 0 && (
         <div className="flex justify-end mb-2 w-full">
-          <span className="text-xs text-gray-500 bg-base-200 px-3 py-1 rounded-full">
+          <span className="text-xs text-gray-500 bg-[#F9FAFB] px-3 py-1 rounded-full">
             {imageDimensions.width} × {imageDimensions.height} px
           </span>
         </div>
       )}
 
       {/* Editor Canvas Area */}
-      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 border border-[#E5E7EB]/80 overflow-hidden">
         <EditorWrapper imageRef={imageToDownload}>
           <>
             {noise && (
@@ -445,7 +450,7 @@ const Editor: React.FC<Props> = () => {
             )}
             {watermark.visible && (
               <span
-                className="text-primary-content absolute bottom-3 right-4 z-20 color-base-100 opacity-90 font-medium outline-none font-sans text-[1rem]"
+                className="text-[#0A0A0A] absolute bottom-3 right-4 z-20 opacity-90 font-medium outline-none font-sans text-[1rem]"
                 spellCheck={false}
                 suppressContentEditableWarning={true}
                 contentEditable

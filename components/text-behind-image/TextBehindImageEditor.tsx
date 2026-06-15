@@ -7,6 +7,13 @@ import { TextBehindImageState, TextLayer } from "./TextBehindImageLayout";
 import { shareImage } from "../../utils/share";
 import ProjectNameHeader from "../common/ProjectNameHeader";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface Props {
   state: TextBehindImageState;
@@ -194,13 +201,13 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
         ctx.globalAlpha = layer.opacity * layer.reflectionOpacity;
         ctx.translate(0, offsetY + fontSize * 1.5);
         ctx.scale(1, -1);
-        
+
         // Create gradient for reflection fade
         const gradient = ctx.createLinearGradient(0, -fontSize, 0, fontSize);
         gradient.addColorStop(0, layer.textColor);
         gradient.addColorStop(1, "transparent");
         ctx.fillStyle = gradient;
-        
+
         drawCurvedText(ctx, layer.text, 0, 0, radius, startAngle, fontSize, true);
         ctx.restore();
       }
@@ -212,7 +219,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
           ctx.translate(0, yOffset);
           ctx.scale(1, -1);
           ctx.globalAlpha = layer.opacity * layer.reflectionOpacity;
-          
+
           // Create gradient for reflection fade
           const gradient = ctx.createLinearGradient(0, -fontSize / 2, 0, fontSize / 2);
           gradient.addColorStop(0, layer.textColor);
@@ -567,33 +574,32 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
           state.image ? "opacity-100" : "opacity-80"
         }`}
       >
-        <div className="dropdown">
-          <label tabIndex={0}>
-            <ToolbarButton title="Export Image">
-              <TfiExport />
-            </ToolbarButton>
-          </label>
-          <ul
-            tabIndex={0}
-            className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50"
-          >
-            <li onClick={() => handleDownload(1, "png")}>
-              <a>Export as PNG 1x</a>
-            </li>
-            <li onClick={() => handleDownload(2, "png")}>
-              <a>Export as PNG 2x</a>
-            </li>
-            <li onClick={() => handleDownload(4, "png")}>
-              <a>Export as PNG 4x</a>
-            </li>
-            <li onClick={() => handleDownload(2, "jpeg")}>
-              <a>Export as JPEG</a>
-            </li>
-            <li onClick={() => handleDownload(2, "webp")}>
-              <a>Export as WebP</a>
-            </li>
-          </ul>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span>
+              <ToolbarButton title="Export Image">
+                <TfiExport />
+              </ToolbarButton>
+            </span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="min-w-[262px]">
+            <DropdownMenuItem onClick={() => handleDownload(1, "png")}>
+              Export as PNG 1x
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(2, "png")}>
+              Export as PNG 2x
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(4, "png")}>
+              Export as PNG 4x
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(2, "jpeg")}>
+              Export as JPEG
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(2, "webp")}>
+              Export as WebP
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <ToolbarButton
           title="Copy"
@@ -621,8 +627,8 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
           <BiReset className="icon" />
         </ToolbarButton>
 
-        <ToolbarButton 
-          title="Share" 
+        <ToolbarButton
+          title="Share"
           onTap={() => state.image && canvasRef.current && shareImage(canvasRef.current.parentElement)}
           disabled={!state.image}
         >
@@ -633,13 +639,13 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
       {/* Editor Canvas Area */}
       <div
         ref={containerRef}
-        className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden"
+        className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#EFF6FF]/30 border border-[#E5E7EB] overflow-hidden"
       >
         {state.image ? (
           <div className="relative p-8">
             <canvas
               ref={canvasRef}
-              className={`max-w-full max-h-[70vh] rounded-xl shadow-2xl ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+              className={`max-w-full max-h-[70vh] rounded-[14px] shadow-2xl ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
               style={{
                 boxShadow:
                   "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05)",
@@ -650,14 +656,14 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
               onMouseLeave={handleCanvasMouseUp}
             />
             {state.isProcessing && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-xl">
-                <div className="bg-base-100 p-4 rounded-xl shadow-2xl min-w-[220px] border border-base-200">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-[14px]">
+                <div className="bg-white p-4 rounded-[14px] shadow-2xl min-w-[220px] border border-[#E5E7EB]">
                   {/* Progress bar */}
                   <div className="mb-3">
-                    <div className="h-2.5 bg-base-200 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-primary to-primary-focus rounded-full transition-all duration-500 ease-out"
-                        style={{ 
+                    <div className="h-2.5 bg-[#F9FAFB] rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] rounded-full transition-all duration-500 ease-out"
+                        style={{
                           width: (() => {
                             const match = state.processingProgress.match(/(\d+)/);
                             return match ? `${match[1]}%` : '5%';
@@ -666,13 +672,13 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
                       />
                     </div>
                   </div>
-                  
+
                   {/* Status text */}
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-primary-content font-medium">
+                    <span className="text-sm text-[#0A0A0A] font-medium">
                       {state.processingProgress.includes('Loading') ? 'Loading Model...' : 'Processing...'}
                     </span>
-                    <span className="text-sm font-bold text-primary">
+                    <span className="text-sm font-bold text-[#2563EB]">
                       {(() => {
                         const match = state.processingProgress.match(/(\d+)/);
                         return match ? `${match[1]}%` : '5%';
@@ -684,14 +690,14 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
             )}
           </div>
         ) : (
-          <div className="p-6 sm:p-8 bg-base-100 relative z-20 rounded-2xl shadow-xl shadow-black/5 animate-fade-in-scale">
+          <div className="p-6 sm:p-8 bg-white relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale">
             {/* header */}
             <div className="flex gap-1 flex-col mb-6">
               <div className="flex items-start gap-4 sm:gap-6">
-                <h2 className="font-bold text-2xl text-primary-content bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
+                <h2 className="font-bold text-2xl text-[#0A0A0A] bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
                   Upload and Start Editing
                 </h2>
-                <div className="text-2xl text-primary animate-pulse-soft">✦</div>
+                <div className="text-2xl text-[#2563EB] animate-pulse-soft">✦</div>
               </div>
               <span className="text-sm text-gray-500 mt-1">
                 Create stunning text behind image effects
@@ -700,10 +706,10 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
             {/* upload */}
             <label
               htmlFor="image-upload-main"
-              className="flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-2xl border-dashed transition-all duration-300 cursor-pointer border-gray-300 hover:border-primary/50 hover:bg-primary/5"
+              className="flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer border-gray-300 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"
             >
-              <div className="p-4 rounded-full bg-primary/10 transition-transform duration-300">
-                <BsImage className="text-primary text-2xl" />
+              <div className="p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300">
+                <BsImage className="text-[#2563EB] text-2xl" />
               </div>
               <input
                 type="file"
@@ -713,7 +719,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
                 onChange={handleImageUpload}
               />
               <h3 className="text-gray-700 font-medium">
-                <span className="text-primary hover:underline cursor-pointer">
+                <span className="text-[#2563EB] hover:underline cursor-pointer">
                   Click to upload
                 </span>{" "}
                 or drag and drop
@@ -729,7 +735,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
             <div className="grid grid-cols-1 gap-3 mt-6">
               <label
                 htmlFor="image-upload-btn"
-                className="btn btn-primary rounded-xl font-semibold w-full shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
+                className="cursor-pointer"
               >
                 <input
                   type="file"
@@ -738,7 +744,9 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
                   id="image-upload-btn"
                   onChange={handleImageUpload}
                 />
-                START EDITING
+                <Button className="w-full font-semibold shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all duration-200 hover:-translate-y-0.5">
+                  START EDITING
+                </Button>
               </label>
             </div>
           </div>

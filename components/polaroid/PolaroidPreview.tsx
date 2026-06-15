@@ -9,6 +9,8 @@ import html2canvas from "html2canvas";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { shareImage } from "../../utils/share";
 import ProjectNameHeader from "../common/ProjectNameHeader";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 interface Props {
   state: PolaroidState;
@@ -140,32 +142,32 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
 
   const getFilterStyle = () => {
     const intensity = state.filterIntensity / 100;
-    
+
     // Base manual adjustments
     const brightness = state.brightness / 100;
     const contrast = state.contrast / 100;
     const saturation = state.saturation / 100;
     const blur = state.blur;
     const fade = state.fade / 100;
-    
+
     // Temperature and tint as hue-rotate approximation
     const tempHue = state.temperature * 0.3;
     const tintHue = state.tint * 0.2;
-    
+
     // Exposure as brightness modifier
     const exposureMod = 1 + (state.exposure / 100);
-    
+
     // Build base adjustments
     let baseFilter = `brightness(${brightness * exposureMod}) contrast(${contrast}) saturate(${saturation})`;
-    
+
     if (tempHue !== 0 || tintHue !== 0) {
       baseFilter += ` hue-rotate(${tempHue + tintHue}deg)`;
     }
-    
+
     if (blur > 0) {
       baseFilter += ` blur(${blur}px)`;
     }
-    
+
     // Add fade effect (reduces contrast and adds slight brightness)
     if (fade > 0) {
       const fadeContrast = 1 - (fade * 0.3);
@@ -316,14 +318,16 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
     <div className="flex items-center justify-start flex-col h-full w-full">
       <ProjectNameHeader name={projectName} onNameChange={onProjectNameChange} isSaving={isSaving} />
       <div style={{ pointerEvents: state.image ? "auto" : "none" }} className={`flex flex-wrap gap-2 w-full mb-3 justify-end ${state.image ? "opacity-100" : "opacity-80"}`}>
-        <div className="dropdown">
-          <label tabIndex={0}><ToolbarButton title="Export Image"><TfiExport /></ToolbarButton></label>
-          <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md">
-            <li onClick={() => handleDownload(1)}><a>Export as PNG 1x</a></li>
-            <li onClick={() => handleDownload(2)}><a>Export as PNG 2x</a></li>
-            <li onClick={() => handleDownload(4)}><a>Export as PNG 4x</a></li>
-          </ul>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span><ToolbarButton title="Export Image"><TfiExport /></ToolbarButton></span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[200px]">
+            <DropdownMenuItem onClick={() => handleDownload(1)}>Export as PNG 1x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(2)}>Export as PNG 2x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(4)}>Export as PNG 4x</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <ToolbarButton title="Copy" onTap={handleCopyToClipboard} disabled={!state.image}><BsClipboard className="icon" /></ToolbarButton>
         <label htmlFor="polaroid-image-reset">
           <input type="file" hidden accept="image/*" id="polaroid-image-reset" onChange={handleFileChange} />
@@ -335,11 +339,11 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
 
       {state.image && state.imageWidth > 0 && (
         <div className="flex justify-end mb-2 w-full">
-          <span className="text-xs text-gray-500 bg-base-200 px-3 py-1 rounded-full">{state.imageWidth} × {state.imageHeight} px</span>
+          <span className="text-xs text-gray-500 bg-[#F9FAFB] px-3 py-1 rounded-full">{state.imageWidth} × {state.imageHeight} px</span>
         </div>
       )}
 
-      <div {...getRootProps()} className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-auto">
+      <div {...getRootProps()} className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#EFF6FF]/30 border border-[#E5E7EB]/80 overflow-auto">
         <input {...getInputProps()} />
         {state.image ? (
           (() => {
@@ -351,14 +355,14 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
             const scaleX = totalWidth > maxPreviewWidth ? maxPreviewWidth / totalWidth : 1;
             const scaleY = totalHeight > maxPreviewHeight ? maxPreviewHeight / totalHeight : 1;
             const displayScale = Math.min(scaleX, scaleY, 1);
-            
+
             return (
               <div style={{ transform: `scale(${displayScale})`, transformOrigin: "center center" }}>
-                <div 
-                  ref={polaroidRef} 
-                  className="flex items-center justify-center" 
-                  style={{ 
-                    background: getBackgroundStyle(), 
+                <div
+                  ref={polaroidRef}
+                  className="flex items-center justify-center"
+                  style={{
+                    background: getBackgroundStyle(),
                     padding: "48px",
                   }}
                 >
@@ -403,21 +407,25 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
 
 const PolaroidDropZone = ({ isDragActive }: { isDragActive: boolean }) => {
   return (
-    <div className="p-6 sm:p-8 bg-base-100 relative z-20 rounded-2xl shadow-xl shadow-black/5 animate-fade-in-scale">
+    <div className="p-6 sm:p-8 bg-white relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale">
       <div className="flex gap-1 flex-col mb-6">
         <div className="flex items-start gap-4 sm:gap-6">
-          <h2 className="font-bold text-2xl text-primary-content bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">Create Polaroid Photo</h2>
-          <div className="text-2xl text-primary animate-pulse-soft">✦</div>
+          <h2 className="font-bold text-2xl text-[#0A0A0A] bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">Create Polaroid Photo</h2>
+          <div className="text-2xl text-[#2563EB] animate-pulse-soft">✦</div>
         </div>
         <span className="text-sm text-gray-500 mt-1">Transform your images into vintage polaroid-style photos</span>
       </div>
-      <div className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-2xl border-dashed transition-all duration-300 cursor-pointer ${isDragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-gray-300 hover:border-primary/50 hover:bg-primary/5"}`}>
-        <div className={`p-4 rounded-full bg-primary/10 transition-transform duration-300 ${isDragActive ? "scale-110" : ""}`}><BsUpload className="text-primary text-2xl" /></div>
-        <h3 className="text-gray-700 font-medium"><span className="text-primary hover:underline cursor-pointer">Click to upload</span> or drag and drop</h3>
+      <div className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer ${isDragActive ? "border-[#2563EB] bg-[#2563EB]/5 scale-[1.02]" : "border-gray-300 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"}`}>
+        <div className={`p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300 ${isDragActive ? "scale-110" : ""}`}><BsUpload className="text-[#2563EB] text-2xl" /></div>
+        <h3 className="text-gray-700 font-medium"><span className="text-[#2563EB] hover:underline cursor-pointer">Click to upload</span> or drag and drop</h3>
         <div className="flex items-center gap-2 text-sm text-gray-500"><BsClipboard className="text-xs" /><span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span></div>
         <span className="text-xs text-gray-400">PNG, JPG, WEBP up to 30MB</span>
       </div>
-      <div className="mt-6"><button className="btn btn-primary rounded-xl font-semibold w-full shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5">{isDragActive ? "DROP TO UPLOAD" : "START CREATING"}</button></div>
+      <div className="mt-6">
+        <Button className="w-full rounded-[14px] font-semibold shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all duration-200 hover:-translate-y-0.5">
+          {isDragActive ? "DROP TO UPLOAD" : "START CREATING"}
+        </Button>
+      </div>
     </div>
   );
 };

@@ -15,7 +15,7 @@ const FrameWrapper: React.FC<Props> = ({ children, frame }) => {
     const isDark = frame === "macOsDark";
     return (
       <div
-        className={`flex flex-col rounded-lg overflow-hidden border ${isDark ? "border-gray-700 shadow-2xl" : "border-gray-200 shadow-xl"}`}
+        className={`flex flex-col rounded-[10px] overflow-hidden border ${isDark ? "border-gray-700 shadow-2xl" : "border-[#E5E7EB] shadow-xl"}`}
       >
         <div
           className={`flex items-center gap-2 px-4 py-2 ${isDark ? "bg-[#2D2D2D]" : "bg-[#F6F6F6]"}`}
@@ -42,7 +42,7 @@ const FrameWrapper: React.FC<Props> = ({ children, frame }) => {
     const isDark = frame === "browserDark";
     return (
       <div
-        className={`flex flex-col rounded-lg overflow-hidden border ${isDark ? "border-gray-700 shadow-2xl" : "border-gray-200 shadow-xl"}`}
+        className={`flex flex-col rounded-[10px] overflow-hidden border ${isDark ? "border-gray-700 shadow-2xl" : "border-[#E5E7EB] shadow-xl"}`}
       >
         <div
           className={`flex items-center gap-2 px-4 py-3 ${isDark ? "bg-[#202124]" : "bg-[#F1F3F4]"}`}

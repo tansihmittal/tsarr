@@ -5,6 +5,13 @@ import { BsClipboard, BsUpload, BsRepeat } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import ToolbarButton from "../common/ToolbarButton";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface Props {
   state: AspectRatioState;
@@ -156,18 +163,16 @@ const AspectRatioPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCop
       <div className="flex items-center justify-start flex-col h-full w-full">
         {/* Top options - disabled state */}
         <div className="flex flex-wrap gap-2 w-full mb-3 justify-end opacity-80" style={{ pointerEvents: "none" }}>
-          <div className="dropdown">
-            <label tabIndex={0}><ToolbarButton title="Export Image" disabled><TfiExport /></ToolbarButton></label>
-          </div>
+          <ToolbarButton title="Export Image" disabled><TfiExport /></ToolbarButton>
           <ToolbarButton title="Copy" disabled><BsClipboard /></ToolbarButton>
-          <label><ToolbarButton title="Reset Image" disabled><BsRepeat /></ToolbarButton></label>
+          <ToolbarButton title="Reset Image" disabled><BsRepeat /></ToolbarButton>
           <ToolbarButton title="Reset Canvas" disabled><BiReset /></ToolbarButton>
         </div>
 
         {/* Editor Canvas Area with DropZone */}
-        <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
+        <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 border border-[#E5E7EB] overflow-hidden">
           <div
-            className={`p-6 sm:p-8 bg-base-100 relative z-20 rounded-2xl shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-primary" : ""}`}
+            className={`p-6 sm:p-8 bg-white relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-[#2563EB]" : ""}`}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -175,10 +180,10 @@ const AspectRatioPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCop
             {/* header */}
             <div className="flex gap-1 flex-col mb-6">
               <div className="flex items-start gap-4 sm:gap-6">
-                <h2 className="font-bold text-2xl text-primary-content bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
+                <h2 className="font-bold text-2xl text-[#0A0A0A] bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
                   Convert Image Aspect Ratio
                 </h2>
-                <div className="text-2xl text-primary animate-pulse-soft">✦</div>
+                <div className="text-2xl text-[#2563EB] animate-pulse-soft">✦</div>
               </div>
               <span className="text-sm text-gray-500 mt-1">
                 Resize images to any aspect ratio with multiple output formats
@@ -187,16 +192,16 @@ const AspectRatioPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCop
 
             {/* upload area */}
             <label
-              className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-2xl border-dashed transition-all duration-300 cursor-pointer ${
-                isDragging ? "border-primary bg-primary/5 scale-[1.02]" : "border-gray-300 hover:border-primary/50 hover:bg-primary/5"
+              className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer ${
+                isDragging ? "border-[#2563EB] bg-[#2563EB]/5 scale-[1.02]" : "border-gray-300 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"
               }`}
             >
-              <div className={`p-4 rounded-full bg-primary/10 transition-transform duration-300 ${isDragging ? "scale-110" : ""}`}>
-                <BsUpload className="text-primary text-2xl" />
+              <div className={`p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300 ${isDragging ? "scale-110" : ""}`}>
+                <BsUpload className="text-[#2563EB] text-2xl" />
               </div>
               <input type="file" hidden accept="image/*" onChange={handleFileInput} />
               <h3 className="text-gray-700 font-medium">
-                <span className="text-primary hover:underline">Click to upload</span> or drag and drop
+                <span className="text-[#2563EB] hover:underline">Click to upload</span> or drag and drop
               </h3>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <BsClipboard className="text-xs" />
@@ -207,14 +212,16 @@ const AspectRatioPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCop
 
             {/* buttons */}
             <div className="grid grid-cols-2 gap-3 mt-6">
-              <label className="btn btn-primary rounded-xl font-semibold w-full shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer">
+              <label className="cursor-pointer">
                 <input type="file" hidden accept="image/*" onChange={handleFileInput} />
-                {isDragging ? "DROP TO UPLOAD" : "START EDITING"}
+                <Button className="rounded-[14px] font-semibold w-full shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all duration-200 hover:-translate-y-0.5" asChild={false}>
+                  {isDragging ? "DROP TO UPLOAD" : "START EDITING"}
+                </Button>
               </label>
-              <button onClick={handlePaste} className="btn btn-outline rounded-xl font-semibold w-full hover:shadow-md transition-all duration-200 gap-2">
+              <Button onClick={handlePaste} variant="secondary" className="rounded-[14px] font-semibold w-full hover:shadow-md transition-all duration-200 gap-2">
                 <BsClipboard className="text-lg" />
                 PASTE IMAGE
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -227,12 +234,14 @@ const AspectRatioPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCop
     <div className="flex items-center justify-start flex-col h-full w-full">
       {/* Top options */}
       <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
-        <div className="dropdown">
-          <label tabIndex={0}><ToolbarButton title="Export Image"><TfiExport /></ToolbarButton></label>
-          <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50">
-            <li onClick={onExport}><a>Export as {state.outputFormat.toUpperCase()} ({state.outputScale}x)</a></li>
-          </ul>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span><ToolbarButton title="Export Image"><TfiExport /></ToolbarButton></span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="min-w-[262px]">
+            <DropdownMenuItem onClick={onExport}>Export as {state.outputFormat.toUpperCase()} ({state.outputScale}x)</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>
 
@@ -246,14 +255,14 @@ const AspectRatioPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCop
 
       {/* Image Dimensions Display */}
       <div className="flex justify-end mb-2 w-full">
-        <span className="text-xs text-gray-500 bg-base-200 px-3 py-1 rounded-full">
+        <span className="text-xs text-gray-500 bg-[#F9FAFB] px-3 py-1 rounded-full">
           {state.originalWidth} × {state.originalHeight} px → {state.useCustomSize ? `${state.customOutputWidth} × ${state.customOutputHeight}` : `${Math.round(800 * state.outputScale * (state.targetAspectRatio.value >= 1 ? 1 : state.targetAspectRatio.value))} × ${Math.round(800 * state.outputScale / (state.targetAspectRatio.value >= 1 ? state.targetAspectRatio.value : 1))}`} px
         </span>
       </div>
 
       {/* Editor Canvas Area */}
       <div
-        className={`relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border ${isDragging ? "border-primary border-dashed bg-primary/5" : "border-base-200/80"} overflow-hidden`}
+        className={`relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 border ${isDragging ? "border-[#2563EB] border-dashed bg-[#2563EB]/5" : "border-[#E5E7EB]"} overflow-hidden`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -261,7 +270,7 @@ const AspectRatioPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCop
         <div className="relative flex items-center justify-center p-4">
           <canvas
             ref={canvasRef}
-            className="max-w-full max-h-[550px] rounded-lg shadow-2xl shadow-black/10"
+            className="max-w-full max-h-[550px] rounded-[10px] shadow-2xl shadow-black/10"
             style={{ background: state.backgroundType === "transparent" ? "repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%) 50% / 20px 20px" : undefined }}
           />
         </div>

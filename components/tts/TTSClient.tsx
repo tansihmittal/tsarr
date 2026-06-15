@@ -43,8 +43,8 @@ export default function TTSClient() {
       <TTSLayout>
         <div className="flex items-center justify-center min-h-[300px] sm:min-h-[400px]">
           <div className="text-center">
-            <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
-            <p className="text-gray-500">Loading TTS Engine...</p>
+            <div className="w-10 h-10 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-[#4B5563]">Loading TTS Engine...</p>
           </div>
         </div>
         <div></div>

@@ -6,12 +6,15 @@ import {
   BsType, BsCameraVideo, BsAspectRatio, BsArrowsFullscreen, BsArrowRepeat,
   BsClipboard, BsBarChartFill, BsGlobe, BsPencilSquare, BsChatSquare,
   BsCardImage, BsEraserFill, BsChevronDown, BsSoundwave, BsLayers,
-  BsPalette, BsDownload, BsPencil, BsPlay, BsFolder2,
+  BsPalette, BsDownload, BsPencil, BsPlay,
 } from "react-icons/bs";
 import { MdSubtitles } from "react-icons/md";
 import { RiSlideshow3Line } from "react-icons/ri";
 import { useState, useEffect } from "react";
 import { Project, cacheProjects, getRecentProjects } from "../utils/projectStorage";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { Card, CardContent, CardTitle, CardDescription } from "../components/ui/card";
 
 const typeRoutes: Record<string, string> = {
   screenshot: "/editor",
@@ -22,7 +25,6 @@ const typeRoutes: Record<string, string> = {
   "text-behind-image": "/text-behind-image",
 };
 
-// Structured Data for SEO
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
@@ -32,8 +34,8 @@ const websiteSchema = {
   potentialAction: {
     "@type": "SearchAction",
     target: "https://tsarr.in/tools?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
+    "query-input": "required name=search_term_string",
+  },
 };
 
 const applicationSchema = {
@@ -41,15 +43,11 @@ const applicationSchema = {
   "@type": "WebApplication",
   name: "tsarr.in Screenshot Editor",
   url: "https://tsarr.in",
-  description: "Free online screenshot editor with frames, backgrounds, annotations. Create code screenshots, video captions, and more.",
+  description: "Free online screenshot editor with frames, backgrounds, annotations.",
   applicationCategory: "DesignApplication",
   operatingSystem: "Any",
   browserRequirements: "Requires JavaScript. Requires HTML5.",
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "USD"
-  },
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   featureList: [
     "Screenshot frames (macOS, Windows, Browser)",
     "Custom backgrounds and gradients",
@@ -58,14 +56,10 @@ const applicationSchema = {
     "Video captions with auto-transcription",
     "Image format conversion",
     "No login required",
-    "Free unlimited exports"
+    "Free unlimited exports",
   ],
   screenshot: "https://tsarr.in/images/og-image.png",
-  author: {
-    "@type": "Person",
-    name: "Tanish Mittal",
-    url: "https://tanishmittal.com"
-  }
+  author: { "@type": "Person", name: "Tanish Mittal", url: "https://tanishmittal.com" },
 };
 
 const organizationSchema = {
@@ -77,48 +71,22 @@ const organizationSchema = {
   sameAs: [
     "https://twitter.com/mittaltani36318",
     "https://github.com/tansihmittal",
-    "https://linkedin.com/in/tanishmittal02"
-  ]
+    "https://linkedin.com/in/tanishmittal02",
+  ],
 };
 
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
-    {
-      "@type": "Question",
-      name: "Is tsarr.in free to use?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes, tsarr.in is completely free with no login required. Create unlimited exports without any cost or restrictions."
-      }
-    },
-    {
-      "@type": "Question",
-      name: "What export formats are supported?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "PNG, JPEG, SVG, WebP, AVIF, GIF, BMP, and ICO. Export at up to 4x resolution for high-quality output."
-      }
-    },
-    {
-      "@type": "Question",
-      name: "Do I need to create an account?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "No account needed. All tools work instantly in your browser with no signup or login required."
-      }
-    },
-    {
-      "@type": "Question",
-      name: "Can I use exports for commercial projects?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Absolutely. Everything you create is yours to use for any purpose, including commercial projects."
-      }
-    }
-  ]
+    { "@type": "Question", name: "Is tsarr.in free to use?", acceptedAnswer: { "@type": "Answer", text: "Yes, completely free with no login required." } },
+    { "@type": "Question", name: "What export formats are supported?", acceptedAnswer: { "@type": "Answer", text: "PNG, JPEG, SVG, WebP, AVIF, GIF, BMP, and ICO. Up to 4x resolution." } },
+    { "@type": "Question", name: "Do I need to create an account?", acceptedAnswer: { "@type": "Answer", text: "No account needed. All tools work instantly in your browser." } },
+    { "@type": "Question", name: "Can I use exports for commercial projects?", acceptedAnswer: { "@type": "Answer", text: "Absolutely. Everything you create is yours to use for any purpose." } },
+  ],
 };
+
+const FONT = "'IBM Plex Sans', sans-serif";
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -170,159 +138,205 @@ export default function Home() {
     { q: "Can I use exports for commercial projects?", a: "Absolutely. Everything you create is yours to use for any purpose, including commercial projects." },
   ];
 
+  const quickLinks = ["Code Screenshots", "Video Captions", "Text Behind Image", "AI Watermark Removal", "Image Converter"];
+
   return (
     <>
       <Head>
-        {/* Primary Meta Tags */}
         <title>tsarr.in - Free Screenshot Editor | 19+ Image and Video Tools Online</title>
-        <meta name="title" content="tsarr.in - Free Screenshot Editor | 19+ Image and Video Tools Online" />
-        <meta name="description" content="Free online screenshot editor with beautiful frames, backgrounds, and annotations. Create code screenshots, add video captions, convert images. 19+ tools, no login required. Export to PNG, SVG, JPEG, WebP." />
-        <meta name="keywords" content="screenshot editor, code screenshot, screenshot tool, image editor, free online editor, no login, code to image, beautiful screenshots, video captions, image converter, text behind image" />
+        <meta name="description" content="Free online screenshot editor with beautiful frames, backgrounds, and annotations. Create code screenshots, add video captions, convert images. 19+ tools, no login required." />
+        <meta name="keywords" content="screenshot editor, code screenshot, screenshot tool, image editor, free online editor, no login, code to image, beautiful screenshots, video captions, image converter" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="author" content="Tanish Mittal" />
         <link rel="canonical" href="https://tsarr.in" />
         <link rel="icon" href="/favicon.ico" />
-
-        {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://tsarr.in" />
         <meta property="og:title" content="tsarr.in - Free Screenshot Editor | 19+ Image and Video Tools" />
-        <meta property="og:description" content="Free online screenshot editor with frames, backgrounds, annotations. Create code screenshots, video captions, and more. No login required." />
+        <meta property="og:description" content="Free online screenshot editor with frames, backgrounds, annotations. No login required." />
         <meta property="og:image" content="https://tsarr.in/images/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="tsarr.in" />
-        <meta property="og:locale" content="en_US" />
-
-        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="https://tsarr.in" />
         <meta name="twitter:title" content="tsarr.in - Free Screenshot Editor | 19+ Tools" />
-        <meta name="twitter:description" content="Free screenshot editor with frames, backgrounds, annotations. Code screenshots, video captions, image conversion. No login required." />
+        <meta name="twitter:description" content="Free screenshot editor with frames, backgrounds, annotations. No login required." />
         <meta name="twitter:image" content="https://tsarr.in/images/og-image.png" />
         <meta name="twitter:creator" content="@mittaltani36318" />
-        <meta name="twitter:site" content="@mittaltani36318" />
-
-        {/* Additional SEO */}
-        <meta name="theme-color" content="#111827" />
-        <meta name="apple-mobile-web-app-title" content="tsarr.in" />
-        <meta name="application-name" content="tsarr.in" />
-        <meta name="format-detection" content="telephone=no" />
-
-        {/* Structured Data */}
+        <meta name="theme-color" content="#ffffff" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(applicationSchema) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       </Head>
 
-      <div className="min-h-screen bg-white text-gray-900 antialiased">
-        {/* Header */}
-        <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100">
+      <div className="min-h-screen bg-white text-[#0A0A0A] antialiased" style={{ fontFamily: FONT }}>
+
+        {/* ── Header ── */}
+        <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-[#E5E7EB]">
           <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-            <Link href="/" className="text-lg font-semibold text-gray-900 tracking-tight">
+            <Link href="/" className="text-base font-semibold text-[#0A0A0A] tracking-tight">
               tsarr.in
             </Link>
-            <nav className="flex items-center gap-1">
-              <Link href="/tools" className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors">
-                Tools
-              </Link>
-              <Link href="/blog" className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors">
-                Blog
-              </Link>
-              <Link href="/editor" className="ml-3 px-4 py-2 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
-                Open Editor
-              </Link>
+
+            {/* Pill nav group */}
+            <nav className="hidden md:flex items-center gap-0.5 bg-[#F9FAFB] border border-[#E5E7EB] rounded-full px-1.5 py-1">
+              {[
+                { label: "Tools", href: "/tools" },
+                { label: "Blog", href: "/blog" },
+                { label: "Projects", href: "/projects" },
+              ].map(({ label, href }) => (
+                <Button key={label} variant="ghost" size="sm" asChild>
+                  <Link href={href}>{label}</Link>
+                </Button>
+              ))}
             </nav>
+
+            <Button size="sm" asChild>
+              <Link href="/editor">Open Editor</Link>
+            </Button>
           </div>
         </header>
 
         <main>
-          {/* Hero */}
-          <section className="pt-20 pb-16 px-6">
-            <div className="max-w-6xl mx-auto">
-              <div className="max-w-3xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 text-sm font-medium rounded-full mb-6 border border-emerald-100">
-                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                  Free and No Login Required
-                </div>
-                <h1 className="text-4xl sm:text-5xl font-semibold text-gray-900 tracking-tight leading-[1.1] mb-6">
-                  Screenshot editor for<br />
-                  <span className="text-gray-400">modern creators</span>
-                </h1>
-                <p className="text-lg text-gray-600 leading-relaxed mb-8 max-w-xl">
-                  Transform screenshots into polished visuals. Add frames, backgrounds, 
-                  and annotations. Create code screenshots, video captions, and more.
-                </p>
-                <div className="flex flex-wrap items-center gap-3">
-                  <Link href="/editor" className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+          {/* ── Hero ── */}
+          <section
+            className="pt-24 pb-20 px-6 relative overflow-hidden"
+            style={{
+              background:
+                "radial-gradient(ellipse 80% 55% at 50% -5%, rgba(37,99,235,0.11) 0%, transparent 65%), #ffffff",
+            }}
+          >
+            <div className="max-w-6xl mx-auto text-center relative">
+              {/* Badge */}
+              <Badge variant="primary" className="mb-8">
+                <span className="w-1.5 h-1.5 bg-[#2563EB] rounded-full" />
+                Free · No login · 19+ tools
+              </Badge>
+
+              {/* Headline */}
+              <h1
+                className="font-normal text-[#0A0A0A] mb-6 max-w-4xl mx-auto"
+                style={{
+                  fontSize: "clamp(40px,6vw,64px)",
+                  lineHeight: 1,
+                  letterSpacing: "-3px",
+                }}
+              >
+                Screenshot editor for{" "}
+                <span className="text-[#2563EB]">modern creators</span>
+              </h1>
+
+              {/* Subheadline */}
+              <p
+                className="text-[#4B5563] mb-10 max-w-lg mx-auto"
+                style={{ fontSize: 18, lineHeight: "28px" }}
+              >
+                Frames, backgrounds, annotations, and AI tools — all free in your browser.
+              </p>
+
+              {/* CTA row */}
+              <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
+                <Button asChild>
+                  <Link href="/editor">
                     Open Screenshot Editor
                     <BsArrowRight className="w-4 h-4" />
                   </Link>
-                  <Link href="/code" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
-                    Code Screenshots
-                  </Link>
-                  <Link href="/tools" className="inline-flex items-center gap-2 px-4 py-2.5 text-gray-500 text-sm font-medium hover:text-gray-900 transition-colors">
-                    View all 19 tools
-                    <BsArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
+                </Button>
+                <Button variant="secondary" asChild>
+                  <Link href="/tools">Browse All Tools</Link>
+                </Button>
+              </div>
+
+              {/* Quick-link chips */}
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {quickLinks.map((label) => (
+                  <Badge key={label}>{label}</Badge>
+                ))}
               </div>
             </div>
           </section>
 
-          {/* Preview */}
+          {/* ── App preview ── */}
           <section className="pb-24 px-6">
             <div className="max-w-6xl mx-auto">
-              <div className="relative rounded-xl border border-gray-200 overflow-hidden shadow-2xl shadow-gray-200/60">
-                <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <div
+                className="rounded-[20px] border border-[#E5E7EB] overflow-hidden"
+                style={{
+                  boxShadow:
+                    "0 24px 64px -12px rgba(0,0,0,0.10), 0 4px 16px -4px rgba(37,99,235,0.06)",
+                }}
+              >
+                <div className="flex items-center gap-3 px-5 py-3 bg-[#F9FAFB] border-b border-[#E5E7EB]">
                   <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-gray-300"></div>
-                    <div className="w-3 h-3 rounded-full bg-gray-300"></div>
-                    <div className="w-3 h-3 rounded-full bg-gray-300"></div>
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="w-3 h-3 rounded-full bg-[#E5E7EB]" />
+                    ))}
                   </div>
-                  <div className="flex-1 text-center">
-                    <span className="text-xs text-gray-400 font-medium">tsarr.in/editor</span>
+                  <div className="flex-1 flex justify-center">
+                    <span className="bg-white border border-[#E5E7EB] rounded-full px-4 py-1 text-[#4B5563] text-xs font-medium">
+                      tsarr.in/editor
+                    </span>
                   </div>
                 </div>
-                <Image src="/images/main.webp" alt="Screenshot Editor Interface" width={1200} height={675} className="w-full h-auto" priority />
+                <Image
+                  src="/images/main.webp"
+                  alt="tsarr.in Screenshot Editor"
+                  width={1200}
+                  height={675}
+                  className="w-full h-auto"
+                  priority
+                />
               </div>
             </div>
           </section>
 
-          {/* Recent Projects */}
+          {/* ── Recent Projects ── */}
           {recentProjects.length > 0 && (
-            <section className="pb-16 px-6">
+            <section className="pb-20 px-6">
               <div className="max-w-6xl mx-auto">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900">Continue where you left off</h2>
-                  <Link href="/projects" className="text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center gap-1">
-                    All projects <BsArrowRight className="w-3.5 h-3.5" />
-                  </Link>
+                  <h2 className="font-medium text-[#0A0A0A]" style={{ fontSize: 20 }}>
+                    Continue where you left off
+                  </h2>
+                  <Button variant="link" size="sm" asChild>
+                    <Link href="/projects">
+                      All projects <BsArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </Button>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {recentProjects.slice(0, 5).map((project) => (
                     <Link
                       key={project.id}
                       href={`${typeRoutes[project.type]}?project=${project.id}`}
-                      className="group bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all"
+                      className="block"
                     >
-                      <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
-                        {project.thumbnail ? (
-                          <img src={project.thumbnail} alt={project.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <BsImage className="text-2xl text-gray-300" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-3">
-                        <h3 className="font-medium text-gray-900 text-sm truncate">{project.name}</h3>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          {new Date(project.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                        </p>
-                      </div>
+                      <Card className="overflow-hidden hover:border-[#60A5FA]">
+                        <div className="aspect-[4/3] bg-[#F3F4F6] relative overflow-hidden">
+                          {project.thumbnail ? (
+                            <img
+                              src={project.thumbnail}
+                              alt={project.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <BsImage className="text-2xl text-[#E5E7EB]" />
+                            </div>
+                          )}
+                        </div>
+                        <CardContent className="p-3">
+                          <p className="font-medium text-[#0A0A0A] truncate text-sm">{project.name}</p>
+                          <p className="text-[#4B5563] mt-0.5 text-xs">
+                            {new Date(project.updatedAt).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </p>
+                        </CardContent>
+                      </Card>
                     </Link>
                   ))}
                 </div>
@@ -330,121 +344,163 @@ export default function Home() {
             </section>
           )}
 
-          {/* Features */}
-          <section className="py-24 px-6 bg-gray-50 border-y border-gray-100">
+          {/* ── Features ── */}
+          <section className="py-24 px-6 bg-[#F9FAFB] border-y border-[#E5E7EB]">
             <div className="max-w-6xl mx-auto">
-              <div className="max-w-2xl mb-16">
-                <h2 className="text-3xl font-semibold text-gray-900 tracking-tight mb-4">
+              <div className="max-w-xl mb-16">
+                <h2
+                  className="font-normal text-[#0A0A0A] mb-4"
+                  style={{ fontSize: "clamp(28px,3.5vw,40px)", lineHeight: 1.1, letterSpacing: "-1.5px" }}
+                >
                   Everything you need to create stunning visuals
                 </h2>
-                <p className="text-gray-600 text-lg">
+                <p className="text-[#4B5563]" style={{ fontSize: 18, lineHeight: "28px" }}>
                   Professional-grade tools that help you communicate better through images.
                 </p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {features.map((feature, i) => (
-                  <div key={i} className="group">
-                    <div className="w-10 h-10 flex items-center justify-center bg-white text-gray-700 rounded-lg border border-gray-200 mb-4 group-hover:border-gray-300 group-hover:shadow-sm transition-all">
-                      {feature.icon}
-                    </div>
-                    <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">{feature.desc}</p>
-                  </div>
+                  <Card key={i} className="bg-white hover:border-[#60A5FA] hover:shadow-sm">
+                    <CardContent className="p-6">
+                      <div className="w-10 h-10 flex items-center justify-center bg-[#EFF6FF] text-[#2563EB] rounded-[10px] mb-4">
+                        {feature.icon}
+                      </div>
+                      <CardTitle className="mb-2">{feature.title}</CardTitle>
+                      <CardDescription>{feature.desc}</CardDescription>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             </div>
           </section>
 
-          {/* Tools */}
+          {/* ── Tools grid ── */}
           <section className="py-24 px-6">
             <div className="max-w-6xl mx-auto">
               <div className="flex items-end justify-between mb-12">
                 <div>
-                  <h2 className="text-3xl font-semibold text-gray-900 tracking-tight mb-2">
+                  <h2
+                    className="font-normal text-[#0A0A0A] mb-2"
+                    style={{ fontSize: "clamp(28px,3.5vw,40px)", lineHeight: 1.1, letterSpacing: "-1.5px" }}
+                  >
                     19+ creative tools
                   </h2>
-                  <p className="text-gray-600">All free, all in your browser.</p>
+                  <p className="text-[#4B5563]" style={{ fontSize: 16 }}>
+                    All free, all in your browser.
+                  </p>
                 </div>
-                <Link href="/tools" className="text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors hidden sm:flex items-center gap-1">
-                  View all <BsArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                <Button variant="link" size="sm" asChild className="hidden sm:flex">
+                  <Link href="/tools">
+                    View all <BsArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </Button>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {tools.slice(0, 12).map((tool, i) => (
-                  <Link
-                    key={i}
-                    href={tool.href}
-                    className="group flex items-start gap-4 p-4 rounded-xl border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all"
-                  >
-                    <div className="w-10 h-10 flex items-center justify-center bg-gray-100 text-gray-600 rounded-lg group-hover:bg-gray-200 transition-colors flex-shrink-0">
-                      {tool.icon}
-                    </div>
-                    <div className="min-w-0 pt-0.5">
-                      <div className="font-medium text-gray-900 mb-0.5">{tool.title}</div>
-                      <div className="text-sm text-gray-500">{tool.desc}</div>
-                    </div>
+                  <Link key={i} href={tool.href} className="block">
+                    <Card className="group flex items-start gap-4 p-4 hover:border-[#DBEAFE] hover:bg-[#EFF6FF]">
+                      <div className="w-9 h-9 flex items-center justify-center bg-white text-[#2563EB] rounded-[10px] border border-[#E5E7EB] group-hover:border-[#60A5FA] transition-colors flex-shrink-0">
+                        {tool.icon}
+                      </div>
+                      <div className="min-w-0 pt-0.5">
+                        <p className="font-medium text-[#0A0A0A] text-sm mb-0.5">{tool.title}</p>
+                        <p className="text-[#4B5563] text-xs">{tool.desc}</p>
+                      </div>
+                    </Card>
                   </Link>
                 ))}
               </div>
+
               <div className="mt-8 text-center">
-                <Link href="/tools" className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
-                  View all 19 tools
-                  <BsArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                <Button variant="secondary" asChild>
+                  <Link href="/tools">
+                    View all 19 tools
+                    <BsArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </Button>
               </div>
             </div>
           </section>
 
-          {/* How it works */}
-          <section className="py-24 px-6 bg-gray-900 text-white">
+          {/* ── How it works ── */}
+          <section className="py-24 px-6 bg-[#F9FAFB] border-y border-[#E5E7EB]">
             <div className="max-w-6xl mx-auto">
-              <div className="max-w-2xl mb-16">
-                <h2 className="text-3xl font-semibold tracking-tight mb-4">
+              <div className="max-w-xl mb-16">
+                <h2
+                  className="font-normal text-[#0A0A0A] mb-4"
+                  style={{ fontSize: "clamp(28px,3.5vw,40px)", lineHeight: 1.1, letterSpacing: "-1.5px" }}
+                >
                   Simple workflow, powerful results
                 </h2>
-                <p className="text-gray-400 text-lg">
+                <p className="text-[#4B5563]" style={{ fontSize: 18, lineHeight: "28px" }}>
                   Get from screenshot to polished visual in seconds.
                 </p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                 {[
                   { n: "01", t: "Upload", d: "Drop an image, paste from clipboard, or select a file. We support all common formats." },
                   { n: "02", t: "Customize", d: "Add frames, backgrounds, annotations. Adjust padding, shadows, and more." },
                   { n: "03", t: "Export", d: "Download as PNG, SVG, JPEG, or WebP at up to 4x resolution." },
                 ].map((step, i) => (
-                  <div key={i} className="relative">
-                    <div className="text-5xl font-bold text-gray-800 mb-4">{step.n}</div>
-                    <h3 className="text-xl font-semibold mb-2">{step.t}</h3>
-                    <p className="text-gray-400 leading-relaxed">{step.d}</p>
+                  <div key={i}>
+                    <div
+                      className="font-normal text-[#DBEAFE] mb-4"
+                      style={{ fontSize: 56, lineHeight: 1, letterSpacing: "-2px" }}
+                    >
+                      {step.n}
+                    </div>
+                    <h3 className="font-medium text-[#0A0A0A] mb-2" style={{ fontSize: 20 }}>
+                      {step.t}
+                    </h3>
+                    <p className="text-[#4B5563]" style={{ fontSize: 16, lineHeight: "26px" }}>
+                      {step.d}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
           </section>
 
-          {/* FAQ */}
+          {/* ── FAQ ── */}
           <section className="py-24 px-6">
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-12">
-                <h2 className="text-3xl font-semibold text-gray-900 tracking-tight mb-4">
+                <h2
+                  className="font-normal text-[#0A0A0A] mb-4"
+                  style={{ fontSize: "clamp(28px,3.5vw,40px)", lineHeight: 1.1, letterSpacing: "-1.5px" }}
+                >
                   Frequently asked questions
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-[#4B5563]" style={{ fontSize: 16 }}>
                   Everything you need to know about tsarr.in
                 </p>
               </div>
-              <div className="divide-y divide-gray-200 border-y border-gray-200">
+              <div className="border border-[#E5E7EB] rounded-[20px] overflow-hidden divide-y divide-[#E5E7EB]">
                 {faqs.map((faq, i) => (
                   <div key={i}>
                     <button
                       onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                      className="w-full py-5 text-left flex items-center justify-between gap-4 hover:text-gray-600 transition-colors"
+                      className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 hover:bg-[#F9FAFB] transition-colors"
                     >
-                      <span className="font-medium text-gray-900">{faq.q}</span>
-                      <BsChevronDown className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`} />
+                      <span className="font-medium text-[#0A0A0A]" style={{ fontSize: 15 }}>
+                        {faq.q}
+                      </span>
+                      <BsChevronDown
+                        className={`w-4 h-4 text-[#4B5563] flex-shrink-0 transition-transform duration-200 ${
+                          openFaq === i ? "rotate-180" : ""
+                        }`}
+                      />
                     </button>
-                    <div className={`overflow-hidden transition-all duration-200 ${openFaq === i ? "max-h-40 pb-5" : "max-h-0"}`}>
-                      <p className="text-gray-600 leading-relaxed">{faq.a}</p>
+                    <div
+                      className={`overflow-hidden transition-all duration-200 ${
+                        openFaq === i ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <p className="px-6 pb-5 text-[#4B5563]" style={{ fontSize: 15, lineHeight: "24px" }}>
+                        {faq.a}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -452,78 +508,132 @@ export default function Home() {
             </div>
           </section>
 
-          {/* CTA */}
-          <section className="py-24 px-6 bg-gray-50 border-t border-gray-100">
+          {/* ── CTA ── */}
+          <section
+            className="py-24 px-6"
+            style={{
+              background:
+                "linear-gradient(145deg, #EFF6FF 0%, #DBEAFE 60%, #EFF6FF 100%)",
+            }}
+          >
             <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-3xl font-semibold text-gray-900 tracking-tight mb-4">
+              <h2
+                className="font-normal text-[#0A0A0A] mb-4"
+                style={{ fontSize: "clamp(32px,4vw,48px)", lineHeight: 1.05, letterSpacing: "-2px" }}
+              >
                 Ready to create something amazing?
               </h2>
-              <p className="text-gray-600 text-lg mb-8">
+              <p className="text-[#4B5563] mb-10" style={{ fontSize: 18, lineHeight: "28px" }}>
                 No signup required. Start editing in seconds.
               </p>
               <div className="flex flex-wrap gap-3 justify-center">
-                <Link href="/editor" className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
-                  Open Screenshot Editor
-                  <BsArrowRight className="w-4 h-4" />
-                </Link>
-                <Link href="/tools" className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
-                  Browse All Tools
-                </Link>
+                <Button asChild>
+                  <Link href="/editor">
+                    Open Screenshot Editor
+                    <BsArrowRight className="w-4 h-4" />
+                  </Link>
+                </Button>
+                <Button variant="secondary" asChild>
+                  <Link href="/tools">Browse All Tools</Link>
+                </Button>
               </div>
             </div>
           </section>
         </main>
 
-        {/* Footer */}
-        <footer className="border-t border-gray-200 bg-white">
+        {/* ── Footer ── */}
+        <footer className="border-t border-[#E5E7EB] bg-white">
           <div className="max-w-6xl mx-auto px-6 py-12">
             <div className="flex flex-col md:flex-row items-start justify-between gap-8">
               <div>
-                <Link href="/" className="text-lg font-semibold text-gray-900 tracking-tight">
+                <Link href="/" className="font-semibold text-[#0A0A0A]" style={{ fontSize: 16 }}>
                   tsarr.in
                 </Link>
-                <p className="mt-2 text-sm text-gray-500 max-w-xs">
+                <p className="mt-2 text-[#4B5563] max-w-xs" style={{ fontSize: 14 }}>
                   Free screenshot editor and image tools. No login required.
                 </p>
               </div>
               <div className="flex gap-12">
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-900 mb-3">Tools</h4>
-                  <ul className="space-y-2 text-sm text-gray-600">
-                    <li><Link href="/editor" className="hover:text-gray-900 transition-colors">Screenshot Editor</Link></li>
-                    <li><Link href="/code" className="hover:text-gray-900 transition-colors">Code Screenshots</Link></li>
-                    <li><Link href="/captions" className="hover:text-gray-900 transition-colors">Video Captions</Link></li>
-                    <li><Link href="/tools" className="hover:text-gray-900 transition-colors">All Tools</Link></li>
+                  <h4 className="font-medium text-[#0A0A0A] mb-3" style={{ fontSize: 14 }}>
+                    Tools
+                  </h4>
+                  <ul className="space-y-2">
+                    {[
+                      { label: "Screenshot Editor", href: "/editor" },
+                      { label: "Code Screenshots", href: "/code" },
+                      { label: "Video Captions", href: "/captions" },
+                      { label: "All Tools", href: "/tools" },
+                    ].map(({ label, href }) => (
+                      <li key={label}>
+                        <Link
+                          href={href}
+                          className="text-[#4B5563] hover:text-[#0A0A0A] transition-colors"
+                          style={{ fontSize: 14 }}
+                        >
+                          {label}
+                        </Link>
+                      </li>
+                    ))}
                   </ul>
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-900 mb-3">Resources</h4>
-                  <ul className="space-y-2 text-sm text-gray-600">
-                    <li><Link href="/blog" className="hover:text-gray-900 transition-colors">Blog</Link></li>
-                    <li><a href="https://github.com/tansihmittal/" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">GitHub</a></li>
-                    <li><a href="https://x.com/glowdopera" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">Twitter</a></li>
-                    <li><a href="https://linkedin.com/in/tanishmittal02" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">LinkedIn</a></li>
+                  <h4 className="font-medium text-[#0A0A0A] mb-3" style={{ fontSize: 14 }}>
+                    Resources
+                  </h4>
+                  <ul className="space-y-2">
+                    <li>
+                      <Link href="/blog" className="text-[#4B5563] hover:text-[#0A0A0A] transition-colors" style={{ fontSize: 14 }}>
+                        Blog
+                      </Link>
+                    </li>
+                    <li>
+                      <a href="https://github.com/tansihmittal/" target="_blank" rel="noopener noreferrer" className="text-[#4B5563] hover:text-[#0A0A0A] transition-colors" style={{ fontSize: 14 }}>
+                        GitHub
+                      </a>
+                    </li>
+                    <li>
+                      <a href="https://x.com/glowdopera" target="_blank" rel="noopener noreferrer" className="text-[#4B5563] hover:text-[#0A0A0A] transition-colors" style={{ fontSize: 14 }}>
+                        Twitter
+                      </a>
+                    </li>
+                    <li>
+                      <a href="https://linkedin.com/in/tanishmittal02" target="_blank" rel="noopener noreferrer" className="text-[#4B5563] hover:text-[#0A0A0A] transition-colors" style={{ fontSize: 14 }}>
+                        LinkedIn
+                      </a>
+                    </li>
                   </ul>
                 </div>
               </div>
             </div>
-            <div className="mt-12 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-sm text-gray-500">
+            <div className="mt-12 pt-8 border-t border-[#F3F4F6] flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-[#4B5563]" style={{ fontSize: 14 }}>
                 © 2025 tsarr.in. Created by{" "}
-                <a href="https://tanishmittal.com/" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <a
+                  href="https://tanishmittal.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#0A0A0A] hover:text-[#2563EB] transition-colors"
+                >
                   Tanish Mittal
                 </a>
               </p>
               <div className="flex items-center gap-4">
-                <a href="https://github.com/tansihmittal/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600 transition-colors">
-                  <BsGithub className="w-5 h-5" />
-                </a>
-                <a href="https://x.com/glowdopera" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600 transition-colors">
-                  <BsTwitter className="w-5 h-5" />
-                </a>
-                <a href="https://linkedin.com/in/tanishmittal02" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600 transition-colors">
-                  <BsLinkedin className="w-5 h-5" />
-                </a>
+                {[
+                  { href: "https://github.com/tansihmittal/", icon: <BsGithub className="w-5 h-5" /> },
+                  { href: "https://x.com/glowdopera", icon: <BsTwitter className="w-5 h-5" /> },
+                  { href: "https://linkedin.com/in/tanishmittal02", icon: <BsLinkedin className="w-5 h-5" /> },
+                ].map(({ href, icon }) => (
+                  <a
+                    key={href}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#4B5563] hover:text-[#0A0A0A] transition-colors"
+                  >
+                    {icon}
+                  </a>
+                ))}
               </div>
             </div>
           </div>

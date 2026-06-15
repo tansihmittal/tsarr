@@ -3,8 +3,24 @@ import { useAuthContext } from "@/context/User";
 import { saveCloudPreset } from "@/utils/supabaseStorage";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "../ui/dialog";
 
-const SavePresetModal: React.FC = () => {
+interface Props {
+  open: boolean;
+  onClose: () => void;
+}
+
+const SavePresetModal: React.FC<Props> = ({ open, onClose }) => {
   const { currentUser, openAuthModal } = useAuthContext();
   const [presetName, setPresetName] = useState("");
   const [saving, setSaving] = useState(false);
@@ -29,9 +45,7 @@ const SavePresetModal: React.FC = () => {
       await saveCloudPreset(presetName.trim(), settings);
       toast.success("Preset saved!");
       setPresetName("");
-      // Close modal
-      const toggle = document.getElementById("my-modal-4") as HTMLInputElement | null;
-      if (toggle) toggle.checked = false;
+      onClose();
     } catch (err: any) {
       toast.error(err.message || "Couldn't save preset");
     } finally {
@@ -40,41 +54,34 @@ const SavePresetModal: React.FC = () => {
   };
 
   return (
-    <>
-      <input type="checkbox" id="my-modal-4" className="modal-toggle" />
-      <label htmlFor="my-modal-4" className="modal cursor-pointer">
-        <label className="modal-box relative rounded-md" htmlFor="">
-          <h3 className="font-bold text-xl mb-4">
-            What should we name your masterpiece!
-          </h3>
+    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+        <DialogHeader>
+          <DialogTitle>Save preset</DialogTitle>
+          <DialogDescription>Give your preset a name to find it later.</DialogDescription>
+        </DialogHeader>
 
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text">Example: Instagram Post</span>
-            </label>
-            <input
-              value={presetName}
-              onChange={(e) => setPresetName(e.target.value)}
-              type="text"
-              placeholder="Type here"
-              className="input input-bordered w-full"
-            />
-          </div>
-          <div className="modal-action">
-            <label
-              htmlFor={saving ? undefined : ""}
-              className="btn rounded-md font-medium"
-              onClick={savePreset}
-            >
-              {saving ? "Saving…" : "Save your preset"}
-            </label>
-            <label htmlFor="my-modal-4" className="btn btn-outline font-medium rounded-md">
-              Cancel
-            </label>
-          </div>
-        </label>
-      </label>
-    </>
+        <div className="px-6 py-2 space-y-2">
+          <Label htmlFor="preset-name">Preset name</Label>
+          <Input
+            id="preset-name"
+            value={presetName}
+            onChange={(e) => setPresetName(e.target.value)}
+            placeholder="e.g. Instagram Post"
+            onKeyDown={(e) => e.key === "Enter" && savePreset()}
+          />
+        </div>
+
+        <DialogFooter>
+          <Button variant="secondary" onClick={onClose} disabled={saving}>
+            Cancel
+          </Button>
+          <Button onClick={savePreset} disabled={saving}>
+            {saving ? "Saving…" : "Save preset"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

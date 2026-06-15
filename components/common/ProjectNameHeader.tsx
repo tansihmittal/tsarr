@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { BsPencil, BsCheck, BsX } from "react-icons/bs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface ProjectNameHeaderProps {
   name: string;
@@ -54,41 +56,47 @@ const ProjectNameHeader: React.FC<ProjectNameHeaderProps> = ({
     <div className="flex items-center gap-2 mb-4">
       {isEditing ? (
         <div className="flex items-center gap-2">
-          <input
+          <Input
             ref={inputRef}
             type="text"
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             onKeyDown={handleKeyDown}
             onBlur={handleSave}
-            className="px-3 py-1.5 text-lg font-semibold bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="px-3 py-1.5 text-lg font-semibold bg-white border border-[#E5E7EB] rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent h-auto"
             placeholder="Project name"
           />
-          <button
+          <Button
+            size="icon"
+            variant="ghost"
             onClick={handleSave}
-            className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+            className="h-8 w-8 text-green-600 hover:bg-green-50 rounded-[10px]"
           >
             <BsCheck className="text-xl" />
-          </button>
-          <button
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
             onClick={handleCancel}
-            className="p-1.5 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+            className="h-8 w-8 text-[#4B5563] hover:bg-[#F9FAFB] rounded-[10px]"
           >
             <BsX className="text-xl" />
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="flex items-center gap-2 group">
-          <h2 className="text-lg font-semibold text-gray-800">{name}</h2>
-          <button
+          <h2 className="text-lg font-semibold text-[#0A0A0A]">{name}</h2>
+          <Button
+            size="icon"
+            variant="ghost"
             onClick={() => setIsEditing(true)}
-            className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+            className="h-8 w-8 text-[#4B5563]/60 hover:text-[#4B5563] hover:bg-[#F9FAFB] rounded-[10px] transition-all opacity-0 group-hover:opacity-100"
           >
             <BsPencil className="text-sm" />
-          </button>
+          </Button>
           {isSaving && (
-            <span className="text-xs text-gray-400 flex items-center gap-1">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+            <span className="text-xs text-[#4B5563] flex items-center gap-1">
+              <div className="w-2 h-2 bg-[#2563EB] rounded-full animate-pulse" />
               Saving...
             </span>
           )}

@@ -6,6 +6,7 @@ import BackgroundTile from "./BackgroundTile";
 import { useEditorContext } from "@/context/Editor";
 import { PresetProps } from "@/interface";
 import { BsTrash3Fill, BsPerson } from "react-icons/bs";
+import { Button } from "@/components/ui/button";
 
 const Presets: React.FC = () => {
   const [presetsData, setPresetsData] = useState<CloudPreset[]>([]);
@@ -48,7 +49,7 @@ const Presets: React.FC = () => {
 
   const LoadingBlock = ({ title }: { title: string }) => (
     <div className="h-[90px] flex items-center justify-center w-full">
-      <span className="text-primary-content capitalize">{title}</span>
+      <span className="text-[#0A0A0A] capitalize">{title}</span>
     </div>
   );
 
@@ -56,7 +57,7 @@ const Presets: React.FC = () => {
     <div>
       <div className="h-[90px] relative cursor-pointer">{children}</div>
       <div className="flex items-center justify-center w-full">
-        <span className="bg-base-100 px-4 py-2 text-primary-content rounded-md capitalize text-center">
+        <span className="bg-white px-4 py-2 text-[#0A0A0A] rounded-md capitalize text-center">
           {title}
         </span>
       </div>
@@ -68,14 +69,11 @@ const Presets: React.FC = () => {
   if (!currentUser) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-6 px-4 text-center">
-        <BsPerson className="text-3xl text-primary-content/30" />
-        <p className="text-sm text-primary-content/50">Sign in to save and load cloud presets</p>
-        <button
-          onClick={openAuthModal}
-          className="btn btn-sm btn-primary rounded-lg"
-        >
+        <BsPerson className="text-3xl text-[#4B5563]/60" />
+        <p className="text-sm text-[#4B5563]">Sign in to save and load cloud presets</p>
+        <Button size="sm" onClick={openAuthModal}>
           Sign In
-        </button>
+        </Button>
       </div>
     );
   }
@@ -95,10 +93,10 @@ const Presets: React.FC = () => {
                     size="100%"
                   />
                   <button
-                    className="absolute bottom-2 right-2 bg-base-100 p-2 rounded-md hover:scale-110 transition-transform"
+                    className="absolute bottom-2 right-2 bg-white p-2 rounded-md hover:scale-110 transition-transform"
                     onClick={() => handleDelete(preset.id)}
                   >
-                    <BsTrash3Fill className="text-error text-lg" />
+                    <BsTrash3Fill className="text-red-500 text-lg" />
                   </button>
                 </>
               </PresetBlock>

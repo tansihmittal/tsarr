@@ -2,6 +2,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
 import { BsDownload, BsClipboard, BsQrCode } from "react-icons/bs";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
 
 const ERROR_LEVELS = ["L", "M", "Q", "H"] as const;
 type ErrorLevel = (typeof ERROR_LEVELS)[number];
@@ -73,7 +76,7 @@ const QrCodeLayout: React.FC = () => {
   };
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
@@ -81,23 +84,26 @@ const QrCodeLayout: React.FC = () => {
           {/* Preview */}
           <div className="flex flex-col gap-3 py-4">
             <div className="flex items-center justify-end gap-2">
-              <button
+              <Button
                 onClick={handleCopy}
-                className="btn btn-sm btn-outline gap-2"
+                size="sm"
+                variant="secondary"
+                className="gap-2"
               >
                 <BsClipboard className="w-3.5 h-3.5" />
                 Copy
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleDownload}
-                className="btn btn-sm btn-primary gap-2"
+                size="sm"
+                className="gap-2"
               >
                 <BsDownload className="w-3.5 h-3.5" />
                 Download PNG
-              </button>
+              </Button>
             </div>
-            <div className="flex items-center justify-center rounded-2xl border border-base-300 bg-base-200/40 min-h-[380px] py-8">
-              <div className="shadow-2xl rounded-xl overflow-hidden">
+            <div className="flex items-center justify-center rounded-[20px] border border-[#E5E7EB] bg-[#EFF6FF] min-h-[380px] py-8">
+              <div className="shadow-2xl rounded-[10px] overflow-hidden">
                 <canvas ref={canvasRef} />
               </div>
             </div>
@@ -106,28 +112,28 @@ const QrCodeLayout: React.FC = () => {
           {/* Controls */}
           <div className="flex flex-col gap-3 py-4">
             {/* Preset type */}
-            <div className="bg-base-200/60 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-3">
+            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
+              <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider mb-3">
                 Type
               </p>
               <div className="flex flex-wrap gap-1.5 mb-3">
                 {PRESETS.map((p, i) => (
-                  <button
+                  <Button
                     key={p.label}
+                    size="sm"
+                    className="h-7 text-xs px-2"
+                    variant={activePreset === i ? "default" : "secondary"}
                     onClick={() => {
                       setActivePreset(i);
                       setText(p.placeholder);
                     }}
-                    className={`btn btn-xs ${
-                      activePreset === i ? "btn-primary" : "btn-outline"
-                    }`}
                   >
                     {p.label}
-                  </button>
+                  </Button>
                 ))}
               </div>
-              <textarea
-                className="textarea textarea-bordered w-full text-sm resize-none"
+              <Textarea
+                className="w-full text-sm resize-none"
                 rows={3}
                 placeholder={PRESETS[activePreset]?.placeholder ?? "Enter text or URL…"}
                 value={text}
@@ -139,86 +145,82 @@ const QrCodeLayout: React.FC = () => {
             </div>
 
             {/* Size */}
-            <div className="bg-base-200/60 rounded-2xl p-4 backdrop-blur-sm">
+            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-semibold text-base-content/50 uppercase tracking-wider">
+                <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider">
                   Size
                 </p>
-                <span className="text-xs font-mono text-base-content/70">
+                <span className="text-xs font-mono text-[#4B5563]">
                   {size}px
                 </span>
               </div>
-              <input
-                type="range"
+              <Slider
                 min={128}
                 max={1024}
                 step={32}
-                value={size}
-                onChange={(e) => setSize(Number(e.target.value))}
-                className="range range-xs range-primary"
+                value={[size]}
+                onValueChange={([v]) => setSize(v)}
               />
-              <div className="flex justify-between text-xs text-base-content/40 mt-1">
+              <div className="flex justify-between text-xs text-[#4B5563]/60 mt-1">
                 <span>128</span>
                 <span>1024</span>
               </div>
             </div>
 
             {/* Margin */}
-            <div className="bg-base-200/60 rounded-2xl p-4 backdrop-blur-sm">
+            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-semibold text-base-content/50 uppercase tracking-wider">
+                <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider">
                   Margin
                 </p>
-                <span className="text-xs font-mono text-base-content/70">
+                <span className="text-xs font-mono text-[#4B5563]">
                   {margin}
                 </span>
               </div>
-              <input
-                type="range"
+              <Slider
                 min={0}
                 max={10}
                 step={1}
-                value={margin}
-                onChange={(e) => setMargin(Number(e.target.value))}
-                className="range range-xs range-primary"
+                value={[margin]}
+                onValueChange={([v]) => setMargin(v)}
               />
             </div>
 
             {/* Colors */}
-            <div className="bg-base-200/60 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-3">
+            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
+              <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider mb-3">
                 Colors
               </p>
               <div className="flex flex-col gap-2">
                 <label className="flex items-center justify-between">
-                  <span className="text-sm text-base-content/70">
+                  <span className="text-sm text-[#4B5563]">
                     Foreground
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono text-base-content/50">
+                    <span className="text-xs font-mono text-[#4B5563]/60">
                       {fgColor.toUpperCase()}
                     </span>
                     <input
                       type="color"
                       value={fgColor}
                       onChange={(e) => setFgColor(e.target.value)}
-                      className="w-8 h-7 rounded cursor-pointer border border-base-300"
+                      className="w-8 h-7 rounded cursor-pointer border border-[#E5E7EB]"
                     />
                   </div>
                 </label>
                 <label className="flex items-center justify-between">
-                  <span className="text-sm text-base-content/70">
+                  <span className="text-sm text-[#4B5563]">
                     Background
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono text-base-content/50">
+                    <span className="text-xs font-mono text-[#4B5563]/60">
                       {bgColor.toUpperCase()}
                     </span>
                     <input
                       type="color"
                       value={bgColor}
                       onChange={(e) => setBgColor(e.target.value)}
-                      className="w-8 h-7 rounded cursor-pointer border border-base-300"
+                      className="w-8 h-7 rounded cursor-pointer border border-[#E5E7EB]"
                     />
                   </div>
                 </label>
@@ -226,24 +228,24 @@ const QrCodeLayout: React.FC = () => {
             </div>
 
             {/* Error correction */}
-            <div className="bg-base-200/60 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-3">
+            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
+              <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider mb-3">
                 Error Correction
               </p>
               <div className="grid grid-cols-4 gap-1.5">
                 {ERROR_LEVELS.map((lvl) => (
-                  <button
+                  <Button
                     key={lvl}
+                    size="sm"
+                    className="h-7 text-xs px-2"
+                    variant={errorLevel === lvl ? "default" : "secondary"}
                     onClick={() => setErrorLevel(lvl)}
-                    className={`btn btn-xs ${
-                      errorLevel === lvl ? "btn-primary" : "btn-outline"
-                    }`}
                   >
                     {lvl}
-                  </button>
+                  </Button>
                 ))}
               </div>
-              <p className="text-xs text-base-content/40 mt-2">
+              <p className="text-xs text-[#4B5563]/60 mt-2">
                 H = most resilient · L = more data
               </p>
             </div>

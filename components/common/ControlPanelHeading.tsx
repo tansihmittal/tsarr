@@ -1,12 +1,22 @@
+import { Separator } from "../ui/separator";
+
 interface Props {
   title: string;
 }
 
 const ControlPanelHeading: React.FC<Props> = ({ title }) => (
-  <h2 className="text-[0.75rem] uppercase tracking-wider font-semibold px-4 py-3 bg-gradient-to-r from-base-200/80 to-base-200/40 text-gray-600 border-b border-base-200/50 flex items-center gap-2">
-    <span className="w-1 h-4 bg-primary rounded-full" />
-    {title}
-  </h2>
+  <>
+    <div
+      className="flex items-center gap-2 px-4 py-3 bg-[#F9FAFB]"
+      style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
+    >
+      <span className="w-1 h-4 bg-[#2563EB] rounded-full" />
+      <span className="text-[0.7rem] uppercase tracking-widest font-semibold text-[#4B5563]">
+        {title}
+      </span>
+    </div>
+    <Separator />
+  </>
 );
 
 export default ControlPanelHeading;

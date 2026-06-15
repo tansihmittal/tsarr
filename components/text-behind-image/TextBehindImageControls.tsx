@@ -19,6 +19,9 @@ import {
   createDefaultLayer,
 } from "./TextBehindImageLayout";
 import { GOOGLE_FONTS, FONT_CATEGORIES, TILT_PRESETS, loadFont } from "../../data/fonts";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
 
 // Default style values for resetting layers when applying presets
 // Excludes: id, text, x, y (position should be preserved)
@@ -251,7 +254,7 @@ const TextBehindImageControls = ({
       }`}
     >
       {/* Top Buttons Container */}
-      <div className="grid grid-cols-3 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
+      <div className="grid grid-cols-3 bg-[#F3F4F6] rounded-[14px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
         <ControlTabButton title="Options" isActive={selectedOption === "options"} onClick={() => setSelectedOption("options")}><IoMdOptions /></ControlTabButton>
         <ControlTabButton title="Layers" isActive={selectedOption === "layers"} onClick={() => setSelectedOption("layers")}><BsLayers /></ControlTabButton>
         <ControlTabButton title="Presets" isActive={selectedOption === "presets"} onClick={() => setSelectedOption("presets")}><BsBookmarkFill /></ControlTabButton>
@@ -259,8 +262,8 @@ const TextBehindImageControls = ({
 
       {/* Options Panel */}
       {selectedOption === "options" ? (
-        <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
-          <div className="relative rounded-xl">
+        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+          <div className="relative rounded-[14px]">
             {/* Upload Section */}
             <PanelHeading title="Image" />
             <label htmlFor="image-upload">
@@ -286,10 +289,10 @@ const TextBehindImageControls = ({
                       <button
                         key={scale}
                         onClick={() => updateState({ exportScale: scale })}
-                        className={`w-8 h-8 rounded-lg text-xs font-medium transition-all duration-200 ${
+                        className={`w-8 h-8 rounded-[10px] text-xs font-medium transition-all duration-200 ${
                           state.exportScale === scale
-                            ? "bg-primary text-primary-content"
-                            : "bg-base-200 hover:bg-base-300"
+                            ? "bg-[#2563EB] text-white"
+                            : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"
                         }`}
                       >
                         {scale}x
@@ -304,10 +307,10 @@ const TextBehindImageControls = ({
                       <button
                         key={format}
                         onClick={() => updateState({ exportFormat: format })}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                        className={`px-3 py-1.5 rounded-[10px] text-xs font-medium transition-all duration-200 ${
                           state.exportFormat === format
-                            ? "bg-primary text-primary-content"
-                            : "bg-base-200 hover:bg-base-300"
+                            ? "bg-[#2563EB] text-white"
+                            : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"
                         }`}
                       >
                         {format.toUpperCase()}
@@ -321,18 +324,18 @@ const TextBehindImageControls = ({
         </div>
       ) : selectedOption === "layers" ? (
         /* Layers Panel */
-        <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Text Layers" />
 
           {/* Add Layer Button */}
           <div className="p-3">
-            <button
+            <Button
               onClick={addLayer}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-focus text-primary-content rounded-xl transition-all duration-200 font-medium shadow-lg shadow-primary/20"
+              className="w-full flex items-center justify-center gap-2"
             >
               <BsPlus className="w-5 h-5" />
               Add Text Layer
-            </button>
+            </Button>
           </div>
 
           {/* Layer List */}
@@ -354,7 +357,7 @@ const TextBehindImageControls = ({
         </div>
       ) : (
         /* Presets Panel */
-        <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Text Style Presets" />
           <p className="text-xs text-gray-500 px-4 py-2">
             Click a preset to apply it to the selected layer, or add a new layer with that style.
@@ -375,7 +378,7 @@ const TextBehindImageControls = ({
                     updateLayer(state.textLayers[0].id, resetAndApply as Partial<TextLayer>);
                   }
                 }}
-                className="group relative overflow-hidden rounded-xl border border-base-200/80 hover:border-primary transition-all hover:shadow-lg"
+                className="group relative overflow-hidden rounded-[14px] border border-[#E5E7EB] hover:border-[#2563EB] transition-all hover:shadow-lg"
               >
                 <div
                   className="h-16 w-full flex items-center justify-center"
@@ -396,8 +399,8 @@ const TextBehindImageControls = ({
                     Aa
                   </span>
                 </div>
-                <div className="p-2 bg-base-100 text-center border-t border-base-200/50">
-                  <span className="text-xs font-medium text-primary-content">
+                <div className="p-2 bg-white text-center border-t border-[#E5E7EB]/50">
+                  <span className="text-xs font-medium text-[#0A0A0A]">
                     {preset.name}
                   </span>
                 </div>
@@ -406,9 +409,10 @@ const TextBehindImageControls = ({
           </div>
 
           {/* Add new layer with preset */}
-          <div className="p-3 border-t border-base-200/50">
+          <div className="p-3 border-t border-[#E5E7EB]/50">
             <p className="text-xs text-gray-500 mb-2">Or add a new layer:</p>
-            <button
+            <Button
+              variant="secondary"
               onClick={() => {
                 const newLayer = createDefaultLayer();
                 updateState({
@@ -416,11 +420,11 @@ const TextBehindImageControls = ({
                   selectedLayerId: newLayer.id,
                 });
               }}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-base-200 hover:bg-base-300 text-primary-content rounded-lg transition-all duration-200 text-sm"
+              className="w-full flex items-center justify-center gap-2 text-sm"
             >
               <BsPlus className="w-4 h-4" />
               Add Default Layer
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -475,10 +479,10 @@ const LayerItem = ({
   };
 
   return (
-    <div className="border border-base-200/80 rounded-xl overflow-hidden bg-base-100">
+    <div className="border border-[#E5E7EB] rounded-[14px] overflow-hidden bg-white">
       {/* Layer Header */}
       <div
-        className="flex items-center justify-between p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
+        className="flex items-center justify-between p-3 cursor-pointer hover:bg-[#EFF6FF] transition-colors"
         onClick={onToggle}
       >
         <div className="flex items-center gap-2">
@@ -495,7 +499,7 @@ const LayerItem = ({
         <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={onDuplicate}
-            className="p-1.5 hover:bg-base-200 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-[#F9FAFB] rounded-[10px] transition-colors"
             title="Duplicate"
           >
             <BsFiles className="w-3.5 h-3.5 text-gray-500" />
@@ -503,7 +507,7 @@ const LayerItem = ({
           {canDelete && (
             <button
               onClick={onRemove}
-              className="p-1.5 hover:bg-red-100 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-red-100 rounded-[10px] transition-colors"
               title="Delete"
             >
               <BsTrash className="w-3.5 h-3.5 text-red-500" />
@@ -514,7 +518,7 @@ const LayerItem = ({
 
       {/* Layer Content */}
       {isExpanded && (
-        <div className="p-3 pt-0 space-y-3 border-t border-base-200/60">
+        <div className="p-3 pt-0 space-y-3 border-t border-[#E5E7EB]/60">
           {/* Text Input */}
           <div>
             <span className="text-xs text-gray-500 font-medium block mb-1.5">Text</span>
@@ -522,7 +526,7 @@ const LayerItem = ({
               type="text"
               value={layer.text}
               onChange={(e) => onUpdate({ text: e.target.value })}
-              className="w-full px-3 py-2 bg-base-200/50 border-0 rounded-lg focus:ring-2 focus:ring-primary text-sm"
+              className="w-full px-3 py-2 bg-[#EFF6FF] border-0 rounded-[10px] focus:ring-2 focus:ring-[#2563EB] text-sm"
               placeholder="Enter text"
             />
           </div>
@@ -531,22 +535,22 @@ const LayerItem = ({
           <div>
             <div className="flex justify-between items-center mb-1.5">
               <span className="text-xs text-gray-500 font-medium">Font Family</span>
-              <span className="text-xs text-primary">{GOOGLE_FONTS.length} fonts</span>
+              <span className="text-xs text-[#2563EB]">{GOOGLE_FONTS.length} fonts</span>
             </div>
             <div className="relative">
               <button
                 onClick={() => setShowFontPicker(!showFontPicker)}
-                className="w-full px-3 py-2 bg-base-200/50 border-0 rounded-lg text-sm text-left flex items-center justify-between hover:bg-base-200 transition-colors"
+                className="w-full px-3 py-2 bg-[#EFF6FF] border-0 rounded-[10px] text-sm text-left flex items-center justify-between hover:bg-[#F9FAFB] transition-colors"
                 style={{ fontFamily: layer.fontFamily }}
               >
                 <span>{layer.fontFamily}</span>
                 <BiChevronDown className={`w-4 h-4 transition-transform ${showFontPicker ? "rotate-180" : ""}`} />
               </button>
-              
+
               {showFontPicker && (
-                <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-base-100 border border-base-200 rounded-xl shadow-xl max-h-[300px] overflow-hidden">
+                <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-[#E5E7EB] rounded-[14px] shadow-xl max-h-[300px] overflow-hidden">
                   {/* Search */}
-                  <div className="p-2 border-b border-base-200 sticky top-0 bg-base-100">
+                  <div className="p-2 border-b border-[#E5E7EB] sticky top-0 bg-white">
                     <div className="relative">
                       <BsSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3" />
                       <input
@@ -554,29 +558,29 @@ const LayerItem = ({
                         value={fontSearch}
                         onChange={(e) => setFontSearch(e.target.value)}
                         placeholder="Search fonts..."
-                        className="w-full pl-8 pr-3 py-1.5 bg-base-200/50 border-0 rounded-lg text-xs focus:ring-2 focus:ring-primary"
+                        className="w-full pl-8 pr-3 py-1.5 bg-[#EFF6FF] border-0 rounded-[10px] text-xs focus:ring-2 focus:ring-[#2563EB]"
                         autoFocus
                       />
                     </div>
                   </div>
-                  
+
                   {/* Category Filter */}
-                  <div className="p-2 border-b border-base-200 flex gap-1 flex-wrap sticky top-[52px] bg-base-100">
+                  <div className="p-2 border-b border-[#E5E7EB] flex gap-1 flex-wrap sticky top-[52px] bg-white">
                     {FONT_CATEGORIES.map((cat) => (
                       <button
                         key={cat.id}
                         onClick={() => setFontCategory(cat.id)}
                         className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
                           fontCategory === cat.id
-                            ? "bg-primary text-white"
-                            : "bg-base-200 hover:bg-base-300"
+                            ? "bg-[#2563EB] text-white"
+                            : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"
                         }`}
                       >
                         {cat.name}
                       </button>
                     ))}
                   </div>
-                  
+
                   {/* Font List */}
                   <div className="overflow-y-auto max-h-[180px]">
                     {filteredFonts.map((font) => (
@@ -584,8 +588,8 @@ const LayerItem = ({
                         key={font.name}
                         onClick={() => handleFontSelect(font.name)}
                         onMouseEnter={() => loadFont(font.name)}
-                        className={`w-full px-3 py-2 text-left text-sm hover:bg-primary/10 transition-colors flex items-center justify-between ${
-                          layer.fontFamily === font.name ? "bg-primary/10 text-primary" : ""
+                        className={`w-full px-3 py-2 text-left text-sm hover:bg-[#2563EB]/10 transition-colors flex items-center justify-between ${
+                          layer.fontFamily === font.name ? "bg-[#2563EB]/10 text-[#2563EB]" : ""
                         }`}
                         style={{ fontFamily: font.name }}
                       >
@@ -613,7 +617,7 @@ const LayerItem = ({
               max="500"
               value={layer.fontSize}
               onChange={(e) => onUpdate({ fontSize: parseInt(e.target.value) || 10 })}
-              className="w-full px-3 py-2 bg-base-200/50 border-0 rounded-lg focus:ring-2 focus:ring-primary text-sm"
+              className="w-full px-3 py-2 bg-[#EFF6FF] border-0 rounded-[10px] focus:ring-2 focus:ring-[#2563EB] text-sm"
             />
           </div>
 
@@ -621,18 +625,16 @@ const LayerItem = ({
           <div>
             <div className="flex justify-between items-center mb-1.5">
               <span className="text-xs text-gray-500 font-medium">Font Weight</span>
-              <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                 {layer.fontWeight}
               </span>
             </div>
-            <input
-              type="range"
-              min="100"
-              max="900"
-              step="100"
-              value={layer.fontWeight}
-              onChange={(e) => onUpdate({ fontWeight: parseInt(e.target.value) })}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={100}
+              max={900}
+              step={100}
+              value={[layer.fontWeight]}
+              onValueChange={([v]) => onUpdate({ fontWeight: v })}
             />
           </div>
 
@@ -644,13 +646,13 @@ const LayerItem = ({
                 type="color"
                 value={layer.textColor}
                 onChange={(e) => onUpdate({ textColor: e.target.value })}
-                className="w-10 h-10 rounded-lg cursor-pointer border-0 p-0"
+                className="w-10 h-10 rounded-[10px] cursor-pointer border-0 p-0"
               />
               <input
                 type="text"
                 value={layer.textColor}
                 onChange={(e) => onUpdate({ textColor: e.target.value })}
-                className="flex-1 px-3 py-2 bg-base-200/50 border-0 rounded-lg focus:ring-2 focus:ring-primary text-xs font-mono"
+                className="flex-1 px-3 py-2 bg-[#EFF6FF] border-0 rounded-[10px] focus:ring-2 focus:ring-[#2563EB] text-xs font-mono"
               />
             </div>
           </div>
@@ -660,34 +662,30 @@ const LayerItem = ({
             <div>
               <div className="flex justify-between items-center mb-1.5">
                 <span className="text-xs text-gray-500 font-medium">Opacity</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {Math.round(layer.opacity * 100)}%
                 </span>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={layer.opacity}
-                onChange={(e) => onUpdate({ opacity: parseFloat(e.target.value) })}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={0}
+                max={1}
+                step={0.01}
+                value={[layer.opacity]}
+                onValueChange={([v]) => onUpdate({ opacity: v })}
               />
             </div>
             <div>
               <div className="flex justify-between items-center mb-1.5">
                 <span className="text-xs text-gray-500 font-medium">Rotation</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {layer.rotation}°
                 </span>
               </div>
-              <input
-                type="range"
-                min="-180"
-                max="180"
-                value={layer.rotation}
-                onChange={(e) => onUpdate({ rotation: parseInt(e.target.value) })}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={-180}
+                max={180}
+                value={[layer.rotation]}
+                onValueChange={([v]) => onUpdate({ rotation: v })}
               />
             </div>
           </div>
@@ -696,17 +694,15 @@ const LayerItem = ({
           <div>
             <div className="flex justify-between items-center mb-1.5">
               <span className="text-xs text-gray-500 font-medium">Letter Spacing</span>
-              <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                 {layer.letterSpacing}px
               </span>
             </div>
-            <input
-              type="range"
-              min="-20"
-              max="100"
-              value={layer.letterSpacing}
-              onChange={(e) => onUpdate({ letterSpacing: parseInt(e.target.value) })}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={-20}
+              max={100}
+              value={[layer.letterSpacing]}
+              onValueChange={([v]) => onUpdate({ letterSpacing: v })}
             />
           </div>
 
@@ -727,8 +723,8 @@ const LayerItem = ({
                   }}
                   className={`px-1.5 py-1 rounded text-[9px] font-medium transition-colors ${
                     layer.tiltX === preset.tiltX && layer.tiltY === preset.tiltY
-                      ? "bg-primary text-white"
-                      : "bg-base-200 hover:bg-base-300"
+                      ? "bg-[#2563EB] text-white"
+                      : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"
                   }`}
                   title={`X: ${preset.tiltX}°, Y: ${preset.tiltY}°`}
                 >
@@ -737,38 +733,34 @@ const LayerItem = ({
               ))}
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-2">
             <div>
               <div className="flex justify-between items-center mb-1.5">
                 <span className="text-xs text-gray-500 font-medium">Tilt X</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {layer.tiltX}°
                 </span>
               </div>
-              <input
-                type="range"
-                min="-45"
-                max="45"
-                value={layer.tiltX}
-                onChange={(e) => onUpdate({ tiltX: parseInt(e.target.value) })}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={-45}
+                max={45}
+                value={[layer.tiltX]}
+                onValueChange={([v]) => onUpdate({ tiltX: v })}
               />
             </div>
             <div>
               <div className="flex justify-between items-center mb-1.5">
                 <span className="text-xs text-gray-500 font-medium">Tilt Y</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {layer.tiltY}°
                 </span>
               </div>
-              <input
-                type="range"
-                min="-45"
-                max="45"
-                value={layer.tiltY}
-                onChange={(e) => onUpdate({ tiltY: parseInt(e.target.value) })}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={-45}
+                max={45}
+                value={[layer.tiltY]}
+                onValueChange={([v]) => onUpdate({ tiltY: v })}
               />
             </div>
           </div>
@@ -777,31 +769,25 @@ const LayerItem = ({
           <div>
             <div className="flex justify-between items-center mb-1.5">
               <span className="text-xs text-gray-500 font-medium">Curve</span>
-              <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                 {layer.curve}
               </span>
             </div>
-            <input
-              type="range"
-              min="-100"
-              max="100"
-              value={layer.curve}
-              onChange={(e) => onUpdate({ curve: parseInt(e.target.value) })}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={-100}
+              max={100}
+              value={[layer.curve]}
+              onValueChange={([v]) => onUpdate({ curve: v })}
             />
           </div>
 
           {/* 3D Reflection */}
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500 font-medium">3D Reflection</span>
-            <label className="custom-toggle">
-              <input
-                type="checkbox"
-                checked={layer.reflection}
-                onChange={(e) => onUpdate({ reflection: e.target.checked })}
-              />
-              <span className="slider"></span>
-            </label>
+            <Switch
+              checked={layer.reflection}
+              onCheckedChange={(v: boolean) => onUpdate({ reflection: v })}
+            />
           </div>
 
           {/* Reflection Opacity - only show when reflection is enabled */}
@@ -809,18 +795,16 @@ const LayerItem = ({
             <div>
               <div className="flex justify-between items-center mb-1.5">
                 <span className="text-xs text-gray-500 font-medium">Reflection Opacity</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {Math.round(layer.reflectionOpacity * 100)}%
                 </span>
               </div>
-              <input
-                type="range"
-                min="0.1"
-                max="0.8"
-                step="0.05"
-                value={layer.reflectionOpacity}
-                onChange={(e) => onUpdate({ reflectionOpacity: parseFloat(e.target.value) })}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={0.1}
+                max={0.8}
+                step={0.05}
+                value={[layer.reflectionOpacity]}
+                onValueChange={([v]) => onUpdate({ reflectionOpacity: v })}
               />
             </div>
           )}
@@ -828,14 +812,10 @@ const LayerItem = ({
           {/* Text Shadow */}
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500 font-medium">Text Shadow</span>
-            <label className="custom-toggle">
-              <input
-                type="checkbox"
-                checked={layer.shadowEnabled}
-                onChange={(e) => onUpdate({ shadowEnabled: e.target.checked })}
-              />
-              <span className="slider"></span>
-            </label>
+            <Switch
+              checked={layer.shadowEnabled}
+              onCheckedChange={(v: boolean) => onUpdate({ shadowEnabled: v })}
+            />
           </div>
 
           {/* Shadow Controls - only show when shadow is enabled */}
@@ -849,14 +829,14 @@ const LayerItem = ({
                     type="color"
                     value={layer.shadowColor.startsWith("rgba") ? "#000000" : layer.shadowColor}
                     onChange={(e) => onUpdate({ shadowColor: e.target.value })}
-                    className="w-8 h-8 rounded-lg cursor-pointer border-0 p-0"
+                    className="w-8 h-8 rounded-[10px] cursor-pointer border-0 p-0"
                   />
                   <div className="flex gap-1">
                     {["#000000", "#ffffff", "#ff0000", "#0066ff"].map((color) => (
                       <button
                         key={color}
                         onClick={() => onUpdate({ shadowColor: color })}
-                        className="w-6 h-6 rounded border border-base-300"
+                        className="w-6 h-6 rounded border border-[#E5E7EB]"
                         style={{ backgroundColor: color }}
                       />
                     ))}
@@ -868,17 +848,15 @@ const LayerItem = ({
               <div>
                 <div className="flex justify-between items-center mb-1.5">
                   <span className="text-xs text-gray-500 font-medium">Shadow Blur</span>
-                  <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                     {layer.shadowBlur}
                   </span>
                 </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="50"
-                  value={layer.shadowBlur}
-                  onChange={(e) => onUpdate({ shadowBlur: parseInt(e.target.value) })}
-                  className="range range-xs range-primary w-full"
+                <Slider
+                  min={0}
+                  max={50}
+                  value={[layer.shadowBlur]}
+                  onValueChange={([v]) => onUpdate({ shadowBlur: v })}
                 />
               </div>
 
@@ -887,33 +865,29 @@ const LayerItem = ({
                 <div>
                   <div className="flex justify-between items-center mb-1.5">
                     <span className="text-xs text-gray-500 font-medium">Offset X</span>
-                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                       {layer.shadowOffsetX}
                     </span>
                   </div>
-                  <input
-                    type="range"
-                    min="-30"
-                    max="30"
-                    value={layer.shadowOffsetX}
-                    onChange={(e) => onUpdate({ shadowOffsetX: parseInt(e.target.value) })}
-                    className="range range-xs range-primary w-full"
+                  <Slider
+                    min={-30}
+                    max={30}
+                    value={[layer.shadowOffsetX]}
+                    onValueChange={([v]) => onUpdate({ shadowOffsetX: v })}
                   />
                 </div>
                 <div>
                   <div className="flex justify-between items-center mb-1.5">
                     <span className="text-xs text-gray-500 font-medium">Offset Y</span>
-                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                       {layer.shadowOffsetY}
                     </span>
                   </div>
-                  <input
-                    type="range"
-                    min="-30"
-                    max="30"
-                    value={layer.shadowOffsetY}
-                    onChange={(e) => onUpdate({ shadowOffsetY: parseInt(e.target.value) })}
-                    className="range range-xs range-primary w-full"
+                  <Slider
+                    min={-30}
+                    max={30}
+                    value={[layer.shadowOffsetY]}
+                    onValueChange={([v]) => onUpdate({ shadowOffsetY: v })}
                   />
                 </div>
               </div>
@@ -929,13 +903,11 @@ const LayerItem = ({
                   <span className="text-[10px] text-gray-400">X</span>
                   <span className="text-[10px] text-gray-400">{layer.x}%</span>
                 </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={layer.x}
-                  onChange={(e) => onUpdate({ x: parseInt(e.target.value) })}
-                  className="range range-xs range-primary w-full"
+                <Slider
+                  min={0}
+                  max={100}
+                  value={[layer.x]}
+                  onValueChange={([v]) => onUpdate({ x: v })}
                 />
               </div>
               <div>
@@ -943,13 +915,11 @@ const LayerItem = ({
                   <span className="text-[10px] text-gray-400">Y</span>
                   <span className="text-[10px] text-gray-400">{layer.y}%</span>
                 </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={layer.y}
-                  onChange={(e) => onUpdate({ y: parseInt(e.target.value) })}
-                  className="range range-xs range-primary w-full"
+                <Slider
+                  min={0}
+                  max={100}
+                  value={[layer.y]}
+                  onValueChange={([v]) => onUpdate({ y: v })}
                 />
               </div>
             </div>
