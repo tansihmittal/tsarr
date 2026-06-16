@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, memo } from "react";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CarouselEditorState, SlideContent } from "./CarouselEditorLayout";
 import { BiSlideshow, BiPlus, BiTrash, BiUser, BiChevronRight } from "react-icons/bi";
 import { IoMdOptions } from "react-icons/io";
@@ -146,7 +146,6 @@ const presets = [
 ];
 
 const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
-  const [selectedTab, setSelectedTab] = useState("slides");
   const [showBgPicker, setShowBgPicker] = useState(false);
   const [imageUrlInput, setImageUrlInput] = useState("");
   const [appIconUrlInput, setAppIconUrlInput] = useState("");
@@ -156,7 +155,7 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
   const profileImageRef = useRef<HTMLInputElement>(null);
   const customBgInputRef = useRef<HTMLInputElement>(null);
 
-  const { presets: customPresets, savePreset, deletePreset } = useCustomPresets<CarouselPresetData>(PRESET_STORAGE_KEY);
+  const { presets: customPresets, savePreset, deletePreset } = useCustomPresets<CarouselPresetData>(PRESET_STORAGE_KEY, "carousel-editor");
 
   const currentSlide = state.slides[state.currentSlide];
 
@@ -292,15 +291,16 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="grid grid-cols-4 bg-[#EFF6FF] rounded-[14px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Slides" isActive={selectedTab === "slides"} onClick={() => setSelectedTab("slides")}><BiSlideshow /></ControlTabButton>
-        <ControlTabButton title="Profile" isActive={selectedTab === "profile"} onClick={() => setSelectedTab("profile")}><BiUser /></ControlTabButton>
-        <ControlTabButton title="Style" isActive={selectedTab === "style"} onClick={() => setSelectedTab("style")}><IoMdOptions /></ControlTabButton>
-        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BsBookmarkFill /></ControlTabButton>
-      </div>
+      <Tabs defaultValue="slides">
+      <TabsList className="w-full grid grid-cols-4 rounded-[12px] bg-[#EFF6FF] mb-3">
+        <TabsTrigger value="slides" className="gap-1 rounded-[10px] text-xs"><BiSlideshow className="w-3.5 h-3.5" /> Slides</TabsTrigger>
+        <TabsTrigger value="profile" className="gap-1 rounded-[10px] text-xs"><BiUser className="w-3.5 h-3.5" /> Profile</TabsTrigger>
+        <TabsTrigger value="style" className="gap-1 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Style</TabsTrigger>
+        <TabsTrigger value="presets" className="gap-1 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+      </TabsList>
 
       <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
-        {selectedTab === "slides" ? (
+        <TabsContent value="slides">
           <div className="relative rounded-md">
             <PanelHeading title="Slides" />
             <div className="p-3 border-b border-[#E5E7EB]">
@@ -387,7 +387,8 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
               </Control>
             )}
           </div>
-        ) : selectedTab === "profile" ? (
+        </TabsContent>
+        <TabsContent value="profile">
           <div className="relative rounded-md">
             <PanelHeading title="Profile" />
             <Control title="Show Profile">
@@ -455,7 +456,8 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
               </Control>
             )}
           </div>
-        ) : selectedTab === "style" ? (
+        </TabsContent>
+        <TabsContent value="style">
           <div className="relative rounded-md">
             <PanelHeading title="Background" />
             <div className="p-4 border-b border-[#E5E7EB]">
@@ -586,7 +588,8 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
             </Control>
           </div>
 
-        ) : (
+        </TabsContent>
+        <TabsContent value="presets">
           <div className="p-4">
             {/* Save Custom Preset */}
             <div className="mb-4 p-3 bg-[#EFF6FF] rounded-[10px]">
@@ -651,8 +654,9 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
               ))}
             </div>
           </div>
-        )}
+        </TabsContent>
       </div>
+      </Tabs>
     </section>
   );
 };

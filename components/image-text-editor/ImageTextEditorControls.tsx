@@ -1,7 +1,7 @@
 import { RefObject, ChangeEvent, ReactNode, useState } from "react";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   BsChevronRight,
   BsLayers,
@@ -42,7 +42,6 @@ const ImageTextEditorControls = ({
   addManualRegion,
   startEditing,
 }: Props) => {
-  const [selectedOption, setSelectedOption] = useState("options");
 
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -68,14 +67,15 @@ const ImageTextEditorControls = ({
         state.image ? "opacity-100" : "opacity-90"
       }`}
     >
+      <Tabs defaultValue="options">
       {/* Top Buttons Container */}
-      <div className="grid grid-cols-2 bg-[#F9FAFB] rounded-[14px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Options" isActive={selectedOption === "options"} onClick={() => setSelectedOption("options")}><IoMdOptions /></ControlTabButton>
-        <ControlTabButton title="Text" isActive={selectedOption === "text"} onClick={() => setSelectedOption("text")}><BsLayers /></ControlTabButton>
-      </div>
+      <TabsList className="w-full grid grid-cols-2 rounded-[12px] bg-[#F9FAFB] mb-3">
+        <TabsTrigger value="options" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Options</TabsTrigger>
+        <TabsTrigger value="text" className="gap-1.5 rounded-[10px] text-xs"><BsLayers className="w-3.5 h-3.5" /> Text</TabsTrigger>
+      </TabsList>
 
       {/* Options Panel */}
-      {selectedOption === "options" ? (
+      <TabsContent value="options">
         <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <div className="relative rounded-[14px]">
             {/* Upload Section */}
@@ -137,8 +137,9 @@ const ImageTextEditorControls = ({
             )}
           </div>
         </div>
-      ) : (
-        /* Text Regions Panel */
+      </TabsContent>
+      {/* Text Regions Panel */}
+      <TabsContent value="text">
         <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Detected Text" />
 
@@ -174,7 +175,8 @@ const ImageTextEditorControls = ({
             )}
           </div>
         </div>
-      )}
+      </TabsContent>
+      </Tabs>
     </section>
   );
 };

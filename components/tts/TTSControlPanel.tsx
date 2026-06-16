@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import ControlPanelHeading from "../common/ControlPanelHeading";
-import ControlTabButton from "../common/ControlTabButton";
 import { IoMdOptions } from "react-icons/io";
 import { BsInfoCircle, BsCheckCircle, BsMagic } from "react-icons/bs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useTTSContext } from "@/context/TTS";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
@@ -10,7 +10,6 @@ import { Slider } from "@/components/ui/slider";
 interface Props { }
 
 const TTSControlPanel: React.FC<Props> = () => {
-  const [selectedOption, setSelectedOption] = useState("options");
   const [languageFilter, setLanguageFilter] = useState("all");
   const [genderFilter, setGenderFilter] = useState("all");
   const { settings, updateSettings, deviceInfo, text, setText, voices, profiles, applyProfile } = useTTSContext();
@@ -46,13 +45,14 @@ const TTSControlPanel: React.FC<Props> = () => {
 
   return (
     <section className="flex flex-col transition-opacity duration-300">
-      <div className="grid grid-cols-3 bg-[#F9FAFB] rounded-[14px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Options" isActive={selectedOption === "options"} onClick={() => setSelectedOption("options")}><IoMdOptions /></ControlTabButton>
-        <ControlTabButton title="Effects" isActive={selectedOption === "effects"} onClick={() => setSelectedOption("effects")}><BsMagic /></ControlTabButton>
-        <ControlTabButton title="Info" isActive={selectedOption === "info"} onClick={() => setSelectedOption("info")}><BsInfoCircle /></ControlTabButton>
-      </div>
+      <Tabs defaultValue="options">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F9FAFB] mb-3">
+        <TabsTrigger value="options" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Options</TabsTrigger>
+        <TabsTrigger value="effects" className="gap-1.5 rounded-[10px] text-xs"><BsMagic className="w-3.5 h-3.5" /> Effects</TabsTrigger>
+        <TabsTrigger value="info" className="gap-1.5 rounded-[10px] text-xs"><BsInfoCircle className="w-3.5 h-3.5" /> Info</TabsTrigger>
+      </TabsList>
 
-      {selectedOption === "options" ? (
+      <TabsContent value="options">
         <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           {/* Voice Selection */}
           <PanelHeading title={`Voice (${filteredVoices.length} of ${voices.length})`} />
@@ -182,7 +182,8 @@ const TTSControlPanel: React.FC<Props> = () => {
             </div>
           </div>
         </div>
-      ) : selectedOption === "effects" ? (
+      </TabsContent>
+      <TabsContent value="effects">
         <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           {/* Voice Profiles */}
           <PanelHeading title="Voice Profiles" />
@@ -278,7 +279,8 @@ const TTSControlPanel: React.FC<Props> = () => {
             </div>
           </div>
         </div>
-      ) : (
+      </TabsContent>
+      <TabsContent value="info">
         <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           {/* Device Info */}
           <PanelHeading title="Device Info" />
@@ -357,7 +359,8 @@ const TTSControlPanel: React.FC<Props> = () => {
             </div>
           </div>
         </div>
-      )}
+      </TabsContent>
+      </Tabs>
     </section>
   );
 };

@@ -6,8 +6,8 @@ import { BsUpload, BsClipboard, BsDownload, BsLockFill, BsUnlock } from "react-i
 import { toast } from "react-hot-toast";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 
@@ -42,7 +42,6 @@ const outputFormats = [
 ];
 
 const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUpload, onExport, getOutputDimensions }) => {
-  const [selectedTab, setSelectedTab] = useState("size");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,11 +74,12 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="grid grid-cols-3 bg-[#F3F4F6] rounded-[14px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Size" isActive={selectedTab === "size"} onClick={() => setSelectedTab("size")}><BiRuler /></ControlTabButton>
-        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BiImage /></ControlTabButton>
-        <ControlTabButton title="Output" isActive={selectedTab === "output"} onClick={() => setSelectedTab("output")}><IoMdOptions /></ControlTabButton>
-      </div>
+      <Tabs defaultValue="size">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] mb-3">
+        <TabsTrigger value="size" className="gap-1.5 rounded-[10px] text-xs"><BiRuler className="w-3.5 h-3.5" /> Size</TabsTrigger>
+        <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BiImage className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+        <TabsTrigger value="output" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Output</TabsTrigger>
+      </TabsList>
 
       <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <PanelHeading title="Image" />
@@ -100,7 +100,7 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
           )}
         </div>
 
-        {selectedTab === "size" ? (
+        <TabsContent value="size">
           <div className="relative rounded-md">
             <PanelHeading title="Resize Mode" />
             <div className="p-4 border-b border-[#E5E7EB]">
@@ -170,8 +170,8 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
               </>
             )}
           </div>
-
-        ) : selectedTab === "presets" ? (
+        </TabsContent>
+        <TabsContent value="presets">
           <div className="relative rounded-md">
             <PanelHeading title="Preset Sizes" />
             <div className="p-4 border-b border-[#E5E7EB]">
@@ -189,7 +189,8 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
               </div>
             </div>
           </div>
-        ) : (
+        </TabsContent>
+        <TabsContent value="output">
           <div className="relative rounded-md">
             <PanelHeading title="Format" />
             <div className="p-4 border-b border-[#E5E7EB]">
@@ -229,8 +230,9 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
               <p className="text-xs text-gray-500 mt-2 text-center">{dims.width} × {dims.height} px</p>
             </div>
           </div>
-        )}
+        </TabsContent>
       </div>
+      </Tabs>
     </section>
   );
 };

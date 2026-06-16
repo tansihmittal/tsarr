@@ -1,5 +1,5 @@
 import { ChangeEvent, ReactNode, useState } from "react";
-import ControlTabButton from "../../common/ControlTabButton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { BiChevronRight, BiReset, BiTrash, BiText, BiEraser } from "react-icons/bi";
 import {
   BsAspectRatio,
@@ -43,7 +43,6 @@ interface Props { }
 
 const ControlPanel: React.FC<Props> = () => {
   const [picker, setPicker] = useState<String | null>(null);
-  const [selectedOption, setSelectedOption] = useState("options");
 
   const {
     currentBackground: { background },
@@ -216,14 +215,15 @@ const ControlPanel: React.FC<Props> = () => {
       className={`flex flex-col transition-opacity duration-300 ${selectedImage ? "opacity-100" : "opacity-90"
         }`}
     >
+      <Tabs defaultValue="options">
       {/* Top Buttons Container */}
-      <div className="grid grid-cols-2 bg-[#F9FAFB]/60 rounded-[14px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Options" isActive={selectedOption === "options"} onClick={() => setSelectedOption("options")}><IoMdOptions /></ControlTabButton>
-        <ControlTabButton title="Presets" isActive={selectedOption === "presets"} onClick={() => setSelectedOption("presets")}><BsBookmarkFill /></ControlTabButton>
-      </div>
+      <TabsList className="w-full grid grid-cols-2 rounded-[12px] bg-[#F9FAFB] mb-3">
+        <TabsTrigger value="options" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Options</TabsTrigger>
+        <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+      </TabsList>
 
       {/* options panel wrapper */}
-      {selectedOption == "options" ? (
+      <TabsContent value="options">
         <div className="rounded-[14px] border border-[#E5E7EB]/80 bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           {picker != null && <NullScreen />}
           {/* inner scrolling wrapper */}
@@ -668,7 +668,8 @@ const ControlPanel: React.FC<Props> = () => {
             </Control>
           </div>
         </div>
-      ) : (
+      </TabsContent>
+      <TabsContent value="presets">
         <div className="rounded-[14px] border border-[#E5E7EB]/80 bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Quick Presets" />
           {/* Built-in quick presets */}
@@ -689,7 +690,8 @@ const ControlPanel: React.FC<Props> = () => {
             </div>
           )}
         </div>
-      )}
+      </TabsContent>
+      </Tabs>
     </section>
   );
 };

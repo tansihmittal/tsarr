@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback, memo, ChangeEvent } from "rea
 import { TweetEditorState } from "./TweetEditorLayout";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { BiMessageRounded, BiReset, BiChevronRight, BiLink } from "react-icons/bi";
 import { IoMdOptions } from "react-icons/io";
 import { BsBookmarkFill, BsBookmark, BsTrash } from "react-icons/bs";
@@ -152,7 +152,6 @@ const DebouncedTextarea = memo(({ value, onChange, className, placeholder, maxLe
 DebouncedTextarea.displayName = "DebouncedTextarea";
 
 const TweetControls: React.FC<Props> = ({ state, updateState }) => {
-  const [selectedTab, setSelectedTab] = useState("content");
   const [showBgPicker, setShowBgPicker] = useState(false);
   const [tweetUrl, setTweetUrl] = useState("");
   const [isImporting, setIsImporting] = useState(false);
@@ -160,7 +159,7 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const customBgInputRef = useRef<HTMLInputElement>(null);
 
-  const { presets: customPresets, savePreset, deletePreset } = useCustomPresets<TweetPresetData>(PRESET_STORAGE_KEY);
+  const { presets: customPresets, savePreset, deletePreset } = useCustomPresets<TweetPresetData>(PRESET_STORAGE_KEY, "tweet-editor");
 
   const getCurrentPresetData = (): TweetPresetData => ({
     theme: state.theme,
@@ -293,14 +292,15 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="grid grid-cols-3 bg-[#F9FAFB] rounded-[14px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Content" isActive={selectedTab === "content"} onClick={() => setSelectedTab("content")}><BiMessageRounded /></ControlTabButton>
-        <ControlTabButton title="Style" isActive={selectedTab === "style"} onClick={() => setSelectedTab("style")}><IoMdOptions /></ControlTabButton>
-        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BsBookmarkFill /></ControlTabButton>
-      </div>
+      <Tabs defaultValue="content">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F9FAFB] mb-3">
+        <TabsTrigger value="content" className="gap-1.5 rounded-[10px] text-xs"><BiMessageRounded className="w-3.5 h-3.5" /> Content</TabsTrigger>
+        <TabsTrigger value="style" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Style</TabsTrigger>
+        <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+      </TabsList>
 
       <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
-        {selectedTab === "content" ? (
+        <TabsContent value="content">
           <div className="relative rounded-md">
             <PanelHeading title="Import Tweet" />
 
@@ -407,7 +407,8 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
               <DebouncedInput value={state.bookmarks} onChange={(v) => updateState({ bookmarks: v })} className="h-9 text-sm px-3 rounded-full bg-[#EFF6FF] border border-[#E5E7EB] w-[100px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
             </Control>
           </div>
-        ) : selectedTab === "style" ? (
+        </TabsContent>
+        <TabsContent value="style">
           <div className="relative rounded-md">
             <PanelHeading title="Theme" />
 
@@ -601,7 +602,8 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
               <Switch checked={state.frameVisible} onCheckedChange={(v: boolean) => updateState({ frameVisible: v })} />
             </Control>
           </div>
-        ) : (
+        </TabsContent>
+        <TabsContent value="presets">
           <div className="p-4">
             {/* Save Current as Preset */}
             <div className="mb-6">
@@ -649,8 +651,9 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
               ))}
             </div>
           </div>
-        )}
+        </TabsContent>
       </div>
+      </Tabs>
     </section>
   );
 };

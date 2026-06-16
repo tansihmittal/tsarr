@@ -1,7 +1,7 @@
 import { useState, useRef, ChangeEvent, ReactNode } from "react";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { IoMdOptions } from "react-icons/io";
 import { BsBookmarkFill } from "react-icons/bs";
 import { MdFilterVintage } from "react-icons/md";
@@ -21,7 +21,6 @@ interface Props {
 }
 
 const PolaroidControls = ({ state, updateState }: Props) => {
-  const [selectedTab, setSelectedTab] = useState("options");
   const [showBgPicker, setShowBgPicker] = useState(false);
   const customBgInputRef = useRef<HTMLInputElement>(null);
 
@@ -108,14 +107,15 @@ const PolaroidControls = ({ state, updateState }: Props) => {
 
   return (
     <section style={{ pointerEvents: state.image ? "auto" : "none" }} className={`flex flex-col transition-opacity duration-300 ${state.image ? "opacity-100" : "opacity-90"}`}>
-      <div className="grid grid-cols-3 bg-[#F3F4F6] rounded-[14px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Options" isActive={selectedTab === "options"} onClick={() => setSelectedTab("options")}><IoMdOptions /></ControlTabButton>
-        <ControlTabButton title="Filters" isActive={selectedTab === "filters"} onClick={() => setSelectedTab("filters")}><MdFilterVintage /></ControlTabButton>
-        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BsBookmarkFill /></ControlTabButton>
-      </div>
+      <Tabs defaultValue="options">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] mb-3">
+        <TabsTrigger value="options" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Options</TabsTrigger>
+        <TabsTrigger value="filters" className="gap-1.5 rounded-[10px] text-xs"><MdFilterVintage className="w-3.5 h-3.5" /> Filters</TabsTrigger>
+        <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+      </TabsList>
 
       <div className="rounded-[14px] border border-[#E5E7EB]/80 bg-white shadow-sm lg:max-h-[calc(100vh-150px)] lg:overflow-y-auto scrollbar-hide animate-fade-in">
-        {selectedTab === "options" ? (
+        <TabsContent value="options">
           <div className="relative rounded-md">
             <PanelHeading title="Frame Settings" />
             <Control title="Frame Color">
@@ -164,7 +164,8 @@ const PolaroidControls = ({ state, updateState }: Props) => {
             </Control>
             {state.shadow && <RangeControl label="Shadow Intensity" value={state.shadowIntensity} min={10} max={60} unit="%" onChange={(value) => updateState({ shadowIntensity: value })} />}
           </div>
-        ) : selectedTab === "filters" ? (
+        </TabsContent>
+        <TabsContent value="filters">
           <div className="relative rounded-md">
             <PanelHeading title="Film Filters" />
             <div className="p-4 border-b border-[#E5E7EB]/60">
@@ -222,7 +223,8 @@ const PolaroidControls = ({ state, updateState }: Props) => {
               <BiReset className="text-xl" />
             </Control>
           </div>
-        ) : (
+        </TabsContent>
+        <TabsContent value="presets">
           <div className="relative rounded-md">
             <PanelHeading title="📸 Dazz Cam Popular" />
             <div className="p-4 border-b border-[#E5E7EB]/60">
@@ -264,8 +266,9 @@ const PolaroidControls = ({ state, updateState }: Props) => {
               </div>
             </div>
           </div>
-        )}
+        </TabsContent>
       </div>
+      </Tabs>
     </section>
   );
 };

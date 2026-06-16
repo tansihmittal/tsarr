@@ -1,6 +1,8 @@
 import type { Shape } from "./types";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import {
   BsTrash,
   BsFiles,
@@ -179,7 +181,7 @@ const ImapProperties: React.FC<Props> = ({
       {/* text-specific */}
       {s.type === "text" && (
         <Section title="Text">
-          <textarea
+          <Textarea
             value={s.text || ""}
             onChange={(e) => onUpdate(s.id, { text: e.target.value }, false)}
             onBlur={() => onUpdate(s.id, {}, true)}
@@ -285,7 +287,7 @@ const ImapProperties: React.FC<Props> = ({
           <label className="text-xs text-[#4B5563]/80 block mb-1">
             Description
           </label>
-          <textarea
+          <Textarea
             value={s.description || ""}
             onChange={(e) =>
               onUpdate(s.id, { description: e.target.value }, false)
@@ -302,30 +304,36 @@ const ImapProperties: React.FC<Props> = ({
               <label className="text-xs text-[#4B5563]/80 block mb-1">
                 Tooltip at
               </label>
-              <select
+              <Select
                 value={s.tooltipPosition || "auto"}
-                onChange={(e) => set({ tooltipPosition: e.target.value as any })}
-                className="w-full rounded-[8px] border border-[#E5E7EB] bg-white px-2 py-1.5 text-xs text-[#0A0A0A] focus:outline-none focus:border-[#60A5FA] capitalize"
+                onValueChange={(v) => set({ tooltipPosition: v as any })}
               >
-                {["auto", "top", "right", "bottom", "left"].map((p) => (
-                  <option key={p} value={p}>
-                    {p}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="h-8 text-xs bg-white border-[#E5E7EB]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {["auto", "top", "right", "bottom", "left"].map((p) => (
+                    <SelectItem key={p} value={p} className="text-xs capitalize">{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label className="text-xs text-[#4B5563]/80 block mb-1">
                 Opens on
               </label>
-              <select
+              <Select
                 value={s.tooltipTrigger || "hover"}
-                onChange={(e) => set({ tooltipTrigger: e.target.value as any })}
-                className="w-full rounded-[8px] border border-[#E5E7EB] bg-white px-2 py-1.5 text-xs text-[#0A0A0A] focus:outline-none focus:border-[#60A5FA]"
+                onValueChange={(v) => set({ tooltipTrigger: v as any })}
               >
-                <option value="hover">Hover</option>
-                <option value="click">Click (sticky)</option>
-              </select>
+                <SelectTrigger className="h-8 text-xs bg-white border-[#E5E7EB]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="hover" className="text-xs">Hover</SelectItem>
+                  <SelectItem value="click" className="text-xs">Click (sticky)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         )}
@@ -343,14 +351,18 @@ const ImapProperties: React.FC<Props> = ({
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-[#4B5563]/80">Open link in</span>
-              <select
+              <Select
                 value={s.linkTarget || "_blank"}
-                onChange={(e) => set({ linkTarget: e.target.value as any })}
-                className="rounded-[8px] border border-[#E5E7EB] bg-white px-2 py-1 text-xs text-[#0A0A0A] focus:outline-none focus:border-[#60A5FA]"
+                onValueChange={(v) => set({ linkTarget: v as any })}
               >
-                <option value="_blank">New tab</option>
-                <option value="_self">Same tab</option>
-              </select>
+                <SelectTrigger className="h-8 text-xs bg-white border-[#E5E7EB] w-[110px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_blank" className="text-xs">New tab</SelectItem>
+                  <SelectItem value="_self" className="text-xs">Same tab</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </>
         )}

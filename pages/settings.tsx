@@ -101,8 +101,18 @@ export default function SettingsPage() {
       // Clear projects
       await clearAllProjects();
 
-      // Clear localStorage
-      const keysToRemove: string[] = [];
+      // Clear localStorage — explicit preset keys + pattern-matched project/tsarr keys
+      const PRESET_KEYS = [
+        "snappy-presets",
+        "code-editor-presets",
+        "tweet-editor-presets",
+        "carousel-editor-presets",
+        "globe-maker-presets",
+        "map-maker-presets",
+        "chart-maker-presets",
+        "imp-projects-v2",
+      ];
+      const keysToRemove: string[] = [...PRESET_KEYS];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key && (key.startsWith("project-") || key.startsWith("tsarr-"))) {

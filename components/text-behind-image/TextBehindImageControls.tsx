@@ -1,7 +1,7 @@
 import { RefObject, ChangeEvent, ReactNode, useState, useEffect } from "react";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   BsPlus,
   BsTrash,
@@ -222,8 +222,6 @@ const TextBehindImageControls = ({
   onImageUpload,
   reprocessImage,
 }: Props) => {
-  const [selectedOption, setSelectedOption] = useState("options");
-
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -253,15 +251,16 @@ const TextBehindImageControls = ({
         state.image ? "opacity-100" : "opacity-90"
       }`}
     >
+      <Tabs defaultValue="options">
       {/* Top Buttons Container */}
-      <div className="grid grid-cols-3 bg-[#F3F4F6] rounded-[14px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Options" isActive={selectedOption === "options"} onClick={() => setSelectedOption("options")}><IoMdOptions /></ControlTabButton>
-        <ControlTabButton title="Layers" isActive={selectedOption === "layers"} onClick={() => setSelectedOption("layers")}><BsLayers /></ControlTabButton>
-        <ControlTabButton title="Presets" isActive={selectedOption === "presets"} onClick={() => setSelectedOption("presets")}><BsBookmarkFill /></ControlTabButton>
-      </div>
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] mb-3">
+        <TabsTrigger value="options" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Options</TabsTrigger>
+        <TabsTrigger value="layers" className="gap-1.5 rounded-[10px] text-xs"><BsLayers className="w-3.5 h-3.5" /> Layers</TabsTrigger>
+        <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+      </TabsList>
 
       {/* Options Panel */}
-      {selectedOption === "options" ? (
+      <TabsContent value="options">
         <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <div className="relative rounded-[14px]">
             {/* Upload Section */}
@@ -322,8 +321,9 @@ const TextBehindImageControls = ({
             )}
           </div>
         </div>
-      ) : selectedOption === "layers" ? (
-        /* Layers Panel */
+      </TabsContent>
+      {/* Layers Panel */}
+      <TabsContent value="layers">
         <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Text Layers" />
 
@@ -355,8 +355,9 @@ const TextBehindImageControls = ({
             ))}
           </div>
         </div>
-      ) : (
-        /* Presets Panel */
+      </TabsContent>
+      {/* Presets Panel */}
+      <TabsContent value="presets">
         <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Text Style Presets" />
           <p className="text-xs text-gray-500 px-4 py-2">
@@ -427,7 +428,8 @@ const TextBehindImageControls = ({
             </Button>
           </div>
         </div>
-      )}
+      </TabsContent>
+      </Tabs>
     </section>
   );
 };

@@ -1,6 +1,7 @@
 import type { MapOptions } from "./types";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Props {
   options: MapOptions;
@@ -218,7 +219,7 @@ const ImapMapOptions: React.FC<Props> = ({ options: o, onChange }) => {
       </Section>
 
       <Section title="Custom CSS">
-        <textarea
+        <Textarea
           value={o.customCss}
           onChange={(e) => onChange({ customCss: e.target.value })}
           rows={4}
@@ -233,7 +234,7 @@ const ImapMapOptions: React.FC<Props> = ({ options: o, onChange }) => {
       </Section>
 
       <Section title="Custom JS">
-        <textarea
+        <Textarea
           value={o.customJs}
           onChange={(e) => onChange({ customJs: e.target.value })}
           rows={4}

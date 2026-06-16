@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, ChangeEvent } from "react";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CodeEditorState } from "./CodeEditorLayout";
 import { BiCode, BiChevronRight, BiReset } from "react-icons/bi";
 import { IoMdOptions } from "react-icons/io";
@@ -224,12 +224,11 @@ const presets = [
 ];
 
 const CodeControls: React.FC<Props> = ({ state, updateState }) => {
-  const [selectedTab, setSelectedTab] = useState("code");
   const [showBgPicker, setShowBgPicker] = useState(false);
   const [newPresetName, setNewPresetName] = useState("");
   const customBgInputRef = useRef<HTMLInputElement>(null);
 
-  const { presets: customPresets, savePreset, deletePreset } = useCustomPresets<CodePresetData>(PRESET_STORAGE_KEY);
+  const { presets: customPresets, savePreset, deletePreset } = useCustomPresets<CodePresetData>(PRESET_STORAGE_KEY, "code-editor");
 
   // Debounced inputs for text fields to prevent cursor jumping
   const windowTitleInput = useDebouncedInput(
@@ -322,16 +321,17 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
     <section
       className="flex flex-col transition-opacity duration-300 opacity-100"
     >
+      <Tabs defaultValue="code">
       {/* Top Buttons Container - Code, Style, Presets */}
-      <div className="grid grid-cols-3 bg-[#F3F4F6] rounded-[14px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Code" isActive={selectedTab === "code"} onClick={() => setSelectedTab("code")}><BiCode /></ControlTabButton>
-        <ControlTabButton title="Style" isActive={selectedTab === "style"} onClick={() => setSelectedTab("style")}><IoMdOptions /></ControlTabButton>
-        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BsBookmarkFill /></ControlTabButton>
-      </div>
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] mb-3">
+        <TabsTrigger value="code" className="gap-1.5 rounded-[10px] text-xs"><BiCode className="w-3.5 h-3.5" /> Code</TabsTrigger>
+        <TabsTrigger value="style" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Style</TabsTrigger>
+        <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+      </TabsList>
 
       {/* Panel Content */}
       <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
-        {selectedTab === "code" ? (
+        <TabsContent value="code">
           <div className="p-4">
             <textarea
               value={state.code}
@@ -341,7 +341,8 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
               spellCheck={false}
             />
           </div>
-        ) : selectedTab === "style" ? (
+        </TabsContent>
+        <TabsContent value="style">
           <div className="relative rounded-md">
             <PanelHeading title="Editor Settings" />
 
@@ -836,7 +837,8 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
               </Control>
             )}
           </div>
-        ) : (
+        </TabsContent>
+        <TabsContent value="presets">
           <div className="p-4">
             {/* Save Custom Preset */}
             <div className="mb-4 p-3 bg-[#EFF6FF] rounded-[10px]">
@@ -915,8 +917,9 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
               ))}
             </div>
           </div>
-        )}
+        </TabsContent>
       </div>
+      </Tabs>
     </section>
   );
 };

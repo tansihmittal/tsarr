@@ -82,14 +82,53 @@ export interface CloudPreset {
   created_at: string;
 }
 
-/** Fetch all presets for the current user. */
+/** Fetch all presets for the current user (Screenshot Editor — excludes tool presets). */
 export const getCloudPresets = async (): Promise<CloudPreset[]> => {
   const { data, error } = await supabase
     .from("presets")
     .select("*")
     .order("created_at", { ascending: false });
   if (error) throw error;
-  return (data || []) as CloudPreset[];
+  // Exclude presets saved by useCustomPresets (which embed _tsarr_tool in data)
+  return (data || []).filter((p: any) => !p.data?._tsarr_tool) as CloudPreset[];
+};
+
+/** Fetch cloud presets for a specific tool. */
+export const getCloudPresetsForTool = async (tool: string): Promise<CloudPreset[]> => {
+  const { data, error } = await supabase
+    .from("presets")
+    .select("*")
+    .contains("data", { _tsarr_tool: tool })
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data || []).map((p: any) => ({
+    ...p,
+    // Strip the internal routing key before returning to consumers
+    data: (({ _tsarr_tool, ...rest }) => rest)(p.data),
+  })) as CloudPreset[];
+};
+
+/** Save a preset for a specific tool. Returns the new cloud UUID. */
+export const saveCloudPresetForTool = async (
+  tool: string,
+  presetName: string,
+  presetData: any
+): Promise<string> => {
+  // Per-tool limit: max 20 presets
+  const { count, error: countError } = await supabase
+    .from("presets")
+    .select("*", { count: "exact", head: true })
+    .contains("data", { _tsarr_tool: tool });
+  if (countError) throw countError;
+  if (count !== null && count >= 20) throw new Error("You can only save 20 presets per tool");
+
+  const { data, error } = await supabase
+    .from("presets")
+    .insert({ preset_name: presetName, data: { ...presetData, _tsarr_tool: tool } })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return data.id;
 };
 
 /** Save a new preset. Throws if the 20-preset limit is reached. */

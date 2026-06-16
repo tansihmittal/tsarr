@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import { WatermarkRemoverState } from "./WatermarkRemoverLayout";
 import { BiEraser } from "react-icons/bi";
 import { IoMdOptions } from "react-icons/io";
@@ -6,9 +6,9 @@ import { BsUpload, BsClipboard, BsDownload, BsTrash, BsMagic } from "react-icons
 import { toast } from "react-hot-toast";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface Props {
   state: WatermarkRemoverState;
@@ -33,7 +33,6 @@ const WatermarkRemoverControls: React.FC<Props> = ({
   onProcess,
   clearSelections
 }) => {
-  const [selectedTab, setSelectedTab] = useState("selection");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,11 +63,12 @@ const WatermarkRemoverControls: React.FC<Props> = ({
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="grid grid-cols-3 bg-[#F3F4F6] rounded-[14px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Select" isActive={selectedTab === "selection"} onClick={() => setSelectedTab("selection")}><BiEraser /></ControlTabButton>
-        <ControlTabButton title="Process" isActive={selectedTab === "process"} onClick={() => setSelectedTab("process")}><BsMagic /></ControlTabButton>
-        <ControlTabButton title="Output" isActive={selectedTab === "output"} onClick={() => setSelectedTab("output")}><IoMdOptions /></ControlTabButton>
-      </div>
+      <Tabs defaultValue="selection">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] mb-3">
+        <TabsTrigger value="selection" className="gap-1.5 rounded-[10px] text-xs"><BiEraser className="w-3.5 h-3.5" /> Select</TabsTrigger>
+        <TabsTrigger value="process" className="gap-1.5 rounded-[10px] text-xs"><BsMagic className="w-3.5 h-3.5" /> Process</TabsTrigger>
+        <TabsTrigger value="output" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Output</TabsTrigger>
+      </TabsList>
 
       <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <PanelHeading title="Image" />
@@ -93,7 +93,7 @@ const WatermarkRemoverControls: React.FC<Props> = ({
           )}
         </div>
 
-        {selectedTab === "selection" ? (
+        <TabsContent value="selection">
           <div className="relative rounded-md">
             <PanelHeading title="Selection Tool" />
             <div className="p-4 border-b border-[#E5E7EB]/60">
@@ -150,8 +150,9 @@ const WatermarkRemoverControls: React.FC<Props> = ({
               </ul>
             </div>
           </div>
+        </TabsContent>
 
-        ) : selectedTab === "process" ? (
+        <TabsContent value="process">
           <div className="relative rounded-md">
             <PanelHeading title="Remove Watermark" />
             <div className="p-4 border-b border-[#E5E7EB]/60">
@@ -244,7 +245,9 @@ const WatermarkRemoverControls: React.FC<Props> = ({
               </div>
             </div>
           </div>
-        ) : (
+        </TabsContent>
+
+        <TabsContent value="output">
           <div className="relative rounded-md">
             <PanelHeading title="Format" />
             <div className="p-4 border-b border-[#E5E7EB]/60">
@@ -295,8 +298,9 @@ const WatermarkRemoverControls: React.FC<Props> = ({
               </p>
             </div>
           </div>
-        )}
+        </TabsContent>
       </div>
+      </Tabs>
     </section>
   );
 };

@@ -1,7 +1,7 @@
 import { ReactNode, useState, useEffect } from "react";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "react-hot-toast";
 import {
   BsPlus,
@@ -616,7 +616,6 @@ const VideoCaptionsControls = ({
   playFromCaption,
   videoRef,
 }: Props) => {
-  const [selectedTab, setSelectedTab] = useState("captions");
   const [isExportingVideo, setIsExportingVideo] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [exportQuality, setExportQuality] = useState<"720p" | "1080p" | "4k" | "original">("original");
@@ -1097,15 +1096,16 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
   return (
     <section className={`flex flex-col transition-opacity duration-300 ${state.videoUrl ? "opacity-100" : "opacity-90"}`}>
+      <Tabs defaultValue="captions">
       {/* Tab Buttons */}
-      <div className="grid grid-cols-3 bg-[#F3F4F6] rounded-[10px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Captions" isActive={selectedTab === "captions"} onClick={() => setSelectedTab("captions")}><MdSubtitles /></ControlTabButton>
-        <ControlTabButton title="Style" isActive={selectedTab === "style"} onClick={() => setSelectedTab("style")}><MdStyle /></ControlTabButton>
-        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BsBookmarkFill /></ControlTabButton>
-      </div>
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] mb-3">
+        <TabsTrigger value="captions" className="gap-1.5 rounded-[10px] text-xs"><MdSubtitles className="w-3.5 h-3.5" /> Captions</TabsTrigger>
+        <TabsTrigger value="style" className="gap-1.5 rounded-[10px] text-xs"><MdStyle className="w-3.5 h-3.5" /> Style</TabsTrigger>
+        <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+      </TabsList>
 
       {/* Captions Panel */}
-      {selectedTab === "captions" && (
+      <TabsContent value="captions">
         <div className="rounded-[10px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Captions" />
 
@@ -1365,10 +1365,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             </>
           )}
         </div>
-      )}
+      </TabsContent>
 
       {/* Style Panel */}
-      {selectedTab === "style" && (
+      <TabsContent value="style">
         <div className="rounded-[10px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Caption Style" />
 
@@ -1794,10 +1794,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             </div>
           )}
         </div>
-      )}
+      </TabsContent>
 
       {/* Presets Panel */}
-      {selectedTab === "presets" && (
+      <TabsContent value="presets">
         <div className="rounded-[10px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Style Presets" />
           <p className="text-xs text-gray-500 px-4 py-2">
@@ -1844,7 +1844,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             </Button>
           </div>
         </div>
-      )}
+      </TabsContent>
+      </Tabs>
     </section>
   );
 };

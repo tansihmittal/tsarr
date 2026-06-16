@@ -6,8 +6,8 @@ import { BsUpload, BsClipboard, BsDownload } from "react-icons/bs";
 import { toast } from "react-hot-toast";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
@@ -57,7 +57,6 @@ const outputFormats = [
 ];
 
 const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUpload, onExport }) => {
-  const [selectedTab, setSelectedTab] = useState("ratio");
   const [customWidth, setCustomWidth] = useState("");
   const [customHeight, setCustomHeight] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -101,11 +100,12 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="grid grid-cols-3 bg-[#F3F4F6] rounded-[14px] p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Ratio" isActive={selectedTab === "ratio"} onClick={() => setSelectedTab("ratio")}><BiCrop /></ControlTabButton>
-        <ControlTabButton title="Fit" isActive={selectedTab === "fit"} onClick={() => setSelectedTab("fit")}><BiImage /></ControlTabButton>
-        <ControlTabButton title="Output" isActive={selectedTab === "output"} onClick={() => setSelectedTab("output")}><IoMdOptions /></ControlTabButton>
-      </div>
+      <Tabs defaultValue="ratio">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] mb-3">
+        <TabsTrigger value="ratio" className="gap-1.5 rounded-[10px] text-xs"><BiCrop className="w-3.5 h-3.5" /> Ratio</TabsTrigger>
+        <TabsTrigger value="fit" className="gap-1.5 rounded-[10px] text-xs"><BiImage className="w-3.5 h-3.5" /> Fit</TabsTrigger>
+        <TabsTrigger value="output" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Output</TabsTrigger>
+      </TabsList>
 
       <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         {/* Upload Section - Always visible */}
@@ -131,7 +131,7 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
           )}
         </div>
 
-        {selectedTab === "ratio" ? (
+        <TabsContent value="ratio">
           <div className="relative rounded-md">
             <PanelHeading title="Aspect Ratio" />
             <div className="p-4 border-b border-[#E5E7EB]">
@@ -172,7 +172,8 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
               <p className="text-xs text-gray-500 mt-2">Current: {state.targetAspectRatio.name}</p>
             </div>
           </div>
-        ) : selectedTab === "fit" ? (
+        </TabsContent>
+        <TabsContent value="fit">
           <div className="relative rounded-md">
             <PanelHeading title="Fit Mode" />
             <div className="p-4 border-b border-[#E5E7EB]">
@@ -226,7 +227,8 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
               </>
             )}
           </div>
-        ) : (
+        </TabsContent>
+        <TabsContent value="output">
           <div className="relative rounded-md">
             <PanelHeading title="Size Mode" />
             <Control title="Use Custom Size">
@@ -326,8 +328,9 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
               </p>
             </div>
           </div>
-        )}
+        </TabsContent>
       </div>
+      </Tabs>
     </section>
   );
 };
