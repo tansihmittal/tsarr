@@ -31,6 +31,10 @@ class YOLODetector {
 
     try {
       console.log("Loading YOLOv11 model...");
+      // onnxruntime-web can't find its .wasm files when bundled by Next.js, so
+      // serve them from the matching CDN build (cached by the service worker).
+      ort.env.wasm.wasmPaths =
+        "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.21.0/dist/";
       this.session = await ort.InferenceSession.create("/models/yolo11n.onnx", {
         executionProviders: ["wasm"],
       });
