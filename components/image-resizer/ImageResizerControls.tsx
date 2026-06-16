@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { ImageResizerState } from "./ImageResizerLayout";
+import { normalizeImageFile, IMAGE_ACCEPT } from "@/utils/imageFile";
 import { BiRuler, BiImage } from "react-icons/bi";
 import { IoMdOptions } from "react-icons/io";
 import { BsUpload, BsClipboard, BsDownload, BsLockFill, BsUnlock } from "react-icons/bs";
@@ -39,14 +40,16 @@ const outputFormats = [
   { id: "jpeg", name: "JPG", desc: "Smaller" },
   { id: "webp", name: "WebP", desc: "Modern" },
   { id: "avif", name: "AVIF", desc: "Best" },
+  { id: "gif", name: "GIF", desc: "Animation" },
+  { id: "bmp", name: "BMP", desc: "Uncompressed" },
 ];
 
 const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUpload, onExport, getOutputDimensions }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) onImageUpload(file);
+    if (file) onImageUpload(await normalizeImageFile(file));
   };
 
   const handlePaste = async () => {
@@ -84,7 +87,7 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
       <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <PanelHeading title="Image" />
         <div className="p-4 border-b border-[#E5E7EB]">
-          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+          <input ref={fileInputRef} type="file" accept={IMAGE_ACCEPT} onChange={handleFileChange} className="hidden" />
           <div className="grid grid-cols-2 gap-2 mb-3">
             <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-2"><BsUpload /> {state.originalImage ? "Change" : "Upload"}</Button>
             <Button variant="secondary" size="sm" onClick={handlePaste} className="gap-2"><BsClipboard /> Paste</Button>

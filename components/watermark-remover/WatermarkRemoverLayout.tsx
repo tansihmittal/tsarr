@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
 import WatermarkRemoverPreview from "./WatermarkRemoverPreview";
 import WatermarkRemoverControls from "./WatermarkRemoverControls";
+import { normalizeImageFile } from "@/utils/imageFile";
 
 export interface WatermarkRemoverState {
   originalImage: string;
@@ -46,7 +47,8 @@ const WatermarkRemoverLayout: React.FC = () => {
     setState((prev) => ({ ...prev, ...updates }));
   };
 
-  const handleImageUpload = useCallback((file: File) => {
+  const handleImageUpload = useCallback(async (file: File) => {
+    const normalized = await normalizeImageFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
@@ -63,7 +65,7 @@ const WatermarkRemoverLayout: React.FC = () => {
       };
       img.src = e.target?.result as string;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(normalized);
   }, []);
 
   const addSelection = useCallback((selection: SelectionArea) => {

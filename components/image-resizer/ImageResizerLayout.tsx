@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
 import ImageResizerPreview from "./ImageResizerPreview";
 import ImageResizerControls from "./ImageResizerControls";
+import { normalizeImageFile } from "@/utils/imageFile";
 
 export interface ImageResizerState {
   originalImage: string;
@@ -13,7 +14,7 @@ export interface ImageResizerState {
   maintainAspectRatio: boolean;
   resizeMode: "pixels" | "percentage" | "preset";
   percentage: number;
-  outputFormat: "png" | "jpeg" | "webp" | "avif";
+  outputFormat: "png" | "jpeg" | "webp" | "avif" | "gif" | "bmp";
   quality: number;
 }
 
@@ -48,7 +49,8 @@ const ImageResizerLayout: React.FC = () => {
     });
   };
 
-  const handleImageUpload = useCallback((file: File) => {
+  const handleImageUpload = useCallback(async (file: File) => {
+    const normalized = await normalizeImageFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
@@ -65,7 +67,7 @@ const ImageResizerLayout: React.FC = () => {
       };
       img.src = e.target?.result as string;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(normalized);
   }, []);
 
   const getOutputDimensions = useCallback(() => {
@@ -90,6 +92,8 @@ const ImageResizerLayout: React.FC = () => {
       jpeg: "image/jpeg",
       webp: "image/webp",
       avif: "image/avif",
+      gif: "image/gif",
+      bmp: "image/bmp",
     };
     const mimeType = mimeTypes[state.outputFormat] || "image/png";
     const quality = state.outputFormat === "png" ? undefined : state.quality / 100;

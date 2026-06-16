@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
 import ImageConverterPreview from "./ImageConverterPreview";
 import ImageConverterControls from "./ImageConverterControls";
+import { normalizeImageFile } from "@/utils/imageFile";
 
 export interface ImageConverterState {
   originalImage: string;
@@ -38,7 +39,10 @@ const ImageConverterLayout: React.FC = () => {
     return mimeType.toUpperCase();
   };
 
-  const handleImageUpload = useCallback((file: File) => {
+  const handleImageUpload = useCallback(async (file: File) => {
+    const originalFormat = getFormatFromFile(file);
+    const originalSize = file.size;
+    const normalized = await normalizeImageFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
@@ -47,14 +51,14 @@ const ImageConverterLayout: React.FC = () => {
           originalImage: e.target?.result as string,
           originalWidth: img.width,
           originalHeight: img.height,
-          originalFormat: getFormatFromFile(file),
-          originalSize: file.size,
+          originalFormat,
+          originalSize,
         });
         toast.success("Image loaded!");
       };
       img.src = e.target?.result as string;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(normalized);
   }, []);
 
   const handleExport = useCallback(async () => {

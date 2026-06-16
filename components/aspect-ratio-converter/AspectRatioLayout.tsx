@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
 import AspectRatioPreview from "./AspectRatioPreview";
 import AspectRatioControls from "./AspectRatioControls";
+import { normalizeImageFile } from "@/utils/imageFile";
 
 export interface AspectRatioState {
   originalImage: string;
@@ -44,7 +45,8 @@ const AspectRatioLayout: React.FC = () => {
     setState((prev) => ({ ...prev, ...updates }));
   };
 
-  const handleImageUpload = useCallback((file: File) => {
+  const handleImageUpload = useCallback(async (file: File) => {
+    const normalized = await normalizeImageFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
@@ -58,7 +60,7 @@ const AspectRatioLayout: React.FC = () => {
       };
       img.src = e.target?.result as string;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(normalized);
   }, []);
 
   const handleImageLoad = useCallback((src: string) => {

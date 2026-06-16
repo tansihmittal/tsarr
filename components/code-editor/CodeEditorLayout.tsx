@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import Navigation from "../common/Navigation";
 import CodePreview from "./CodePreview";
 import CodeControls from "./CodeControls";
-import { downloadimagePng, downloadimageJpeg, downloadimageSvg, copyToClipboard } from "../edtior/Editor/downloads";
+import { downloadimagePng, downloadimageJpeg, downloadimageSvg, downloadimageWebp, copyToClipboard } from "../edtior/Editor/downloads";
 import { BackgroundConfig } from "../common/BackgroundPicker";
 import { useProject } from "@/hooks/useProject";
 import { getProjectAsync } from "@/utils/projectStorage";
@@ -167,13 +167,15 @@ const CodeEditorLayout: React.FC = () => {
     setState((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleExport = (format: "png" | "jpeg" | "svg", scale: number = 2) => {
+  const handleExport = (format: "png" | "jpeg" | "svg" | "webp", scale: number = 2) => {
     if (!previewRef.current) return;
 
     if (format === "png") {
       downloadimagePng(previewRef.current, scale);
     } else if (format === "jpeg") {
       downloadimageJpeg(previewRef.current, scale);
+    } else if (format === "webp") {
+      downloadimageWebp(previewRef.current, scale);
     } else {
       downloadimageSvg(previewRef.current, scale);
     }

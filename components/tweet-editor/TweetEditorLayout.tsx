@@ -7,6 +7,7 @@ import {
   downloadimagePng,
   downloadimageJpeg,
   downloadimageSvg,
+  downloadimageWebp,
   copyToClipboard,
 } from "../edtior/Editor/downloads";
 import { BackgroundConfig } from "../common/BackgroundPicker";
@@ -137,10 +138,11 @@ const TweetEditorLayout: React.FC = () => {
     setState((prev) => ({ ...prev, ...updates }));
   };
 
-  const handleExport = (format: "png" | "jpeg" | "svg", scale: number = 2) => {
+  const handleExport = (format: "png" | "jpeg" | "svg" | "webp", scale: number = 2) => {
     if (!previewRef.current) return;
     if (format === "png") downloadimagePng(previewRef.current, scale);
     else if (format === "jpeg") downloadimageJpeg(previewRef.current, scale);
+    else if (format === "webp") downloadimageWebp(previewRef.current, scale);
     else downloadimageSvg(previewRef.current, scale);
   };
 

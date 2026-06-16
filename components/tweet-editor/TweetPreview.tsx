@@ -16,7 +16,7 @@ import {
 interface Props {
   state: TweetEditorState;
   previewRef: RefObject<HTMLDivElement>;
-  onExport: (format: "png" | "jpeg" | "svg", scale?: number) => void;
+  onExport: (format: "png" | "jpeg" | "svg" | "webp", scale?: number) => void;
   onCopy: () => void;
   updateState: (updates: Partial<TweetEditorState>) => void;
   projectName: string;
@@ -105,11 +105,12 @@ const TweetPreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, up
             </span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-[200px] z-50">
-            <DropdownMenuItem onClick={() => onExport("png", 1)}>Export as PNG 1x</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onExport("png", 2)}>Export as PNG 2x</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onExport("png", 4)}>Export as PNG 4x</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onExport("svg", 2)}>Export as SVG</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onExport("jpeg", 2)}>Export as JPEG</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("png", 1)}>PNG 1x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("png", 2)}>PNG 2x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("png", 4)}>PNG 4x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("jpeg", 2)}>JPEG</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("webp", 2)}>WebP</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("svg", 2)}>SVG</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>

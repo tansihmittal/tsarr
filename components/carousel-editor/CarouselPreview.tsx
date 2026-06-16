@@ -18,7 +18,7 @@ import {
 interface Props {
   state: CarouselEditorState;
   previewRef: RefObject<HTMLDivElement>;
-  onExport: (format: "png" | "jpeg" | "svg", scale?: number) => void;
+  onExport: (format: "png" | "jpeg" | "svg" | "webp", scale?: number) => void;
   onExportAll: () => void;
   onCopy: () => void;
   updateState: (updates: Partial<CarouselEditorState>) => void;
@@ -121,6 +121,7 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
             <DropdownMenuItem onClick={() => onExport("png", 2)}>PNG 2x</DropdownMenuItem>
             <DropdownMenuItem onClick={() => onExport("png", 4)}>PNG 4x</DropdownMenuItem>
             <DropdownMenuItem onClick={() => onExport("jpeg", 2)}>JPEG</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("webp", 2)}>WebP</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <ToolbarButton title="Export All" onTap={onExportAll}><FiDownload /></ToolbarButton>

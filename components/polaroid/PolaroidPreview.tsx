@@ -1,4 +1,5 @@
 import { useRef, ChangeEvent, useCallback, useEffect } from "react";
+import { normalizeImageFile, IMAGE_ACCEPT } from "@/utils/imageFile";
 import ToolbarButton from "../common/ToolbarButton";
 import { BsClipboard, BsRepeat, BsUpload, BsShare } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
@@ -24,18 +25,12 @@ interface Props {
 }
 
 const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectName, onProjectNameChange, isSaving }: Props) => {
-  const handleDownload = async (scale: number = 2) => {
+  const handleDownload = async (scale: number = 2, format: "png" | "jpeg" | "webp" = "png") => {
     if (!polaroidRef.current || !state.image) return;
     try {
-      // Get the actual background color for html2canvas
       let bgColor: string | null = null;
-      if (state.backgroundType === "transparent") {
-        bgColor = null;
-      } else if (state.backgroundType === "solid") {
+      if (state.backgroundType === "solid") {
         bgColor = state.backgroundColor;
-      } else {
-        // For gradients, we let html2canvas capture it naturally
-        bgColor = null;
       }
 
       const canvas = await html2canvas(polaroidRef.current, {
@@ -44,9 +39,10 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
         useCORS: true,
         logging: false,
       });
+      const mimeMap = { png: "image/png", jpeg: "image/jpeg", webp: "image/webp" };
       const link = document.createElement("a");
-      link.download = `tsarr-in-polaroid-${Date.now()}.png`;
-      link.href = canvas.toDataURL("image/png");
+      link.download = `tsarr-in-polaroid-${Date.now()}.${format}`;
+      link.href = canvas.toDataURL(mimeMap[format], format === "png" ? 1.0 : 0.92);
       link.click();
       toast.success("Image downloaded!");
     } catch (error) {
@@ -83,10 +79,11 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
     }
   };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const fileUrl = URL.createObjectURL(file);
+      const normalized = await normalizeImageFile(file);
+      const fileUrl = URL.createObjectURL(normalized);
       const img = new window.Image();
       img.onload = () => onImageUpload(fileUrl, img.width, img.height);
       img.src = fileUrl;
@@ -101,10 +98,12 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
       }
       const file = acceptedFiles[0];
       if (file) {
-        const fileUrl = URL.createObjectURL(file);
-        const img = new window.Image();
-        img.onload = () => onImageUpload(fileUrl, img.width, img.height);
-        img.src = fileUrl;
+        normalizeImageFile(file).then((normalized) => {
+          const fileUrl = URL.createObjectURL(normalized);
+          const img = new window.Image();
+          img.onload = () => onImageUpload(fileUrl, img.width, img.height);
+          img.src = fileUrl;
+        });
       }
     },
     [onImageUpload]
@@ -113,7 +112,7 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     maxFiles: 1,
-    accept: { "image/jpeg": [".jpg", ".jpeg"], "image/png": [".png"], "image/webp": [".webp"] },
+    accept: { "image/*": [], "image/heic": [".heic"], "image/heif": [".heif"] },
     maxSize: 30 * 1024 * 1024,
     noClick: !!state.image,
   });
@@ -323,14 +322,16 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
             <span><ToolbarButton title="Export Image"><TfiExport /></ToolbarButton></span>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[200px]">
-            <DropdownMenuItem onClick={() => handleDownload(1)}>Export as PNG 1x</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleDownload(2)}>Export as PNG 2x</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleDownload(4)}>Export as PNG 4x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(1, "png")}>PNG 1x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(2, "png")}>PNG 2x (Recommended)</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(4, "png")}>PNG 4x (High res)</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(2, "jpeg")}>JPEG 2x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(2, "webp")}>WebP 2x</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <ToolbarButton title="Copy" onTap={handleCopyToClipboard} disabled={!state.image}><BsClipboard className="icon" /></ToolbarButton>
         <label htmlFor="polaroid-image-reset">
-          <input type="file" hidden accept="image/*" id="polaroid-image-reset" onChange={handleFileChange} />
+          <input type="file" hidden accept={IMAGE_ACCEPT} id="polaroid-image-reset" onChange={handleFileChange} />
           <ToolbarButton title="Reset Image"><BsRepeat className="icon" /></ToolbarButton>
         </label>
         <ToolbarButton title="Reset Canvas" onTap={onReset}><BiReset className="icon" /></ToolbarButton>

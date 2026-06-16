@@ -3,6 +3,8 @@ import { BsClipboard, BsRepeat, BsImage, BsDownload } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { ImageTextEditorState, TextRegion } from "./ImageTextEditorLayout";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { normalizeImageFile, IMAGE_ACCEPT } from "@/utils/imageFile";
 
 // Helper to check if a color is light (for shadow direction)
 const isColorLight = (color: string): boolean => {
@@ -250,11 +252,12 @@ const ImageTextEditorPreview = ({
     };
   };
 
-  const handleDownload = () => {
+  const handleDownload = (format: "png" | "jpeg" | "webp" = "png") => {
     if (!canvasRef.current) return;
+    const mimeMap = { png: "image/png", jpeg: "image/jpeg", webp: "image/webp" };
     const link = document.createElement("a");
-    link.download = `tsarr-in-edited-image.png`;
-    link.href = canvasRef.current.toDataURL("image/png");
+    link.download = `tsarr-in-edited-image.${format}`;
+    link.href = canvasRef.current.toDataURL(mimeMap[format], format === "png" ? 1.0 : 0.92);
     link.click();
   };
 
@@ -272,11 +275,12 @@ const ImageTextEditorPreview = ({
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const url = URL.createObjectURL(file);
+    const normalized = await normalizeImageFile(file);
+    const url = URL.createObjectURL(normalized);
     const img = new Image();
     img.onload = () => {
       onImageUpload?.(url, img.width, img.height) ?? updateState({
@@ -368,14 +372,25 @@ const ImageTextEditorPreview = ({
     <div className="flex flex-col h-full w-full">
       {/* Action buttons */}
       <div className={`flex flex-wrap gap-2 mb-3 justify-end ${state.image ? "opacity-100" : "opacity-60 pointer-events-none"}`}>
-        <ActionButton title="Download" onClick={handleDownload} disabled={!state.image}>
-          <BsDownload />
-        </ActionButton>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span>
+              <ActionButton title="Download" onClick={() => {}} disabled={!state.image}>
+                <BsDownload />
+              </ActionButton>
+            </span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[160px]">
+            <DropdownMenuItem onClick={() => handleDownload("png")}>PNG (Lossless)</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload("jpeg")}>JPEG</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload("webp")}>WebP</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <ActionButton title="Copy" onClick={handleCopyToClipboard} disabled={!state.image}>
           <BsClipboard />
         </ActionButton>
         <label>
-          <input type="file" hidden accept="image/*" ref={fileInputRef} onChange={handleImageUpload} />
+          <input type="file" hidden accept={IMAGE_ACCEPT} ref={fileInputRef} onChange={handleImageUpload} />
           <ActionButton title="Change">
             <BsRepeat />
           </ActionButton>

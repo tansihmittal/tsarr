@@ -13,6 +13,7 @@ import {
   downloadimageJpeg,
   downloadimagePng,
   downloadimageSvg,
+  downloadimageWebp,
   getImageBlob,
 } from "./downloads";
 import { toast } from "react-hot-toast";
@@ -298,14 +299,15 @@ const Editor: React.FC<Props> = () => {
     return () => window.removeEventListener("paste", handlePaste);
   }, [updateData, selectedImage]);
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const { normalizeImageFile } = await import("@/utils/imageFile");
+      const normalized = await normalizeImageFile(file);
       if (selectedImage && selectedImage.startsWith("blob:")) URL.revokeObjectURL(selectedImage);
-      const fileUrl = URL.createObjectURL(file);
+      const fileUrl = URL.createObjectURL(normalized);
       updateData && updateData("selectedImage", fileUrl);
 
-      // Get image dimensions
       const img = new window.Image();
       img.onload = () => {
         updateData && updateData("imageDimensions", { width: img.width, height: img.height });
@@ -347,21 +349,12 @@ const Editor: React.FC<Props> = () => {
             </span>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="min-w-[262px]" align="end">
-            <DropdownMenuItem onClick={() => downloadimagePng(imageToDownload.current, 1)}>
-              Export as PNG 1x
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => downloadimagePng(imageToDownload.current, 2)}>
-              Export as PNG 2x
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => downloadimagePng(imageToDownload.current, 4)}>
-              Export as PNG 4x
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => downloadimageSvg(imageToDownload.current, 2)}>
-              Export as SVG
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => downloadimageJpeg(imageToDownload.current, 2)}>
-              Export as JPEG
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimagePng(imageToDownload.current, 1)}>PNG 1x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimagePng(imageToDownload.current, 2)}>PNG 2x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimagePng(imageToDownload.current, 4)}>PNG 4x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimageJpeg(imageToDownload.current, 2)}>JPEG</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimageWebp(imageToDownload.current, 2)}>WebP</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimageSvg(imageToDownload.current, 2)}>SVG</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 

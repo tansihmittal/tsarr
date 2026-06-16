@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { toast } from "react-hot-toast";
+import { normalizeImageFile } from "@/utils/imageFile";
 import Navigation from "../common/Navigation";
 import { backgroundRemover } from "../../utils/backgroundRemoval";
 import {
@@ -26,12 +27,13 @@ const BackgroundRemoverLayout: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const handleFile = useCallback((file: File) => {
-    if (!file.type.startsWith("image/")) {
+  const handleFile = useCallback(async (file: File) => {
+    if (!file.type.startsWith("image/") && !/\.(heic|heif)$/i.test(file.name)) {
       toast.error("Please upload an image file");
       return;
     }
-    const url = URL.createObjectURL(file);
+    const normalized = await normalizeImageFile(file);
+    const url = URL.createObjectURL(normalized);
     setOriginalUrl(url);
     setResultUrl("");
     setProgress("");
