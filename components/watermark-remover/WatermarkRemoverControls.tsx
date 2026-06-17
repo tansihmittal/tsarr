@@ -71,30 +71,29 @@ const WatermarkRemoverControls: React.FC<Props> = ({
         <TabsTrigger value="output" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Output</TabsTrigger>
       </TabsList>
 
-      <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
-        <PanelHeading title="Image" />
-        <div className="p-4 border-b border-[#E5E7EB]/60">
-          <input ref={fileInputRef} type="file" accept={IMAGE_ACCEPT} onChange={handleFileChange} className="hidden" />
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-2">
-              <BsUpload /> {state.originalImage ? "Change" : "Upload"}
-            </Button>
-            <Button variant="secondary" size="sm" onClick={handlePaste} className="gap-2">
-              <BsClipboard /> Paste
-            </Button>
-          </div>
-          {state.originalImage && (
-            <div className="flex items-center gap-3">
-              <img src={state.originalImage} alt="Preview" className="w-16 h-16 rounded-[10px] object-cover" />
-              <div className="text-sm">
-                <div className="font-medium text-[#0A0A0A]">{state.imageWidth} × {state.imageHeight}</div>
-                <div className="text-gray-500">Original size</div>
-              </div>
+      <TabsContent value="selection">
+        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+          <PanelHeading title="Image" />
+          <div className="p-4 border-b border-[#E5E7EB]/60">
+            <input ref={fileInputRef} type="file" accept={IMAGE_ACCEPT} onChange={handleFileChange} className="hidden" />
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-2">
+                <BsUpload /> {state.originalImage ? "Change" : "Upload"}
+              </Button>
+              <Button variant="secondary" size="sm" onClick={handlePaste} className="gap-2">
+                <BsClipboard /> Paste
+              </Button>
             </div>
-          )}
-        </div>
-
-        <TabsContent value="selection">
+            {state.originalImage && (
+              <div className="flex items-center gap-3">
+                <img src={state.originalImage} alt="Preview" className="w-16 h-16 rounded-[10px] object-cover" />
+                <div className="text-sm">
+                  <div className="font-medium text-[#0A0A0A]">{state.imageWidth} × {state.imageHeight}</div>
+                  <div className="text-gray-500">Original size</div>
+                </div>
+              </div>
+            )}
+          </div>
           <div className="relative rounded-md">
             <PanelHeading title="Selection Tool" />
             <div className="p-4 border-b border-[#E5E7EB]/60">
@@ -151,9 +150,11 @@ const WatermarkRemoverControls: React.FC<Props> = ({
               </ul>
             </div>
           </div>
+        </div>
         </TabsContent>
 
         <TabsContent value="process">
+        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <div className="relative rounded-md">
             <PanelHeading title="Remove Watermark" />
             <div className="p-4 border-b border-[#E5E7EB]/60">
@@ -246,9 +247,11 @@ const WatermarkRemoverControls: React.FC<Props> = ({
               </div>
             </div>
           </div>
+        </div>
         </TabsContent>
 
         <TabsContent value="output">
+        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <div className="relative rounded-md">
             <PanelHeading title="Format" />
             <div className="p-4 border-b border-[#E5E7EB]/60">
@@ -299,8 +302,8 @@ const WatermarkRemoverControls: React.FC<Props> = ({
               </p>
             </div>
           </div>
+        </div>
         </TabsContent>
-      </div>
       </Tabs>
     </section>
   );

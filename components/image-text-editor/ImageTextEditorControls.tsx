@@ -11,6 +11,9 @@ import {
   BsCheck,
   BsX,
   BsPlus,
+  BsStars,
+  BsPalette,
+  BsDownload,
 } from "react-icons/bs";
 import { IoMdOptions } from "react-icons/io";
 import { BiRefresh } from "react-icons/bi";
@@ -130,9 +133,9 @@ const ImageTextEditorControls = ({
                 {/* Tips */}
                 <PanelHeading title="Tips" />
                 <div className="p-4 text-xs text-gray-500 space-y-2">
-                  <p>✨ Click directly on text in the image to edit</p>
-                  <p>🎨 Text color matches the original automatically</p>
-                  <p>📥 Use Download button to save your edited image</p>
+                  <p className="flex items-center gap-1.5"><BsStars className="shrink-0" /> Click directly on text in the image to edit</p>
+                  <p className="flex items-center gap-1.5"><BsPalette className="shrink-0" /> Text color matches the original automatically</p>
+                  <p className="flex items-center gap-1.5"><BsDownload className="shrink-0" /> Use Download button to save your edited image</p>
                 </div>
               </>
             )}

@@ -412,7 +412,7 @@ const PolaroidDropZone = ({ isDragActive }: { isDragActive: boolean }) => {
       <div className="flex gap-1 flex-col mb-6">
         <div className="flex items-start gap-4 sm:gap-6">
           <h2 className="font-bold text-2xl text-[#0A0A0A] bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">Create Polaroid Photo</h2>
-          <div className="text-2xl text-[#2563EB] animate-pulse-soft">✦</div>
+          <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
         </div>
         <span className="text-sm text-gray-500 mt-1">Transform your images into vintage polaroid-style photos</span>
       </div>

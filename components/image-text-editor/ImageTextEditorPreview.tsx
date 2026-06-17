@@ -451,7 +451,7 @@ const ImageTextEditorPreview = ({
             {/* Status */}
             {!state.isProcessing && state.textRegions.length > 0 && (
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/80 text-white text-xs px-4 py-2 rounded-full">
-                ✨ {state.textRegions.length} text regions • Click to edit
+                {state.textRegions.length} text regions • Click to edit
               </div>
             )}
           </div>
@@ -459,7 +459,7 @@ const ImageTextEditorPreview = ({
           <div className="p-8 bg-white rounded-[20px] shadow-xl max-w-md w-full">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-[#0A0A0A] mb-2">
-                ✨ Magic Text Editor
+                Magic Text Editor
               </h2>
               <p className="text-gray-500 text-sm">
                 Edit any text in images seamlessly

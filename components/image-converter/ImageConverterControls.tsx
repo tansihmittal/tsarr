@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { ImageConverterState } from "./ImageConverterLayout";
-import { BsUpload, BsClipboard, BsDownload, BsFileEarmarkImage } from "react-icons/bs";
+import { BsUpload, BsClipboard, BsDownload, BsFileEarmarkImage, BsImage, BsCamera, BsGlobe2, BsStars, BsCameraReels, BsPalette, BsDiamond, BsFileEarmark, BsController, BsPhone } from "react-icons/bs";
 import { IMAGE_ACCEPT } from "@/utils/imageFile";
 import { toast } from "react-hot-toast";
 import ControlPanelHeading from "../common/ControlPanelHeading";
@@ -17,16 +17,16 @@ interface Props {
 }
 
 const allFormats = [
-  { id: "png", name: "PNG", desc: "Lossless, transparency", icon: "🖼️", supportsQuality: false },
-  { id: "jpeg", name: "JPG", desc: "Smaller file size", icon: "📷", supportsQuality: true },
-  { id: "webp", name: "WebP", desc: "Modern, efficient", icon: "🌐", supportsQuality: true },
-  { id: "avif", name: "AVIF", desc: "Best compression", icon: "✨", supportsQuality: true },
-  { id: "gif", name: "GIF", desc: "Animation support", icon: "🎞️", supportsQuality: false },
-  { id: "bmp", name: "BMP", desc: "Uncompressed", icon: "🎨", supportsQuality: false },
-  { id: "ico", name: "ICO", desc: "Icon format", icon: "🔷", supportsQuality: false },
-  { id: "tiff", name: "TIFF", desc: "Print quality", icon: "📄", supportsQuality: false },
-  { id: "tga", name: "TGA", desc: "Game textures", icon: "🎮", supportsQuality: false },
-  { id: "heic", name: "HEIC", desc: "Apple format", icon: "🍎", supportsQuality: true },
+  { id: "png",  name: "PNG",  desc: "Lossless, transparency", icon: <BsImage />,      supportsQuality: false },
+  { id: "jpeg", name: "JPG",  desc: "Smaller file size",      icon: <BsCamera />,     supportsQuality: true  },
+  { id: "webp", name: "WebP", desc: "Modern, efficient",      icon: <BsGlobe2 />,     supportsQuality: true  },
+  { id: "avif", name: "AVIF", desc: "Best compression",       icon: <BsStars />,      supportsQuality: true  },
+  { id: "gif",  name: "GIF",  desc: "Animation support",      icon: <BsCameraReels />,supportsQuality: false },
+  { id: "bmp",  name: "BMP",  desc: "Uncompressed",           icon: <BsPalette />,    supportsQuality: false },
+  { id: "ico",  name: "ICO",  desc: "Icon format",            icon: <BsDiamond />,    supportsQuality: false },
+  { id: "tiff", name: "TIFF", desc: "Print quality",          icon: <BsFileEarmark />,supportsQuality: false },
+  { id: "tga",  name: "TGA",  desc: "Game textures",          icon: <BsController />, supportsQuality: false },
+  { id: "heic", name: "HEIC", desc: "Apple format",           icon: <BsPhone />,      supportsQuality: true  },
 ];
 
 const inputFormats = ["PNG", "JPG", "JPEG", "WEBP", "AVIF", "GIF", "BMP", "ICO", "TIFF", "TIF", "TGA", "HEIC", "HEIF", "SVG"];
@@ -99,7 +99,7 @@ const ImageConverterControls: React.FC<Props> = ({ state, updateState, onImageUp
                 className={`p-2.5 rounded-[10px] text-left transition-all ${state.outputFormat === format.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2" : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"}`}
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-base">{format.icon}</span>
+                  <span className="text-base flex items-center">{format.icon}</span>
                   <div>
                     <div className="font-semibold text-sm">{format.name}</div>
                     <div className={`text-[10px] ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500"}`}>{format.desc}</div>

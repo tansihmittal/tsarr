@@ -28,7 +28,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({
       }
 
       const file = new File([blob], "tsarr-creation.png", { type: "image/png" });
-      const shareText = "Created with tsarr.in - Free Screenshot Editor ✨";
+      const shareText = "Created with tsarr.in - Free Screenshot Editor";
       const shareUrl = "https://tsarr.in";
 
       // Check if Web Share API is available with files support

@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useCallback, useState } from "react";
 import { ImageConverterState } from "./ImageConverterLayout";
 import { TfiExport } from "react-icons/tfi";
-import { BsClipboard, BsUpload, BsRepeat } from "react-icons/bs";
+import { BsClipboard, BsUpload, BsRepeat, BsStars } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import ToolbarButton from "../common/ToolbarButton";
@@ -80,7 +80,7 @@ const ImageConverterPreview: React.FC<Props> = ({ state, canvasRef, onExport, on
             <div className="flex gap-1 flex-col mb-6">
               <div className="flex items-start gap-4 sm:gap-6">
                 <h2 className="font-bold text-2xl text-[#0A0A0A]">Convert Image Format</h2>
-                <div className="text-2xl text-[#2563EB] animate-pulse-soft">✦</div>
+                <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
               </div>
               <span className="text-sm text-gray-500 mt-1">Convert any image to PNG, JPG, WebP, AVIF, GIF, BMP, ICO</span>
             </div>

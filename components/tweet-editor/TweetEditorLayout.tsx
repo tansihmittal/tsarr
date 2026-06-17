@@ -65,7 +65,7 @@ const TweetEditorLayout: React.FC = () => {
     avatarUrl: "",
     verified: true,
     tweetText:
-      "Just shipped something amazing! 🚀\n\nBuilding in public is the best way to learn and grow.",
+      "Just shipped something amazing!\n\nBuilding in public is the best way to learn and grow.",
     date: new Date(),
     likes: "1,234",
     retweets: "567",

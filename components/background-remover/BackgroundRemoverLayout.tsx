@@ -11,8 +11,11 @@ import {
   BsPalette,
   BsArrowLeftRight,
 } from "react-icons/bs";
+import { IoMdOptions } from "react-icons/io";
 import { MdOutlineAutoFixHigh } from "react-icons/md";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import ControlPanelHeading from "../common/ControlPanelHeading";
 
 type BgOption = "transparent" | "white" | "black" | "custom";
 type ExportFormat = "png" | "webp" | "jpeg";
@@ -282,7 +285,7 @@ const BackgroundRemoverLayout: React.FC = () => {
           </div>
 
           {/* Controls */}
-          <div className="flex flex-col gap-3 py-4">
+          <section className="flex flex-col transition-opacity duration-300 opacity-100">
             <input
               ref={fileInputRef}
               type="file"
@@ -293,124 +296,131 @@ const BackgroundRemoverLayout: React.FC = () => {
                 if (file) handleFile(file);
               }}
             />
+            <Tabs defaultValue="options">
+              <TabsList className="w-full grid grid-cols-2 rounded-[12px] bg-[#F3F4F6] mb-3">
+                <TabsTrigger value="options" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Options</TabsTrigger>
+                <TabsTrigger value="output" className="gap-1.5 rounded-[10px] text-xs"><BsDownload className="w-3.5 h-3.5" /> Export</TabsTrigger>
+              </TabsList>
 
-            {/* Upload */}
-            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
-              <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider mb-3">
-                Image
-              </p>
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                size="sm"
-                variant="secondary"
-                className="w-full gap-2"
-              >
-                <BsUpload className="w-3.5 h-3.5" />
-                Upload Image
-              </Button>
-              {originalUrl && (
-                <Button
-                  onClick={() => {
-                    setOriginalUrl("");
-                    setResultUrl("");
-                  }}
-                  size="sm"
-                  variant="ghost"
-                  className="w-full mt-2 text-red-400 hover:text-red-600"
-                >
-                  Clear
-                </Button>
-              )}
-            </div>
-
-            {/* Remove BG button */}
-            <Button
-              onClick={handleRemove}
-              disabled={!originalUrl || isProcessing}
-              className="gap-2 w-full"
-            >
-              {isProcessing ? (
-                <>
-                  <span className="loading loading-spinner loading-xs" />
-                  {progress || "Processing..."}
-                </>
-              ) : (
-                <>
-                  <MdOutlineAutoFixHigh className="w-4 h-4" />
-                  Remove Background
-                </>
-              )}
-            </Button>
-
-            {/* Background color */}
-            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
-              <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider mb-3">
-                Background
-              </p>
-              <div className="grid grid-cols-2 gap-2 mb-3">
-                {(["transparent", "white", "black", "custom"] as BgOption[]).map(
-                  (opt) => (
+              <TabsContent value="options">
+                <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+                  <ControlPanelHeading title="Image" />
+                  <div className="p-4 border-b border-[#E5E7EB]/60">
                     <Button
-                      key={opt}
+                      onClick={() => fileInputRef.current?.click()}
                       size="sm"
-                      variant={bgOption === opt ? "default" : "secondary"}
-                      className="capitalize"
-                      onClick={() => setBgOption(opt)}
+                      variant="secondary"
+                      className="w-full gap-2"
                     >
-                      {opt}
+                      <BsUpload className="w-3.5 h-3.5" />
+                      {originalUrl ? "Change Image" : "Upload Image"}
                     </Button>
-                  )
-                )}
-              </div>
-              {bgOption === "custom" && (
-                <div className="flex items-center gap-2 mt-2">
-                  <input
-                    type="color"
-                    value={customColor}
-                    onChange={(e) => setCustomColor(e.target.value)}
-                    className="w-10 h-8 rounded cursor-pointer border border-[#E5E7EB]"
-                  />
-                  <span className="text-xs font-mono text-[#4B5563]">
-                    {customColor.toUpperCase()}
-                  </span>
-                </div>
-              )}
-            </div>
+                    {originalUrl && (
+                      <Button
+                        onClick={() => { setOriginalUrl(""); setResultUrl(""); }}
+                        size="sm"
+                        variant="ghost"
+                        className="w-full mt-2 text-red-400 hover:text-red-600"
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
 
-            {/* Export Format */}
-            {resultUrl && (
-              <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
-                <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider mb-3">Export Format</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {(["png", "webp", "jpeg"] as ExportFormat[]).map((fmt) => (
+                  <ControlPanelHeading title="Remove Background" />
+                  <div className="p-4 border-b border-[#E5E7EB]/60">
                     <Button
-                      key={fmt}
-                      size="sm"
-                      variant={exportFormat === fmt ? "default" : "secondary"}
-                      className="uppercase text-xs"
-                      onClick={() => setExportFormat(fmt)}
+                      onClick={handleRemove}
+                      disabled={!originalUrl || isProcessing}
+                      className="gap-2 w-full shadow-lg shadow-[#2563EB]/20"
                     >
-                      {fmt === "jpeg" ? "JPG" : fmt.toUpperCase()}
+                      {isProcessing ? (
+                        <>
+                          <span className="loading loading-spinner loading-xs" />
+                          {progress || "Processing..."}
+                        </>
+                      ) : (
+                        <>
+                          <MdOutlineAutoFixHigh className="w-4 h-4" />
+                          Remove Background
+                        </>
+                      )}
                     </Button>
-                  ))}
-                </div>
-                {exportFormat === "jpeg" && bgOption === "transparent" && (
-                  <p className="text-xs text-amber-600 mt-2">JPG doesn't support transparency — white bg will be used</p>
-                )}
-              </div>
-            )}
+                  </div>
 
-            {/* Download */}
-            {resultUrl && (
-              <Button
-                onClick={handleDownload}
-                className="gap-2 w-full bg-green-600 hover:bg-green-700"
-              >
-                <BsDownload className="w-4 h-4" />
-                Download {exportFormat === "jpeg" ? "JPG" : exportFormat.toUpperCase()}
-              </Button>
-            )}
-          </div>
+                  <ControlPanelHeading title="Background Color" />
+                  <div className="p-4 border-b border-[#E5E7EB]/60">
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      {(["transparent", "white", "black", "custom"] as BgOption[]).map((opt) => (
+                        <Button
+                          key={opt}
+                          size="sm"
+                          variant={bgOption === opt ? "default" : "secondary"}
+                          className="capitalize"
+                          onClick={() => setBgOption(opt)}
+                        >
+                          {opt}
+                        </Button>
+                      ))}
+                    </div>
+                    {bgOption === "custom" && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <input
+                          type="color"
+                          value={customColor}
+                          onChange={(e) => setCustomColor(e.target.value)}
+                          className="w-10 h-8 rounded cursor-pointer border border-[#E5E7EB]"
+                        />
+                        <span className="text-xs font-mono text-[#4B5563]">
+                          {customColor.toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="output">
+                <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+                  <ControlPanelHeading title="Format" />
+                  <div className="p-4 border-b border-[#E5E7EB]/60">
+                    <div className="grid grid-cols-3 gap-2">
+                      {(["png", "webp", "jpeg"] as ExportFormat[]).map((fmt) => (
+                        <button
+                          key={fmt}
+                          onClick={() => setExportFormat(fmt)}
+                          className={`p-3 rounded-[10px] text-center transition-all ${exportFormat === fmt ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"}`}
+                        >
+                          <div className="font-semibold text-sm">{fmt === "jpeg" ? "JPG" : fmt.toUpperCase()}</div>
+                          <div className={`text-xs ${exportFormat === fmt ? "text-white/70" : "text-gray-500"}`}>
+                            {fmt === "png" ? "Lossless" : fmt === "webp" ? "Modern" : "Smaller"}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                    {exportFormat === "jpeg" && bgOption === "transparent" && (
+                      <p className="text-xs text-amber-600 mt-3">JPG doesn't support transparency — white bg will be used</p>
+                    )}
+                  </div>
+
+                  <ControlPanelHeading title="Download" />
+                  <div className="p-4 border-b border-[#E5E7EB]/60">
+                    <Button
+                      onClick={handleDownload}
+                      disabled={!resultUrl}
+                      className="gap-2 w-full shadow-lg shadow-[#2563EB]/20"
+                    >
+                      <BsDownload className="w-4 h-4" />
+                      Download {exportFormat === "jpeg" ? "JPG" : exportFormat.toUpperCase()}
+                    </Button>
+                    {!resultUrl && (
+                      <p className="text-xs text-gray-500 mt-2 text-center">Remove background first to download</p>
+                    )}
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </section>
         </div>
       </section>
     </main>

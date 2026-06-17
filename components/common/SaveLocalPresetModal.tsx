@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BsExclamationTriangle } from "react-icons/bs";
 import { toast } from "react-hot-toast";
 import { validatePresetName, presetNameExists } from "@/utils/localPresets";
 import { Button } from "@/components/ui/button";
@@ -137,7 +138,7 @@ const SaveLocalPresetModal: React.FC<SaveLocalPresetModalProps> = ({
             <DialogHeader>
               <div className="flex items-center gap-3 mb-1">
                 <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-                  <span className="text-amber-600 text-xl">⚠</span>
+                  <BsExclamationTriangle className="text-amber-600 text-xl" />
                 </div>
                 <DialogTitle className="font-bold text-xl text-gray-800">Overwrite Preset?</DialogTitle>
               </div>

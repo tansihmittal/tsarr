@@ -393,11 +393,11 @@ const BubbleBlasterPreview = ({
             {/* Status bar */}
             {!state.isProcessing && state.bubbles.length > 0 && (
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/80 text-white text-xs px-4 py-2 rounded-full flex items-center gap-3">
-                <span>💬 {state.bubbles.length} bubbles</span>
-                <span className="text-[#60A5FA]">✓ {selectedCount} selected</span>
+                <span><span class="inline-block w-3 h-3 rounded-full bg-current" /> {state.bubbles.length} bubbles</span>
+                <span className="text-[#60A5FA]">{selectedCount} selected</span>
                 {processedCount > 0 && (
                   <span className="text-green-400">
-                    ✨ {processedCount} cleaned
+                    {processedCount} cleaned
                   </span>
                 )}
               </div>
@@ -406,7 +406,7 @@ const BubbleBlasterPreview = ({
             {/* Mode indicator */}
             {state.mode === "draw" && (
               <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-xs px-4 py-2 rounded-full">
-                ✏️ Draw mode - Click and drag to select bubble region
+                Draw mode — click and drag to select region
               </div>
             )}
           </div>
@@ -464,9 +464,9 @@ const DropZone = ({
       <div className="flex gap-1 flex-col mb-6">
         <div className="flex items-start gap-4 sm:gap-6">
           <h2 className="font-bold text-2xl text-[#0A0A0A] bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
-            💬 Bubble Blaster
+            Bubble Blaster
           </h2>
-          <div className="text-2xl text-[#2563EB] animate-pulse-soft">✦</div>
+          <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
         </div>
         <span className="text-sm text-gray-500 mt-1">
           Remove text from manga speech bubbles instantly

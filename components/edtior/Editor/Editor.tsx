@@ -210,7 +210,7 @@ const Editor: React.FC<Props> = () => {
       }
 
       const file = new File([blob], "tsarr-creation.png", { type: "image/png" });
-      const shareText = "Created with tsarr.in - Free Screenshot Editor ✨";
+      const shareText = "Created with tsarr.in - Free Screenshot Editor";
       const shareUrl = "https://tsarr.in";
 
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {

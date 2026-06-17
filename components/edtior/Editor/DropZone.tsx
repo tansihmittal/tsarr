@@ -1,20 +1,16 @@
 import { useEditorContext } from "@/context/Editor";
 import { ChangeEvent, useCallback, useRef, useState } from "react";
-import { BsUpload, BsClipboard, BsLink45Deg } from "react-icons/bs";
+import { BsUpload, BsClipboard, BsLink45Deg, BsStars } from "react-icons/bs";
 
 import { FileRejection, useDropzone } from "react-dropzone";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 
 interface Props {}
@@ -125,7 +121,6 @@ const DropZone: React.FC<Props> = () => {
       return;
     }
 
-    // Validate URL
     let url = urlInput.trim();
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
       url = "https://" + url;
@@ -135,50 +130,40 @@ const DropZone: React.FC<Props> = () => {
     const loadingToast = toast.loading("Capturing screenshot...");
 
     try {
-      const deviceSizes = {
-        desktop: { width: 1920, height: 1080 },
-        tablet: { width: 768, height: 1024 },
-        mobile: { width: 375, height: 812 },
+      const body: Record<string, unknown> = {
+        url,
+        device: captureDevice,
+        fullPage: captureFullPage,
       };
-
-      const dimensions = customWidth && customHeight
-        ? { width: Number(customWidth), height: Number(customHeight) }
-        : deviceSizes[captureDevice];
-
-      // Use microlink API for screenshots with device scale factor for better quality
-      let apiUrl: string;
-      const baseParams = `url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=${dimensions.width}&viewport.height=${dimensions.height}&viewport.deviceScaleFactor=2`;
-
-      if (captureFullPage) {
-        apiUrl = `https://api.microlink.io/?${baseParams}&screenshot.fullPage=true`;
-      } else {
-        apiUrl = `https://api.microlink.io/?${baseParams}`;
+      if (customWidth && customHeight) {
+        body.width = Number(customWidth);
+        body.height = Number(customHeight);
       }
 
-      const response = await fetch(apiUrl);
+      const response = await fetch("/api/screenshot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to capture screenshot");
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to capture screenshot");
       }
 
-      // The response is the actual image, convert to blob URL
       const blob = await response.blob();
       const imageUrl = URL.createObjectURL(blob);
 
-      // Get actual image dimensions from the loaded image
       const img = new window.Image();
       img.onload = () => {
         if (updateData) {
-          // Use actual image dimensions, not requested dimensions
           updateData("imageDimensions", { width: img.naturalWidth, height: img.naturalHeight });
           updateData("selectedImage", imageUrl);
         }
       };
       img.onerror = () => {
-        // Fallback if image fails to load dimensions
         if (updateData) {
           updateData("selectedImage", imageUrl);
-          updateData("imageDimensions", { width: dimensions.width, height: dimensions.height });
         }
       };
       img.src = imageUrl;
@@ -201,7 +186,7 @@ const DropZone: React.FC<Props> = () => {
           <h2 className="font-bold text-2xl text-[#0A0A0A] bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
             Upload and Start Editing
           </h2>
-          <div className="text-2xl text-[#2563EB] animate-pulse-soft">✦</div>
+          <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
         </div>
         <span className="text-sm text-gray-500 mt-1">
           Transform boring screenshots into stunning visuals
@@ -277,84 +262,83 @@ const DropZone: React.FC<Props> = () => {
           setUrlInput("");
         }
       }}>
-        <DialogContent className="w-full max-w-xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold text-[#0A0A0A]">
+        <DialogContent className="w-full max-w-md p-6 gap-0">
+          <DialogHeader className="mb-5">
+            <DialogTitle className="text-lg font-semibold text-[#0A0A0A]">
               Screenshot from URL
             </DialogTitle>
           </DialogHeader>
 
           {/* URL Input */}
-          <div className="mb-5">
-            <Label className="text-sm text-gray-500 font-medium block mb-2">Website URL</Label>
-            <Input
+          <div className="mb-4">
+            <label className="text-xs text-gray-500 font-medium block mb-1.5">Website URL</label>
+            <input
               type="url"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
               placeholder="https://example.com"
-              className="w-full px-4 py-3.5 border-2 border-[#E5E7EB] rounded-[14px] focus:border-[#2563EB] focus:outline-none transition-colors bg-white text-base"
+              className="w-full px-4 py-3 border-2 border-[#E5E7EB] rounded-[12px] focus:border-[#2563EB] focus:outline-none transition-colors bg-white text-sm"
               autoFocus
               onKeyDown={(e) => e.key === "Enter" && handleUrlCapture()}
             />
           </div>
 
           {/* Device Selection */}
-          <div className="mb-5">
-            <Label className="text-sm text-gray-500 font-medium block mb-2">Device View</Label>
-            <div className="grid grid-cols-3 gap-3">
+          <div className="mb-4">
+            <label className="text-xs text-gray-500 font-medium block mb-1.5">Device View</label>
+            <div className="grid grid-cols-3 gap-2">
               {(["desktop", "tablet", "mobile"] as const).map((device) => (
                 <button
                   key={device}
                   onClick={() => setCaptureDevice(device)}
-                  className={`py-3 rounded-[10px] text-sm font-medium transition-all duration-200 capitalize ${
+                  className={`py-2.5 rounded-[10px] text-xs font-medium transition-all capitalize ${
                     captureDevice === device
-                      ? "bg-[#2563EB] text-white shadow-md"
-                      : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"
+                      ? "bg-[#2563EB] text-white shadow-sm"
+                      : "bg-[#F3F4F6] hover:bg-[#E5E7EB] text-gray-700"
                   }`}
                 >
                   {device}
                 </button>
               ))}
             </div>
-            <div className="text-xs text-gray-400 mt-2">
+            <p className="text-xs text-gray-400 mt-1.5">
               {captureDevice === "desktop" && "1920 × 1080"}
               {captureDevice === "tablet" && "768 × 1024"}
               {captureDevice === "mobile" && "375 × 812"}
-            </div>
+            </p>
           </div>
 
           {/* Full Page Option */}
-          <div className="mb-5 flex items-center justify-between py-2">
-            <Label className="text-sm text-[#0A0A0A] font-medium">Capture full page</Label>
-            <Switch
-              checked={captureFullPage}
-              onCheckedChange={setCaptureFullPage}
-            />
+          <div className="flex items-center justify-between mb-4 px-4 py-3 bg-[#F9FAFB] rounded-[12px]">
+            <span className="text-sm text-[#0A0A0A] font-medium">Capture full page</span>
+            <Switch checked={captureFullPage} onCheckedChange={setCaptureFullPage} />
           </div>
 
           {/* Custom Size */}
-          <div className="mb-5">
-            <Label className="text-sm text-gray-500 font-medium block mb-2">Custom Size (optional)</Label>
-            <div className="grid grid-cols-2 gap-3">
-              <Input
+          <div className="mb-6">
+            <label className="text-xs text-gray-500 font-medium block mb-1.5">
+              Custom Size <span className="font-normal">(optional)</span>
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <input
                 type="number"
                 value={customWidth}
                 onChange={(e) => setCustomWidth(e.target.value ? Number(e.target.value) : "")}
                 placeholder="Width"
-                className="w-full px-4 py-3 border-2 border-[#E5E7EB] rounded-[10px] focus:border-[#2563EB] focus:outline-none text-sm bg-white"
+                className="w-full px-4 py-2.5 border-2 border-[#E5E7EB] rounded-[12px] focus:border-[#2563EB] focus:outline-none text-sm bg-white transition-colors"
               />
-              <Input
+              <input
                 type="number"
                 value={customHeight}
                 onChange={(e) => setCustomHeight(e.target.value ? Number(e.target.value) : "")}
                 placeholder="Height"
-                className="w-full px-4 py-3 border-2 border-[#E5E7EB] rounded-[10px] focus:border-[#2563EB] focus:outline-none text-sm bg-white"
+                className="w-full px-4 py-2.5 border-2 border-[#E5E7EB] rounded-[12px] focus:border-[#2563EB] focus:outline-none text-sm bg-white transition-colors"
               />
             </div>
             {(customWidth || customHeight) && (
               <button
                 onClick={() => { setCustomWidth(""); setCustomHeight(""); }}
-                className="mt-2 text-xs text-gray-400 hover:text-red-500 transition-colors"
+                className="mt-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors"
               >
                 Clear custom size
               </button>
@@ -362,13 +346,10 @@ const DropZone: React.FC<Props> = () => {
           </div>
 
           {/* Actions */}
-          <DialogFooter className="flex justify-end gap-4 mt-2">
+          <div className="flex justify-end gap-3">
             <Button
               variant="ghost"
-              onClick={() => {
-                setShowUrlModal(false);
-                setUrlInput("");
-              }}
+              onClick={() => { setShowUrlModal(false); setUrlInput(""); }}
               disabled={isCapturing}
             >
               Cancel
@@ -376,7 +357,7 @@ const DropZone: React.FC<Props> = () => {
             <Button
               onClick={handleUrlCapture}
               disabled={isCapturing || !urlInput.trim()}
-              className="gap-2"
+              className="gap-2 min-w-[100px]"
             >
               {isCapturing ? (
                 <>
@@ -387,7 +368,7 @@ const DropZone: React.FC<Props> = () => {
                 "Capture"
               )}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

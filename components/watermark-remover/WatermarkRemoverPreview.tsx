@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useCallback, useState, useRef } from "react";
 import { WatermarkRemoverState, SelectionArea } from "./WatermarkRemoverLayout";
 import { TfiExport } from "react-icons/tfi";
-import { BsClipboard, BsUpload, BsRepeat } from "react-icons/bs";
+import { BsClipboard, BsUpload, BsRepeat, BsStars } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import ToolbarButton from "../common/ToolbarButton";
@@ -152,7 +152,7 @@ const WatermarkRemoverPreview: React.FC<Props> = ({
             <div className="flex gap-1 flex-col mb-6">
               <div className="flex items-start gap-4 sm:gap-6">
                 <h2 className="font-bold text-2xl text-[#0A0A0A]">Watermark Remover</h2>
-                <div className="text-2xl text-[#2563EB] animate-pulse-soft">✦</div>
+                <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
               </div>
               <span className="text-sm text-gray-500 mt-1">Remove watermarks from images with intelligent inpainting</span>
             </div>

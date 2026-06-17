@@ -86,7 +86,8 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
         <TabsTrigger value="output" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Output</TabsTrigger>
       </TabsList>
 
-      <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <TabsContent value="size">
+        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <PanelHeading title="Image" />
         <div className="p-4 border-b border-[#E5E7EB]">
           <input ref={fileInputRef} type="file" accept={IMAGE_ACCEPT} onChange={handleFileChange} className="hidden" />
@@ -105,7 +106,6 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
           )}
         </div>
 
-        <TabsContent value="size">
           <div className="relative rounded-md">
             <PanelHeading title="Resize Mode" />
             <div className="p-4 border-b border-[#E5E7EB]">
@@ -175,9 +175,10 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
               </>
             )}
           </div>
+        </div>
         </TabsContent>
         <TabsContent value="presets">
-          <div className="relative rounded-md">
+          <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
             <PanelHeading title="Preset Sizes" />
             <div className="p-4 border-b border-[#E5E7EB]">
               <div className="grid grid-cols-2 gap-2">
@@ -196,7 +197,7 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
           </div>
         </TabsContent>
         <TabsContent value="output">
-          <div className="relative rounded-md">
+          <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
             <PanelHeading title="Format" />
             <div className="p-4 border-b border-[#E5E7EB]">
               <div className="grid grid-cols-4 gap-2">
@@ -236,7 +237,6 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
             </div>
           </div>
         </TabsContent>
-      </div>
       </Tabs>
     </section>
   );

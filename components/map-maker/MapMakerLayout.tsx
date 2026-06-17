@@ -27,6 +27,11 @@ import {
   BsFlag,
   BsLightning,
   BsCircleFill,
+  BsMap,
+  BsCircle,
+  BsArrowUpRight,
+  BsGrid,
+  BsExclamationTriangle,
 } from "react-icons/bs";
 import { TfiExport } from "react-icons/tfi";
 import { BiReset } from "react-icons/bi";
@@ -95,12 +100,12 @@ const markerIcons: { id: MarkerIcon; name: string; icon: React.ReactNode }[] = [
   { id: "lightning", name: "Lightning", icon: <BsLightning /> },
 ];
 
-const mapTypes: { id: MapType; name: string; icon: string }[] = [
-  { id: "choropleth", name: "Choropleth", icon: "🗺️" },
-  { id: "bubble", name: "Bubble", icon: "🔵" },
-  { id: "marker", name: "Marker", icon: "📍" },
-  { id: "flow", name: "Flow/Arc", icon: "↗️" },
-  { id: "heatmap", name: "Heat Map", icon: "🔥" },
+const mapTypes: { id: MapType; name: string; icon: React.ReactNode }[] = [
+  { id: "choropleth", name: "Choropleth", icon: <BsMap /> },
+  { id: "bubble",     name: "Bubble",     icon: <BsCircle /> },
+  { id: "marker",     name: "Marker",     icon: <BsGeoAlt /> },
+  { id: "flow",       name: "Flow/Arc",   icon: <BsArrowUpRight /> },
+  { id: "heatmap",    name: "Heat Map",   icon: <BsGrid /> },
 ];
 
 const regionOptions: RegionConfig[] = [
@@ -362,9 +367,9 @@ const DataPointRow: React.FC<{
       {mapType !== "choropleth" && (
         <div className="text-[10px] pl-1">
           {coordsFound && point.coordinates ? (
-            <span className="text-success">📍 {point.coordinates[0].toFixed(2)}, {point.coordinates[1].toFixed(2)}</span>
+            <span className="text-success flex items-center gap-1"><BsGeoAlt className="inline" /> {point.coordinates[0].toFixed(2)}, {point.coordinates[1].toFixed(2)}</span>
           ) : (
-            <span className="text-warning">⚠️ Location not found - type a valid city/country</span>
+            <span className="text-warning flex items-center gap-1"><BsExclamationTriangle className="inline" /> Location not found - type a valid city/country</span>
           )}
         </div>
       )}
@@ -454,9 +459,9 @@ const FlowRow: React.FC<{
       </div>
       <div className="text-[10px] text-gray-500">
         {flow.from[0] !== 0 && flow.to[0] !== 0 ? (
-          <span>📍 {flow.from[0].toFixed(2)}, {flow.from[1].toFixed(2)} → {flow.to[0].toFixed(2)}, {flow.to[1].toFixed(2)}</span>
+          <span className="flex items-center gap-1"><BsGeoAlt className="inline" /> {flow.from[0].toFixed(2)}, {flow.from[1].toFixed(2)} → {flow.to[0].toFixed(2)}, {flow.to[1].toFixed(2)}</span>
         ) : (
-          <span className="text-warning">⚠️ Enter valid city names to show route</span>
+          <span className="text-warning flex items-center gap-1"><BsExclamationTriangle className="inline" /> Enter valid city names to show route</span>
         )}
       </div>
     </div>
@@ -1289,7 +1294,7 @@ const MapMakerLayout: React.FC = () => {
                   <div className="flex gap-2">
                     <input ref={fileInputRef} type="file" accept=".csv,.tsv,.txt" onChange={handleFileUpload} className="hidden" />
                     <Button size="sm" variant="secondary" className="flex-1 gap-1" onClick={() => fileInputRef.current?.click()}><BsUpload /> CSV</Button>
-                    <Button size="sm" variant="secondary" className="flex-1 gap-1" onClick={() => toast("Paste from Excel (Ctrl+V)", { icon: "📋" })}><BsTable /> Paste</Button>
+                    <Button size="sm" variant="secondary" className="flex-1 gap-1" onClick={() => toast("Paste from Excel (Ctrl+V)")}><BsTable /> Paste</Button>
                   </div>
                   <div className="text-[10px] text-gray-500 mt-2 space-y-1">
                     <p><strong>Points:</strong> name, value, lng, lat</p>

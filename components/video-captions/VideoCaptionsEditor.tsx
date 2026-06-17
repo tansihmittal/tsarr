@@ -1,6 +1,6 @@
 import { RefObject, useEffect, useState, useMemo, useRef } from "react";
 import ToolbarButton from "../common/ToolbarButton";
-import { BsPlayFill, BsPauseFill, BsUpload } from "react-icons/bs";
+import { BsPlayFill, BsPauseFill, BsUpload, BsStars } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { VideoCaptionsState, Caption, CaptionStyle } from "./VideoCaptionsLayout";
 import { Button } from "@/components/ui/button";
@@ -754,7 +754,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                 <h2 className="font-bold text-2xl text-[#0A0A0A] bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
                   Upload Your Video
                 </h2>
-                <div className="text-2xl text-[#2563EB] animate-pulse-soft">✦</div>
+                <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
               </div>
               <span className="text-sm text-gray-500 mt-1">
                 Add captions and subtitles to your videos

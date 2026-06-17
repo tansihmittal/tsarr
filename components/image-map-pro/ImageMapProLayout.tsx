@@ -440,7 +440,7 @@ const ImageMapProLayout: React.FC = () => {
       pendingImage.current = data;
       setPendingImageHref(data.href);
       setTool("image");
-      toast("Draw a box on the canvas to place the image", { icon: "🖼️" });
+      toast("Draw a box on the canvas to place the image");
     } catch (err: any) {
       toast.error(err.message || "Failed to load image");
     }

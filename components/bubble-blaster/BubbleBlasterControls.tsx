@@ -5,6 +5,10 @@ import {
   BsX,
   BsTrash,
   BsLightning,
+  BsLightbulb,
+  BsPencil,
+  BsBullseye,
+  BsChatSquareDots,
 } from "react-icons/bs";
 import { BiRefresh, BiSelectMultiple, BiPointer, BiPencil } from "react-icons/bi";
 import { BubbleBlasterState, BubbleRegion } from "./BubbleBlasterLayout";
@@ -203,17 +207,17 @@ const BubbleBlasterControls = ({
             {/* Tips */}
             <PanelHeading title="Tips" />
             <div className="p-4 text-xs text-gray-500 space-y-2">
-              <p>💡 Click bubbles to select/deselect them</p>
-              <p>✏️ Use Draw mode to manually select regions</p>
-              <p>⚡ Click &quot;BLAST!&quot; to remove text from selected bubbles</p>
-              <p>🎯 Adjust sensitivity for better detection</p>
+              <p className="flex items-center gap-1.5"><BsLightbulb className="shrink-0" /> Click bubbles to select/deselect them</p>
+              <p className="flex items-center gap-1.5"><BsPencil className="shrink-0" /> Use Draw mode to manually select regions</p>
+              <p className="flex items-center gap-1.5"><BsLightning className="shrink-0" /> Click &quot;BLAST!&quot; to remove text from selected bubbles</p>
+              <p className="flex items-center gap-1.5"><BsBullseye className="shrink-0" /> Adjust sensitivity for better detection</p>
             </div>
           </>
         )}
 
         {!state.image && (
           <div className="p-8 text-center text-gray-400">
-            <p className="text-lg mb-2">💬</p>
+            <BsChatSquareDots className="text-2xl mb-2 mx-auto" />
             <p className="text-sm">Upload an image to get started</p>
           </div>
         )}

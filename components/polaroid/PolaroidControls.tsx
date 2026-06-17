@@ -32,7 +32,7 @@ const PolaroidControls = ({ state, updateState }: Props) => {
     { id: "faded", name: "Faded" },
     { id: "warm", name: "Warm" },
     { id: "cool", name: "Cool" },
-    { id: "cpm35", name: "CPM35 ⭐" },
+    { id: "cpm35", name: "CPM35" },
     { id: "fqs", name: "FQS R" },
     { id: "hoga", name: "Hoga" },
     { id: "fxn", name: "FXN R" },
@@ -226,10 +226,10 @@ const PolaroidControls = ({ state, updateState }: Props) => {
         </TabsContent>
         <TabsContent value="presets">
           <div className="relative rounded-md">
-            <PanelHeading title="📸 Dazz Cam Popular" />
+            <PanelHeading title="Dazz Cam Popular" />
             <div className="p-4 border-b border-[#E5E7EB]/60">
               <div className="grid grid-cols-1 gap-2">
-                <button onClick={() => updateState({ filter: "cpm35", filterIntensity: 85, lightLeak: "subtle", vignette: false, grain: true, grainIntensity: 15, frameColor: "#faf8f5", captionFont: "Caveat", brightness: 105, contrast: 95, saturation: 115, temperature: 5, fade: 8 })} className="px-3 py-2.5 bg-[#F9FAFB] hover:bg-[#E5E7EB] rounded-[10px] text-xs font-medium transition-all duration-200">CPM35 ⭐</button>
+                <button onClick={() => updateState({ filter: "cpm35", filterIntensity: 85, lightLeak: "subtle", vignette: false, grain: true, grainIntensity: 15, frameColor: "#faf8f5", captionFont: "Caveat", brightness: 105, contrast: 95, saturation: 115, temperature: 5, fade: 8 })} className="px-3 py-2.5 bg-[#F9FAFB] hover:bg-[#E5E7EB] rounded-[10px] text-xs font-medium transition-all duration-200">CPM35</button>
                 <button onClick={() => updateState({ filter: "fqs", filterIntensity: 80, lightLeak: "warm", vignette: false, grain: true, grainIntensity: 20, frameColor: "#f5f0e6", captionFont: "Indie Flower", brightness: 103, contrast: 105, saturation: 120, temperature: 15 })} className="px-3 py-2.5 bg-[#F9FAFB] hover:bg-[#E5E7EB] rounded-[10px] text-xs font-medium transition-all duration-200">FQS R Green</button>
                 <button onClick={() => updateState({ filter: "hoga", filterIntensity: 90, lightLeak: "rainbow", vignette: true, vignetteIntensity: 50, grain: true, grainIntensity: 25, frameColor: "#f8f4e8", captionFont: "Permanent Marker", brightness: 95, contrast: 110, saturation: 90, blur: 0.5 })} className="px-3 py-2.5 bg-[#F9FAFB] hover:bg-[#E5E7EB] rounded-[10px] text-xs font-medium transition-all duration-200">Hoga Lo-Fi</button>
                 <button onClick={() => updateState({ filter: "fxn", filterIntensity: 85, lightLeak: "none", vignette: false, grain: false, frameColor: "#ffffff", captionFont: "Arial", brightness: 98, contrast: 130, saturation: 135, shadows: -10 })} className="px-3 py-2.5 bg-[#F9FAFB] hover:bg-[#E5E7EB] rounded-[10px] text-xs font-medium transition-all duration-200">FXN R Fuji</button>
@@ -240,7 +240,7 @@ const PolaroidControls = ({ state, updateState }: Props) => {
               </div>
             </div>
 
-            <PanelHeading title="🎞️ Film Stocks" />
+            <PanelHeading title="Film Stocks" />
             <div className="p-4 border-b border-[#E5E7EB]/60">
               <div className="grid grid-cols-1 gap-2">
                 <button onClick={() => updateState({ filter: "portra", filterIntensity: 85, lightLeak: "subtle", vignette: false, grain: true, grainIntensity: 12, frameColor: "#faf8f5", brightness: 103, contrast: 95, saturation: 95, temperature: 8, highlights: -10, shadows: 15 })} className="px-3 py-2.5 bg-[#F9FAFB] hover:bg-[#E5E7EB] rounded-[10px] text-xs font-medium transition-all duration-200">Portra 400</button>
@@ -254,7 +254,7 @@ const PolaroidControls = ({ state, updateState }: Props) => {
               </div>
             </div>
 
-            <PanelHeading title="✨ Quick Moods" />
+            <PanelHeading title="Quick Moods" />
             <div className="p-4 border-b border-[#E5E7EB]/60">
               <div className="grid grid-cols-1 gap-2">
                 <button onClick={() => updateState({ filter: "none", brightness: 110, contrast: 90, saturation: 80, fade: 25, temperature: 5, vignette: false, grain: true, grainIntensity: 15, lightLeak: "subtle" })} className="px-3 py-2.5 bg-[#F9FAFB] hover:bg-[#E5E7EB] rounded-[10px] text-xs font-medium transition-all duration-200">Dreamy</button>

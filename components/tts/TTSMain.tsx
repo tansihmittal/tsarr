@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { BiReset, BiCopy, BiDownload } from "react-icons/bi";
-import { BsPlay, BsPause, BsStop } from "react-icons/bs";
+import { BsPlay, BsPause, BsStop, BsCpu, BsMic, BsShuffle } from "react-icons/bs";
 import { HiOutlineSpeakerWave } from "react-icons/hi2";
 import { toast } from "react-hot-toast";
 import { useTTSContext } from "@/context/TTS";
@@ -241,10 +241,10 @@ const TTSMain: React.FC<Props> = () => {
       {/* Badge row */}
       <div className="flex justify-between items-center mb-2 w-full flex-wrap gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs bg-[#2563EB]/10 text-[#2563EB] px-3 py-1 rounded-full font-medium">🧠 Kokoro 82M</span>
+          <span className="text-xs bg-[#2563EB]/10 text-[#2563EB] px-3 py-1 rounded-full font-medium flex items-center gap-1"><BsCpu /> Kokoro 82M</span>
           {currentVoice && (
-            <span className="text-xs bg-[#F3F4F6] text-[#0A0A0A] px-3 py-1 rounded-full font-medium">
-              🎤 {currentVoice.name}
+            <span className="text-xs bg-[#F3F4F6] text-[#0A0A0A] px-3 py-1 rounded-full font-medium flex items-center gap-1">
+              <BsMic /> {currentVoice.name}
             </span>
           )}
           {currentProfile && settings.voiceProfile !== "default" && (
@@ -253,8 +253,8 @@ const TTSMain: React.FC<Props> = () => {
             </span>
           )}
           {settings.voice2 && (
-            <span className="text-xs bg-[#EFF6FF] text-[#2563EB] px-3 py-1 rounded-full font-medium">
-              🔀 Blended
+            <span className="text-xs bg-[#EFF6FF] text-[#2563EB] px-3 py-1 rounded-full font-medium flex items-center gap-1">
+              <BsShuffle /> Blended
             </span>
           )}
         </div>

@@ -55,7 +55,7 @@ const SplashScreen = ({ onComplete, minDuration = 1200 }: SplashScreenProps) => 
       
       {/* Tagline */}
       <p className="text-indigo-600 text-xs font-semibold tracking-wide mb-8">
-        Make it the Tsarr way ✨
+        Make it the Tsarr way
       </p>
 
       {/* Progress bar */}

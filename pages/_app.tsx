@@ -81,7 +81,7 @@ export default function App({ Component, pageProps }: AppProps) {
                   boxShadow: "none",
                   color: "#f2f2f2",
                 },
-                icon: "👏",
+                icon: undefined,
               }}
             />
 

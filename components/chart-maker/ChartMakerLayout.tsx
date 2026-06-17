@@ -27,6 +27,26 @@ import {
   BsTable,
   BsBookmark,
   BsBookmarkFill,
+  BsBarChart,
+  BsBarChartLine,
+  BsBarChartLineFill,
+  BsBarChartSteps,
+  BsGraphUp,
+  BsGraphDown,
+  BsPieChart,
+  BsPieChartFill,
+  BsCrosshair,
+  BsDiagram3,
+  BsLayers,
+  BsLayersFill,
+  BsDot,
+  BsCircle,
+  BsBox,
+  BsArrowClockwise,
+  BsSpeedometer2,
+  BsSpeedometer,
+  BsGrid,
+  BsGridFill,
 } from "react-icons/bs";
 import { TfiExport } from "react-icons/tfi";
 import { BiReset } from "react-icons/bi";
@@ -71,32 +91,32 @@ const defaultColors = [
   "#ef4444", "#22c55e", "#3b82f6", "#f97316", "#06b6d4",
 ];
 
-const chartTypes: { id: ChartType; name: string; icon: string }[] = [
+const chartTypes: { id: ChartType; name: string; icon: React.ReactNode }[] = [
   // Basic Charts
-  { id: "bar", name: "Bar", icon: "📊" },
-  { id: "horizontalBar", name: "Column", icon: "📊" },
-  { id: "line", name: "Line", icon: "📈" },
-  { id: "area", name: "Area", icon: "📉" },
+  { id: "bar",           name: "Bar",       icon: <BsBarChart /> },
+  { id: "horizontalBar", name: "Column",    icon: <BsBarChartLine /> },
+  { id: "line",          name: "Line",      icon: <BsGraphUp /> },
+  { id: "area",          name: "Area",      icon: <BsGraphDown /> },
   // Circular Charts
-  { id: "pie", name: "Pie", icon: "🥧" },
-  { id: "doughnut", name: "Donut", icon: "🍩" },
-  { id: "polarArea", name: "Polar", icon: "🎯" },
-  { id: "radar", name: "Radar", icon: "🕸️" },
+  { id: "pie",           name: "Pie",       icon: <BsPieChart /> },
+  { id: "doughnut",      name: "Donut",     icon: <BsPieChartFill /> },
+  { id: "polarArea",     name: "Polar",     icon: <BsCrosshair /> },
+  { id: "radar",         name: "Radar",     icon: <BsDiagram3 /> },
   // Stacked Charts
-  { id: "stackedBar", name: "Stacked", icon: "📚" },
-  { id: "stackedArea", name: "S-Area", icon: "🏔️" },
+  { id: "stackedBar",    name: "Stacked",   icon: <BsLayers /> },
+  { id: "stackedArea",   name: "S-Area",    icon: <BsLayersFill /> },
   // Advanced Charts
-  { id: "scatter", name: "Scatter", icon: "⚬" },
-  { id: "bubble", name: "Bubble", icon: "🫧" },
-  { id: "stepLine", name: "Step", icon: "📶" },
-  { id: "combo", name: "Combo", icon: "📊📈" },
+  { id: "scatter",       name: "Scatter",   icon: <BsDot /> },
+  { id: "bubble",        name: "Bubble",    icon: <BsCircle /> },
+  { id: "stepLine",      name: "Step",      icon: <BsBarChartSteps /> },
+  { id: "combo",         name: "Combo",     icon: <BsBarChartLineFill /> },
   // New Chart Types
-  { id: "heatmap", name: "Heatmap", icon: "🔥" },
-  { id: "treemap", name: "Treemap", icon: "🌳" },
-  { id: "boxplot", name: "BoxPlot", icon: "📦" },
-  { id: "radialBar", name: "RadialBar", icon: "🎡" },
-  { id: "gauge", name: "Gauge", icon: "⏱️" },
-  { id: "solidGauge", name: "SolidGauge", icon: "🔘" },
+  { id: "heatmap",       name: "Heatmap",   icon: <BsGrid /> },
+  { id: "treemap",       name: "Treemap",   icon: <BsGridFill /> },
+  { id: "boxplot",       name: "BoxPlot",   icon: <BsBox /> },
+  { id: "radialBar",     name: "RadialBar", icon: <BsArrowClockwise /> },
+  { id: "gauge",         name: "Gauge",     icon: <BsSpeedometer2 /> },
+  { id: "solidGauge",    name: "SolidGauge",icon: <BsSpeedometer /> },
 ];
 
 const defaultPresets: ChartPreset[] = [
@@ -977,7 +997,7 @@ const ChartMakerLayout: React.FC = () => {
                         onClick={() => setChartType(t.id)}
                         className={`p-2 rounded-[10px] text-center transition-all ${chartType === t.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2 ring-offset-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6] text-[#0A0A0A]"}`}
                       >
-                        <div className="text-lg">{t.icon}</div>
+                        <div className="text-lg flex items-center justify-center">{t.icon}</div>
                         <div className="text-[10px] font-semibold">{t.name}</div>
                       </button>
                     ))}
@@ -998,7 +1018,7 @@ const ChartMakerLayout: React.FC = () => {
                     <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="flex-1 gap-1">
                       <BsUpload /> CSV
                     </Button>
-                    <Button variant="secondary" size="sm" onClick={() => toast("Paste from Excel (Ctrl+V)", { icon: "📋" })} className="flex-1 gap-1">
+                    <Button variant="secondary" size="sm" onClick={() => toast("Paste from Excel (Ctrl+V)")} className="flex-1 gap-1">
                       <BsTable /> Paste
                     </Button>
                   </div>

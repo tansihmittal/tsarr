@@ -1,6 +1,6 @@
 import { useEffect, useRef, RefObject, useCallback, ReactNode, useState } from "react";
 import ToolbarButton from "../common/ToolbarButton";
-import { BsClipboard, BsRepeat, BsImage, BsShare } from "react-icons/bs";
+import { BsClipboard, BsRepeat, BsImage, BsShare, BsStars } from "react-icons/bs";
 import { TfiExport } from "react-icons/tfi";
 import { BiReset } from "react-icons/bi";
 import { TextBehindImageState, TextLayer } from "./TextBehindImageLayout";
@@ -700,7 +700,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
                 <h2 className="font-bold text-2xl text-[#0A0A0A] bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
                   Upload and Start Editing
                 </h2>
-                <div className="text-2xl text-[#2563EB] animate-pulse-soft">✦</div>
+                <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
               </div>
               <span className="text-sm text-gray-500 mt-1">
                 Create stunning text behind image effects

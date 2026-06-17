@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useCallback, useState } from "react";
 import { AspectRatioState } from "./AspectRatioLayout";
 import { TfiExport } from "react-icons/tfi";
-import { BsClipboard, BsUpload, BsRepeat } from "react-icons/bs";
+import { BsClipboard, BsUpload, BsRepeat, BsStars } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import ToolbarButton from "../common/ToolbarButton";
@@ -184,7 +184,7 @@ const AspectRatioPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCop
                 <h2 className="font-bold text-2xl text-[#0A0A0A] bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
                   Convert Image Aspect Ratio
                 </h2>
-                <div className="text-2xl text-[#2563EB] animate-pulse-soft">✦</div>
+                <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
               </div>
               <span className="text-sm text-gray-500 mt-1">
                 Resize images to any aspect ratio with multiple output formats

@@ -8,6 +8,14 @@ import {
   BsPlayFill,
   BsPauseFill,
   BsGear,
+  BsCameraVideo,
+  BsGlobe2,
+  BsPlayCircle,
+  BsCameraVideoFill,
+  BsCollection,
+  BsImages,
+  BsMusicNote,
+  BsVolumeUp,
 } from "react-icons/bs";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -46,14 +54,14 @@ const formats: {
   icon: string;
   type: "video" | "audio";
 }[] = [
-  { id: "mp4", name: "MP4", icon: "🎬", type: "video" },
-  { id: "webm", name: "WebM", icon: "🌐", type: "video" },
-  { id: "avi", name: "AVI", icon: "📹", type: "video" },
-  { id: "mov", name: "MOV", icon: "🎥", type: "video" },
-  { id: "mkv", name: "MKV", icon: "🎞️", type: "video" },
-  { id: "gif", name: "GIF", icon: "✨", type: "video" },
-  { id: "mp3", name: "MP3", icon: "🎵", type: "audio" },
-  { id: "wav", name: "WAV", icon: "🔊", type: "audio" },
+  { id: "mp4",  name: "MP4",  icon: <BsCameraVideo />,     type: "video" },
+  { id: "webm", name: "WebM", icon: <BsGlobe2 />,          type: "video" },
+  { id: "avi",  name: "AVI",  icon: <BsPlayCircle />,      type: "video" },
+  { id: "mov",  name: "MOV",  icon: <BsCameraVideoFill />, type: "video" },
+  { id: "mkv",  name: "MKV",  icon: <BsCollection />,      type: "video" },
+  { id: "gif",  name: "GIF",  icon: <BsImages />,          type: "video" },
+  { id: "mp3",  name: "MP3",  icon: <BsMusicNote />,       type: "audio" },
+  { id: "wav",  name: "WAV",  icon: <BsVolumeUp />,        type: "audio" },
 ];
 
 const resolutions: { id: Resolution; name: string; width: number; height: number }[] = [
@@ -457,7 +465,7 @@ const VideoConverterLayout: React.FC = () => {
                       onClick={() => setOutputFormat(f.id)}
                       className={`p-1.5 sm:p-2 rounded-[10px] text-center transition-all active:scale-95 ${outputFormat === f.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2 ring-offset-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6] text-[#0A0A0A]"}`}
                     >
-                      <div className="text-base sm:text-lg">{f.icon}</div>
+                      <div className="text-base sm:text-lg flex items-center justify-center">{f.icon}</div>
                       <div className="text-[10px] sm:text-xs font-semibold">{f.name}</div>
                     </button>
                   ))}

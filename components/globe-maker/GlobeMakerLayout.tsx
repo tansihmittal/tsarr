@@ -18,6 +18,9 @@ import {
   BsArrowCounterclockwise,
   BsCode,
   BsSearch,
+  BsGeoAlt,
+  BsExclamationTriangle,
+  BsCameraVideo,
 } from "react-icons/bs";
 import { TfiExport } from "react-icons/tfi";
 import { BiReset } from "react-icons/bi";
@@ -665,9 +668,9 @@ const PointRow: React.FC<{
       </div>
       <div className="text-[10px] text-gray-500">
         {point.lat !== 0 || point.lng !== 0 ? (
-          <span className="text-green-600">📍 {point.lat.toFixed(2)}, {point.lng.toFixed(2)}</span>
+          <span className="text-green-600 flex items-center gap-1"><BsGeoAlt className="inline" /> {point.lat.toFixed(2)}, {point.lng.toFixed(2)}</span>
         ) : (
-          <span className="text-yellow-600">⚠️ Enter a valid city name</span>
+          <span className="text-yellow-600 flex items-center gap-1"><BsExclamationTriangle className="inline" /> Enter a valid city name</span>
         )}
       </div>
     </div>
@@ -1340,7 +1343,7 @@ const GlobeMakerLayout: React.FC = () => {
     if (!globeRef.current || isRecording) return;
 
     setIsRecording(true);
-    toast("Recording 3 seconds...", { icon: "🎬" });
+    toast("Recording 3 seconds...");
 
     try {
       const GIF = (await import("gif.js")).default;
@@ -1392,7 +1395,7 @@ const GlobeMakerLayout: React.FC = () => {
     if (!globeRef.current || isRecording) return;
 
     setIsRecording(true);
-    toast("Recording 5 seconds...", { icon: "🎥" });
+    toast("Recording 5 seconds...");
 
     try {
       const GIF = (await import("gif.js")).default;
@@ -1665,7 +1668,7 @@ const GlobeMakerLayout: React.FC = () => {
                     <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="flex-1 gap-1">
                       <BsUpload /> CSV
                     </Button>
-                    <Button variant="secondary" size="sm" onClick={() => toast("Paste from Excel (Ctrl+V)", { icon: "📋" })} className="flex-1 gap-1">
+                    <Button variant="secondary" size="sm" onClick={() => toast("Paste from Excel (Ctrl+V)")} className="flex-1 gap-1">
                       <BsTable /> Paste
                     </Button>
                   </div>
@@ -1727,7 +1730,7 @@ const GlobeMakerLayout: React.FC = () => {
                     <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="flex-1 gap-1">
                       <BsUpload /> CSV
                     </Button>
-                    <Button variant="secondary" size="sm" onClick={() => toast("Paste from Excel (Ctrl+V)", { icon: "📋" })} className="flex-1 gap-1">
+                    <Button variant="secondary" size="sm" onClick={() => toast("Paste from Excel (Ctrl+V)")} className="flex-1 gap-1">
                       <BsTable /> Paste
                     </Button>
                   </div>

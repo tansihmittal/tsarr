@@ -1145,7 +1145,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 ))}
               </div>
               <p className="text-[10px] text-gray-400 mt-1.5">
-                {state.wordsPerCaption === 0 ? "✨ AI picks optimal words based on speech rhythm" : state.wordsPerCaption <= 2 ? "⚡ Fast, punchy TikTok style" : state.wordsPerCaption <= 3 ? "📱 Balanced for social media" : "📺 Traditional subtitle style"}
+                {state.wordsPerCaption === 0 ? "AI picks optimal words based on speech rhythm" : state.wordsPerCaption <= 2 ? "Fast, punchy TikTok style" : state.wordsPerCaption <= 3 ? "Balanced for social media" : "Traditional subtitle style"}
               </p>
             </div>
 
@@ -1541,14 +1541,14 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 <SelectItem value="slide">Slide</SelectItem>
                 <SelectItem value="bounce">Bounce</SelectItem>
                 <SelectItem value="highlight">Highlight</SelectItem>
-                <SelectItem value="glow">Glow ✨</SelectItem>
+                <SelectItem value="glow">Glow</SelectItem>
                 <SelectItem value="shake">Shake</SelectItem>
-                <SelectItem value="wave">Wave 🌊</SelectItem>
+                <SelectItem value="wave">Wave</SelectItem>
                 <SelectItem value="zoom">Zoom</SelectItem>
                 <SelectItem value="flip">Flip 3D</SelectItem>
                 <SelectItem value="swing">Swing</SelectItem>
                 <SelectItem value="elastic">Elastic</SelectItem>
-                <SelectItem value="neon">Neon 💡</SelectItem>
+                <SelectItem value="neon">Neon</SelectItem>
               </SelectContent>
             </Select>
           </Control>
