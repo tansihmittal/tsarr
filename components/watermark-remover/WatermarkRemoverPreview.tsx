@@ -7,6 +7,7 @@ import { toast } from "react-hot-toast";
 import ToolbarButton from "../common/ToolbarButton";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { IMAGE_ACCEPT } from "@/utils/imageFile";
 
 interface Props {
   state: WatermarkRemoverState;
@@ -157,7 +158,7 @@ const WatermarkRemoverPreview: React.FC<Props> = ({
             </div>
             <label className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer ${isDragging ? "border-[#2563EB] bg-[#2563EB]/5 scale-[1.02]" : "border-gray-300 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"}`}>
               <div className={`p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300 ${isDragging ? "scale-110" : ""}`}><BsUpload className="text-[#2563EB] text-2xl" /></div>
-              <input type="file" hidden accept="image/*" onChange={handleFileInput} />
+              <input type="file" hidden accept={IMAGE_ACCEPT} onChange={handleFileInput} />
               <h3 className="text-gray-700 font-medium"><span className="text-[#2563EB] hover:underline">Click to upload</span> or drag and drop</h3>
               <div className="flex items-center gap-2 text-sm text-gray-500"><BsClipboard className="text-xs" /><span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span></div>
               <span className="text-xs text-gray-400">JPG, PNG, WebP up to 30MB</span>
@@ -167,7 +168,7 @@ const WatermarkRemoverPreview: React.FC<Props> = ({
                 <Button className="rounded-[14px] font-semibold w-full shadow-lg shadow-[#2563EB]/20 pointer-events-none">
                   {isDragging ? "DROP TO UPLOAD" : "START EDITING"}
                 </Button>
-                <input type="file" hidden accept="image/*" onChange={handleFileInput} />
+                <input type="file" hidden accept={IMAGE_ACCEPT} onChange={handleFileInput} />
               </label>
               <Button variant="secondary" onClick={handlePaste} className="rounded-[14px] font-semibold w-full gap-2"><BsClipboard className="text-lg" />PASTE IMAGE</Button>
             </div>
@@ -192,7 +193,7 @@ const WatermarkRemoverPreview: React.FC<Props> = ({
           </DropdownMenuContent>
         </DropdownMenu>
         <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>
-        <label htmlFor="watermark-change-image"><input type="file" hidden accept="image/*" id="watermark-change-image" onChange={handleFileInput} /><ToolbarButton title="Reset Image"><BsRepeat /></ToolbarButton></label>
+        <label htmlFor="watermark-change-image"><input type="file" hidden accept={IMAGE_ACCEPT} id="watermark-change-image" onChange={handleFileInput} /><ToolbarButton title="Reset Image"><BsRepeat /></ToolbarButton></label>
         <ToolbarButton title="Reset Canvas" onTap={handleReset}><BiReset /></ToolbarButton>
       </div>
 

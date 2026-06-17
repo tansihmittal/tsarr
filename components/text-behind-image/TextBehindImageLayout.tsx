@@ -43,7 +43,7 @@ export interface TextBehindImageState {
   backgroundColor: string;
   textLayers: TextLayer[];
   selectedLayerId: string | null;
-  exportFormat: "png" | "jpeg" | "webp";
+  exportFormat: "png" | "jpeg" | "webp" | "avif";
   exportScale: number;
   // Background removal
   foregroundImage: string | null;

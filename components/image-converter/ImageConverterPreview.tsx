@@ -7,6 +7,7 @@ import { toast } from "react-hot-toast";
 import ToolbarButton from "../common/ToolbarButton";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { IMAGE_ACCEPT } from "@/utils/imageFile";
 
 interface Props {
   state: ImageConverterState;
@@ -20,7 +21,7 @@ const ImageConverterPreview: React.FC<Props> = ({ state, canvasRef, onExport, on
   const [isDragging, setIsDragging] = useState(false);
 
   const handleReset = () => { if (confirm("Reset all changes?")) window.location.reload(); };
-  const handleDrop = useCallback((e: React.DragEvent) => { e.preventDefault(); setIsDragging(false); const file = e.dataTransfer.files[0]; if (file?.type.startsWith("image/")) onImageUpload(file); }, [onImageUpload]);
+  const handleDrop = useCallback((e: React.DragEvent) => { e.preventDefault(); setIsDragging(false); const file = e.dataTransfer.files[0]; if (file && (file.type.startsWith("image/") || /\.(heic|heif)$/i.test(file.name))) onImageUpload(file); }, [onImageUpload]);
   const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); };
   const handleDragLeave = () => setIsDragging(false);
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (file) onImageUpload(file); };
@@ -85,14 +86,14 @@ const ImageConverterPreview: React.FC<Props> = ({ state, canvasRef, onExport, on
             </div>
             <label className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer ${isDragging ? "border-[#2563EB] bg-[#2563EB]/5 scale-[1.02]" : "border-gray-300 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"}`}>
               <div className={`p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300 ${isDragging ? "scale-110" : ""}`}><BsUpload className="text-[#2563EB] text-2xl" /></div>
-              <input type="file" hidden accept="image/*" onChange={handleFileInput} />
+              <input type="file" hidden accept={IMAGE_ACCEPT} onChange={handleFileInput} />
               <h3 className="text-gray-700 font-medium"><span className="text-[#2563EB] hover:underline">Click to upload</span> or drag and drop</h3>
               <div className="flex items-center gap-2 text-sm text-gray-500"><BsClipboard className="text-xs" /><span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span></div>
               <span className="text-xs text-gray-400">PNG, JPG, WebP, AVIF, GIF, BMP, ICO, TIFF, TGA, HEIC, SVG</span>
             </label>
             <div className="grid grid-cols-2 gap-3 mt-6">
               <Button asChild={true} className="rounded-[14px] font-semibold w-full shadow-lg shadow-[#2563EB]/20 cursor-pointer">
-                <label><input type="file" hidden accept="image/*" onChange={handleFileInput} />{isDragging ? "DROP TO UPLOAD" : "SELECT IMAGE"}</label>
+                <label><input type="file" hidden accept={IMAGE_ACCEPT} onChange={handleFileInput} />{isDragging ? "DROP TO UPLOAD" : "SELECT IMAGE"}</label>
               </Button>
               <Button variant="secondary" onClick={handlePaste} className="rounded-[14px] font-semibold w-full gap-2"><BsClipboard className="text-lg" />PASTE IMAGE</Button>
             </div>
@@ -112,7 +113,7 @@ const ImageConverterPreview: React.FC<Props> = ({ state, canvasRef, onExport, on
           </DropdownMenuContent>
         </DropdownMenu>
         <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>
-        <label htmlFor="converter-change"><input type="file" hidden accept="image/*" id="converter-change" onChange={handleFileInput} /><ToolbarButton title="Reset Image"><BsRepeat /></ToolbarButton></label>
+        <label htmlFor="converter-change"><input type="file" hidden accept={IMAGE_ACCEPT} id="converter-change" onChange={handleFileInput} /><ToolbarButton title="Reset Image"><BsRepeat /></ToolbarButton></label>
         <ToolbarButton title="Reset Canvas" onTap={handleReset}><BiReset /></ToolbarButton>
       </div>
       <div className="flex justify-between mb-2 w-full">

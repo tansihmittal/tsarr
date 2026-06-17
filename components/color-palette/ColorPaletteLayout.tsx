@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from "react";
 import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
 import { BsUpload, BsDownload, BsClipboard, BsImage } from "react-icons/bs";
+import { normalizeImageFile, IMAGE_ACCEPT } from "@/utils/imageFile";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
@@ -157,12 +158,13 @@ const ColorPaletteLayout: React.FC = () => {
   );
 
   const handleFile = useCallback(
-    (file: File) => {
-      if (!file.type.startsWith("image/")) {
+    async (file: File) => {
+      if (!file.type.startsWith("image/") && !/\.(heic|heif)$/i.test(file.name)) {
         toast.error("Please upload an image");
         return;
       }
-      const url = URL.createObjectURL(file);
+      const normalized = await normalizeImageFile(file);
+      const url = URL.createObjectURL(normalized);
       setImageUrl(url);
       extractColors(url);
     },
@@ -364,7 +366,7 @@ const ColorPaletteLayout: React.FC = () => {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept={IMAGE_ACCEPT}
               className="hidden"
               onChange={(e) => {
                 const file = e.target.files?.[0];

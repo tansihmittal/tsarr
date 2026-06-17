@@ -6,6 +6,7 @@ import { BiReset } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import ToolbarButton from "../common/ToolbarButton";
 import { Button } from "@/components/ui/button";
+import { IMAGE_ACCEPT } from "@/utils/imageFile";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -199,7 +200,7 @@ const AspectRatioPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCop
               <div className={`p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300 ${isDragging ? "scale-110" : ""}`}>
                 <BsUpload className="text-[#2563EB] text-2xl" />
               </div>
-              <input type="file" hidden accept="image/*" onChange={handleFileInput} />
+              <input type="file" hidden accept={IMAGE_ACCEPT} onChange={handleFileInput} />
               <h3 className="text-gray-700 font-medium">
                 <span className="text-[#2563EB] hover:underline">Click to upload</span> or drag and drop
               </h3>
@@ -213,7 +214,7 @@ const AspectRatioPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCop
             {/* buttons */}
             <div className="grid grid-cols-2 gap-3 mt-6">
               <label className="cursor-pointer">
-                <input type="file" hidden accept="image/*" onChange={handleFileInput} />
+                <input type="file" hidden accept={IMAGE_ACCEPT} onChange={handleFileInput} />
                 <Button className="rounded-[14px] font-semibold w-full shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all duration-200 hover:-translate-y-0.5" asChild={false}>
                   {isDragging ? "DROP TO UPLOAD" : "START EDITING"}
                 </Button>
@@ -246,7 +247,7 @@ const AspectRatioPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCop
         <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>
 
         <label htmlFor="aspect-ratio-change-image">
-          <input type="file" hidden accept="image/*" id="aspect-ratio-change-image" onChange={handleFileInput} />
+          <input type="file" hidden accept={IMAGE_ACCEPT} id="aspect-ratio-change-image" onChange={handleFileInput} />
           <ToolbarButton title="Reset Image"><BsRepeat /></ToolbarButton>
         </label>
 

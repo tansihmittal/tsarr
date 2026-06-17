@@ -434,7 +434,8 @@ export function documentToSvg(doc: ImapDocument, opts: ExportOptions = {}): stri
     : "";
   const body = ab.shapes.map((s) => shapeSvg(s, interactive)).join("\n  ");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${esc(doc.name)}">
+  return `<!-- ${esc(doc.name)} — interactive image map · made with tsarr.in -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${esc(doc.name)}">
   ${styleBlock}
   ${defs}
   ${bgRect}

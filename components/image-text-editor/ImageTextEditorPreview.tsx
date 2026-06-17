@@ -473,7 +473,7 @@ const ImageTextEditorPreview = ({
               <div className="p-4 rounded-full bg-[#2563EB]/10">
                 <BsImage className="text-[#2563EB] text-3xl" />
               </div>
-              <input type="file" hidden accept="image/*" id="image-upload-main" onChange={handleImageUpload} />
+              <input type="file" hidden accept={IMAGE_ACCEPT} id="image-upload-main" onChange={handleImageUpload} />
               <div className="text-center">
                 <p className="font-medium text-gray-700">
                   <span className="text-[#2563EB]">Click to upload</span> or drag & drop

@@ -8,6 +8,7 @@ import { shareImage } from "../../utils/share";
 import ProjectNameHeader from "../common/ProjectNameHeader";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { IMAGE_ACCEPT, normalizeImageFile } from "@/utils/imageFile";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -443,11 +444,10 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
 
           // Export
           const mimeType =
-            exportFormat === "jpeg"
-              ? "image/jpeg"
-              : exportFormat === "webp"
-                ? "image/webp"
-                : "image/png";
+            exportFormat === "jpeg" ? "image/jpeg"
+            : exportFormat === "webp" ? "image/webp"
+            : exportFormat === "avif" ? "image/avif"
+            : "image/png";
 
           const link = document.createElement("a");
           link.download = `tsarr-in-text-behind-image-${scale}x.${exportFormat}`;
@@ -503,11 +503,11 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const url = URL.createObjectURL(file);
+    const normalized = await normalizeImageFile(file);
+    const url = URL.createObjectURL(normalized);
     const img = new Image();
     img.onload = () => {
       if (onImageUpload) {
@@ -593,10 +593,13 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
               Export as PNG 4x
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleDownload(2, "jpeg")}>
-              Export as JPEG
+              Export as JPEG 2x
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleDownload(2, "webp")}>
-              Export as WebP
+              Export as WebP 2x
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(2, "avif")}>
+              Export as AVIF 2x
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -613,7 +616,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
           <input
             type="file"
             hidden
-            accept="image/*"
+            accept={IMAGE_ACCEPT}
             id="image-upload-reset"
             ref={fileInputRef}
             onChange={handleImageUpload}
@@ -714,7 +717,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
               <input
                 type="file"
                 hidden
-                accept="image/*"
+                accept={IMAGE_ACCEPT}
                 id="image-upload-main"
                 onChange={handleImageUpload}
               />
@@ -728,7 +731,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
                 <BsClipboard className="text-xs" />
                 <span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span>
               </div>
-              <span className="text-xs text-gray-400">PNG, JPG, WEBP up to 30MB</span>
+              <span className="text-xs text-gray-400">PNG, JPG, WebP, AVIF, HEIC, SVG and more</span>
             </label>
 
             {/* button wrapper */}
@@ -740,7 +743,7 @@ const TextBehindImageEditor = ({ state, canvasRef, updateState, onImageUpload, u
                 <input
                   type="file"
                   hidden
-                  accept="image/*"
+                  accept={IMAGE_ACCEPT}
                   id="image-upload-btn"
                   onChange={handleImageUpload}
                 />

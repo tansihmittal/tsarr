@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { toast } from "react-hot-toast";
-import { normalizeImageFile } from "@/utils/imageFile";
+import { normalizeImageFile, IMAGE_ACCEPT } from "@/utils/imageFile";
 import Navigation from "../common/Navigation";
 import { backgroundRemover } from "../../utils/backgroundRemoval";
 import {
@@ -15,6 +15,7 @@ import { MdOutlineAutoFixHigh } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 
 type BgOption = "transparent" | "white" | "black" | "custom";
+type ExportFormat = "png" | "webp" | "jpeg";
 
 const BackgroundRemoverLayout: React.FC = () => {
   const [originalUrl, setOriginalUrl] = useState<string>("");
@@ -24,6 +25,7 @@ const BackgroundRemoverLayout: React.FC = () => {
   const [bgOption, setBgOption] = useState<BgOption>("transparent");
   const [customColor, setCustomColor] = useState("#ffffff");
   const [view, setView] = useState<"split" | "original" | "result">("split");
+  const [exportFormat, setExportFormat] = useState<ExportFormat>("png");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -102,7 +104,9 @@ const BackgroundRemoverLayout: React.FC = () => {
           ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
         ctx.drawImage(img, 0, 0);
-        canvas.toBlob((b) => (b ? resolve(b) : reject("Canvas error")), "image/png");
+        const mimeType = exportFormat === "jpeg" ? "image/jpeg" : exportFormat === "webp" ? "image/webp" : "image/png";
+        const quality = exportFormat === "png" ? undefined : 0.92;
+        canvas.toBlob((b) => (b ? resolve(b) : reject("Canvas error")), mimeType, quality);
       };
       img.onerror = reject;
       img.src = resultUrl;
@@ -115,7 +119,7 @@ const BackgroundRemoverLayout: React.FC = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "tsarr-bg-removed.png";
+      a.download = `tsarr-bg-removed.${exportFormat}`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success("Downloaded!");
@@ -184,7 +188,7 @@ const BackgroundRemoverLayout: React.FC = () => {
                   className="ml-auto gap-1.5"
                 >
                   <BsDownload className="w-3.5 h-3.5" />
-                  Download PNG
+                  Download {exportFormat === "jpeg" ? "JPG" : exportFormat.toUpperCase()}
                 </Button>
               )}
             </div>
@@ -282,7 +286,7 @@ const BackgroundRemoverLayout: React.FC = () => {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept={IMAGE_ACCEPT}
               className="hidden"
               onChange={(e) => {
                 const file = e.target.files?.[0];
@@ -373,6 +377,29 @@ const BackgroundRemoverLayout: React.FC = () => {
               )}
             </div>
 
+            {/* Export Format */}
+            {resultUrl && (
+              <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
+                <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider mb-3">Export Format</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["png", "webp", "jpeg"] as ExportFormat[]).map((fmt) => (
+                    <Button
+                      key={fmt}
+                      size="sm"
+                      variant={exportFormat === fmt ? "default" : "secondary"}
+                      className="uppercase text-xs"
+                      onClick={() => setExportFormat(fmt)}
+                    >
+                      {fmt === "jpeg" ? "JPG" : fmt.toUpperCase()}
+                    </Button>
+                  ))}
+                </div>
+                {exportFormat === "jpeg" && bgOption === "transparent" && (
+                  <p className="text-xs text-amber-600 mt-2">JPG doesn't support transparency — white bg will be used</p>
+                )}
+              </div>
+            )}
+
             {/* Download */}
             {resultUrl && (
               <Button
@@ -380,7 +407,7 @@ const BackgroundRemoverLayout: React.FC = () => {
                 className="gap-2 w-full bg-green-600 hover:bg-green-700"
               >
                 <BsDownload className="w-4 h-4" />
-                Download PNG
+                Download {exportFormat === "jpeg" ? "JPG" : exportFormat.toUpperCase()}
               </Button>
             )}
           </div>

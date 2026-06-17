@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { toast } from "react-hot-toast";
+import { normalizeImageFile, IMAGE_ACCEPT } from "@/utils/imageFile";
 import Navigation from "../common/Navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -390,24 +391,21 @@ const ImageMapProLayout: React.FC = () => {
   const [renameVal, setRenameVal] = useState("");
 
   // ---------- background / images ----------
-  const loadImageData = (file: File): Promise<{ href: string; w: number; h: number }> =>
-    new Promise((resolve, reject) => {
-      if (!file.type.startsWith("image/")) {
-        reject(new Error("Please choose an image file"));
-        return;
-      }
+  const loadImageData = async (file: File): Promise<{ href: string; w: number; h: number }> => {
+    const normalized = await normalizeImageFile(file);
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
         const href = reader.result as string;
         const img = new Image();
-        img.onload = () =>
-          resolve({ href, w: img.naturalWidth, h: img.naturalHeight });
+        img.onload = () => resolve({ href, w: img.naturalWidth, h: img.naturalHeight });
         img.onerror = () => reject(new Error("Could not read image"));
         img.src = href;
       };
       reader.onerror = () => reject(new Error("Could not read file"));
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(normalized);
     });
+  };
 
   const handleBgFile = useCallback(
     async (file: File) => {
@@ -942,11 +940,11 @@ const ImageMapProLayout: React.FC = () => {
       <Navigation />
 
       {/* hidden inputs */}
-      <input ref={bgInputRef} type="file" accept="image/*" className="hidden"
+      <input ref={bgInputRef} type="file" accept={IMAGE_ACCEPT} className="hidden"
         onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) handleBgFile(f); }} />
-      <input ref={aiInputRef} type="file" accept="image/*" className="hidden" />
-      <input ref={placeImageInputRef} type="file" accept="image/*" className="hidden" onChange={onPlaceImageFile} />
-      <input ref={replaceImageInputRef} type="file" accept="image/*" className="hidden" onChange={onReplaceImageFile} />
+      <input ref={aiInputRef} type="file" accept={IMAGE_ACCEPT} className="hidden" />
+      <input ref={placeImageInputRef} type="file" accept={IMAGE_ACCEPT} className="hidden" onChange={onPlaceImageFile} />
+      <input ref={replaceImageInputRef} type="file" accept={IMAGE_ACCEPT} className="hidden" onChange={onReplaceImageFile} />
       <input ref={importJsonRef} type="file" accept="application/json,.json" className="hidden" onChange={onImportJson} />
 
       {/* Toolbar — relative z-30 keeps its dropdowns (AI Detect, Export) above

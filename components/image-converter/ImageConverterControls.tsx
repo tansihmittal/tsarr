@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { ImageConverterState } from "./ImageConverterLayout";
 import { BsUpload, BsClipboard, BsDownload, BsFileEarmarkImage } from "react-icons/bs";
+import { IMAGE_ACCEPT } from "@/utils/imageFile";
 import { toast } from "react-hot-toast";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
@@ -68,7 +69,7 @@ const ImageConverterControls: React.FC<Props> = ({ state, updateState, onImageUp
       <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <PanelHeading title="Image" />
         <div className="p-4 border-b border-[#E5E7EB]/60">
-          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+          <input ref={fileInputRef} type="file" accept={IMAGE_ACCEPT} onChange={handleFileChange} className="hidden" />
           <div className="grid grid-cols-2 gap-2 mb-3">
             <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-2"><BsUpload /> {state.originalImage ? "Change" : "Upload"}</Button>
             <Button variant="secondary" size="sm" onClick={handlePaste} className="gap-2"><BsClipboard /> Paste</Button>

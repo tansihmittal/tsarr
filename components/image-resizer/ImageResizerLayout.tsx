@@ -14,7 +14,7 @@ export interface ImageResizerState {
   maintainAspectRatio: boolean;
   resizeMode: "pixels" | "percentage" | "preset";
   percentage: number;
-  outputFormat: "png" | "jpeg" | "webp" | "avif" | "gif" | "bmp";
+  outputFormat: "png" | "jpeg" | "webp" | "avif" | "gif" | "bmp" | "tiff" | "ico";
   quality: number;
 }
 
@@ -94,9 +94,12 @@ const ImageResizerLayout: React.FC = () => {
       avif: "image/avif",
       gif: "image/gif",
       bmp: "image/bmp",
+      tiff: "image/tiff",
+      ico: "image/x-icon",
     };
+    const noQualityFormats = ["png", "gif", "bmp", "tiff", "ico"];
     const mimeType = mimeTypes[state.outputFormat] || "image/png";
-    const quality = state.outputFormat === "png" ? undefined : state.quality / 100;
+    const quality = noQualityFormats.includes(state.outputFormat) ? undefined : state.quality / 100;
     const dims = getOutputDimensions();
 
     canvas.toBlob((blob) => {

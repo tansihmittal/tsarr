@@ -4,6 +4,7 @@ import { BiEraser } from "react-icons/bi";
 import { IoMdOptions } from "react-icons/io";
 import { BsUpload, BsClipboard, BsDownload, BsTrash, BsMagic } from "react-icons/bs";
 import { toast } from "react-hot-toast";
+import { IMAGE_ACCEPT } from "@/utils/imageFile";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
 import { Button } from "@/components/ui/button";
@@ -73,7 +74,7 @@ const WatermarkRemoverControls: React.FC<Props> = ({
       <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <PanelHeading title="Image" />
         <div className="p-4 border-b border-[#E5E7EB]/60">
-          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+          <input ref={fileInputRef} type="file" accept={IMAGE_ACCEPT} onChange={handleFileChange} className="hidden" />
           <div className="grid grid-cols-2 gap-2 mb-3">
             <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-2">
               <BsUpload /> {state.originalImage ? "Change" : "Upload"}

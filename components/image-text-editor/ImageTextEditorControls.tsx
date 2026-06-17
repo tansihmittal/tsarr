@@ -1,4 +1,5 @@
 import { RefObject, ChangeEvent, ReactNode, useState } from "react";
+import { IMAGE_ACCEPT, normalizeImageFile } from "@/utils/imageFile";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -43,10 +44,10 @@ const ImageTextEditorControls = ({
   startEditing,
 }: Props) => {
 
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
+    const normalized = await normalizeImageFile(file);
     const reader = new FileReader();
     reader.onload = (event) => {
       const result = event.target?.result as string;
@@ -56,7 +57,7 @@ const ImageTextEditorControls = ({
       };
       img.src = result;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(normalized);
   };
 
   const modifiedCount = state.textRegions.filter((r) => r.isModified).length;
@@ -85,7 +86,7 @@ const ImageTextEditorControls = ({
                 <input
                   type="file"
                   hidden
-                  accept="image/*"
+                  accept={IMAGE_ACCEPT}
                   id="image-upload"
                   onChange={handleImageUpload}
                 />

@@ -1,4 +1,5 @@
 import { RefObject, ChangeEvent, ReactNode, useState, useEffect } from "react";
+import { IMAGE_ACCEPT } from "@/utils/imageFile";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -270,7 +271,7 @@ const TextBehindImageControls = ({
                 <input
                   type="file"
                   hidden
-                  accept="image/*"
+                  accept={IMAGE_ACCEPT}
                   id="image-upload"
                   onChange={handleImageUpload}
                 />
@@ -302,7 +303,7 @@ const TextBehindImageControls = ({
 
                 <Control title="Format" value={state.exportFormat.toUpperCase()}>
                   <div className="flex gap-1">
-                    {(["png", "jpeg", "webp"] as const).map((format) => (
+                    {(["png", "jpeg", "webp", "avif"] as const).map((format) => (
                       <button
                         key={format}
                         onClick={() => updateState({ exportFormat: format })}

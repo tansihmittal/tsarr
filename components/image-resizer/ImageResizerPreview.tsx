@@ -1,4 +1,5 @@
 import { RefObject, useEffect, useCallback, useState } from "react";
+import { IMAGE_ACCEPT } from "@/utils/imageFile";
 import { ImageResizerState } from "./ImageResizerLayout";
 import { TfiExport } from "react-icons/tfi";
 import { BsClipboard, BsUpload, BsRepeat } from "react-icons/bs";
@@ -29,7 +30,7 @@ const ImageResizerPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCo
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith("image/")) onImageUpload(file);
+    if (file && (file.type.startsWith("image/") || /\.(heic|heif)$/i.test(file.name))) onImageUpload(file);
   }, [onImageUpload]);
 
   const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); };
@@ -105,14 +106,14 @@ const ImageResizerPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCo
             </div>
             <label className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer ${isDragging ? "border-[#2563EB] bg-[#2563EB]/5 scale-[1.02]" : "border-gray-300 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"}`}>
               <div className={`p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300 ${isDragging ? "scale-110" : ""}`}><BsUpload className="text-[#2563EB] text-2xl" /></div>
-              <input type="file" hidden accept="image/*" onChange={handleFileInput} />
+              <input type="file" hidden accept={IMAGE_ACCEPT} onChange={handleFileInput} />
               <h3 className="text-gray-700 font-medium"><span className="text-[#2563EB] hover:underline">Click to upload</span> or drag and drop</h3>
               <div className="flex items-center gap-2 text-sm text-gray-500"><BsClipboard className="text-xs" /><span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span></div>
-              <span className="text-xs text-gray-400">JPG, PNG, WebP, AVIF, GIF, SVG up to 30MB</span>
+              <span className="text-xs text-gray-400">PNG, JPG, WebP, AVIF, GIF, HEIC, SVG and more</span>
             </label>
             <div className="grid grid-cols-2 gap-3 mt-6">
               <label className="cursor-pointer">
-                <input type="file" hidden accept="image/*" onChange={handleFileInput} />
+                <input type="file" hidden accept={IMAGE_ACCEPT} onChange={handleFileInput} />
                 <Button className="rounded-[14px] font-semibold w-full shadow-lg shadow-[#2563EB]/20 pointer-events-none">
                   {isDragging ? "DROP TO UPLOAD" : "START EDITING"}
                 </Button>
@@ -139,7 +140,7 @@ const ImageResizerPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCo
           </DropdownMenuContent>
         </DropdownMenu>
         <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>
-        <label htmlFor="resizer-change-image"><input type="file" hidden accept="image/*" id="resizer-change-image" onChange={handleFileInput} /><ToolbarButton title="Reset Image"><BsRepeat /></ToolbarButton></label>
+        <label htmlFor="resizer-change-image"><input type="file" hidden accept={IMAGE_ACCEPT} id="resizer-change-image" onChange={handleFileInput} /><ToolbarButton title="Reset Image"><BsRepeat /></ToolbarButton></label>
         <ToolbarButton title="Reset Canvas" onTap={handleReset}><BiReset /></ToolbarButton>
       </div>
       <div className="flex justify-end mb-2 w-full">

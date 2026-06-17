@@ -42,6 +42,8 @@ const outputFormats = [
   { id: "avif", name: "AVIF", desc: "Best" },
   { id: "gif", name: "GIF", desc: "Animation" },
   { id: "bmp", name: "BMP", desc: "Uncompressed" },
+  { id: "tiff", name: "TIFF", desc: "Print" },
+  { id: "ico", name: "ICO", desc: "Icon" },
 ];
 
 const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUpload, onExport, getOutputDimensions }) => {
@@ -211,7 +213,7 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
               </div>
             </div>
 
-            {state.outputFormat !== "png" && (
+            {!["png", "gif", "bmp", "tiff", "ico"].includes(state.outputFormat) && (
               <>
                 <PanelHeading title="Quality" />
                 <div className="p-4 border-b border-[#E5E7EB]">
