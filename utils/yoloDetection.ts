@@ -58,7 +58,6 @@ class YOLODetector {
       this.preprocessImage(imageElement);
 
     try {
-      console.log("Running inference...");
       const feeds: Record<string, ort.Tensor> = { images: tensor };
       const results = await this.session.run(feeds);
 
@@ -67,8 +66,6 @@ class YOLODetector {
       const output = results[outputName];
       const outputData = output.data as Float32Array;
       const outputDims = output.dims as number[];
-
-      console.log("Output shape:", outputDims);
 
       // Post-process results
       return this.postprocess(
@@ -84,20 +81,35 @@ class YOLODetector {
     } catch (error) {
       console.error("Detection failed:", error);
       return [];
+    } finally {
+      // Dispose input tensor to free WASM memory
+      tensor.dispose();
     }
   }
 
   private preprocessImage(imageElement: HTMLImageElement) {
     const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d")!;
-
     canvas.width = this.inputSize;
     canvas.height = this.inputSize;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
 
+    let srcElement: HTMLImageElement | HTMLCanvasElement = imageElement;
     const originalWidth = imageElement.naturalWidth || imageElement.width;
     const originalHeight = imageElement.naturalHeight || imageElement.height;
 
+    // Pre-scale very large images before letterboxing to avoid expensive drawImage scaling
+    const MAX_PRE_SCALE = 1280;
+    if (originalWidth > MAX_PRE_SCALE || originalHeight > MAX_PRE_SCALE) {
+      const pre = document.createElement("canvas");
+      const preScale = MAX_PRE_SCALE / Math.max(originalWidth, originalHeight);
+      pre.width = Math.round(originalWidth * preScale);
+      pre.height = Math.round(originalHeight * preScale);
+      pre.getContext("2d")!.drawImage(imageElement, 0, 0, pre.width, pre.height);
+      srcElement = pre;
+    }
+
     // Calculate scale and offsets for letterboxing
+    // Scale uses original dimensions so bbox coords are correct
     const scale = Math.min(
       this.inputSize / originalWidth,
       this.inputSize / originalHeight
@@ -110,7 +122,7 @@ class YOLODetector {
     // Fill with gray (114, 114, 114 is YOLO standard)
     ctx.fillStyle = "rgb(114, 114, 114)";
     ctx.fillRect(0, 0, this.inputSize, this.inputSize);
-    ctx.drawImage(imageElement, offsetX, offsetY, scaledWidth, scaledHeight);
+    ctx.drawImage(srcElement, offsetX, offsetY, scaledWidth, scaledHeight);
 
     // Get image data
     const imageData = ctx.getImageData(0, 0, this.inputSize, this.inputSize);

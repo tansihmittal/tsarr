@@ -150,8 +150,11 @@ const VideoConverterLayout: React.FC = () => {
       }
     };
     loadFFmpeg();
+    return () => {
+      // Release WASM memory on unmount
+      try { ffmpegRef.current?.terminate(); } catch {}
+    };
   }, []);
-
 
   // Revoke video blob URL when it changes or on unmount (handles both new uploads and page exit)
   useEffect(() => {
@@ -331,10 +334,10 @@ const VideoConverterLayout: React.FC = () => {
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <div className="text-center mb-5 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#0A0A0A] mb-1 sm:mb-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#0A0A0A] dark:text-white mb-1 sm:mb-2">
               Video Converter
             </h1>
-            <p className="text-[#4B5563] text-sm sm:text-base">
+            <p className="text-[#4B5563] dark:text-gray-400 text-sm sm:text-base">
               Convert videos to any format with custom resolution, frame rate &
               more
             </p>
@@ -351,13 +354,13 @@ const VideoConverterLayout: React.FC = () => {
 
           <div className="grid lg:grid-cols-[2fr_1fr] gap-4 lg:gap-6">
             {/* Preview Area */}
-            <div className="bg-white rounded-[20px] shadow-xl p-4 sm:p-6">
+            <div className="bg-white dark:bg-gray-900 rounded-[20px] shadow-xl p-4 sm:p-6">
               {!video ? (
                 <div
                   onDrop={handleDrop}
                   onDragOver={(e) => e.preventDefault()}
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-[#E5E7EB] rounded-[20px] p-8 sm:p-12 cursor-pointer hover:border-[#2563EB] hover:bg-[#2563EB]/5 transition-all text-center active:scale-[0.99]"
+                  className="border-2 border-dashed border-[#E5E7EB] dark:border-gray-700 rounded-[20px] p-8 sm:p-12 cursor-pointer hover:border-[#2563EB] hover:bg-[#2563EB]/5 transition-all text-center active:scale-[0.99]"
                 >
                   <input
                     ref={fileInputRef}
@@ -369,9 +372,9 @@ const VideoConverterLayout: React.FC = () => {
                   <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 rounded-full bg-[#2563EB]/10 flex items-center justify-center">
                     <BsUpload className="text-3xl sm:text-4xl text-[#2563EB]" />
                   </div>
-                  <h2 className="text-lg sm:text-xl font-semibold text-[#0A0A0A] mb-2">Upload Video</h2>
-                  <p className="text-[#4B5563] mb-2 text-sm sm:text-base">Drag & drop or tap to browse</p>
-                  <p className="text-xs text-[#4B5563]/60">Supports MP4, WebM, AVI, MOV, MKV, and more</p>
+                  <h2 className="text-lg sm:text-xl font-semibold text-[#0A0A0A] dark:text-white mb-2">Upload Video</h2>
+                  <p className="text-[#4B5563] dark:text-gray-400 mb-2 text-sm sm:text-base">Drag & drop or tap to browse</p>
+                  <p className="text-xs text-[#4B5563]/60 dark:text-gray-400/60">Supports MP4, WebM, AVI, MOV, MKV, and more</p>
                 </div>
               ) : (
                 <div className="space-y-3 sm:space-y-4">
@@ -401,30 +404,30 @@ const VideoConverterLayout: React.FC = () => {
 
                   {/* Video Info */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-sm">
-                    <div className="bg-[#F9FAFB] rounded-[10px] p-2.5 sm:p-3 text-center">
-                      <div className="text-[#4B5563] text-xs">Duration</div>
-                      <div className="font-semibold text-[#0A0A0A] text-sm">{formatTime(video.duration)}</div>
+                    <div className="bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] p-2.5 sm:p-3 text-center">
+                      <div className="text-[#4B5563] dark:text-gray-400 text-xs">Duration</div>
+                      <div className="font-semibold text-[#0A0A0A] dark:text-white text-sm">{formatTime(video.duration)}</div>
                     </div>
-                    <div className="bg-[#F9FAFB] rounded-[10px] p-2.5 sm:p-3 text-center">
-                      <div className="text-[#4B5563] text-xs">Resolution</div>
-                      <div className="font-semibold text-[#0A0A0A] text-sm">{video.width}×{video.height}</div>
+                    <div className="bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] p-2.5 sm:p-3 text-center">
+                      <div className="text-[#4B5563] dark:text-gray-400 text-xs">Resolution</div>
+                      <div className="font-semibold text-[#0A0A0A] dark:text-white text-sm">{video.width}×{video.height}</div>
                     </div>
-                    <div className="bg-[#F9FAFB] rounded-[10px] p-2.5 sm:p-3 text-center">
-                      <div className="text-[#4B5563] text-xs">Size</div>
-                      <div className="font-semibold text-[#0A0A0A] text-sm">{formatSize(video.size)}</div>
+                    <div className="bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] p-2.5 sm:p-3 text-center">
+                      <div className="text-[#4B5563] dark:text-gray-400 text-xs">Size</div>
+                      <div className="font-semibold text-[#0A0A0A] dark:text-white text-sm">{formatSize(video.size)}</div>
                     </div>
-                    <div className="bg-[#F9FAFB] rounded-[10px] p-2.5 sm:p-3 text-center">
-                      <div className="text-[#4B5563] text-xs">Format</div>
-                      <div className="font-semibold text-[#0A0A0A] text-sm">{video.name.split(".").pop()?.toUpperCase()}</div>
+                    <div className="bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] p-2.5 sm:p-3 text-center">
+                      <div className="text-[#4B5563] dark:text-gray-400 text-xs">Format</div>
+                      <div className="font-semibold text-[#0A0A0A] dark:text-white text-sm">{video.name.split(".").pop()?.toUpperCase()}</div>
                     </div>
                   </div>
 
                   {/* Trim Controls */}
-                  <div className="bg-[#F9FAFB] rounded-[10px] p-3 sm:p-4">
-                    <Label className="text-sm font-medium text-[#4B5563] block mb-2">Trim Video</Label>
+                  <div className="bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] p-3 sm:p-4">
+                    <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Trim Video</Label>
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                       <div className="flex-1">
-                        <Label className="text-xs text-[#4B5563]">Start: {formatTime(trimStart)}</Label>
+                        <Label className="text-xs text-[#4B5563] dark:text-gray-400">Start: {formatTime(trimStart)}</Label>
                         <Slider
                           min={0}
                           max={video.duration}
@@ -435,7 +438,7 @@ const VideoConverterLayout: React.FC = () => {
                         />
                       </div>
                       <div className="flex-1">
-                        <Label className="text-xs text-[#4B5563]">End: {formatTime(trimEnd)}</Label>
+                        <Label className="text-xs text-[#4B5563] dark:text-gray-400">End: {formatTime(trimEnd)}</Label>
                         <Slider
                           min={0}
                           max={video.duration}
@@ -452,18 +455,18 @@ const VideoConverterLayout: React.FC = () => {
             </div>
 
             {/* Controls */}
-            <div className="bg-white rounded-[20px] shadow-xl p-4 sm:p-6 space-y-4 sm:space-y-5">
-              <h3 className="font-semibold text-[#0A0A0A] flex items-center gap-2"><BsGear /> Conversion Settings</h3>
+            <div className="bg-white dark:bg-gray-900 rounded-[20px] shadow-xl p-4 sm:p-6 space-y-4 sm:space-y-5">
+              <h3 className="font-semibold text-[#0A0A0A] dark:text-white flex items-center gap-2"><BsGear /> Conversion Settings</h3>
 
               {/* Output Format */}
               <div>
-                <Label className="text-sm font-medium text-[#4B5563] block mb-2">Output Format</Label>
+                <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Output Format</Label>
                 <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
                   {formats.map((f) => (
                     <button
                       key={f.id}
                       onClick={() => setOutputFormat(f.id)}
-                      className={`p-1.5 sm:p-2 rounded-[10px] text-center transition-all active:scale-95 ${outputFormat === f.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2 ring-offset-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6] text-[#0A0A0A]"}`}
+                      className={`p-1.5 sm:p-2 rounded-[10px] text-center transition-all active:scale-95 ${outputFormat === f.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2 ring-offset-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 text-[#0A0A0A] dark:text-white"}`}
                     >
                       <div className="text-base sm:text-lg flex items-center justify-center">{f.icon}</div>
                       <div className="text-[10px] sm:text-xs font-semibold">{f.name}</div>
@@ -475,7 +478,7 @@ const VideoConverterLayout: React.FC = () => {
               {/* Resolution */}
               {!["mp3", "wav"].includes(outputFormat) && (
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Resolution</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Resolution</Label>
                   <Select value={resolution} onValueChange={(v) => setResolution(v as Resolution)}>
                     <SelectTrigger className="w-full">
                       <SelectValue />
@@ -492,7 +495,7 @@ const VideoConverterLayout: React.FC = () => {
               {/* Frame Rate */}
               {!["mp3", "wav"].includes(outputFormat) && (
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Frame Rate</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Frame Rate</Label>
                   <Select value={frameRate} onValueChange={(v) => setFrameRate(v as FrameRate)}>
                     <SelectTrigger className="w-full">
                       <SelectValue />
@@ -509,7 +512,7 @@ const VideoConverterLayout: React.FC = () => {
               {/* Quality */}
               {!["gif", "mp3", "wav"].includes(outputFormat) && (
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Quality (CRF: {quality})</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Quality (CRF: {quality})</Label>
                   <Slider
                     min={0}
                     max={51}
@@ -517,7 +520,7 @@ const VideoConverterLayout: React.FC = () => {
                     onValueChange={([v]) => setQuality(v)}
                     className="w-full"
                   />
-                  <div className="flex justify-between text-xs text-[#4B5563] mt-1">
+                  <div className="flex justify-between text-xs text-[#4B5563] dark:text-gray-400 mt-1">
                     <span>Best</span>
                     <span>Smallest</span>
                   </div>
@@ -532,7 +535,7 @@ const VideoConverterLayout: React.FC = () => {
                     onCheckedChange={setRemoveAudio}
                     id="remove-audio"
                   />
-                  <Label htmlFor="remove-audio" className="text-sm text-[#0A0A0A] cursor-pointer">Remove audio track</Label>
+                  <Label htmlFor="remove-audio" className="text-sm text-[#0A0A0A] dark:text-white cursor-pointer">Remove audio track</Label>
                 </div>
               )}
 
@@ -555,7 +558,7 @@ const VideoConverterLayout: React.FC = () => {
               </Button>
 
               {isConverting && (
-                <div className="w-full bg-[#F9FAFB] rounded-full h-2">
+                <div className="w-full bg-[#F9FAFB] dark:bg-gray-800 rounded-full h-2">
                   <div className="bg-[#2563EB] h-2 rounded-full transition-all" style={{ width: `${progress}%` }}></div>
                 </div>
               )}

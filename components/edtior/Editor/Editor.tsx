@@ -141,6 +141,11 @@ const Editor: React.FC<Props> = () => {
     frameUrl,
   });
 
+  // Stable ref so the save callback always reads current project.save without
+  // being listed as a dep (project object changes identity every render).
+  const projectSaveRef = useRef(project.save);
+  useEffect(() => { projectSaveRef.current = project.save; });
+
   // Auto-save with debounce (Canva-style) - saves 2 seconds after last change
   useEffect(() => {
     // Only auto-save if there's an image (actual content to save)
@@ -151,14 +156,38 @@ const Editor: React.FC<Props> = () => {
       clearTimeout(autoSaveTimeoutRef.current);
     }
 
+    // Capture state values synchronously so the async callback below is not stale
+    const snapshot = {
+      selectedImage,
+      imageDimensions,
+      currentBackground,
+      currentBackgroundType,
+      scale,
+      borderRadius,
+      canvasRoundness,
+      padding,
+      left,
+      right,
+      tilt,
+      rotate,
+      aspectRatio,
+      currentBoxShadow,
+      noise,
+      watermark,
+      selectedFrame,
+      frameTitle,
+      frameUrl,
+    };
+
     // Set new timeout for auto-save
     autoSaveTimeoutRef.current = setTimeout(async () => {
-      const editorState = getEditorState();
-      // Convert blob URL to base64 for persistence
+      const editorState = { ...snapshot };
+      // Convert blob URL to base64 off the hot path — deferred so it doesn't
+      // block interaction (fires after the 2-second idle gap).
       if (editorState.selectedImage && editorState.selectedImage.startsWith('blob:')) {
         editorState.selectedImage = await imageToBase64(editorState.selectedImage);
       }
-      project.save(editorState, imageToDownload.current);
+      projectSaveRef.current(editorState, imageToDownload.current);
     }, 2000); // 2 second debounce
 
     return () => {
@@ -166,9 +195,9 @@ const Editor: React.FC<Props> = () => {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedImage,
+    imageDimensions,
     currentBackground,
     currentBackgroundType,
     scale,
@@ -188,13 +217,15 @@ const Editor: React.FC<Props> = () => {
     frameUrl,
   ]);
 
+  const projectMarkChangedRef = useRef(project.markChanged);
+  useEffect(() => { projectMarkChangedRef.current = project.markChanged; });
+
   // Mark project as changed when editor state changes
   useEffect(() => {
     if (projectLoaded || selectedImage) {
-      project.markChanged();
+      projectMarkChangedRef.current();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedImage, currentBackground, scale, borderRadius, canvasRoundness, padding, left, right, tilt, rotate, aspectRatio, currentBoxShadow, noise, watermark, selectedFrame]);
+  }, [projectLoaded, selectedImage, currentBackground, scale, borderRadius, canvasRoundness, padding, left, right, tilt, rotate, aspectRatio, currentBoxShadow, noise, watermark, selectedFrame]);
 
   // Share functionality
   const handleShare = async () => {
@@ -413,14 +444,14 @@ const Editor: React.FC<Props> = () => {
       {/* Image Dimensions Display */}
       {selectedImage && imageDimensions.width > 0 && (
         <div className="flex justify-end mb-2 w-full">
-          <span className="text-xs text-gray-500 bg-[#F9FAFB] px-3 py-1 rounded-full">
+          <span className="text-xs text-gray-500 dark:text-gray-400 bg-[#F9FAFB] dark:bg-gray-800/50 px-3 py-1 rounded-full">
             {imageDimensions.width} × {imageDimensions.height} px
           </span>
         </div>
       )}
 
       {/* Editor Canvas Area */}
-      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 border border-[#E5E7EB]/80 overflow-hidden">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/3 dark:bg-gray-800/30 dark:bg-gray-800/50 border border-[#E5E7EB]/8 dark:border-gray-700/80 dark:border-gray-700 overflow-hidden">
         <EditorWrapper imageRef={imageToDownload}>
           <>
             {noise && (
@@ -443,7 +474,7 @@ const Editor: React.FC<Props> = () => {
             )}
             {watermark.visible && (
               <span
-                className="text-[#0A0A0A] absolute bottom-3 right-4 z-20 opacity-90 font-medium outline-none font-sans text-[1rem]"
+                className="text-[#0A0A0A] dark:text-white absolute bottom-3 right-4 z-20 opacity-90 font-medium outline-none font-sans text-[1rem]"
                 spellCheck={false}
                 suppressContentEditableWarning={true}
                 contentEditable

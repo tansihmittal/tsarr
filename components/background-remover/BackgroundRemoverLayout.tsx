@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { normalizeImageFile, IMAGE_ACCEPT } from "@/utils/imageFile";
 import Navigation from "../common/Navigation";
@@ -31,6 +31,17 @@ const BackgroundRemoverLayout: React.FC = () => {
   const [exportFormat, setExportFormat] = useState<ExportFormat>("png");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Revoke blob URLs when they change or on unmount
+  useEffect(() => {
+    const url = originalUrl;
+    return () => { if (url) URL.revokeObjectURL(url); };
+  }, [originalUrl]);
+
+  useEffect(() => {
+    const url = resultUrl;
+    return () => { if (url) URL.revokeObjectURL(url); };
+  }, [resultUrl]);
 
   const handleFile = useCallback(async (file: File) => {
     if (!file.type.startsWith("image/") && !/\.(heic|heif)$/i.test(file.name)) {
@@ -158,8 +169,8 @@ const BackgroundRemoverLayout: React.FC = () => {
                 onClick={() => setView("split")}
                 className={`px-3 py-1 rounded-[10px] text-xs font-medium transition-colors ${
                   view === "split"
-                    ? "bg-[#F3F4F6] text-[#0A0A0A]"
-                    : "text-[#4B5563] hover:text-[#0A0A0A]"
+                    ? "bg-[#F3F4F6] dark:bg-gray-700 text-[#0A0A0A] dark:text-white"
+                    : "text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:text-white dark:hover:text-white"
                 }`}
               >
                 Split
@@ -168,8 +179,8 @@ const BackgroundRemoverLayout: React.FC = () => {
                 onClick={() => setView("original")}
                 className={`px-3 py-1 rounded-[10px] text-xs font-medium transition-colors ${
                   view === "original"
-                    ? "bg-[#F3F4F6] text-[#0A0A0A]"
-                    : "text-[#4B5563] hover:text-[#0A0A0A]"
+                    ? "bg-[#F3F4F6] dark:bg-gray-700 text-[#0A0A0A] dark:text-white"
+                    : "text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:text-white dark:hover:text-white"
                 }`}
               >
                 Original
@@ -178,8 +189,8 @@ const BackgroundRemoverLayout: React.FC = () => {
                 onClick={() => setView("result")}
                 className={`px-3 py-1 rounded-[10px] text-xs font-medium transition-colors ${
                   view === "result"
-                    ? "bg-[#F3F4F6] text-[#0A0A0A]"
-                    : "text-[#4B5563] hover:text-[#0A0A0A]"
+                    ? "bg-[#F3F4F6] dark:bg-gray-700 text-[#0A0A0A] dark:text-white"
+                    : "text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:text-white dark:hover:text-white"
                 }`}
               >
                 Result
@@ -198,22 +209,22 @@ const BackgroundRemoverLayout: React.FC = () => {
 
             {!originalUrl ? (
               <div
-                className="flex flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-[#E5E7EB] bg-[#EFF6FF] min-h-[420px] cursor-pointer hover:border-[#2563EB]/50 transition-colors"
+                className="flex flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-[#E5E7EB] dark:border-gray-700 bg-[#EFF6FF] dark:bg-blue-900/20 min-h-[420px] cursor-pointer hover:border-[#2563EB]/50 transition-colors"
                 onDrop={handleDrop}
                 onDragOver={(e) => e.preventDefault()}
                 onClick={() => fileInputRef.current?.click()}
               >
-                <BsImage className="w-12 h-12 text-[#4B5563]/20 mb-4" />
-                <p className="text-[#4B5563] text-sm mb-1">
+                <BsImage className="w-12 h-12 text-[#4B5563]/20 dark:text-gray-400/20 mb-4" />
+                <p className="text-[#4B5563] dark:text-gray-400 text-sm mb-1">
                   Drop image here or click to upload
                 </p>
-                <p className="text-[#4B5563]/60 text-xs">
+                <p className="text-[#4B5563]/60 dark:text-gray-400/60 text-xs">
                   Or paste (Ctrl/Cmd+V) anywhere
                 </p>
               </div>
             ) : view === "split" ? (
               <div className="grid grid-cols-2 gap-3">
-                <div className="relative rounded-[20px] overflow-hidden bg-[#EFF6FF] border border-[#E5E7EB] min-h-[320px] flex items-center justify-center">
+                <div className="relative rounded-[20px] overflow-hidden bg-[#EFF6FF] dark:bg-blue-900/20 border border-[#E5E7EB] dark:border-gray-700 min-h-[320px] flex items-center justify-center">
                   <span className="absolute top-2 left-2 text-xs font-medium bg-black/40 text-white px-2 py-0.5 rounded-md z-10">
                     Original
                   </span>
@@ -224,7 +235,7 @@ const BackgroundRemoverLayout: React.FC = () => {
                   />
                 </div>
                 <div
-                  className="relative rounded-[20px] overflow-hidden border border-[#E5E7EB] min-h-[320px] flex items-center justify-center"
+                  className="relative rounded-[20px] overflow-hidden border border-[#E5E7EB] dark:border-gray-700 min-h-[320px] flex items-center justify-center"
                   style={{
                     background:
                       bgColor === "transparent"
@@ -244,17 +255,17 @@ const BackgroundRemoverLayout: React.FC = () => {
                   ) : isProcessing ? (
                     <div className="text-center px-4">
                       <div className="loading loading-spinner loading-md text-[#2563EB] mb-3" />
-                      <p className="text-xs text-[#4B5563]">{progress}</p>
+                      <p className="text-xs text-[#4B5563] dark:text-gray-400">{progress}</p>
                     </div>
                   ) : (
-                    <p className="text-xs text-[#4B5563]/60">
+                    <p className="text-xs text-[#4B5563]/60 dark:text-gray-400/60">
                       Result will appear here
                     </p>
                   )}
                 </div>
               </div>
             ) : view === "original" ? (
-              <div className="rounded-[20px] overflow-hidden bg-[#EFF6FF] border border-[#E5E7EB] min-h-[420px] flex items-center justify-center">
+              <div className="rounded-[20px] overflow-hidden bg-[#EFF6FF] dark:bg-blue-900/20 border border-[#E5E7EB] dark:border-gray-700 min-h-[420px] flex items-center justify-center">
                 <img
                   src={originalUrl}
                   alt="Original"
@@ -263,7 +274,7 @@ const BackgroundRemoverLayout: React.FC = () => {
               </div>
             ) : (
               <div
-                className="rounded-[20px] overflow-hidden border border-[#E5E7EB] min-h-[420px] flex items-center justify-center"
+                className="rounded-[20px] overflow-hidden border border-[#E5E7EB] dark:border-gray-700 min-h-[420px] flex items-center justify-center"
                 style={{
                   background:
                     bgColor === "transparent"
@@ -278,7 +289,7 @@ const BackgroundRemoverLayout: React.FC = () => {
                     className="max-w-full max-h-[500px] object-contain"
                   />
                 ) : (
-                  <p className="text-xs text-[#4B5563]/60">No result yet</p>
+                  <p className="text-xs text-[#4B5563]/60 dark:text-gray-400/60">No result yet</p>
                 )}
               </div>
             )}
@@ -297,15 +308,15 @@ const BackgroundRemoverLayout: React.FC = () => {
               }}
             />
             <Tabs defaultValue="options">
-              <TabsList className="w-full grid grid-cols-2 rounded-[12px] bg-[#F3F4F6] mb-3">
+              <TabsList className="w-full grid grid-cols-2 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-3">
                 <TabsTrigger value="options" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Options</TabsTrigger>
                 <TabsTrigger value="output" className="gap-1.5 rounded-[10px] text-xs"><BsDownload className="w-3.5 h-3.5" /> Export</TabsTrigger>
               </TabsList>
 
               <TabsContent value="options">
-                <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+                <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
                   <ControlPanelHeading title="Image" />
-                  <div className="p-4 border-b border-[#E5E7EB]/60">
+                  <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
                     <Button
                       onClick={() => fileInputRef.current?.click()}
                       size="sm"
@@ -328,7 +339,7 @@ const BackgroundRemoverLayout: React.FC = () => {
                   </div>
 
                   <ControlPanelHeading title="Remove Background" />
-                  <div className="p-4 border-b border-[#E5E7EB]/60">
+                  <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
                     <Button
                       onClick={handleRemove}
                       disabled={!originalUrl || isProcessing}
@@ -349,7 +360,7 @@ const BackgroundRemoverLayout: React.FC = () => {
                   </div>
 
                   <ControlPanelHeading title="Background Color" />
-                  <div className="p-4 border-b border-[#E5E7EB]/60">
+                  <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
                     <div className="grid grid-cols-2 gap-2 mb-3">
                       {(["transparent", "white", "black", "custom"] as BgOption[]).map((opt) => (
                         <Button
@@ -369,9 +380,9 @@ const BackgroundRemoverLayout: React.FC = () => {
                           type="color"
                           value={customColor}
                           onChange={(e) => setCustomColor(e.target.value)}
-                          className="w-10 h-8 rounded cursor-pointer border border-[#E5E7EB]"
+                          className="w-10 h-8 rounded cursor-pointer border border-[#E5E7EB] dark:border-gray-700"
                         />
-                        <span className="text-xs font-mono text-[#4B5563]">
+                        <span className="text-xs font-mono text-[#4B5563] dark:text-gray-400">
                           {customColor.toUpperCase()}
                         </span>
                       </div>
@@ -381,18 +392,18 @@ const BackgroundRemoverLayout: React.FC = () => {
               </TabsContent>
 
               <TabsContent value="output">
-                <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+                <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
                   <ControlPanelHeading title="Format" />
-                  <div className="p-4 border-b border-[#E5E7EB]/60">
+                  <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
                     <div className="grid grid-cols-3 gap-2">
                       {(["png", "webp", "jpeg"] as ExportFormat[]).map((fmt) => (
                         <button
                           key={fmt}
                           onClick={() => setExportFormat(fmt)}
-                          className={`p-3 rounded-[10px] text-center transition-all ${exportFormat === fmt ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"}`}
+                          className={`p-3 rounded-[10px] text-center transition-all ${exportFormat === fmt ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800"}`}
                         >
                           <div className="font-semibold text-sm">{fmt === "jpeg" ? "JPG" : fmt.toUpperCase()}</div>
-                          <div className={`text-xs ${exportFormat === fmt ? "text-white/70" : "text-gray-500"}`}>
+                          <div className={`text-xs ${exportFormat === fmt ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>
                             {fmt === "png" ? "Lossless" : fmt === "webp" ? "Modern" : "Smaller"}
                           </div>
                         </button>
@@ -404,7 +415,7 @@ const BackgroundRemoverLayout: React.FC = () => {
                   </div>
 
                   <ControlPanelHeading title="Download" />
-                  <div className="p-4 border-b border-[#E5E7EB]/60">
+                  <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
                     <Button
                       onClick={handleDownload}
                       disabled={!resultUrl}
@@ -414,7 +425,7 @@ const BackgroundRemoverLayout: React.FC = () => {
                       Download {exportFormat === "jpeg" ? "JPG" : exportFormat.toUpperCase()}
                     </Button>
                     {!resultUrl && (
-                      <p className="text-xs text-gray-500 mt-2 text-center">Remove background first to download</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">Remove background first to download</p>
                     )}
                   </div>
                 </div>

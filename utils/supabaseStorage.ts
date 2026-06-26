@@ -33,12 +33,13 @@ export const syncToCloudIfLoggedIn = async (project: Project): Promise<void> => 
   }
 };
 
-/** Fetch all cloud projects for the current user. */
+/** Fetch cloud projects for the current user (most recent 100, no full data blob). */
 export const getCloudProjects = async (): Promise<Project[]> => {
   const { data, error } = await supabase
     .from("projects")
-    .select("*")
-    .order("updated_at", { ascending: false });
+    .select("id,name,type,thumbnail,created_at,updated_at")
+    .order("updated_at", { ascending: false })
+    .limit(100);
   if (error) throw error;
   return (data || []).map((p: any) => ({
     id: p.id,
@@ -86,8 +87,9 @@ export interface CloudPreset {
 export const getCloudPresets = async (): Promise<CloudPreset[]> => {
   const { data, error } = await supabase
     .from("presets")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .select("id,preset_name,data,created_at")
+    .order("created_at", { ascending: false })
+    .limit(100);
   if (error) throw error;
   // Exclude presets saved by useCustomPresets (which embed _tsarr_tool in data)
   return (data || []).filter((p: any) => !p.data?._tsarr_tool) as CloudPreset[];
@@ -97,9 +99,10 @@ export const getCloudPresets = async (): Promise<CloudPreset[]> => {
 export const getCloudPresetsForTool = async (tool: string): Promise<CloudPreset[]> => {
   const { data, error } = await supabase
     .from("presets")
-    .select("*")
+    .select("id,preset_name,data,created_at")
     .contains("data", { _tsarr_tool: tool })
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(20);
   if (error) throw error;
   return (data || []).map((p: any) => ({
     ...p,

@@ -1,4 +1,4 @@
-import {
+import React, {
   useCallback,
   useEffect,
   useMemo,
@@ -62,7 +62,9 @@ import ImapMapOptions from "./ImapMapOptions";
 import { maskToPolygons, maskToBBox } from "./maskToPolygon";
 
 const PROJECTS_KEY = "imp-projects-v2";
-const MAX_HISTORY = 60;
+// 30 entries × shallow Shape refs. Base64 href strings are interned in JS so
+// they're shared across history — actual memory cost is just array overhead.
+const MAX_HISTORY = 30;
 
 interface StoredProject {
   id: string;
@@ -165,6 +167,7 @@ const ImageMapProLayout: React.FC = () => {
   const importJsonRef = useRef<HTMLInputElement>(null);
   const pendingImage = useRef<{ href: string; w: number; h: number } | null>(null);
   const replaceTargetId = useRef<string | null>(null);
+  const detectAbortRef = useRef<AbortController | null>(null);
   const [pendingImageHref, setPendingImageHref] = useState<string | null>(null);
 
   const selected = getActiveArtboard(doc).shapes.find((s) => s.id === selectedId) || null;
@@ -513,12 +516,14 @@ const ImageMapProLayout: React.FC = () => {
   // Ask the server (SAM3) to segment one or more text prompts → masks.
   const segment = async (
     src: string,
-    prompts: string[]
+    prompts: string[],
+    signal?: AbortSignal
   ): Promise<SegmentedMask[]> => {
     const res = await fetch("/api/detect-regions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ imageBase64: src, prompts }),
+      signal,
     });
     const data = await res.json();
     if (!res.ok && data.error) throw new Error(data.error);
@@ -535,12 +540,14 @@ const ImageMapProLayout: React.FC = () => {
   // Server VLM: identify & box all distinct parts/objects, in bg-pixel coords.
   const enumerate = async (
     src: string,
-    instruction: string
+    instruction: string,
+    signal?: AbortSignal
   ): Promise<{ label: string; x: number; y: number; w: number; h: number }[]> => {
     const res = await fetch("/api/detect-regions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ imageBase64: src, mode: "enumerate", instruction }),
+      signal,
     });
     const data = await res.json();
     if (!res.ok && data.error) throw new Error(data.error);
@@ -558,7 +565,8 @@ const ImageMapProLayout: React.FC = () => {
   const getEnumeration = async (
     src: string,
     instruction: string,
-    onPhase: (msg: string) => void
+    onPhase: (msg: string) => void,
+    signal?: AbortSignal
   ): Promise<{ label: string; x: number; y: number; w: number; h: number }[]> => {
     onPhase("Detecting objects…");
     const dets = await runYolo(src);
@@ -572,7 +580,7 @@ const ImageMapProLayout: React.FC = () => {
       }));
     }
     onPhase("Labeling with AI…");
-    return enumerate(src, instruction);
+    return enumerate(src, instruction, signal);
   };
 
   const curAbW = () => getActiveArtboard(docRef.current).bgWidth;
@@ -584,6 +592,13 @@ const ImageMapProLayout: React.FC = () => {
       toast.error("Upload a background image first");
       return;
     }
+
+    // Cancel any in-flight detection request
+    detectAbortRef.current?.abort();
+    const abortCtrl = new AbortController();
+    detectAbortRef.current = abortCtrl;
+    const signal = abortCtrl.signal;
+
     const inst = (instruction || "").trim();
     const shapeFromInst = inst && ELLIPSE_TERMS.test(inst) ? "ellipse" : null;
     const chosenShape: ShapeType = overrideShape ?? shapeFromInst ?? detectShape;
@@ -640,7 +655,8 @@ const ImageMapProLayout: React.FC = () => {
       // (YOLO for common objects, VLM for novel content like boards/diagrams.)
       if (isMetaInstruction(inst)) {
         const items = await getEnumeration(curAb.bg, inst, (m) =>
-          toast.loading(m, { id })
+          toast.loading(m, { id }),
+          signal
         );
         if (!items.length) {
           toast.error("Couldn't find anything to label — try naming it", {
@@ -663,7 +679,7 @@ const ImageMapProLayout: React.FC = () => {
       // Polygon → SAM3 mask → traced outline(s).
       if (chosenShape === "polygon") {
         toast.loading("Segmenting…", { id });
-        const masks = await segment(curAb.bg, [inst]);
+        const masks = await segment(curAb.bg, [inst], signal);
         if (!masks.length) {
           toast.error(`Couldn't segment "${inst}"`, { id });
           return;
@@ -722,7 +738,7 @@ const ImageMapProLayout: React.FC = () => {
       }
 
       toast.loading("Segmenting…", { id });
-      const masks = await segment(curAb.bg, [inst]);
+      const masks = await segment(curAb.bg, [inst], signal);
       const newShapes: Shape[] = [];
       for (const m of masks) {
         const box = await maskToBBox(m.maskBase64, W, H);
@@ -744,7 +760,11 @@ const ImageMapProLayout: React.FC = () => {
         { id }
       );
     } catch (err: any) {
-      toast.error(err.message || "AI detection failed", { id });
+      if (err?.name === "AbortError") {
+        toast.dismiss(id);
+      } else {
+        toast.error(err.message || "AI detection failed", { id });
+      }
     } finally {
       setIsDetecting(false);
     }
@@ -832,6 +852,10 @@ const ImageMapProLayout: React.FC = () => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File too large (max 10 MB)");
+      return;
+    }
     try {
       const text = await file.text();
       const parsed = JSON.parse(text);
@@ -897,7 +921,8 @@ const ImageMapProLayout: React.FC = () => {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // saveProject/startPlaceImage/setTool intentionally omitted: they read from
+    // refs or are stable setState dispatchers and never go stale.
   }, [selectedId, undo, redo, duplicateShape, deleteShape]);
 
   const editText = (id: string) => {
@@ -934,7 +959,7 @@ const ImageMapProLayout: React.FC = () => {
   // ---------- render ----------
   return (
     <div
-      className="h-screen flex flex-col bg-[#FBFBFD] overflow-hidden"
+      className="h-screen flex flex-col bg-[#FBFBFD] dark:bg-gray-900 overflow-hidden"
       style={{ fontFamily: TOOL_FONT }}
     >
       <Navigation />
@@ -949,11 +974,11 @@ const ImageMapProLayout: React.FC = () => {
 
       {/* Toolbar — relative z-30 keeps its dropdowns (AI Detect, Export) above
           the canvas/sidebars, which otherwise paint over them and swallow clicks. */}
-      <div className="relative z-30 shrink-0 border-b border-[#E5E7EB] bg-white/90 backdrop-blur px-3 py-2 flex items-center gap-2 flex-wrap">
+      <div className="relative z-30 shrink-0 border-b border-[#E5E7EB] dark:border-gray-700 bg-white/90 dark:bg-gray-900/90 backdrop-blur px-3 py-2 flex items-center gap-2 flex-wrap">
         <button
           onClick={() => setShowSidebar((v) => !v)}
           title="Toggle panels"
-          className="w-9 h-9 rounded-[12px] border border-[#E5E7EB] flex items-center justify-center text-[#4B5563] hover:bg-[#F9FAFB] shrink-0"
+          className="w-9 h-9 rounded-[12px] border border-[#E5E7EB] dark:border-gray-700 flex items-center justify-center text-[#4B5563] dark:text-gray-400 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 shrink-0"
         >
           <BsLayoutSidebarInset className="w-4 h-4" />
         </button>
@@ -961,11 +986,11 @@ const ImageMapProLayout: React.FC = () => {
         <input
           value={doc.name}
           onChange={(e) => setDoc({ ...docRef.current, name: e.target.value })}
-          className="w-[150px] rounded-[12px] border border-transparent hover:border-[#E5E7EB] focus:border-[#60A5FA] bg-transparent px-2.5 py-1.5 text-sm font-semibold text-[#0A0A0A] focus:outline-none truncate"
+          className="w-[150px] rounded-[12px] border border-transparent hover:border-[#E5E7EB] dark:border-gray-700 dark:hover:border-gray-700 focus:border-[#60A5FA] bg-transparent px-2.5 py-1.5 text-sm font-semibold text-[#0A0A0A] dark:text-white focus:outline-none truncate"
         />
 
         {/* tool group */}
-        <div className="flex items-center gap-1 p-1 rounded-[14px] bg-[#F3F4F6] border border-[#E5E7EB]">
+        <div className="flex items-center gap-1 p-1 rounded-[14px] bg-[#F3F4F6] dark:bg-gray-800 border border-[#E5E7EB] dark:border-gray-700">
           {TOOLS.map((tl) => {
             const Icon = tl.icon;
             const active = tool === tl.id;
@@ -978,7 +1003,7 @@ const ImageMapProLayout: React.FC = () => {
                 className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
                   active
                     ? "bg-[#0A0A0A] text-white shadow-sm"
-                    : "text-[#4B5563] hover:bg-white"
+                    : "text-[#4B5563] dark:text-gray-400 hover:bg-white dark:hover:bg-gray-700"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -993,7 +1018,7 @@ const ImageMapProLayout: React.FC = () => {
             onClick={undo}
             disabled={!canUndo}
             title="Undo (⌘Z)"
-            className="w-9 h-9 rounded-[12px] border border-[#E5E7EB] flex items-center justify-center text-[#4B5563] hover:bg-[#F9FAFB] disabled:opacity-30"
+            className="w-9 h-9 rounded-[12px] border border-[#E5E7EB] dark:border-gray-700 flex items-center justify-center text-[#4B5563] dark:text-gray-400 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 disabled:opacity-30"
           >
             <BsArrowCounterclockwise className="w-4 h-4" />
           </button>
@@ -1001,7 +1026,7 @@ const ImageMapProLayout: React.FC = () => {
             onClick={redo}
             disabled={!canRedo}
             title="Redo (⌘⇧Z)"
-            className="w-9 h-9 rounded-[12px] border border-[#E5E7EB] flex items-center justify-center text-[#4B5563] hover:bg-[#F9FAFB] disabled:opacity-30"
+            className="w-9 h-9 rounded-[12px] border border-[#E5E7EB] dark:border-gray-700 flex items-center justify-center text-[#4B5563] dark:text-gray-400 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 disabled:opacity-30"
           >
             <BsArrowClockwise className="w-4 h-4" />
           </button>
@@ -1015,7 +1040,7 @@ const ImageMapProLayout: React.FC = () => {
             size="sm"
             disabled={isDetecting || !getActiveArtboard(doc).bg}
             onClick={() => setDetectOpen((v) => !v)}
-            className="gap-1.5 text-[#2563EB] border-[#BFDBFE] hover:bg-[#EFF6FF]"
+            className="gap-1.5 text-[#2563EB] border-[#BFDBFE] hover:bg-[#EFF6FF] dark:bg-blue-900/20"
           >
             <BsStars className="w-3.5 h-3.5" />
             {isDetecting ? "Detecting…" : "AI Detect"}
@@ -1023,8 +1048,8 @@ const ImageMapProLayout: React.FC = () => {
           {detectOpen && !isDetecting && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setDetectOpen(false)} />
-              <div className="absolute right-0 mt-2 w-72 bg-white rounded-[14px] border border-[#E5E7EB] shadow-lg p-3 z-50">
-                <p className="text-xs font-semibold text-[#0A0A0A] mb-1.5">
+              <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-900 rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 shadow-lg p-3 z-50">
+                <p className="text-xs font-semibold text-[#0A0A0A] dark:text-white mb-1.5">
                   Tell the AI what to mark
                 </p>
                 <input
@@ -1035,15 +1060,15 @@ const ImageMapProLayout: React.FC = () => {
                     if (e.key === "Enter") runDetect(detectText.trim());
                   }}
                   placeholder="e.g. all the buttons, faces, products…"
-                  className="w-full rounded-[10px] border border-[#E5E7EB] bg-white px-2.5 py-2 text-xs text-[#0A0A0A] placeholder:text-[#4B5563]/40 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/25 focus:border-[#60A5FA]"
+                  className="w-full rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-800 px-2.5 py-2 text-xs text-[#0A0A0A] dark:text-white placeholder:text-[#4B5563]/40 dark:text-gray-400/40 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/25 focus:border-[#60A5FA]"
                 />
-                <p className="text-[11px] text-[#4B5563]/45 mt-1.5 leading-relaxed">
+                <p className="text-[11px] text-[#4B5563]/4 dark:text-gray-400/45 dark:text-gray-400 mt-1.5 leading-relaxed">
                   Describe what to turn into hotspots, or leave blank to auto-detect
                   everything.
                 </p>
                 {/* Shape selector */}
                 <div className="mt-2.5">
-                  <p className="text-[11px] font-medium text-[#4B5563]/70 mb-1.5">Shape</p>
+                  <p className="text-[11px] font-medium text-[#4B5563]/7 dark:text-gray-400/70 dark:text-gray-400 mb-1.5">Shape</p>
                   <div className="flex gap-1.5">
                     {(["rect", "ellipse", "polygon"] as ShapeType[]).map((s) => (
                       <button
@@ -1052,7 +1077,7 @@ const ImageMapProLayout: React.FC = () => {
                         className={`flex items-center gap-1 px-2.5 py-1 rounded-[8px] text-[11px] border transition-colors ${
                           detectShape === s
                             ? "bg-[#2563EB] text-white border-[#2563EB]"
-                            : "bg-white text-[#4B5563] border-[#E5E7EB] hover:border-[#60A5FA]"
+                            : "bg-white dark:bg-gray-800 text-[#4B5563] dark:text-gray-400 border-[#E5E7EB] dark:border-gray-700 hover:border-[#60A5FA]"
                         }`}
                       >
                         {s === "rect" && <BsSquare className="w-3 h-3" />}
@@ -1083,7 +1108,7 @@ const ImageMapProLayout: React.FC = () => {
           className={`h-[38px] px-4 rounded-full text-sm font-medium flex items-center gap-1.5 border transition-colors ${
             preview
               ? "bg-[#2563EB] text-white border-[#2563EB]"
-              : "bg-white text-[#4B5563] border-[#E5E7EB] hover:border-[#60A5FA]"
+              : "bg-white dark:bg-gray-900 text-[#4B5563] dark:text-gray-400 border-[#E5E7EB] dark:border-gray-700 hover:border-[#60A5FA]"
           }`}
         >
           {preview ? <BsEyeSlash className="w-3.5 h-3.5" /> : <BsEye className="w-3.5 h-3.5" />}
@@ -1104,11 +1129,11 @@ const ImageMapProLayout: React.FC = () => {
           {exportOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setExportOpen(false)} />
-              <div className="absolute right-0 mt-2 w-52 bg-white rounded-[14px] border border-[#E5E7EB] shadow-lg p-1.5 z-50">
+              <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-900 rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 shadow-lg p-1.5 z-50">
                 <MenuItem icon={BsDownload} label="Download SVG" sub="Interactive, self-contained" onClick={exportSvg} />
                 <MenuItem icon={BsCodeSlash} label="Copy embed HTML" sub="Paste into any site" onClick={copyEmbed} />
                 <MenuItem icon={BsClipboard} label="Copy SVG markup" onClick={() => { copy(documentToSvg(docRef.current), "SVG"); setExportOpen(false); }} />
-                <div className="h-px bg-[#E5E7EB] my-1" />
+                <div className="h-px bg-[#E5E7EB] dark:bg-gray-700 my-1" />
                 <MenuItem icon={BsFiletypeJson} label="Export project (.json)" onClick={exportJson} />
                 <MenuItem icon={BsUpload} label="Import project (.json)" onClick={() => { importJsonRef.current?.click(); setExportOpen(false); }} />
               </div>
@@ -1121,9 +1146,9 @@ const ImageMapProLayout: React.FC = () => {
       <div className="flex-1 flex overflow-hidden">
         {/* Left: layers + projects */}
         {showSidebar && (
-          <aside className="w-[210px] shrink-0 border-r border-[#E5E7EB] bg-white flex flex-col overflow-hidden">
-            <div className="px-3 py-2.5 border-b border-[#E5E7EB] flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-[#4B5563]/60 uppercase tracking-wider">
+          <aside className="w-[210px] shrink-0 border-r border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 flex flex-col overflow-hidden">
+            <div className="px-3 py-2.5 border-b border-[#E5E7EB] dark:border-gray-700 flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-[#4B5563]/6 dark:text-gray-400/60 dark:text-gray-400 uppercase tracking-wider">
                 Layers
               </span>
               {marked.length >= 2 ? (
@@ -1134,24 +1159,24 @@ const ImageMapProLayout: React.FC = () => {
                   <BsCollection className="w-3 h-3" /> Group {marked.length}
                 </button>
               ) : (
-                <span className="text-[11px] text-[#4B5563]/40">{getActiveArtboard(doc).shapes.length}</span>
+                <span className="text-[11px] text-[#4B5563]/4 dark:text-gray-400/40 dark:text-gray-500 dark:text-gray-400">{getActiveArtboard(doc).shapes.length}</span>
               )}
             </div>
 
             {/* search */}
             <div className="px-2 pt-2">
               <div className="relative">
-                <BsSearch className="w-3 h-3 text-[#4B5563]/40 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <BsSearch className="w-3 h-3 text-[#4B5563]/40 dark:text-gray-400/40 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 <input
                   value={layerSearch}
                   onChange={(e) => setLayerSearch(e.target.value)}
                   placeholder="Search objects…"
-                  className="w-full rounded-[10px] border border-[#E5E7EB] bg-white pl-7 pr-7 py-1.5 text-xs text-[#0A0A0A] placeholder:text-[#4B5563]/40 focus:outline-none focus:border-[#60A5FA]"
+                  className="w-full rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-800 pl-7 pr-7 py-1.5 text-xs text-[#0A0A0A] dark:text-white placeholder:text-[#4B5563]/40 dark:text-gray-400/40 dark:placeholder-gray-500 focus:outline-none focus:border-[#60A5FA]"
                 />
                 {layerSearch && (
                   <button
                     onClick={() => setLayerSearch("")}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[#4B5563]/40 hover:text-[#4B5563]"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[#4B5563]/40 dark:text-gray-400/40 hover:text-[#4B5563] dark:text-gray-400"
                   >
                     <BsXLg className="w-2.5 h-2.5" />
                   </button>
@@ -1161,7 +1186,7 @@ const ImageMapProLayout: React.FC = () => {
 
             <div className="flex-1 overflow-y-auto p-1.5 space-y-0.5">
               {getActiveArtboard(doc).shapes.length === 0 && (
-                <p className="text-xs text-[#4B5563]/40 text-center px-3 py-6 leading-relaxed">
+                <p className="text-xs text-[#4B5563]/4 dark:text-gray-400/40 dark:text-gray-500 dark:text-gray-400 text-center px-3 py-6 leading-relaxed">
                   No shapes yet. Pick a tool above and draw on your image.
                 </p>
               )}
@@ -1190,17 +1215,17 @@ const ImageMapProLayout: React.FC = () => {
                       }}
                       className={`group flex items-center gap-2 px-2 py-1.5 rounded-[10px] cursor-pointer ${indent ? "ml-3" : ""} ${
                         active
-                          ? "bg-[#EFF6FF] text-[#2563EB]"
+                          ? "bg-[#EFF6FF] dark:bg-blue-900/30 text-[#2563EB]"
                           : isMarked
-                          ? "bg-[#EFF6FF]/60 text-[#2563EB] ring-1 ring-[#BFDBFE]"
-                          : "text-[#4B5563] hover:bg-[#F9FAFB]"
+                          ? "bg-[#EFF6FF]/6 dark:bg-blue-900/200 dark:bg-blue-900/20 text-[#2563EB] ring-1 ring-[#BFDBFE] dark:ring-gray-700"
+                          : "text-[#4B5563] dark:text-gray-400 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800"
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5 shrink-0" />
                       <span className="flex-1 text-xs truncate">{s.name}</span>
                       <button
                         onClick={(e) => { e.stopPropagation(); deleteShape(s.id); }}
-                        className="opacity-0 group-hover:opacity-100 text-[#4B5563]/50 hover:text-red-500"
+                        className="opacity-0 group-hover:opacity-100 text-[#4B5563]/50 dark:text-gray-400/50 hover:text-red-500"
                       >
                         <BsTrash className="w-3 h-3" />
                       </button>
@@ -1222,7 +1247,7 @@ const ImageMapProLayout: React.FC = () => {
                           onClick={() =>
                             setCollapsedGroups((c) => ({ ...c, [s.groupId!]: !c[s.groupId!] }))
                           }
-                          className="group flex items-center gap-1.5 px-2 py-1.5 rounded-[10px] cursor-pointer text-[#4B5563] hover:bg-[#F9FAFB]"
+                          className="group flex items-center gap-1.5 px-2 py-1.5 rounded-[10px] cursor-pointer text-[#4B5563] dark:text-gray-400 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800"
                         >
                           {collapsed ? (
                             <BsChevronRight className="w-2.5 h-2.5 shrink-0" />
@@ -1233,13 +1258,13 @@ const ImageMapProLayout: React.FC = () => {
                           <span className="flex-1 text-xs font-medium truncate">
                             Group
                           </span>
-                          <span className="text-[10px] text-[#4B5563]/40">
+                          <span className="text-[10px] text-[#4B5563]/4 dark:text-gray-400/40 dark:text-gray-500 dark:text-gray-400">
                             {members.length}
                           </span>
                           <button
                             title="Ungroup"
                             onClick={(e) => { e.stopPropagation(); ungroup(s.groupId!); }}
-                            className="opacity-0 group-hover:opacity-100 text-[#4B5563]/50 hover:text-[#2563EB]"
+                            className="opacity-0 group-hover:opacity-100 text-[#4B5563]/50 dark:text-gray-400/50 hover:text-[#2563EB]"
                           >
                             <BsXLg className="w-2.5 h-2.5" />
                           </button>
@@ -1256,17 +1281,17 @@ const ImageMapProLayout: React.FC = () => {
               })()}
             </div>
 
-            <div className="border-t border-[#E5E7EB] px-3 py-2.5 flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-[#4B5563]/60 uppercase tracking-wider">
+            <div className="border-t border-[#E5E7EB] dark:border-gray-700 px-3 py-2.5 flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-[#4B5563]/6 dark:text-gray-400/60 dark:text-gray-400 uppercase tracking-wider">
                 Projects
               </span>
-              <button onClick={newProject} title="New" className="text-[#4B5563]/60 hover:text-[#2563EB]">
+              <button onClick={newProject} title="New" className="text-[#4B5563]/6 dark:text-gray-400/60 dark:text-gray-500 dark:text-gray-400 hover:text-[#2563EB]">
                 <BsPlusLg className="w-3.5 h-3.5" />
               </button>
             </div>
             <div className="max-h-[28%] overflow-y-auto p-1.5 space-y-0.5">
               {sortedProjects.length === 0 && (
-                <p className="text-[11px] text-[#4B5563]/40 text-center px-2 py-2">
+                <p className="text-[11px] text-[#4B5563]/4 dark:text-gray-400/40 dark:text-gray-500 dark:text-gray-400 text-center px-2 py-2">
                   Saved projects appear here.
                 </p>
               )}
@@ -1274,14 +1299,14 @@ const ImageMapProLayout: React.FC = () => {
                 <div
                   key={p.id}
                   className={`group flex items-center gap-1.5 px-2 py-1.5 rounded-[10px] cursor-pointer ${
-                    p.id === doc.id ? "bg-[#EFF6FF] text-[#2563EB]" : "text-[#4B5563] hover:bg-[#F9FAFB]"
+                    p.id === doc.id ? "bg-[#EFF6FF] dark:bg-blue-900/30 text-[#2563EB]" : "text-[#4B5563] dark:text-gray-400 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800"
                   }`}
                   onClick={() => openProject(p)}
                 >
                   <span className="flex-1 text-xs truncate">{p.name}</span>
                   <button
                     onClick={(e) => { e.stopPropagation(); deleteProject(p.id); }}
-                    className="opacity-0 group-hover:opacity-100 text-[#4B5563]/50 hover:text-red-500"
+                    className="opacity-0 group-hover:opacity-100 text-[#4B5563]/50 dark:text-gray-400/50 hover:text-red-500"
                   >
                     <BsTrash className="w-3 h-3" />
                   </button>
@@ -1296,18 +1321,18 @@ const ImageMapProLayout: React.FC = () => {
           {!getActiveArtboard(doc).bg ? (
             <div className="absolute inset-0 bottom-9 flex items-center justify-center p-6">
               <div
-                className="w-full max-w-xl flex flex-col items-center justify-center rounded-[24px] border-2 border-dashed border-[#E5E7EB] bg-white/70 py-20 cursor-pointer hover:border-[#60A5FA] transition-colors"
+                className="w-full max-w-xl flex flex-col items-center justify-center rounded-[24px] border-2 border-dashed border-[#E5E7EB] dark:border-gray-700 bg-white/70 dark:bg-gray-800/50 py-20 cursor-pointer hover:border-[#60A5FA] transition-colors"
                 onClick={() => bgInputRef.current?.click()}
                 onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleBgFile(f); }}
                 onDragOver={(e) => e.preventDefault()}
               >
-                <div className="w-14 h-14 rounded-[18px] bg-[#EFF6FF] flex items-center justify-center mb-4">
+                <div className="w-14 h-14 rounded-[18px] bg-[#EFF6FF] dark:bg-blue-900/20 flex items-center justify-center mb-4">
                   <BsImage className="w-7 h-7 text-[#2563EB]/60" />
                 </div>
-                <p className="text-base font-semibold text-[#0A0A0A] mb-1">
+                <p className="text-base font-semibold text-[#0A0A0A] dark:text-white mb-1">
                   Drop an image to begin
                 </p>
-                <p className="text-sm text-[#4B5563]/55 mb-5">
+                <p className="text-sm text-[#4B5563]/5 dark:text-gray-400/55 dark:text-gray-400 mb-5">
                   Then draw clickable hotspots, add images, text & shapes.
                 </p>
                 <Button size="sm" className="gap-2">
@@ -1333,7 +1358,7 @@ const ImageMapProLayout: React.FC = () => {
           )}
 
           {/* Artboard tab switcher */}
-          <div className="absolute bottom-0 left-0 right-0 h-9 flex items-center gap-0.5 px-2 bg-white/90 backdrop-blur border-t border-[#E5E7EB] z-10 overflow-x-auto">
+          <div className="absolute bottom-0 left-0 right-0 h-9 flex items-center gap-0.5 px-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur border-t border-[#E5E7EB] dark:border-gray-700 z-10 overflow-x-auto">
             {doc.artboards.map((ab) => {
               const isActive = ab.id === doc.activeArtboard;
               return (
@@ -1348,7 +1373,7 @@ const ImageMapProLayout: React.FC = () => {
                         if (e.key === "Enter") { renameArtboard(ab.id, renameVal || ab.name); setRenamingAb(null); }
                         if (e.key === "Escape") setRenamingAb(null);
                       }}
-                      className="h-6 px-2 text-[11px] rounded-[6px] border border-[#60A5FA] outline-none bg-white min-w-[80px] max-w-[120px]"
+                      className="h-6 px-2 text-[11px] rounded-[6px] border border-[#60A5FA] outline-none bg-white dark:bg-gray-800 dark:text-white min-w-[80px] max-w-[120px]"
                     />
                   ) : (
                     <button
@@ -1357,7 +1382,7 @@ const ImageMapProLayout: React.FC = () => {
                       className={`h-6 px-2.5 rounded-[6px] text-[11px] font-medium transition-colors whitespace-nowrap ${
                         isActive
                           ? "bg-[#0A0A0A] text-white"
-                          : "text-[#4B5563] hover:bg-[#F3F4F6]"
+                          : "text-[#4B5563] dark:text-gray-400 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800"
                       }`}
                     >
                       {ab.name}
@@ -1378,7 +1403,7 @@ const ImageMapProLayout: React.FC = () => {
             <button
               onClick={addArtboard}
               title="New artboard"
-              className="h-6 w-6 rounded-[6px] flex items-center justify-center text-[#4B5563] hover:bg-[#F3F4F6] shrink-0 ml-1 text-base leading-none"
+              className="h-6 w-6 rounded-[6px] flex items-center justify-center text-[#4B5563] dark:text-gray-400 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800 shrink-0 ml-1 text-base leading-none"
             >
               +
             </button>
@@ -1386,7 +1411,7 @@ const ImageMapProLayout: React.FC = () => {
 
           {/* hint bar */}
           {getActiveArtboard(doc).bg && !preview && (
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur border border-[#E5E7EB] rounded-full px-4 py-1.5 text-[11px] text-[#4B5563]/70 shadow-sm pointer-events-none">
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-gray-900/95 backdrop-blur border border-[#E5E7EB] dark:border-gray-700 rounded-full px-4 py-1.5 text-[11px] text-[#4B5563]/70 dark:text-gray-400/70 shadow-sm pointer-events-none">
               {tool === "polygon"
                 ? "Click to add points · double-click or Enter to finish · Esc to cancel"
                 : tool === "select"
@@ -1398,12 +1423,12 @@ const ImageMapProLayout: React.FC = () => {
 
         {/* Right: properties / map options */}
         {showSidebar && (
-          <aside className="w-[280px] shrink-0 border-l border-[#E5E7EB] bg-[#FBFBFD] overflow-y-auto p-3">
-            <div className="flex items-center gap-1 p-1 mb-3 rounded-[12px] bg-[#F3F4F6] border border-[#E5E7EB]">
+          <aside className="w-[280px] shrink-0 border-l border-[#E5E7EB] dark:border-gray-700 bg-[#FBFBFD] dark:bg-gray-900 overflow-y-auto p-3">
+            <div className="flex items-center gap-1 p-1 mb-3 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 border border-[#E5E7EB] dark:border-gray-700">
               <button
                 onClick={() => setRightTab("props")}
                 className={`flex-1 py-1.5 rounded-[8px] text-xs font-medium transition-colors ${
-                  rightTab === "props" ? "bg-white text-[#0A0A0A] shadow-sm" : "text-[#4B5563]"
+                  rightTab === "props" ? "bg-white dark:bg-gray-700 text-[#0A0A0A] dark:text-white shadow-sm" : "text-[#4B5563] dark:text-gray-400"
                 }`}
               >
                 Properties
@@ -1411,7 +1436,7 @@ const ImageMapProLayout: React.FC = () => {
               <button
                 onClick={() => setRightTab("map")}
                 className={`flex-1 py-1.5 rounded-[8px] text-xs font-medium flex items-center justify-center gap-1.5 transition-colors ${
-                  rightTab === "map" ? "bg-white text-[#0A0A0A] shadow-sm" : "text-[#4B5563]"
+                  rightTab === "map" ? "bg-white dark:bg-gray-700 text-[#0A0A0A] dark:text-white shadow-sm" : "text-[#4B5563] dark:text-gray-400"
                 }`}
               >
                 <BsSliders className="w-3 h-3" /> Map
@@ -1449,7 +1474,7 @@ const ImageMapProLayout: React.FC = () => {
   );
 };
 
-function MenuItem({
+const MenuItem = React.memo(function MenuItem({
   icon: Icon,
   label,
   sub,
@@ -1463,15 +1488,15 @@ function MenuItem({
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-[10px] text-left hover:bg-[#F3F4F6]"
+      className="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-[10px] text-left hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800"
     >
-      <Icon className="w-4 h-4 mt-0.5 text-[#4B5563] shrink-0" />
+      <Icon className="w-4 h-4 mt-0.5 text-[#4B5563] dark:text-gray-400 shrink-0" />
       <div className="min-w-0">
-        <p className="text-xs font-medium text-[#0A0A0A]">{label}</p>
-        {sub && <p className="text-[10px] text-[#4B5563]/50 truncate">{sub}</p>}
+        <p className="text-xs font-medium text-[#0A0A0A] dark:text-white">{label}</p>
+        {sub && <p className="text-[10px] text-[#4B5563]/50 dark:text-gray-400/50 truncate">{sub}</p>}
       </div>
     </button>
   );
-}
+});
 
 export default ImageMapProLayout;
