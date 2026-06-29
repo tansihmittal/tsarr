@@ -26,7 +26,7 @@ const FramePicker: React.FC = () => {
                         onClick={() => updateData && updateData("selectedFrame", { name: frame.name, value: frame.value })}
                         className={`flex items-center gap-3 p-3 rounded-md border-2 cursor-pointer transition-all ${selectedFrame.value === frame.value
                             ? "border-blue-500 bg-blue-50 text-blue-600"
-                            : "border-[#E5E7EB] hover:border-gray-300 bg-white text-[#0A0A0A]"
+                            : "border-[#E5E7EB] dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-900 text-[#0A0A0A] dark:text-white"
                             }`}
                     >
                         <div className="text-xl">{frame.icon}</div>

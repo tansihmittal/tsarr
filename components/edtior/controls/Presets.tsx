@@ -49,7 +49,7 @@ const Presets: React.FC = () => {
 
   const LoadingBlock = ({ title }: { title: string }) => (
     <div className="h-[90px] flex items-center justify-center w-full">
-      <span className="text-[#0A0A0A] capitalize">{title}</span>
+      <span className="text-[#0A0A0A] dark:text-white capitalize">{title}</span>
     </div>
   );
 
@@ -57,7 +57,7 @@ const Presets: React.FC = () => {
     <div>
       <div className="h-[90px] relative cursor-pointer">{children}</div>
       <div className="flex items-center justify-center w-full">
-        <span className="bg-white px-4 py-2 text-[#0A0A0A] rounded-md capitalize text-center">
+        <span className="bg-white dark:bg-gray-900 px-4 py-2 text-[#0A0A0A] dark:text-white rounded-md capitalize text-center">
           {title}
         </span>
       </div>
@@ -69,8 +69,8 @@ const Presets: React.FC = () => {
   if (!currentUser) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-6 px-4 text-center">
-        <BsPerson className="text-3xl text-[#4B5563]/60" />
-        <p className="text-sm text-[#4B5563]">Sign in to save and load cloud presets</p>
+        <BsPerson className="text-3xl text-[#4B5563]/6 dark:text-gray-400/60 dark:text-gray-400/60" />
+        <p className="text-sm text-[#4B5563] dark:text-gray-400">Sign in to save and load cloud presets</p>
         <Button size="sm" onClick={openAuthModal}>
           Sign In
         </Button>
@@ -93,7 +93,7 @@ const Presets: React.FC = () => {
                     size="100%"
                   />
                   <button
-                    className="absolute bottom-2 right-2 bg-white p-2 rounded-md hover:scale-110 transition-transform"
+                    className="absolute bottom-2 right-2 bg-white dark:bg-gray-900 p-2 rounded-md hover:scale-110 transition-transform"
                     onClick={() => handleDelete(preset.id)}
                   >
                     <BsTrash3Fill className="text-red-500 text-lg" />

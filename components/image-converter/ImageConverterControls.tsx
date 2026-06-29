@@ -66,23 +66,23 @@ const ImageConverterControls: React.FC<Props> = ({ state, updateState, onImageUp
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <PanelHeading title="Image" />
-        <div className="p-4 border-b border-[#E5E7EB]/60">
+        <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
           <input ref={fileInputRef} type="file" accept={IMAGE_ACCEPT} onChange={handleFileChange} className="hidden" />
           <div className="grid grid-cols-2 gap-2 mb-3">
             <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-2"><BsUpload /> {state.originalImage ? "Change" : "Upload"}</Button>
             <Button variant="secondary" size="sm" onClick={handlePaste} className="gap-2"><BsClipboard /> Paste</Button>
           </div>
           {state.originalImage && (
-            <div className="flex items-center gap-3 p-3 bg-[#EFF6FF] rounded-[10px]">
+            <div className="flex items-center gap-3 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 rounded-[10px]">
               <img src={state.originalImage} alt="Preview" className="w-14 h-14 rounded-[10px] object-cover" />
               <div className="text-sm flex-1">
-                <div className="font-medium text-[#0A0A0A] flex items-center gap-2">
+                <div className="font-medium text-[#0A0A0A] dark:text-white flex items-center gap-2">
                   <BsFileEarmarkImage className="text-[#2563EB]" />
                   {state.originalFormat}
                 </div>
-                <div className="text-gray-500">{state.originalWidth} × {state.originalHeight}</div>
+                <div className="text-gray-500 dark:text-gray-400">{state.originalWidth} × {state.originalHeight}</div>
                 <div className="text-gray-400 text-xs">{formatSize(state.originalSize)}</div>
               </div>
             </div>
@@ -90,26 +90,26 @@ const ImageConverterControls: React.FC<Props> = ({ state, updateState, onImageUp
         </div>
 
         <PanelHeading title="Convert To" />
-        <div className="p-4 border-b border-[#E5E7EB]/60">
+        <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
           <div className="grid grid-cols-2 gap-2">
             {outputFormats.map((format) => (
               <button
                 key={format.id}
                 onClick={() => updateState({ outputFormat: format.id as ImageConverterState["outputFormat"] })}
-                className={`p-2.5 rounded-[10px] text-left transition-all ${state.outputFormat === format.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2" : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"}`}
+                className={`p-2.5 rounded-[10px] text-left transition-all ${state.outputFormat === format.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
               >
                 <div className="flex items-center gap-2">
                   <span className="text-base flex items-center">{format.icon}</span>
                   <div>
                     <div className="font-semibold text-sm">{format.name}</div>
-                    <div className={`text-[10px] ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500"}`}>{format.desc}</div>
+                    <div className={`text-[10px] ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>{format.desc}</div>
                   </div>
                 </div>
               </button>
             ))}
           </div>
           {state.originalImage && (
-            <p className="text-xs text-center mt-3 text-gray-500">
+            <p className="text-xs text-center mt-3 text-gray-500 dark:text-gray-400">
               {state.originalFormat} → {state.outputFormat.toUpperCase()}
             </p>
           )}
@@ -118,9 +118,9 @@ const ImageConverterControls: React.FC<Props> = ({ state, updateState, onImageUp
         {selectedFormat?.supportsQuality && (
           <>
             <PanelHeading title="Quality" />
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Quality</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Quality</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.quality}%</span>
               </div>
               <Slider min={10} max={100} value={[state.quality]} onValueChange={([v]) => updateState({ quality: v })} className="w-full mb-2" />
@@ -146,7 +146,7 @@ const ImageConverterControls: React.FC<Props> = ({ state, updateState, onImageUp
             Convert to {state.outputFormat.toUpperCase()}
           </Button>
           {state.originalImage && (
-            <p className="text-xs text-gray-500 mt-3 text-center">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 text-center">
               {state.originalFormat} → {state.outputFormat.toUpperCase()}
             </p>
           )}

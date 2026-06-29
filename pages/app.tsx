@@ -174,24 +174,24 @@ export default function AppHome() {
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Head>
 
-      <div className="min-h-screen bg-[#F9FAFB] pb-24 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+      <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-800/50 pb-24 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
         {/* Header */}
-        <header className="bg-white/95 backdrop-blur-lg border-b border-[#E5E7EB]/80 sticky top-0 z-50">
+        <header className="bg-white/95 backdrop-blur-lg border-b border-[#E5E7EB]/80 dark:border-gray-700/80 sticky top-0 z-50">
           <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-            <Link href="/" className="text-lg font-bold text-[#0A0A0A]">
+            <Link href="/" className="text-lg font-bold text-[#0A0A0A] dark:text-white">
               tsarr.in
             </Link>
 
             {/* Desktop Search */}
             <div className="hidden sm:flex flex-1 max-w-sm mx-6">
               <div className="relative w-full">
-                <BsSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4B5563] text-sm" />
+                <BsSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4B5563] dark:text-gray-400 text-sm" />
                 <Input
                   type="text"
                   placeholder="Search designs..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 bg-[#F9FAFB] rounded-[14px] text-sm focus:bg-white transition-all h-9"
+                  className="w-full pl-9 pr-4 bg-[#F9FAFB] dark:bg-gray-800 rounded-[14px] text-sm focus:bg-white dark:focus:bg-gray-800 transition-all h-9"
                 />
               </div>
             </div>
@@ -221,18 +221,18 @@ export default function AppHome() {
           {/* Mobile Search */}
           <div className="sm:hidden mb-5">
             <div className="relative">
-              <BsSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4B5563]" />
+              <BsSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4B5563] dark:text-gray-400" />
               <Input
                 type="text"
                 placeholder="Search designs..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-10 bg-white border border-[#E5E7EB] rounded-[14px] text-base h-12"
+                className="w-full pl-11 pr-10 bg-white dark:bg-gray-900 border border-[#E5E7EB] dark:border-gray-700 rounded-[14px] text-base h-12"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-[#4B5563] hover:text-[#0A0A0A]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:text-white"
                 >
                   <BsX className="text-lg" />
                 </button>
@@ -242,14 +242,14 @@ export default function AppHome() {
 
           {/* Welcome */}
           <div className="mb-6">
-            <h1 className="text-xl sm:text-2xl font-bold text-[#0A0A0A] mb-0.5">Welcome back</h1>
-            <p className="text-[#4B5563] text-sm sm:text-base">What will you create today?</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#0A0A0A] dark:text-white mb-0.5">Welcome back</h1>
+            <p className="text-[#4B5563] dark:text-gray-400 text-sm sm:text-base">What will you create today?</p>
           </div>
 
           {/* Quick Create - Mobile optimized horizontal scroll */}
           <section className="mb-8">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base font-semibold text-[#0A0A0A]">Create new</h2>
+              <h2 className="text-base font-semibold text-[#0A0A0A] dark:text-white">Create new</h2>
               <Link href="/tools" className="text-sm text-[#2563EB] hover:text-[#1D4ED8] flex items-center gap-1 font-medium">
                 All tools <BsArrowRight className="text-xs" />
               </Link>
@@ -263,7 +263,7 @@ export default function AppHome() {
                   <div
                     key={i}
                     onClick={() => handleToolClick(tool.slug, tool.href)}
-                    className="flex-shrink-0 w-[100px] sm:w-auto group flex flex-col items-center p-3 sm:p-4 bg-white rounded-[14px] border border-[#E5E7EB] hover:border-[#2563EB]/30 hover:shadow-md transition-all active:scale-95 cursor-pointer"
+                    className="flex-shrink-0 w-[100px] sm:w-auto group flex flex-col items-center p-3 sm:p-4 bg-white dark:bg-gray-900 rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB]/30 hover:shadow-md transition-all active:scale-95 cursor-pointer"
                   >
                     <div className={`w-11 h-11 sm:w-12 sm:h-12 ${tool.color} rounded-[14px] flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-sm relative`}>
                       <Icon className="text-white text-lg sm:text-xl" />
@@ -273,8 +273,8 @@ export default function AppHome() {
                         </div>
                       )}
                     </div>
-                    <span className="text-xs sm:text-sm font-medium text-[#0A0A0A] text-center">{tool.title}</span>
-                    <span className="text-[10px] sm:text-xs text-[#4B5563] text-center mt-0.5 hidden sm:block">{tool.desc}</span>
+                    <span className="text-xs sm:text-sm font-medium text-[#0A0A0A] dark:text-white text-center">{tool.title}</span>
+                    <span className="text-[10px] sm:text-xs text-[#4B5563] dark:text-gray-400 text-center mt-0.5 hidden sm:block">{tool.desc}</span>
                   </div>
                 );
               })}
@@ -285,7 +285,7 @@ export default function AppHome() {
           {!isLoading && recentProjects.length > 0 && !searchQuery && (
             <section className="mb-8">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-base font-semibold text-[#0A0A0A]">Recent</h2>
+                <h2 className="text-base font-semibold text-[#0A0A0A] dark:text-white">Recent</h2>
                 <Link href="/projects" className="text-sm text-[#2563EB] hover:text-[#1D4ED8] flex items-center gap-1 font-medium">
                   All projects <BsArrowRight className="text-xs" />
                 </Link>
@@ -314,14 +314,14 @@ export default function AppHome() {
           {/* Search Results */}
           {searchQuery && (
             <section>
-              <h2 className="text-base font-semibold text-[#0A0A0A] mb-3">
-                Results <span className="text-[#4B5563] font-normal">({filteredProjects.length})</span>
+              <h2 className="text-base font-semibold text-[#0A0A0A] dark:text-white mb-3">
+                Results <span className="text-[#4B5563] dark:text-gray-400 font-normal">({filteredProjects.length})</span>
               </h2>
               {filteredProjects.length === 0 ? (
-                <div className="text-center py-16 bg-white rounded-[20px] border border-[#E5E7EB]">
-                  <BsSearch className="text-4xl text-[#4B5563]/60 mx-auto mb-3" />
-                  <h3 className="font-medium text-[#0A0A0A] mb-1">No designs found</h3>
-                  <p className="text-sm text-[#4B5563]">Try a different search term</p>
+                <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-[20px] border border-[#E5E7EB] dark:border-gray-700">
+                  <BsSearch className="text-4xl text-[#4B5563]/60 dark:text-gray-400/60 mx-auto mb-3" />
+                  <h3 className="font-medium text-[#0A0A0A] dark:text-white mb-1">No designs found</h3>
+                  <p className="text-sm text-[#4B5563] dark:text-gray-400">Try a different search term</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
@@ -348,12 +348,12 @@ export default function AppHome() {
 
           {/* Empty State */}
           {!isLoading && allProjects.length === 0 && !searchQuery && (
-            <div className="text-center py-16 sm:py-20 bg-white rounded-[20px] border border-[#E5E7EB]">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#EFF6FF] rounded-[20px] flex items-center justify-center mx-auto mb-5">
+            <div className="text-center py-16 sm:py-20 bg-white dark:bg-gray-900 rounded-[20px] border border-[#E5E7EB] dark:border-gray-700">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#EFF6FF] dark:bg-blue-900/20 rounded-[20px] flex items-center justify-center mx-auto mb-5">
                 <BsImage className="text-2xl sm:text-3xl text-[#2563EB]" />
               </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-[#0A0A0A] mb-2">Create your first design</h3>
-              <p className="text-[#4B5563] mb-6 max-w-sm mx-auto text-sm sm:text-base px-4">
+              <h3 className="text-lg sm:text-xl font-semibold text-[#0A0A0A] dark:text-white mb-2">Create your first design</h3>
+              <p className="text-[#4B5563] dark:text-gray-400 mb-6 max-w-sm mx-auto text-sm sm:text-base px-4">
                 Choose a tool above to get started. Your projects will appear here.
               </p>
               <Button asChild className="inline-flex items-center gap-2 rounded-[14px] bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-95">
@@ -404,14 +404,14 @@ function ProjectCard({
   return (
     <Link
       href={`${typeRoutes[project.type]}?project=${project.id}`}
-      className="flex-shrink-0 w-[140px] sm:w-auto group relative bg-white rounded-[14px] overflow-hidden border border-[#E5E7EB] hover:shadow-lg hover:border-gray-300 transition-all active:scale-[0.98]"
+      className="flex-shrink-0 w-[140px] sm:w-auto group relative bg-white dark:bg-gray-900 rounded-[14px] overflow-hidden border border-[#E5E7EB] dark:border-gray-700 hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 transition-all active:scale-[0.98]"
     >
-      <div className="aspect-[4/3] bg-[#F9FAFB] relative overflow-hidden">
+      <div className="aspect-[4/3] bg-[#F9FAFB] dark:bg-gray-800 relative overflow-hidden">
         {project.thumbnail ? (
           <img src={project.thumbnail} alt={project.name} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <Icon className="text-2xl sm:text-3xl text-[#4B5563]/60" />
+            <Icon className="text-2xl sm:text-3xl text-[#4B5563]/60 dark:text-gray-400/60" />
           </div>
         )}
         <div className={`absolute top-2 left-2 w-5 h-5 sm:w-6 sm:h-6 ${colorClass} rounded-md flex items-center justify-center shadow-sm`}>
@@ -432,9 +432,9 @@ function ProjectCard({
             autoFocus
           />
         ) : (
-          <h3 className="font-medium text-[#0A0A0A] text-xs sm:text-sm truncate">{project.name}</h3>
+          <h3 className="font-medium text-[#0A0A0A] dark:text-white text-xs sm:text-sm truncate">{project.name}</h3>
         )}
-        <p className="text-[10px] sm:text-xs text-[#4B5563] mt-0.5">{formatDate(project.updatedAt)}</p>
+        <p className="text-[10px] sm:text-xs text-[#4B5563] dark:text-gray-400 mt-0.5">{formatDate(project.updatedAt)}</p>
       </div>
 
       <DropdownMenu
@@ -450,7 +450,7 @@ function ProjectCard({
             className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-[10px] opacity-0 group-hover:opacity-100 sm:transition-opacity hover:bg-white shadow-sm"
             style={{ opacity: menuOpen === project.id ? 1 : undefined }}
           >
-            <BsThreeDotsVertical className="text-[#4B5563] text-sm" />
+            <BsThreeDotsVertical className="text-[#4B5563] dark:text-gray-400 text-sm" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-[120px] rounded-[14px]">
@@ -458,13 +458,13 @@ function ProjectCard({
             onClick={(e) => handleRename(project.id, project.name, e as unknown as React.MouseEvent)}
             className="flex items-center gap-2 cursor-pointer"
           >
-            <BsPencil className="text-[#4B5563]" /> Rename
+            <BsPencil className="text-[#4B5563] dark:text-gray-400" /> Rename
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={(e) => handleDuplicate(project.id, e as unknown as React.MouseEvent)}
             className="flex items-center gap-2 cursor-pointer"
           >
-            <BsFiles className="text-[#4B5563]" /> Duplicate
+            <BsFiles className="text-[#4B5563] dark:text-gray-400" /> Duplicate
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem

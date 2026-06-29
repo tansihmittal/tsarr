@@ -14,8 +14,8 @@ const ControlTabButton: React.FC<Props> = ({ title, isActive, onClick, children 
     className={cn(
       "flex justify-center items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer",
       isActive
-        ? "bg-white shadow-sm text-[#0A0A0A]"
-        : "text-[#4B5563] hover:text-[#0A0A0A] hover:bg-white/60"
+        ? "bg-white dark:bg-gray-900 shadow-sm text-[#0A0A0A] dark:text-white"
+        : "text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:hover:text-white hover:bg-white/60"
     )}
     style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
   >

@@ -101,16 +101,16 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
       <Tabs defaultValue="ratio">
-      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] mb-3">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-3">
         <TabsTrigger value="ratio" className="gap-1.5 rounded-[10px] text-xs"><BiCrop className="w-3.5 h-3.5" /> Ratio</TabsTrigger>
         <TabsTrigger value="fit" className="gap-1.5 rounded-[10px] text-xs"><BiImage className="w-3.5 h-3.5" /> Fit</TabsTrigger>
         <TabsTrigger value="output" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Output</TabsTrigger>
       </TabsList>
 
-      <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         {/* Upload Section - Always visible */}
         <PanelHeading title="Image" />
-        <div className="p-4 border-b border-[#E5E7EB]">
+        <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
           <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/heic,image/gif,image/svg+xml" onChange={handleFileChange} className="hidden" />
           <div className="grid grid-cols-2 gap-2 mb-3">
             <Button onClick={() => fileInputRef.current?.click()} variant="secondary" size="sm" className="gap-2">
@@ -124,8 +124,8 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
             <div className="flex items-center gap-3">
               <img src={state.originalImage} alt="Preview" className="w-16 h-16 rounded-[10px] object-cover" />
               <div className="text-sm">
-                <div className="font-medium text-[#0A0A0A]">{state.originalWidth} × {state.originalHeight}</div>
-                <div className="text-gray-500">Original size</div>
+                <div className="font-medium text-[#0A0A0A] dark:text-white">{state.originalWidth} × {state.originalHeight}</div>
+                <div className="text-gray-500 dark:text-gray-400">Original size</div>
               </div>
             </div>
           )}
@@ -134,23 +134,23 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
         <TabsContent value="ratio">
           <div className="relative rounded-md">
             <PanelHeading title="Aspect Ratio" />
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-3 gap-2">
                 {aspectRatios.map((ratio) => (
                   <button
                     key={ratio.id}
                     onClick={() => updateState({ targetAspectRatio: { name: ratio.name, value: ratio.value } })}
-                    className={`p-3 rounded-[10px] text-center transition-all ${state.targetAspectRatio.name === ratio.name ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"}`}
+                    className={`p-3 rounded-[10px] text-center transition-all ${state.targetAspectRatio.name === ratio.name ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
                   >
                     <div className="font-semibold text-sm">{ratio.name}</div>
-                    <div className={`text-xs ${state.targetAspectRatio.name === ratio.name ? "text-white/70" : "text-gray-500"}`}>{ratio.desc}</div>
+                    <div className={`text-xs ${state.targetAspectRatio.name === ratio.name ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>{ratio.desc}</div>
                   </button>
                 ))}
               </div>
             </div>
 
             <PanelHeading title="Common Presets" />
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-2 gap-2">
                 <Button onClick={() => updateState({ targetAspectRatio: { name: "1:1", value: 1 } })} variant="secondary" size="sm">Instagram Post</Button>
                 <Button onClick={() => updateState({ targetAspectRatio: { name: "9:16", value: 9/16 } })} variant="secondary" size="sm">Story/Reel</Button>
@@ -162,30 +162,30 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
             </div>
 
             <PanelHeading title="Custom Ratio" />
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex gap-2 items-center">
                 <Input type="number" value={customWidth} onChange={(e) => setCustomWidth(e.target.value)} placeholder="W" className="h-9 text-sm w-20" min="1" />
-                <span className="text-gray-500">:</span>
+                <span className="text-gray-500 dark:text-gray-400">:</span>
                 <Input type="number" value={customHeight} onChange={(e) => setCustomHeight(e.target.value)} placeholder="H" className="h-9 text-sm w-20" min="1" />
                 <Button onClick={applyCustomRatio} size="sm">Apply</Button>
               </div>
-              <p className="text-xs text-gray-500 mt-2">Current: {state.targetAspectRatio.name}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Current: {state.targetAspectRatio.name}</p>
             </div>
           </div>
         </TabsContent>
         <TabsContent value="fit">
           <div className="relative rounded-md">
             <PanelHeading title="Fit Mode" />
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-2 gap-2">
                 {fitModes.map((mode) => (
                   <button
                     key={mode.id}
                     onClick={() => updateState({ fitMode: mode.id as AspectRatioState["fitMode"] })}
-                    className={`p-3 rounded-[10px] text-left transition-all ${state.fitMode === mode.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"}`}
+                    className={`p-3 rounded-[10px] text-left transition-all ${state.fitMode === mode.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
                   >
                     <div className="font-semibold text-sm">{mode.name}</div>
-                    <div className={`text-xs ${state.fitMode === mode.id ? "text-white/70" : "text-gray-500"}`}>{mode.desc}</div>
+                    <div className={`text-xs ${state.fitMode === mode.id ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>{mode.desc}</div>
                   </button>
                 ))}
               </div>
@@ -194,14 +194,14 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
             {(state.fitMode === "cover" || state.fitMode === "crop") && (
               <>
                 <PanelHeading title="Crop Position" />
-                <div className="p-4 border-b border-[#E5E7EB]">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs text-gray-500 font-medium">Horizontal</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Horizontal</span>
                     <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.cropPosition.x}%</span>
                   </div>
                   <Slider min={0} max={100} value={[state.cropPosition.x]} onValueChange={([v]) => updateState({ cropPosition: { ...state.cropPosition, x: v } })} className="w-full mb-4" />
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs text-gray-500 font-medium">Vertical</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Vertical</span>
                     <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.cropPosition.y}%</span>
                   </div>
                   <Slider min={0} max={100} value={[state.cropPosition.y]} onValueChange={([v]) => updateState({ cropPosition: { ...state.cropPosition, y: v } })} className="w-full" />
@@ -215,7 +215,7 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
                 <Control title="Type">
                   <div className="flex gap-1">
                     {(["solid", "blur", "transparent"] as const).map((type) => (
-                      <button key={type} onClick={() => updateState({ backgroundType: type })} className={`px-2 py-1 rounded text-xs capitalize ${state.backgroundType === type ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"}`}>{type}</button>
+                      <button key={type} onClick={() => updateState({ backgroundType: type })} className={`px-2 py-1 rounded text-xs capitalize ${state.backgroundType === type ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>{type}</button>
                     ))}
                   </div>
                 </Control>
@@ -238,14 +238,14 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
             {state.useCustomSize ? (
               <>
                 <PanelHeading title="Custom Output Size" />
-                <div className="p-4 border-b border-[#E5E7EB]">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="grid grid-cols-2 gap-3 mb-3">
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Width (px)</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400 block mb-1">Width (px)</label>
                       <Input type="number" value={state.customOutputWidth} onChange={(e) => updateState({ customOutputWidth: Number(e.target.value) })} className="h-9 text-sm w-full" min="1" max="8000" />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Height (px)</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400 block mb-1">Height (px)</label>
                       <Input type="number" value={state.customOutputHeight} onChange={(e) => updateState({ customOutputHeight: Number(e.target.value) })} className="h-9 text-sm w-full" min="1" max="8000" />
                     </div>
                   </div>
@@ -262,19 +262,19 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
             ) : (
               <>
                 <PanelHeading title="Output Scale" />
-                <div className="p-4 border-b border-[#E5E7EB]">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="flex flex-wrap gap-2">
                     {outputScales.map((scale) => (
                       <button
                         key={scale.id}
                         onClick={() => updateState({ outputScale: scale.value })}
-                        className={`px-4 py-2 rounded-[10px] font-medium transition-all ${state.outputScale === scale.value ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"}`}
+                        className={`px-4 py-2 rounded-[10px] font-medium transition-all ${state.outputScale === scale.value ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
                       >
                         {scale.name}
                       </button>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-500 mt-3">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
                     Output: ~{Math.round(800 * state.outputScale * (state.targetAspectRatio.value >= 1 ? 1 : state.targetAspectRatio.value))} × {Math.round(800 * state.outputScale / (state.targetAspectRatio.value >= 1 ? state.targetAspectRatio.value : 1))} px
                   </p>
                 </div>
@@ -282,16 +282,16 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
             )}
 
             <PanelHeading title="Format" />
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-3 gap-2">
                 {outputFormats.map((format) => (
                   <button
                     key={format.id}
                     onClick={() => updateState({ outputFormat: format.id as AspectRatioState["outputFormat"] })}
-                    className={`p-3 rounded-[10px] text-center transition-all ${state.outputFormat === format.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"}`}
+                    className={`p-3 rounded-[10px] text-center transition-all ${state.outputFormat === format.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
                   >
                     <div className="font-semibold text-sm">{format.name}</div>
-                    <div className={`text-xs ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500"}`}>{format.desc}</div>
+                    <div className={`text-xs ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>{format.desc}</div>
                   </button>
                 ))}
               </div>
@@ -300,9 +300,9 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
             {state.outputFormat !== "png" && (
               <>
                 <PanelHeading title="Quality" />
-                <div className="p-4 border-b border-[#E5E7EB]">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs text-gray-500 font-medium">Quality</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Quality</span>
                     <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.quality}%</span>
                   </div>
                   <Slider min={10} max={100} value={[state.quality]} onValueChange={([v]) => updateState({ quality: v })} className="w-full" />
@@ -311,7 +311,7 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
             )}
 
             <PanelHeading title="Export" />
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <Button
                 onClick={onExport}
                 disabled={!state.originalImage}
@@ -320,7 +320,7 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
                 <BsDownload className="text-lg" />
                 Export {state.outputFormat.toUpperCase()} {state.useCustomSize ? `(${state.customOutputWidth}×${state.customOutputHeight})` : `(${state.outputScale}x)`}
               </Button>
-              <p className="text-xs text-gray-500 mt-2 text-center">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
                 {state.useCustomSize
                   ? `${state.customOutputWidth} × ${state.customOutputHeight} px`
                   : `~${Math.round(800 * state.outputScale * (state.targetAspectRatio.value >= 1 ? 1 : state.targetAspectRatio.value))} × ${Math.round(800 * state.outputScale / (state.targetAspectRatio.value >= 1 ? state.targetAspectRatio.value : 1))} px`

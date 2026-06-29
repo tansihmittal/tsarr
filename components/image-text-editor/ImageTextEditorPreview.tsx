@@ -403,7 +403,7 @@ const ImageTextEditorPreview = ({
       {/* Canvas area */}
       <div
         ref={containerRef}
-        className="relative flex-1 min-h-[300px] sm:min-h-[400px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 border border-[#E5E7EB] overflow-hidden"
+        className="relative flex-1 min-h-[300px] sm:min-h-[400px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 dark:bg-gray-800/30 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden"
       >
         {state.image ? (
           <div className="relative p-6">
@@ -433,15 +433,15 @@ const ImageTextEditorPreview = ({
             {/* Processing overlay */}
             {state.isProcessing && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm rounded-[14px]">
-                <div className="bg-white p-5 rounded-[14px] shadow-2xl min-w-[240px]">
-                  <div className="h-2 bg-[#F9FAFB] rounded-full overflow-hidden mb-3">
+                <div className="bg-white dark:bg-gray-900 p-5 rounded-[14px] shadow-2xl min-w-[240px]">
+                  <div className="h-2 bg-[#F9FAFB] dark:bg-gray-800 rounded-full overflow-hidden mb-3">
                     <div
                       className="h-full bg-[#2563EB] rounded-full transition-all duration-300"
                       style={{ width: `${state.processingPercent}%` }}
                     />
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#0A0A0A]">{state.processingProgress}</span>
+                    <span className="text-[#0A0A0A] dark:text-white">{state.processingProgress}</span>
                     <span className="font-bold text-[#2563EB]">{state.processingPercent}%</span>
                   </div>
                 </div>
@@ -456,12 +456,12 @@ const ImageTextEditorPreview = ({
             )}
           </div>
         ) : (
-          <div className="p-8 bg-white rounded-[20px] shadow-xl max-w-md w-full">
+          <div className="p-8 bg-white dark:bg-gray-900 rounded-[20px] shadow-xl max-w-md w-full">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-[#0A0A0A] mb-2">
+              <h2 className="text-2xl font-bold text-[#0A0A0A] dark:text-white mb-2">
                 Magic Text Editor
               </h2>
-              <p className="text-gray-500 text-sm">
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
                 Edit any text in images seamlessly
               </p>
             </div>
@@ -475,7 +475,7 @@ const ImageTextEditorPreview = ({
               </div>
               <input type="file" hidden accept={IMAGE_ACCEPT} id="image-upload-main" onChange={handleImageUpload} />
               <div className="text-center">
-                <p className="font-medium text-gray-700">
+                <p className="font-medium text-gray-700 dark:text-gray-200">
                   <span className="text-[#2563EB]">Click to upload</span> or drag & drop
                 </p>
                 <p className="text-xs text-gray-400 mt-1">

@@ -35,9 +35,9 @@ const ClipboardSaverControls: React.FC<Props> = ({
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <ControlPanelHeading title="Output Format" />
-        <div className="p-4 border-b border-[#E5E7EB]/60">
+        <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
           <div className="grid grid-cols-2 gap-2">
             {formats.map((format) => (
               <button
@@ -46,11 +46,11 @@ const ClipboardSaverControls: React.FC<Props> = ({
                 className={`p-3 rounded-[10px] text-left transition-all ${
                   outputFormat === format.id
                     ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2"
-                    : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"
+                    : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                 }`}
               >
                 <div className="font-semibold text-sm">{format.name}</div>
-                <div className={`text-xs ${outputFormat === format.id ? "text-white/70" : "text-gray-500"}`}>
+                <div className={`text-xs ${outputFormat === format.id ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>
                   {format.desc}
                 </div>
               </button>
@@ -61,9 +61,9 @@ const ClipboardSaverControls: React.FC<Props> = ({
         {selectedFormat?.supportsQuality && (
           <>
             <ControlPanelHeading title="Quality" />
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Quality</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Quality</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{quality}%</span>
               </div>
               <Slider
@@ -90,7 +90,7 @@ const ClipboardSaverControls: React.FC<Props> = ({
         )}
 
         <ControlPanelHeading title="Export" />
-        <div className="p-4 border-b border-[#E5E7EB]/60">
+        <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
           <Button
             onClick={onDownload}
             disabled={!hasImage}

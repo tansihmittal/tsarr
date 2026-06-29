@@ -323,20 +323,20 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
     >
       <Tabs defaultValue="code">
       {/* Top Buttons Container - Code, Style, Presets */}
-      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] mb-3">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-3">
         <TabsTrigger value="code" className="gap-1.5 rounded-[10px] text-xs"><BiCode className="w-3.5 h-3.5" /> Code</TabsTrigger>
         <TabsTrigger value="style" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Style</TabsTrigger>
         <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
       </TabsList>
 
       {/* Panel Content */}
-      <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <TabsContent value="code">
           <div className="p-4">
             <textarea
               value={state.code}
               onChange={(e) => updateState("code", e.target.value)}
-              className="w-full h-[calc(100vh-320px)] p-4 font-mono text-sm bg-[#F9FAFB] rounded-[10px] border-2 border-[#E5E7EB] focus:border-[#2563EB] focus:outline-none resize-none"
+              className="w-full h-[calc(100vh-320px)] p-4 font-mono text-sm bg-[#F9FAFB] dark:bg-gray-800/50 rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 focus:border-[#2563EB] focus:outline-none resize-none"
               placeholder="Paste your code here..."
               spellCheck={false}
             />
@@ -390,9 +390,9 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             </Control>
 
             {/* Font Size */}
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-[#4B5563] font-medium">Font Size</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Font Size</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.fontSize}px
                 </span>
@@ -477,15 +477,15 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             </Control>
 
             {/* Shadow - Grid like screenshot editor */}
-            <div className="py-3 px-4 border-b border-[#E5E7EB]">
-              <span className="text-[#0A0A0A] font-medium block mb-2">Shadow</span>
+            <div className="py-3 px-4 border-b border-[#E5E7EB] dark:border-gray-700">
+              <span className="text-[#0A0A0A] dark:text-white font-medium block mb-2">Shadow</span>
               <div className="grid grid-cols-3 gap-2">
                 {boxShadows.map((shadow) => (
                   <button
                     key={shadow.id}
                     onClick={() => updateState("shadow", shadow.value)}
                     className={`py-2 px-3 rounded-[10px] text-xs font-medium transition-all ${
-                      state.shadow === shadow.value ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"
+                      state.shadow === shadow.value ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                     }`}
                   >
                     {shadow.name}
@@ -495,9 +495,9 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             </div>
 
             {/* Scale */}
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-[#4B5563] font-medium">Scale</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Scale</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.scale}
                 </span>
@@ -512,9 +512,9 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             </div>
 
             {/* Border Radius */}
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-[#4B5563] font-medium">Border Radius</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Border Radius</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.borderRadius}
                 </span>
@@ -528,9 +528,9 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             </div>
 
             {/* Padding */}
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-[#4B5563] font-medium">Padding</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Padding</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.padding}
                 </span>
@@ -550,8 +550,8 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
               <div className="flex gap-1">
                 {tiltDirectionArray.map((dir) => (
                   <span
-                    className={`text-[#0A0A0A] h-8 w-8 rounded-[4px] flex justify-center items-center border-2 border-[#E5E7EB] cursor-pointer hover:bg-[#F9FAFB] ${
-                      state.tilt.name === dir.name && "bg-[#F9FAFB]"
+                    className={`text-[#0A0A0A] dark:text-white h-8 w-8 rounded-[4px] flex justify-center items-center border-2 border-[#E5E7EB] dark:border-gray-700 cursor-pointer hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 ${
+                      state.tilt.name === dir.name && "bg-[#F9FAFB] dark:bg-gray-800"
                     }`}
                     key={dir.id}
                     onClick={() => updateState("tilt", { name: dir.name, value: dir.value })}
@@ -563,9 +563,9 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             </Control>
 
             {/* Left */}
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-[#4B5563] font-medium">Left</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Left</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.left}
                 </span>
@@ -580,9 +580,9 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             </div>
 
             {/* Top */}
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-[#4B5563] font-medium">Top</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Top</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.top}
                 </span>
@@ -597,9 +597,9 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             </div>
 
             {/* Rotate */}
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-[#4B5563] font-medium">Rotate</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Rotate</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.rotate}°
                 </span>
@@ -621,10 +621,10 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             <PanelHeading title="Background Options" />
 
             {/* Background */}
-            <div className="py-3 px-4 border-b border-[#E5E7EB]">
-              <span className="text-[#0A0A0A] block mb-2">Background</span>
+            <div className="py-3 px-4 border-b border-[#E5E7EB] dark:border-gray-700">
+              <span className="text-[#0A0A0A] dark:text-white block mb-2">Background</span>
               <div
-                className="w-full h-12 rounded-[10px] border-2 border-[#E5E7EB] cursor-pointer hover:border-[#2563EB] transition-all mb-3"
+                className="w-full h-12 rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 cursor-pointer hover:border-[#2563EB] transition-all mb-3"
                 style={{ background: state.background.background }}
                 onClick={() => setShowBgPicker(!showBgPicker)}
               />
@@ -640,9 +640,9 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             </div>
 
             {/* Canvas Roundness */}
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-[#4B5563] font-medium">Roundness</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Roundness</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.canvasRoundness}
                 </span>
@@ -706,7 +706,7 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
                     className={`px-3 py-1 rounded text-xs capitalize ${
                       state.windowStyle === style
                         ? "bg-[#2563EB] text-white"
-                        : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"
+                        : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                     }`}
                   >
                     {style}
@@ -744,7 +744,7 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
                     className={`px-3 py-1 rounded text-xs capitalize ${
                       state.windowBackground === bg
                         ? "bg-[#2563EB] text-white"
-                        : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"
+                        : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                     }`}
                   >
                     {bg}
@@ -780,7 +780,7 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
                     className={`px-3 py-1 rounded text-xs capitalize ${
                       state.borderStyle === border.id
                         ? "bg-[#2563EB] text-white"
-                        : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"
+                        : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                     }`}
                   >
                     {border.name}
@@ -799,9 +799,9 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
 
             {/* Reflection Opacity - only show when reflection is enabled */}
             {state.reflection && (
-              <div className="p-4 border-b border-[#E5E7EB]">
+              <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                 <div className="flex justify-between items-center mb-1.5">
-                  <span className="text-xs text-[#4B5563] font-medium">Reflection Opacity</span>
+                  <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Reflection Opacity</span>
                   <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                     {Math.round(state.reflectionOpacity * 100)}%
                   </span>
@@ -841,8 +841,8 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
         <TabsContent value="presets">
           <div className="p-4">
             {/* Save Custom Preset */}
-            <div className="mb-4 p-3 bg-[#EFF6FF] rounded-[10px]">
-              <p className="text-xs text-[#4B5563] mb-2">Save current style as preset</p>
+            <div className="mb-4 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 rounded-[10px]">
+              <p className="text-xs text-[#4B5563] dark:text-gray-400 mb-2">Save current style as preset</p>
               <div className="flex gap-2">
                 <Input
                   type="text"
@@ -859,20 +859,20 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             {/* Custom Presets */}
             {customPresets.length > 0 && (
               <div className="mb-4">
-                <p className="text-xs text-[#4B5563] mb-2 font-medium">Your Presets</p>
+                <p className="text-xs text-[#4B5563] dark:text-gray-400 mb-2 font-medium">Your Presets</p>
                 <div className="grid grid-cols-2 gap-3">
                   {customPresets.map((preset) => (
                     <div key={preset.id} className="group relative">
                       <button
                         onClick={() => applyCustomPreset(preset.data)}
-                        className="w-full overflow-hidden rounded-[10px] border-2 border-[#E5E7EB] hover:border-[#2563EB] transition-all"
+                        className="w-full overflow-hidden rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB] transition-all"
                       >
                         <div
                           className="h-16 w-full"
                           style={{ background: preset.data.background.background }}
                         />
-                        <div className="p-2 bg-white text-center">
-                          <span className="text-xs font-medium text-[#0A0A0A]">{preset.name}</span>
+                        <div className="p-2 bg-white dark:bg-gray-900 text-center">
+                          <span className="text-xs font-medium text-[#0A0A0A] dark:text-white">{preset.name}</span>
                         </div>
                       </button>
                       <button
@@ -888,13 +888,13 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             )}
 
             {/* Default Presets */}
-            <p className="text-xs text-[#4B5563] mb-2 font-medium">Default Presets</p>
+            <p className="text-xs text-[#4B5563] dark:text-gray-400 mb-2 font-medium">Default Presets</p>
             <div className="grid grid-cols-2 gap-3">
               {presets.map((preset) => (
                 <button
                   key={preset.id}
                   onClick={() => applyPreset(preset)}
-                  className="group relative overflow-hidden rounded-[10px] border-2 border-[#E5E7EB] hover:border-[#2563EB] transition-all"
+                  className="group relative overflow-hidden rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB] transition-all"
                 >
                   <div
                     className="h-20 w-full"
@@ -910,8 +910,8 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
                       />
                     </div>
                   </div>
-                  <div className="p-2 bg-white text-center">
-                    <span className="text-xs font-medium text-[#0A0A0A]">{preset.name}</span>
+                  <div className="p-2 bg-white dark:bg-gray-900 text-center">
+                    <span className="text-xs font-medium text-[#0A0A0A] dark:text-white">{preset.name}</span>
                   </div>
                 </button>
               ))}

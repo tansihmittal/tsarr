@@ -22,9 +22,9 @@ interface Props {
 }
 
 const labelCls =
-  "text-[11px] font-semibold text-[#4B5563]/60 uppercase tracking-wider";
+  "text-[11px] font-semibold text-[#4B5563]/60 dark:text-gray-400/60 uppercase tracking-wider";
 const fieldCls =
-  "w-full rounded-[10px] border border-[#E5E7EB] bg-white px-2.5 py-1.5 text-xs text-[#0A0A0A] placeholder:text-[#4B5563]/40 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/25 focus:border-[#60A5FA]";
+  "w-full rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-800 px-2.5 py-1.5 text-xs dark:text-white text-[#0A0A0A] dark:text-white placeholder:text-[#4B5563]/40 dark:text-gray-400/40 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/25 focus:border-[#60A5FA]";
 
 function Section({
   title,
@@ -34,7 +34,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-[14px] border border-[#E5E7EB] p-3 space-y-2.5">
+    <div className="bg-white dark:bg-gray-900 rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 p-3 space-y-2.5">
       <p className={labelCls}>{title}</p>
       {children}
     </div>
@@ -53,19 +53,19 @@ function ColorRow({
   const safe = /^#[0-9a-fA-F]{6}$/.test(value) ? value : "#2563EB";
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className="text-xs text-[#4B5563]/80">{label}</span>
+      <span className="text-xs text-[#4B5563]/80 dark:text-gray-400/80">{label}</span>
       <div className="flex items-center gap-1.5">
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-[78px] rounded-[8px] border border-[#E5E7EB] bg-white px-2 py-1 text-[11px] font-mono text-[#0A0A0A] focus:outline-none focus:border-[#60A5FA]"
+          className="w-[78px] rounded-[8px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-1 text-[11px] dark:text-white font-mono text-[#0A0A0A] dark:text-white focus:outline-none focus:border-[#60A5FA]"
         />
         <input
           type="color"
           value={safe}
           onChange={(e) => onChange(e.target.value)}
-          className="w-7 h-7 rounded-[8px] border border-[#E5E7EB] bg-white p-0.5 cursor-pointer"
+          className="w-7 h-7 rounded-[8px] border border-[#E5E7EB] dark:border-gray-700 bg-white p-0.5 cursor-pointer"
         />
       </div>
     </div>
@@ -83,7 +83,7 @@ function ToggleRow({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-xs text-[#4B5563]/80">{label}</span>
+      <span className="text-xs text-[#4B5563]/80 dark:text-gray-400/80">{label}</span>
       <Switch checked={checked} onCheckedChange={onChange} />
     </div>
   );
@@ -109,8 +109,8 @@ function RangeRow({
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-[#4B5563]/80">{label}</span>
-        <span className="text-[11px] font-mono text-[#4B5563]/60">
+        <span className="text-xs text-[#4B5563]/80 dark:text-gray-400/80">{label}</span>
+        <span className="text-[11px] font-mono text-[#4B5563]/60 dark:text-gray-400/60">
           {value}
           {suffix || ""}
         </span>
@@ -138,11 +138,11 @@ const ImapProperties: React.FC<Props> = ({
   if (!shape) {
     return (
       <div className="flex flex-col items-center justify-center text-center py-10 px-4">
-        <div className="w-10 h-10 rounded-full bg-[#EFF6FF] flex items-center justify-center mb-3">
+        <div className="w-10 h-10 rounded-full bg-[#EFF6FF] dark:bg-blue-900/20 flex items-center justify-center mb-3">
           <BsLink45Deg className="w-5 h-5 text-[#2563EB]/50" />
         </div>
-        <p className="text-sm text-[#4B5563]/70 font-medium">No selection</p>
-        <p className="text-xs text-[#4B5563]/45 mt-1">
+        <p className="text-sm text-[#4B5563]/70 dark:text-gray-400/70 font-medium">No selection</p>
+        <p className="text-xs text-[#4B5563]/45 dark:text-gray-400/45 mt-1">
           Pick a tool and draw on the image, or click a shape to edit it.
         </p>
       </div>
@@ -160,19 +160,19 @@ const ImapProperties: React.FC<Props> = ({
           value={s.name}
           onChange={(e) => onUpdate(s.id, { name: e.target.value }, false)}
           onBlur={(e) => onUpdate(s.id, { name: e.target.value }, true)}
-          className="flex-1 rounded-[10px] border border-[#E5E7EB] bg-white px-2.5 py-1.5 text-sm font-medium text-[#0A0A0A] focus:outline-none focus:border-[#60A5FA]"
+          className="flex-1 rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-800 px-2.5 py-1.5 text-sm font-medium text-[#0A0A0A] dark:text-white focus:outline-none focus:border-[#60A5FA]"
         />
         <button
           title="Bring forward"
           onClick={() => onReorder(s.id, "front")}
-          className="w-8 h-8 rounded-[10px] border border-[#E5E7EB] flex items-center justify-center text-[#4B5563] hover:bg-[#F9FAFB]"
+          className="w-8 h-8 rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 flex items-center justify-center text-[#4B5563] dark:text-gray-400 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800"
         >
           <BsArrowUp className="w-3.5 h-3.5" />
         </button>
         <button
           title="Send backward"
           onClick={() => onReorder(s.id, "back")}
-          className="w-8 h-8 rounded-[10px] border border-[#E5E7EB] flex items-center justify-center text-[#4B5563] hover:bg-[#F9FAFB]"
+          className="w-8 h-8 rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 flex items-center justify-center text-[#4B5563] dark:text-gray-400 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800"
         >
           <BsArrowDown className="w-3.5 h-3.5" />
         </button>
@@ -205,7 +205,7 @@ const ImapProperties: React.FC<Props> = ({
                 className={`flex-1 py-1.5 rounded-[8px] text-[11px] capitalize border ${
                   (s.textAlign || "start") === a
                     ? "bg-[#0A0A0A] text-white border-[#0A0A0A]"
-                    : "bg-white text-[#4B5563] border-[#E5E7EB] hover:border-[#60A5FA]"
+                    : "bg-white dark:bg-gray-800 text-[#4B5563] dark:text-gray-400 border-[#E5E7EB] dark:border-gray-700 hover:border-[#60A5FA]"
                 }`}
               >
                 {a === "start" ? "Left" : a === "middle" ? "Center" : "Right"}
@@ -220,7 +220,7 @@ const ImapProperties: React.FC<Props> = ({
         <Section title="Image">
           <button
             onClick={() => onReplaceImage(s.id)}
-            className="w-full flex items-center justify-center gap-2 py-2 rounded-[10px] border border-[#E5E7EB] bg-white text-xs font-medium text-[#4B5563] hover:border-[#60A5FA]"
+            className="w-full flex items-center justify-center gap-2 py-2 rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-800 text-xs font-medium text-[#4B5563] dark:text-gray-400 hover:border-[#60A5FA]"
           >
             <BsImage className="w-3.5 h-3.5" />
             Replace image
@@ -232,7 +232,7 @@ const ImapProperties: React.FC<Props> = ({
       {s.type === "pin" && (
         <Section title="Marker">
           <div>
-            <label className="text-xs text-[#4B5563]/80 block mb-1">
+            <label className="text-xs text-[#4B5563]/80 dark:text-gray-400/80 block mb-1">
               Label (number, letter or emoji)
             </label>
             <input
@@ -252,7 +252,7 @@ const ImapProperties: React.FC<Props> = ({
       {/* interactivity */}
       <Section title="Interactivity">
         <div>
-          <label className="text-xs text-[#4B5563]/80 block mb-1.5">
+          <label className="text-xs text-[#4B5563]/80 dark:text-gray-400/80 block mb-1.5">
             On click / hover
           </label>
           <div className="flex gap-1.5">
@@ -263,7 +263,7 @@ const ImapProperties: React.FC<Props> = ({
                 className={`flex-1 py-1.5 rounded-[8px] text-[11px] capitalize border ${
                   (s.action || "link") === a
                     ? "bg-[#0A0A0A] text-white border-[#0A0A0A]"
-                    : "bg-white text-[#4B5563] border-[#E5E7EB] hover:border-[#60A5FA]"
+                    : "bg-white dark:bg-gray-800 text-[#4B5563] dark:text-gray-400 border-[#E5E7EB] dark:border-gray-700 hover:border-[#60A5FA]"
                 }`}
               >
                 {a === "link" ? "Open link" : a === "tooltip" ? "Tooltip" : "None"}
@@ -272,7 +272,7 @@ const ImapProperties: React.FC<Props> = ({
           </div>
         </div>
         <div>
-          <label className="text-xs text-[#4B5563]/80 block mb-1">
+          <label className="text-xs text-[#4B5563]/80 dark:text-gray-400/80 block mb-1">
             Tooltip title
           </label>
           <input
@@ -284,7 +284,7 @@ const ImapProperties: React.FC<Props> = ({
           />
         </div>
         <div>
-          <label className="text-xs text-[#4B5563]/80 block mb-1">
+          <label className="text-xs text-[#4B5563]/80 dark:text-gray-400/80 block mb-1">
             Description
           </label>
           <Textarea
@@ -301,14 +301,14 @@ const ImapProperties: React.FC<Props> = ({
         {(s.title || s.description) && (s.action ?? "link") !== "none" && (
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-xs text-[#4B5563]/80 block mb-1">
+              <label className="text-xs text-[#4B5563]/80 dark:text-gray-400/80 block mb-1">
                 Tooltip at
               </label>
               <Select
                 value={s.tooltipPosition || "auto"}
                 onValueChange={(v) => set({ tooltipPosition: v as any })}
               >
-                <SelectTrigger className="h-8 text-xs bg-white border-[#E5E7EB]">
+                <SelectTrigger className="h-8 text-xs bg-white dark:bg-gray-800 border-[#E5E7EB] dark:border-gray-700">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -319,14 +319,14 @@ const ImapProperties: React.FC<Props> = ({
               </Select>
             </div>
             <div>
-              <label className="text-xs text-[#4B5563]/80 block mb-1">
+              <label className="text-xs text-[#4B5563]/80 dark:text-gray-400/80 block mb-1">
                 Opens on
               </label>
               <Select
                 value={s.tooltipTrigger || "hover"}
                 onValueChange={(v) => set({ tooltipTrigger: v as any })}
               >
-                <SelectTrigger className="h-8 text-xs bg-white border-[#E5E7EB]">
+                <SelectTrigger className="h-8 text-xs bg-white dark:bg-gray-800 border-[#E5E7EB] dark:border-gray-700">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -340,7 +340,7 @@ const ImapProperties: React.FC<Props> = ({
         {(s.action ?? "link") === "link" && (
           <>
             <div>
-              <label className="text-xs text-[#4B5563]/80 block mb-1">Link URL</label>
+              <label className="text-xs text-[#4B5563]/80 dark:text-gray-400/80 block mb-1">Link URL</label>
               <input
                 value={s.link || ""}
                 onChange={(e) => onUpdate(s.id, { link: e.target.value }, false)}
@@ -350,12 +350,12 @@ const ImapProperties: React.FC<Props> = ({
               />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-[#4B5563]/80">Open link in</span>
+              <span className="text-xs text-[#4B5563]/80 dark:text-gray-400/80">Open link in</span>
               <Select
                 value={s.linkTarget || "_blank"}
                 onValueChange={(v) => set({ linkTarget: v as any })}
               >
-                <SelectTrigger className="h-8 text-xs bg-white border-[#E5E7EB] w-[110px]">
+                <SelectTrigger className="h-8 text-xs bg-white dark:bg-gray-800 border-[#E5E7EB] dark:border-gray-700 w-[110px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -456,14 +456,14 @@ const ImapProperties: React.FC<Props> = ({
                 className={`flex-1 py-1.5 rounded-[8px] text-[11px] capitalize border ${
                   (s.animation || "none") === a
                     ? "bg-[#0A0A0A] text-white border-[#0A0A0A]"
-                    : "bg-white text-[#4B5563] border-[#E5E7EB] hover:border-[#60A5FA]"
+                    : "bg-white dark:bg-gray-800 text-[#4B5563] dark:text-gray-400 border-[#E5E7EB] dark:border-gray-700 hover:border-[#60A5FA]"
                 }`}
               >
                 {a}
               </button>
             ))}
           </div>
-          <p className="text-[11px] text-[#4B5563]/45">
+          <p className="text-[11px] text-[#4B5563]/45 dark:text-gray-400/45">
             Plays in Preview and exports — draws attention to the spot.
           </p>
         </Section>
@@ -511,14 +511,14 @@ const ImapProperties: React.FC<Props> = ({
       <div className="flex gap-2">
         <button
           onClick={() => onDuplicate(s.id)}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[10px] border border-[#E5E7EB] bg-white text-xs font-medium text-[#4B5563] hover:border-[#60A5FA]"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-800 text-xs font-medium text-[#4B5563] dark:text-gray-400 hover:border-[#60A5FA]"
         >
           <BsFiles className="w-3.5 h-3.5" />
           Duplicate
         </button>
         <button
           onClick={() => onDelete(s.id)}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[10px] border border-red-200 bg-white text-xs font-medium text-red-500 hover:bg-red-50"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[10px] border border-red-200 dark:border-red-900/50 bg-white dark:bg-gray-800 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
         >
           <BsTrash className="w-3.5 h-3.5" />
           Delete

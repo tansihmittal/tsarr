@@ -62,6 +62,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 ChartJS.register(
   CategoryScale, LinearScale, PointElement, LineElement, BarElement,
@@ -167,11 +168,11 @@ const HeatmapChart: React.FC<{ data: any; options: any; datasets: DataSet[]; lab
       <div className="grid gap-1" style={{ gridTemplateColumns: `auto repeat(${labels.length}, 1fr)` }}>
         <div></div>
         {labels.map((label, i) => (
-          <div key={i} className="text-xs text-center font-medium text-gray-600 px-2">{label}</div>
+          <div key={i} className="text-xs text-center font-medium text-gray-600 dark:text-gray-300 px-2">{label}</div>
         ))}
         {datasets.map((ds, dsIndex) => (
           <>
-            <div key={`label-${dsIndex}`} className="text-xs font-medium text-gray-600 pr-2 flex items-center">{ds.name}</div>
+            <div key={`label-${dsIndex}`} className="text-xs font-medium text-gray-600 dark:text-gray-300 pr-2 flex items-center">{ds.name}</div>
             {ds.data.map((value, i) => (
               <div
                 key={`${dsIndex}-${i}`}
@@ -185,7 +186,7 @@ const HeatmapChart: React.FC<{ data: any; options: any; datasets: DataSet[]; lab
           </>
         ))}
       </div>
-      <div className="flex items-center gap-2 mt-4 text-xs text-gray-500">
+      <div className="flex items-center gap-2 mt-4 text-xs text-gray-500 dark:text-gray-400">
         <span>Low</span>
         <div className="flex gap-0.5">
           <div className="w-6 h-3 bg-green-500 rounded-l"></div>
@@ -318,7 +319,7 @@ const RadialBarChart: React.FC<{ datasets: DataSet[]; labels: string[] }> = ({ d
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <div className="text-2xl font-bold">{data[0]}%</div>
-            <div className="text-xs text-gray-500">{labels[0]}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">{labels[0]}</div>
           </div>
         </div>
       </div>
@@ -377,7 +378,7 @@ const GaugeChart: React.FC<{ datasets: DataSet[]; title: string }> = ({ datasets
       </svg>
       <div className="text-center mt-2">
         <div className="text-3xl font-bold" style={{ color }}>{value}</div>
-        <div className="text-sm text-gray-500">{title}</div>
+        <div className="text-sm text-gray-500 dark:text-gray-400">{title}</div>
       </div>
     </div>
   );
@@ -420,7 +421,7 @@ const SolidGaugeChart: React.FC<{ datasets: DataSet[]; title: string }> = ({ dat
       </svg>
       <div className="absolute flex flex-col items-center justify-center">
         <div className="text-4xl font-bold" style={{ color }}>{value}%</div>
-        <div className="text-sm text-gray-500">{title}</div>
+        <div className="text-sm text-gray-500 dark:text-gray-400">{title}</div>
       </div>
     </div>
   );
@@ -442,7 +443,6 @@ const ChartMakerLayout: React.FC = () => {
   const [animated, setAnimated] = useState(true);
   const [padding, setPadding] = useState(40);
   const [borderRadius, setBorderRadius] = useState(16);
-  const [activeTab, setActiveTab] = useState<"data" | "style" | "presets">("data");
   const [customPresets, setCustomPresets] = useState<ChartPreset[]>([]);
   const [newPresetName, setNewPresetName] = useState("");
 
@@ -963,7 +963,7 @@ const ChartMakerLayout: React.FC = () => {
             </div>
 
             {/* Chart Container */}
-            <div className="relative flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F3F4F6] border border-[#E5E7EB] overflow-hidden">
+            <div className="relative flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F3F4F6] dark:bg-gray-800 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden">
               <div ref={chartContainerRef} className="w-full h-full flex items-center justify-center" style={{ background: background.background, padding: `${padding}px`, borderRadius: `${borderRadius}px` }}>
                 <div className="w-full h-full max-w-[800px] max-h-[500px]">{renderChart()}</div>
               </div>
@@ -971,31 +971,25 @@ const ChartMakerLayout: React.FC = () => {
           </div>
 
           {/* Controls Panel */}
-          <div className="bg-white rounded-[20px] shadow-lg p-5 h-fit max-h-[85vh] overflow-y-auto">
-            {/* Tabs */}
-            <div className="grid grid-cols-3 bg-[#F9FAFB] rounded-[10px] p-1 mb-5">
-              {(["data", "style", "presets"] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`py-2 px-3 text-sm font-medium rounded-md capitalize transition-all ${activeTab === tab ? "bg-white shadow-sm" : "hover:bg-white/50"}`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
+          <div className="bg-white dark:bg-gray-900 rounded-[20px] shadow-lg p-5 h-fit max-h-[85vh] overflow-y-auto">
+            <Tabs defaultValue="data">
+            <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-5">
+              <TabsTrigger value="data" className="rounded-[10px] text-xs">Data</TabsTrigger>
+              <TabsTrigger value="style" className="rounded-[10px] text-xs">Style</TabsTrigger>
+              <TabsTrigger value="presets" className="rounded-[10px] text-xs">Presets</TabsTrigger>
+            </TabsList>
 
-            {activeTab === "data" && (
+            <TabsContent value="data">
               <div className="space-y-5">
                 {/* Chart Type */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Chart Type</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Chart Type</Label>
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {chartTypes.map((t) => (
                       <button
                         key={t.id}
                         onClick={() => setChartType(t.id)}
-                        className={`p-2 rounded-[10px] text-center transition-all ${chartType === t.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2 ring-offset-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6] text-[#0A0A0A]"}`}
+                        className={`p-2 rounded-[10px] text-center transition-all ${chartType === t.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2 ring-offset-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 text-[#0A0A0A] dark:text-white"}`}
                       >
                         <div className="text-lg flex items-center justify-center">{t.icon}</div>
                         <div className="text-[10px] font-semibold">{t.name}</div>
@@ -1006,13 +1000,13 @@ const ChartMakerLayout: React.FC = () => {
 
                 {/* Title */}
                 <div className="space-y-1.5">
-                  <Label className="text-sm font-medium text-[#4B5563]">Chart Title</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400">Chart Title</Label>
                   <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Enter title" />
                 </div>
 
                 {/* Import Data */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Import Data</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Import Data</Label>
                   <div className="flex gap-2">
                     <input ref={fileInputRef} type="file" accept=".csv,.tsv,.txt" onChange={handleFileUpload} className="hidden" />
                     <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="flex-1 gap-1">
@@ -1027,13 +1021,13 @@ const ChartMakerLayout: React.FC = () => {
                 {/* Labels */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <Label className="text-sm font-medium text-[#4B5563]">Labels ({labels.length})</Label>
+                    <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400">Labels ({labels.length})</Label>
                     <Button size="sm" className="h-7 text-xs px-2 gap-1" onClick={addLabel}><BsPlus /></Button>
                   </div>
-                  <div className="bg-[#F9FAFB] rounded-[10px] p-2 max-h-[120px] overflow-y-auto">
+                  <div className="bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] p-2 max-h-[120px] overflow-y-auto">
                     <div className="grid grid-cols-3 gap-1">
                       {labels.map((label, i) => (
-                        <div key={i} className="flex items-center bg-white rounded px-1">
+                        <div key={i} className="flex items-center bg-white dark:bg-gray-800 rounded px-1">
                           <input
                             type="text"
                             value={label}
@@ -1050,12 +1044,12 @@ const ChartMakerLayout: React.FC = () => {
                 {/* Data Series */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <Label className="text-sm font-medium text-[#4B5563]">Data Series ({datasets.length})</Label>
+                    <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400">Data Series ({datasets.length})</Label>
                     <Button size="sm" className="h-7 text-xs px-2 gap-1" onClick={addDataset}><BsPlus /></Button>
                   </div>
                   <div className="space-y-3">
                     {datasets.map((ds, dsIndex) => (
-                      <div key={dsIndex} className="bg-[#F9FAFB] rounded-[10px] p-3 space-y-2">
+                      <div key={dsIndex} className="bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] p-3 space-y-2">
                         <div className="flex items-center gap-2">
                           <div className="flex flex-col gap-1">
                             <input type="color" value={ds.color} onChange={(e) => updateDataset(dsIndex, "color", e.target.value)} className="w-6 h-6 rounded cursor-pointer" title="Fill Color" />
@@ -1078,7 +1072,7 @@ const ChartMakerLayout: React.FC = () => {
                               type="number"
                               value={val}
                               onChange={(e) => updateDataValue(dsIndex, i, Number(e.target.value))}
-                              className="w-full text-center p-1 text-xs border border-[#E5E7EB] rounded-md bg-white outline-none focus:border-[#2563EB]"
+                              className="w-full text-center p-1 text-xs border border-[#E5E7EB] dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 dark:text-white outline-none focus:border-[#2563EB]"
                             />
                           ))}
                         </div>
@@ -1087,15 +1081,15 @@ const ChartMakerLayout: React.FC = () => {
                   </div>
                 </div>
               </div>
-            )}
+            </TabsContent>
 
-            {activeTab === "style" && (
+            <TabsContent value="style">
               <div className="space-y-5">
                 {/* Legend Preview - Show series with colors */}
                 {datasets.length > 0 && (
                   <div>
-                    <Label className="text-sm font-medium text-[#4B5563] block mb-2">Data Series Legend</Label>
-                    <div className="bg-[#F9FAFB] rounded-[10px] p-3 space-y-2">
+                    <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Data Series Legend</Label>
+                    <div className="bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] p-3 space-y-2">
                       {datasets.map((ds, i) => (
                         <div key={i} className="flex items-center gap-2">
                           <div className="w-4 h-4 rounded" style={{ backgroundColor: ds.color, border: `2px solid ${ds.borderColor}` }} />
@@ -1107,64 +1101,64 @@ const ChartMakerLayout: React.FC = () => {
                 )}
 
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Background</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Background</Label>
                   <BackgroundPicker background={background} onBackgroundChange={setBackground} showTilt={false} />
                 </div>
 
                 {/* Colors Section */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Colors</Label>
-                  <div className="space-y-3 bg-[#F9FAFB] rounded-[10px] p-3">
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Colors</Label>
+                  <div className="space-y-3 bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] p-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-[#0A0A0A]">Title Color</span>
+                      <span className="text-sm text-[#0A0A0A] dark:text-white">Title Color</span>
                       <input type="color" value={titleColor} onChange={(e) => setTitleColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0" />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-[#0A0A0A]">Label Color</span>
+                      <span className="text-sm text-[#0A0A0A] dark:text-white">Label Color</span>
                       <input type="color" value={labelColor} onChange={(e) => setLabelColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0" />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-[#0A0A0A]">Legend Color</span>
+                      <span className="text-sm text-[#0A0A0A] dark:text-white">Legend Color</span>
                       <input type="color" value={legendColor} onChange={(e) => setLegendColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0" />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-[#0A0A0A]">Grid Color</span>
+                      <span className="text-sm text-[#0A0A0A] dark:text-white">Grid Color</span>
                       <input type="color" value={gridColor} onChange={(e) => setGridColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0" />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-sm font-medium text-[#4B5563]">Padding: {padding}px</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400">Padding: {padding}px</Label>
                   <Slider min={0} max={100} value={[padding]} onValueChange={([v]) => setPadding(v)} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-sm font-medium text-[#4B5563]">Border Radius: {borderRadius}px</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400">Border Radius: {borderRadius}px</Label>
                   <Slider min={0} max={50} value={[borderRadius]} onValueChange={([v]) => setBorderRadius(v)} />
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-[#4B5563] block">Options</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block">Options</Label>
                   <div className="flex items-center gap-3">
                     <Switch checked={showLegend} onCheckedChange={setShowLegend} />
-                    <span className="text-sm text-[#0A0A0A]">Show Legend</span>
+                    <span className="text-sm text-[#0A0A0A] dark:text-white">Show Legend</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Switch checked={showGrid} onCheckedChange={setShowGrid} />
-                    <span className="text-sm text-[#0A0A0A]">Show Grid Lines</span>
+                    <span className="text-sm text-[#0A0A0A] dark:text-white">Show Grid Lines</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Switch checked={animated} onCheckedChange={setAnimated} />
-                    <span className="text-sm text-[#0A0A0A]">Enable Animations</span>
+                    <span className="text-sm text-[#0A0A0A] dark:text-white">Enable Animations</span>
                   </div>
                 </div>
               </div>
-            )}
+            </TabsContent>
 
-            {activeTab === "presets" && (
+            <TabsContent value="presets">
               <div className="space-y-5">
                 {/* Save Current as Preset */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Save Current Chart</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Save Current Chart</Label>
                   <div className="flex gap-2">
                     <Input
                       value={newPresetName}
@@ -1179,7 +1173,7 @@ const ChartMakerLayout: React.FC = () => {
                 {/* Custom Presets */}
                 {customPresets.length > 0 && (
                   <div>
-                    <Label className="text-sm font-medium text-[#4B5563] block mb-2">Your Presets</Label>
+                    <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Your Presets</Label>
                     <div className="grid grid-cols-2 gap-2">
                       {customPresets.map((p) => (
                         <div key={p.id} className="relative group">
@@ -1205,7 +1199,7 @@ const ChartMakerLayout: React.FC = () => {
 
                 {/* Default Presets */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Templates</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Templates</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {defaultPresets.map((p) => (
                       <Button
@@ -1221,7 +1215,8 @@ const ChartMakerLayout: React.FC = () => {
                   </div>
                 </div>
               </div>
-            )}
+            </TabsContent>
+            </Tabs>
           </div>
         </div>
       </section>

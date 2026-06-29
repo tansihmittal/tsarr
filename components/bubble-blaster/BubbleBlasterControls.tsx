@@ -62,7 +62,7 @@ const BubbleBlasterControls = ({
           className={`w-full py-4 mb-3 rounded-[14px] font-bold text-lg transition-all flex items-center justify-center gap-2 ${
             unprocessedSelected > 0 && !state.isProcessing
               ? "bg-gradient-to-r from-[#2563EB] to-purple-600 text-white shadow-lg shadow-[#2563EB]/30 hover:shadow-xl hover:scale-[1.02]"
-              : "bg-[#F9FAFB] text-gray-400 cursor-not-allowed"
+              : "bg-[#F9FAFB] dark:bg-gray-800 text-gray-400 cursor-not-allowed"
           }`}
         >
           <BsLightning className="text-xl" />
@@ -70,7 +70,7 @@ const BubbleBlasterControls = ({
         </button>
       )}
 
-      <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-200px)] lg:overflow-y-scroll scrollbar-hide">
+      <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-200px)] lg:overflow-y-scroll scrollbar-hide">
         {state.image && (
           <>
             {/* Mode Selection */}
@@ -81,7 +81,7 @@ const BubbleBlasterControls = ({
                 className={`flex-1 py-2.5 px-3 rounded-[10px] font-medium text-sm flex items-center justify-center gap-2 transition-all ${
                   state.mode === "select"
                     ? "bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/20"
-                    : "bg-[#F9FAFB] text-[#0A0A0A] hover:bg-[#E5E7EB]"
+                    : "bg-[#F9FAFB] dark:bg-gray-800 text-[#0A0A0A] dark:text-white hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                 }`}
               >
                 <BiPointer />
@@ -92,7 +92,7 @@ const BubbleBlasterControls = ({
                 className={`flex-1 py-2.5 px-3 rounded-[10px] font-medium text-sm flex items-center justify-center gap-2 transition-all ${
                   state.mode === "draw"
                     ? "bg-amber-500 text-white shadow-md shadow-amber-500/20"
-                    : "bg-[#F9FAFB] text-[#0A0A0A] hover:bg-[#E5E7EB]"
+                    : "bg-[#F9FAFB] dark:bg-gray-800 text-[#0A0A0A] dark:text-white hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                 }`}
               >
                 <BiPencil />
@@ -102,9 +102,9 @@ const BubbleBlasterControls = ({
 
             {/* Detection Settings */}
             <PanelHeading title="Detection" />
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                   Bubble Sensitivity
                 </span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
@@ -122,9 +122,9 @@ const BubbleBlasterControls = ({
               </p>
             </div>
 
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                   Text Threshold
                 </span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
@@ -154,14 +154,14 @@ const BubbleBlasterControls = ({
               <div className="flex gap-2 mb-3">
                 <button
                   onClick={selectAllBubbles}
-                  className="flex-1 py-2 bg-[#F9FAFB] hover:bg-[#E5E7EB] rounded-[10px] text-xs font-medium flex items-center justify-center gap-1 transition-all"
+                  className="flex-1 py-2 bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700 rounded-[10px] text-xs font-medium flex items-center justify-center gap-1 transition-all"
                 >
                   <BiSelectMultiple />
                   Select All
                 </button>
                 <button
                   onClick={deselectAllBubbles}
-                  className="flex-1 py-2 bg-[#F9FAFB] hover:bg-[#E5E7EB] rounded-[10px] text-xs font-medium flex items-center justify-center gap-1 transition-all"
+                  className="flex-1 py-2 bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700 rounded-[10px] text-xs font-medium flex items-center justify-center gap-1 transition-all"
                 >
                   <BsX />
                   Deselect
@@ -206,7 +206,7 @@ const BubbleBlasterControls = ({
 
             {/* Tips */}
             <PanelHeading title="Tips" />
-            <div className="p-4 text-xs text-gray-500 space-y-2">
+            <div className="p-4 text-xs text-gray-500 dark:text-gray-400 space-y-2">
               <p className="flex items-center gap-1.5"><BsLightbulb className="shrink-0" /> Click bubbles to select/deselect them</p>
               <p className="flex items-center gap-1.5"><BsPencil className="shrink-0" /> Use Draw mode to manually select regions</p>
               <p className="flex items-center gap-1.5"><BsLightning className="shrink-0" /> Click &quot;BLAST!&quot; to remove text from selected bubbles</p>
@@ -241,7 +241,7 @@ const BubbleItem = ({ bubble, index, onToggle, onDelete }: BubbleItemProps) => {
           ? bubble.isProcessed
             ? "border-green-300 bg-green-50"
             : "border-[#2563EB]/30 bg-[#2563EB]/5"
-          : "border-[#E5E7EB] bg-white"
+          : "border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900"
       }`}
     >
       <div className="flex items-center gap-2">
@@ -252,7 +252,7 @@ const BubbleItem = ({ bubble, index, onToggle, onDelete }: BubbleItemProps) => {
               ? bubble.isProcessed
                 ? "bg-green-500 text-white"
                 : "bg-[#2563EB] text-white"
-              : "bg-[#F9FAFB]"
+              : "bg-[#F9FAFB] dark:bg-gray-800"
           }`}
         >
           {bubble.isSelected && <BsCheck className="text-sm" />}

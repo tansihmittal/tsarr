@@ -171,17 +171,17 @@ export default function Home() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       </Head>
 
-      <div className="min-h-screen bg-white text-[#0A0A0A] antialiased" style={{ fontFamily: FONT }}>
+      <div className="min-h-screen bg-white dark:bg-gray-900 text-[#0A0A0A] dark:text-white antialiased" style={{ fontFamily: FONT }}>
 
         {/* ── Header ── */}
-        <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-[#E5E7EB]">
+        <header className="sticky top-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b border-[#E5E7EB] dark:border-gray-700">
           <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-            <Link href="/" className="text-base font-semibold text-[#0A0A0A] tracking-tight">
+            <Link href="/" className="text-base font-semibold text-[#0A0A0A] dark:text-white tracking-tight">
               tsarr.in
             </Link>
 
             {/* Pill nav group */}
-            <nav className="hidden md:flex items-center gap-0.5 bg-[#F9FAFB] border border-[#E5E7EB] rounded-full px-1.5 py-1">
+            <nav className="hidden md:flex items-center gap-0.5 bg-[#F9FAFB] dark:bg-gray-800/50 border border-[#E5E7EB] dark:border-gray-700 rounded-full px-1.5 py-1">
               {[
                 { label: "Tools", href: "/tools" },
                 { label: "Blog", href: "/blog" },
@@ -217,7 +217,7 @@ export default function Home() {
 
               {/* Headline */}
               <h1
-                className="font-normal text-[#0A0A0A] mb-6 max-w-4xl mx-auto"
+                className="font-normal text-[#0A0A0A] dark:text-white mb-6 max-w-4xl mx-auto"
                 style={{
                   fontSize: "clamp(40px,6vw,64px)",
                   lineHeight: 1,
@@ -230,7 +230,7 @@ export default function Home() {
 
               {/* Subheadline */}
               <p
-                className="text-[#4B5563] mb-10 max-w-lg mx-auto"
+                className="text-[#4B5563] dark:text-gray-400 mb-10 max-w-lg mx-auto"
                 style={{ fontSize: 18, lineHeight: "28px" }}
               >
                 Frames, backgrounds, annotations, and AI tools — all free in your browser.
@@ -262,20 +262,20 @@ export default function Home() {
           <section className="pb-24 px-6">
             <div className="max-w-6xl mx-auto">
               <div
-                className="rounded-[20px] border border-[#E5E7EB] overflow-hidden"
+                className="rounded-[20px] border border-[#E5E7EB] dark:border-gray-700 overflow-hidden"
                 style={{
                   boxShadow:
                     "0 24px 64px -12px rgba(0,0,0,0.10), 0 4px 16px -4px rgba(37,99,235,0.06)",
                 }}
               >
-                <div className="flex items-center gap-3 px-5 py-3 bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                <div className="flex items-center gap-3 px-5 py-3 bg-[#F9FAFB] dark:bg-gray-800/50 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="flex gap-1.5">
                     {[0, 1, 2].map((i) => (
                       <div key={i} className="w-3 h-3 rounded-full bg-[#E5E7EB]" />
                     ))}
                   </div>
                   <div className="flex-1 flex justify-center">
-                    <span className="bg-white border border-[#E5E7EB] rounded-full px-4 py-1 text-[#4B5563] text-xs font-medium">
+                    <span className="bg-white dark:bg-gray-900 border border-[#E5E7EB] dark:border-gray-700 rounded-full px-4 py-1 text-[#4B5563] dark:text-gray-400 text-xs font-medium">
                       tsarr.in/editor
                     </span>
                   </div>
@@ -297,7 +297,7 @@ export default function Home() {
             <section className="pb-20 px-6">
               <div className="max-w-6xl mx-auto">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="font-medium text-[#0A0A0A]" style={{ fontSize: 20 }}>
+                  <h2 className="font-medium text-[#0A0A0A] dark:text-white" style={{ fontSize: 20 }}>
                     Continue where you left off
                   </h2>
                   <Button variant="link" size="sm" asChild>
@@ -314,7 +314,7 @@ export default function Home() {
                       className="block"
                     >
                       <Card className="overflow-hidden hover:border-[#60A5FA]">
-                        <div className="aspect-[4/3] bg-[#F3F4F6] relative overflow-hidden">
+                        <div className="aspect-[4/3] bg-[#F3F4F6] dark:bg-gray-800 relative overflow-hidden">
                           {project.thumbnail ? (
                             <img
                               src={project.thumbnail}
@@ -328,8 +328,8 @@ export default function Home() {
                           )}
                         </div>
                         <CardContent className="p-3">
-                          <p className="font-medium text-[#0A0A0A] truncate text-sm">{project.name}</p>
-                          <p className="text-[#4B5563] mt-0.5 text-xs">
+                          <p className="font-medium text-[#0A0A0A] dark:text-white truncate text-sm">{project.name}</p>
+                          <p className="text-[#4B5563] dark:text-gray-400 mt-0.5 text-xs">
                             {new Date(project.updatedAt).toLocaleDateString("en-US", {
                               month: "short",
                               day: "numeric",
@@ -345,25 +345,25 @@ export default function Home() {
           )}
 
           {/* ── Features ── */}
-          <section className="py-24 px-6 bg-[#F9FAFB] border-y border-[#E5E7EB]">
+          <section className="py-24 px-6 bg-[#F9FAFB] dark:bg-gray-800/50 border-y border-[#E5E7EB] dark:border-gray-700">
             <div className="max-w-6xl mx-auto">
               <div className="max-w-xl mb-16">
                 <h2
-                  className="font-normal text-[#0A0A0A] mb-4"
+                  className="font-normal text-[#0A0A0A] dark:text-white mb-4"
                   style={{ fontSize: "clamp(28px,3.5vw,40px)", lineHeight: 1.1, letterSpacing: "-1.5px" }}
                 >
                   Everything you need to create stunning visuals
                 </h2>
-                <p className="text-[#4B5563]" style={{ fontSize: 18, lineHeight: "28px" }}>
+                <p className="text-[#4B5563] dark:text-gray-400" style={{ fontSize: 18, lineHeight: "28px" }}>
                   Professional-grade tools that help you communicate better through images.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {features.map((feature, i) => (
-                  <Card key={i} className="bg-white hover:border-[#60A5FA] hover:shadow-sm">
+                  <Card key={i} className="bg-white dark:bg-gray-900 hover:border-[#60A5FA] hover:shadow-sm">
                     <CardContent className="p-6">
-                      <div className="w-10 h-10 flex items-center justify-center bg-[#EFF6FF] text-[#2563EB] rounded-[10px] mb-4">
+                      <div className="w-10 h-10 flex items-center justify-center bg-[#EFF6FF] dark:bg-blue-900/30 text-[#2563EB] rounded-[10px] mb-4">
                         {feature.icon}
                       </div>
                       <CardTitle className="mb-2">{feature.title}</CardTitle>
@@ -381,12 +381,12 @@ export default function Home() {
               <div className="flex items-end justify-between mb-12">
                 <div>
                   <h2
-                    className="font-normal text-[#0A0A0A] mb-2"
+                    className="font-normal text-[#0A0A0A] dark:text-white mb-2"
                     style={{ fontSize: "clamp(28px,3.5vw,40px)", lineHeight: 1.1, letterSpacing: "-1.5px" }}
                   >
                     19+ creative tools
                   </h2>
-                  <p className="text-[#4B5563]" style={{ fontSize: 16 }}>
+                  <p className="text-[#4B5563] dark:text-gray-400" style={{ fontSize: 16 }}>
                     All free, all in your browser.
                   </p>
                 </div>
@@ -400,13 +400,13 @@ export default function Home() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {tools.slice(0, 12).map((tool, i) => (
                   <Link key={i} href={tool.href} className="block">
-                    <Card className="group flex items-start gap-4 p-4 hover:border-[#DBEAFE] hover:bg-[#EFF6FF]">
-                      <div className="w-9 h-9 flex items-center justify-center bg-white text-[#2563EB] rounded-[10px] border border-[#E5E7EB] group-hover:border-[#60A5FA] transition-colors flex-shrink-0">
+                    <Card className="group flex items-start gap-4 p-4 hover:border-[#DBEAFE] hover:bg-[#EFF6FF] dark:bg-blue-900/20 dark:hover:bg-blue-900/30">
+                      <div className="w-9 h-9 flex items-center justify-center bg-white dark:bg-gray-900 text-[#2563EB] rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 group-hover:border-[#60A5FA] transition-colors flex-shrink-0">
                         {tool.icon}
                       </div>
                       <div className="min-w-0 pt-0.5">
-                        <p className="font-medium text-[#0A0A0A] text-sm mb-0.5">{tool.title}</p>
-                        <p className="text-[#4B5563] text-xs">{tool.desc}</p>
+                        <p className="font-medium text-[#0A0A0A] dark:text-white text-sm mb-0.5">{tool.title}</p>
+                        <p className="text-[#4B5563] dark:text-gray-400 text-xs">{tool.desc}</p>
                       </div>
                     </Card>
                   </Link>
@@ -425,16 +425,16 @@ export default function Home() {
           </section>
 
           {/* ── How it works ── */}
-          <section className="py-24 px-6 bg-[#F9FAFB] border-y border-[#E5E7EB]">
+          <section className="py-24 px-6 bg-[#F9FAFB] dark:bg-gray-800/50 border-y border-[#E5E7EB] dark:border-gray-700">
             <div className="max-w-6xl mx-auto">
               <div className="max-w-xl mb-16">
                 <h2
-                  className="font-normal text-[#0A0A0A] mb-4"
+                  className="font-normal text-[#0A0A0A] dark:text-white mb-4"
                   style={{ fontSize: "clamp(28px,3.5vw,40px)", lineHeight: 1.1, letterSpacing: "-1.5px" }}
                 >
                   Simple workflow, powerful results
                 </h2>
-                <p className="text-[#4B5563]" style={{ fontSize: 18, lineHeight: "28px" }}>
+                <p className="text-[#4B5563] dark:text-gray-400" style={{ fontSize: 18, lineHeight: "28px" }}>
                   Get from screenshot to polished visual in seconds.
                 </p>
               </div>
@@ -451,10 +451,10 @@ export default function Home() {
                     >
                       {step.n}
                     </div>
-                    <h3 className="font-medium text-[#0A0A0A] mb-2" style={{ fontSize: 20 }}>
+                    <h3 className="font-medium text-[#0A0A0A] dark:text-white mb-2" style={{ fontSize: 20 }}>
                       {step.t}
                     </h3>
-                    <p className="text-[#4B5563]" style={{ fontSize: 16, lineHeight: "26px" }}>
+                    <p className="text-[#4B5563] dark:text-gray-400" style={{ fontSize: 16, lineHeight: "26px" }}>
                       {step.d}
                     </p>
                   </div>
@@ -468,27 +468,27 @@ export default function Home() {
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-12">
                 <h2
-                  className="font-normal text-[#0A0A0A] mb-4"
+                  className="font-normal text-[#0A0A0A] dark:text-white mb-4"
                   style={{ fontSize: "clamp(28px,3.5vw,40px)", lineHeight: 1.1, letterSpacing: "-1.5px" }}
                 >
                   Frequently asked questions
                 </h2>
-                <p className="text-[#4B5563]" style={{ fontSize: 16 }}>
+                <p className="text-[#4B5563] dark:text-gray-400" style={{ fontSize: 16 }}>
                   Everything you need to know about tsarr.in
                 </p>
               </div>
-              <div className="border border-[#E5E7EB] rounded-[20px] overflow-hidden divide-y divide-[#E5E7EB]">
+              <div className="border border-[#E5E7EB] dark:border-gray-700 rounded-[20px] overflow-hidden divide-y divide-[#E5E7EB] dark:divide-gray-700">
                 {faqs.map((faq, i) => (
                   <div key={i}>
                     <button
                       onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                      className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 hover:bg-[#F9FAFB] transition-colors"
+                      className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors"
                     >
-                      <span className="font-medium text-[#0A0A0A]" style={{ fontSize: 15 }}>
+                      <span className="font-medium text-[#0A0A0A] dark:text-white" style={{ fontSize: 15 }}>
                         {faq.q}
                       </span>
                       <BsChevronDown
-                        className={`w-4 h-4 text-[#4B5563] flex-shrink-0 transition-transform duration-200 ${
+                        className={`w-4 h-4 text-[#4B5563] dark:text-gray-400 flex-shrink-0 transition-transform duration-200 ${
                           openFaq === i ? "rotate-180" : ""
                         }`}
                       />
@@ -498,7 +498,7 @@ export default function Home() {
                         openFaq === i ? "max-h-40" : "max-h-0"
                       }`}
                     >
-                      <p className="px-6 pb-5 text-[#4B5563]" style={{ fontSize: 15, lineHeight: "24px" }}>
+                      <p className="px-6 pb-5 text-[#4B5563] dark:text-gray-400" style={{ fontSize: 15, lineHeight: "24px" }}>
                         {faq.a}
                       </p>
                     </div>
@@ -518,12 +518,12 @@ export default function Home() {
           >
             <div className="max-w-3xl mx-auto text-center">
               <h2
-                className="font-normal text-[#0A0A0A] mb-4"
+                className="font-normal text-[#0A0A0A] dark:text-white mb-4"
                 style={{ fontSize: "clamp(32px,4vw,48px)", lineHeight: 1.05, letterSpacing: "-2px" }}
               >
                 Ready to create something amazing?
               </h2>
-              <p className="text-[#4B5563] mb-10" style={{ fontSize: 18, lineHeight: "28px" }}>
+              <p className="text-[#4B5563] dark:text-gray-400 mb-10" style={{ fontSize: 18, lineHeight: "28px" }}>
                 No signup required. Start editing in seconds.
               </p>
               <div className="flex flex-wrap gap-3 justify-center">
@@ -542,20 +542,20 @@ export default function Home() {
         </main>
 
         {/* ── Footer ── */}
-        <footer className="border-t border-[#E5E7EB] bg-white">
+        <footer className="border-t border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900">
           <div className="max-w-6xl mx-auto px-6 py-12">
             <div className="flex flex-col md:flex-row items-start justify-between gap-8">
               <div>
-                <Link href="/" className="font-semibold text-[#0A0A0A]" style={{ fontSize: 16 }}>
+                <Link href="/" className="font-semibold text-[#0A0A0A] dark:text-white" style={{ fontSize: 16 }}>
                   tsarr.in
                 </Link>
-                <p className="mt-2 text-[#4B5563] max-w-xs" style={{ fontSize: 14 }}>
+                <p className="mt-2 text-[#4B5563] dark:text-gray-400 max-w-xs" style={{ fontSize: 14 }}>
                   Free screenshot editor and image tools. No login required.
                 </p>
               </div>
               <div className="flex gap-12">
                 <div>
-                  <h4 className="font-medium text-[#0A0A0A] mb-3" style={{ fontSize: 14 }}>
+                  <h4 className="font-medium text-[#0A0A0A] dark:text-white mb-3" style={{ fontSize: 14 }}>
                     Tools
                   </h4>
                   <ul className="space-y-2">
@@ -568,7 +568,7 @@ export default function Home() {
                       <li key={label}>
                         <Link
                           href={href}
-                          className="text-[#4B5563] hover:text-[#0A0A0A] transition-colors"
+                          className="text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:text-white dark:hover:text-white transition-colors"
                           style={{ fontSize: 14 }}
                         >
                           {label}
@@ -578,27 +578,27 @@ export default function Home() {
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-medium text-[#0A0A0A] mb-3" style={{ fontSize: 14 }}>
+                  <h4 className="font-medium text-[#0A0A0A] dark:text-white mb-3" style={{ fontSize: 14 }}>
                     Resources
                   </h4>
                   <ul className="space-y-2">
                     <li>
-                      <Link href="/blog" className="text-[#4B5563] hover:text-[#0A0A0A] transition-colors" style={{ fontSize: 14 }}>
+                      <Link href="/blog" className="text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:text-white dark:hover:text-white transition-colors" style={{ fontSize: 14 }}>
                         Blog
                       </Link>
                     </li>
                     <li>
-                      <a href="https://github.com/tansihmittal/" target="_blank" rel="noopener noreferrer" className="text-[#4B5563] hover:text-[#0A0A0A] transition-colors" style={{ fontSize: 14 }}>
+                      <a href="https://github.com/tansihmittal/" target="_blank" rel="noopener noreferrer" className="text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:text-white dark:hover:text-white transition-colors" style={{ fontSize: 14 }}>
                         GitHub
                       </a>
                     </li>
                     <li>
-                      <a href="https://x.com/glowdopera" target="_blank" rel="noopener noreferrer" className="text-[#4B5563] hover:text-[#0A0A0A] transition-colors" style={{ fontSize: 14 }}>
+                      <a href="https://x.com/glowdopera" target="_blank" rel="noopener noreferrer" className="text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:text-white dark:hover:text-white transition-colors" style={{ fontSize: 14 }}>
                         Twitter
                       </a>
                     </li>
                     <li>
-                      <a href="https://linkedin.com/in/tanishmittal02" target="_blank" rel="noopener noreferrer" className="text-[#4B5563] hover:text-[#0A0A0A] transition-colors" style={{ fontSize: 14 }}>
+                      <a href="https://linkedin.com/in/tanishmittal02" target="_blank" rel="noopener noreferrer" className="text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:text-white dark:hover:text-white transition-colors" style={{ fontSize: 14 }}>
                         LinkedIn
                       </a>
                     </li>
@@ -606,14 +606,14 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="mt-12 pt-8 border-t border-[#F3F4F6] flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-[#4B5563]" style={{ fontSize: 14 }}>
+            <div className="mt-12 pt-8 border-t border-[#F3F4F6] dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-[#4B5563] dark:text-gray-400" style={{ fontSize: 14 }}>
                 © 2025 tsarr.in. Created by{" "}
                 <a
                   href="https://tanishmittal.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#0A0A0A] hover:text-[#2563EB] transition-colors"
+                  className="text-[#0A0A0A] dark:text-white hover:text-[#2563EB] transition-colors"
                 >
                   Tanish Mittal
                 </a>
@@ -629,7 +629,7 @@ export default function Home() {
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#4B5563] hover:text-[#0A0A0A] transition-colors"
+                    className="text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:text-white dark:hover:text-white transition-colors"
                   >
                     {icon}
                   </a>

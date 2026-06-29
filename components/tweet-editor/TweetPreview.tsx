@@ -119,7 +119,7 @@ const TweetPreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, up
       </div>
 
       {/* Editor Canvas Area */}
-      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 border border-[#E5E7EB]/80 overflow-hidden py-8">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 dark:bg-gray-800/30 border border-[#E5E7EB]/80 dark:border-gray-700/80 overflow-hidden py-8">
         <div
           ref={previewRef}
           className="flex flex-col items-center justify-center relative"

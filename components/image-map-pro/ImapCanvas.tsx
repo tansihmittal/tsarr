@@ -861,7 +861,7 @@ const ImapCanvas: React.FC<Props> = ({
             <button
               key={b.k}
               onClick={(e) => { e.stopPropagation(); b.fn(); }}
-              className="w-8 h-8 rounded-[10px] bg-white border border-[#E5E7EB] shadow-sm text-[#4B5563] hover:border-[#60A5FA] text-base leading-none"
+              className="w-8 h-8 rounded-[10px] bg-white dark:bg-gray-800 border border-[#E5E7EB] dark:border-gray-700 shadow-sm text-[#4B5563] dark:text-gray-400 hover:border-[#60A5FA] text-base leading-none"
             >
               {b.label}
             </button>

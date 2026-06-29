@@ -130,14 +130,14 @@ const AuthModal: React.FC<Props> = ({
               {/* Divider */}
               <div className="flex items-center gap-3">
                 <Separator className="flex-1" />
-                <span className="text-xs text-[#4B5563]/50 uppercase tracking-wider">or with email</span>
+                <span className="text-xs text-[#4B5563]/5 dark:text-gray-400/50 dark:text-gray-400/50 uppercase tracking-wider">or with email</span>
                 <Separator className="flex-1" />
               </div>
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-3">
                 <div className="relative">
-                  <BsEnvelopeFill className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4B5563]/40 text-sm pointer-events-none z-10" />
+                  <BsEnvelopeFill className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4B5563]/40 dark:text-gray-400/40 text-sm pointer-events-none z-10" />
                   <Input
                     type="email"
                     value={email}
@@ -150,7 +150,7 @@ const AuthModal: React.FC<Props> = ({
                   />
                 </div>
                 <div className="relative">
-                  <BsLockFill className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4B5563]/40 text-sm pointer-events-none z-10" />
+                  <BsLockFill className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4B5563]/40 dark:text-gray-400/40 text-sm pointer-events-none z-10" />
                   <Input
                     type="password"
                     value={password}
@@ -179,7 +179,7 @@ const AuthModal: React.FC<Props> = ({
                 variant="ghost"
                 size="sm"
                 onClick={handleClose}
-                className="w-full text-[#4B5563]/50 hover:text-[#4B5563]"
+                className="w-full text-[#4B5563]/5 dark:text-gray-400/50 dark:text-gray-400/50 hover:text-[#4B5563] dark:text-gray-400 dark:hover:text-gray-400"
               >
                 Continue without an account
               </Button>

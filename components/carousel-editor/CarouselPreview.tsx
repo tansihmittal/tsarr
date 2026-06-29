@@ -85,7 +85,7 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
   const WebsiteLink = () => {
     if (!currentSlideData.websiteUrl) return null;
     return (
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm">
+      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm">
         <BsGlobe style={{ color: state.websiteUrlColor }} />
         <span className="text-sm font-medium" style={{ color: state.websiteUrlColor }}>{currentSlideData.websiteUrl}</span>
       </div>
@@ -130,7 +130,7 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
         <ToolbarButton title="Share" onTap={() => shareImage(previewRef.current)}><BsShare /></ToolbarButton>
       </div>
 
-      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F3F4F6] border border-[#E5E7EB] overflow-hidden py-8">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F3F4F6] dark:bg-gray-800 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden py-8">
         <div
           ref={previewRef}
           className="relative overflow-hidden"
@@ -242,7 +242,7 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
           variant="secondary"
           onClick={goToPrevSlide}
           disabled={state.currentSlide === 0}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white shadow-lg"
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-gray-900 shadow-lg"
         >
           <BsChevronLeft className="text-xl" />
         </Button>
@@ -251,7 +251,7 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
           variant="secondary"
           onClick={goToNextSlide}
           disabled={state.currentSlide === state.slides.length - 1}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white shadow-lg"
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-gray-900 shadow-lg"
         >
           <BsChevronRight className="text-xl" />
         </Button>

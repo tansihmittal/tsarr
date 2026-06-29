@@ -1,6 +1,6 @@
 import { useAuthContext } from "@/context/User";
 import { BsPersonFillGear, BsGrid3X3Gap, BsFolder2, BsPerson, BsSun, BsMoon } from "react-icons/bs";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import {
@@ -16,19 +16,27 @@ const Navigation: React.FC = () => {
   const [dark, setDark] = useState(false);
   const { currentUser, logout, openAuthModal, isLoading } = useAuthContext();
 
+  useEffect(() => {
+    const stored = localStorage.getItem("theme");
+    if (stored === "dark") setDark(true);
+  }, []);
+
   const toggleTheme = () => {
     const next = !dark;
     setDark(next);
-    document.body.dataset.theme = next ? "dark" : "bumblebee";
+    const html = document.documentElement;
+    html.setAttribute("data-theme", next ? "dark" : "bumblebee");
+    html.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
   };
 
   return (
     <nav
-      className="border-b h-[60px] sm:h-[70px] bg-white/95 backdrop-blur-lg border-[#E5E7EB] flex items-center mb-4 sticky top-0 z-50"
+      className="border-b h-[60px] sm:h-[70px] bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-[#E5E7EB] dark:border-gray-700 flex items-center mb-4 sticky top-0 z-50"
       style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
     >
       <div className="container mx-auto px-4 lg:px-0 flex items-center justify-between">
-        <Link href="/" className="text-base font-semibold text-[#0A0A0A] hover:text-[#2563EB] transition-colors">
+        <Link href="/" className="text-base font-semibold text-[#0A0A0A] dark:text-white hover:text-[#2563EB] dark:hover:text-[#60A5FA] transition-colors">
           tsarr.in
         </Link>
 

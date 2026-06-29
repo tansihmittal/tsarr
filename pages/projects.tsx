@@ -213,17 +213,17 @@ export default function ProjectsPage() {
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Head>
 
-      <div className="min-h-screen bg-[#F9FAFB] pb-24 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+      <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-800/50 pb-24 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
         {/* Header */}
-        <header className="bg-white/95 backdrop-blur-lg border-b border-[#E5E7EB]/80 sticky top-0 z-30">
+        <header className="bg-white/95 dark:bg-gray-900 backdrop-blur-lg border-b border-[#E5E7EB]/8 dark:border-gray-700/80 dark:border-gray-700 sticky top-0 z-30">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link href="/app" className="p-2.5 hover:bg-gray-100 rounded-[14px] transition-colors">
-                <BsArrowLeft className="text-gray-600" />
+              <Link href="/app" className="p-2.5 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-[14px] transition-colors">
+                <BsArrowLeft className="text-gray-600 dark:text-gray-400" />
               </Link>
               <div>
-                <h1 className="font-semibold text-[#0A0A0A]">Projects</h1>
-                <p className="text-xs text-[#4B5563]">{projects.length} designs</p>
+                <h1 className="font-semibold text-[#0A0A0A] dark:text-white">Projects</h1>
+                <p className="text-xs text-[#4B5563] dark:text-gray-400">{projects.length} designs</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -263,16 +263,16 @@ export default function ProjectsPage() {
           {/* Stats - Mobile optimized */}
           {projects.length > 0 && (
             <div className="grid grid-cols-2 gap-3 mb-5">
-              <div className="bg-white rounded-[14px] p-3 sm:p-4 border border-[#E5E7EB]">
-                <p className="text-xl sm:text-2xl font-bold text-[#0A0A0A]">{projects.length}</p>
-                <p className="text-xs text-[#4B5563]">Total projects</p>
+              <div className="bg-white dark:bg-gray-900 rounded-[14px] p-3 sm:p-4 border border-[#E5E7EB] dark:border-gray-700">
+                <p className="text-xl sm:text-2xl font-bold text-[#0A0A0A] dark:text-white">{projects.length}</p>
+                <p className="text-xs text-[#4B5563] dark:text-gray-400">Total projects</p>
               </div>
-              <div className="bg-white rounded-[14px] p-3 sm:p-4 border border-[#E5E7EB]">
+              <div className="bg-white dark:bg-gray-900 rounded-[14px] p-3 sm:p-4 border border-[#E5E7EB] dark:border-gray-700">
                 <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-xs font-medium text-[#0A0A0A]">Storage</p>
-                  <p className="text-xs text-[#4B5563]">{formatBytes(storage.used)}</p>
+                  <p className="text-xs font-medium text-[#0A0A0A] dark:text-white">Storage</p>
+                  <p className="text-xs text-[#4B5563] dark:text-gray-400">{formatBytes(storage.used)}</p>
                 </div>
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                   <div className="h-full bg-[#2563EB] rounded-full transition-all" style={{ width: `${Math.min(storage.percentage, 100)}%` }} />
                 </div>
               </div>
@@ -288,12 +288,12 @@ export default function ProjectsPage() {
                 placeholder="Search projects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-10 py-3 bg-white border-[#E5E7EB] rounded-[14px] text-base focus:ring-2 focus:ring-[#2563EB]"
+                className="w-full pl-11 pr-10 py-3 bg-white dark:bg-gray-900 border-[#E5E7EB] dark:border-gray-700 rounded-[14px] text-base focus:ring-2 focus:ring-[#2563EB]"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-300"
                 >
                   <BsX className="text-lg" />
                 </button>
@@ -301,7 +301,7 @@ export default function ProjectsPage() {
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="px-3 py-2.5 bg-white border-[#E5E7EB] rounded-[14px] text-sm flex-shrink-0 w-auto min-w-[120px]">
+                <SelectTrigger className="px-3 py-2.5 bg-white dark:bg-gray-900 border-[#E5E7EB] dark:border-gray-700 rounded-[14px] text-sm flex-shrink-0 w-auto min-w-[120px]">
                   <SelectValue placeholder="All types" />
                 </SelectTrigger>
                 <SelectContent>
@@ -312,7 +312,7 @@ export default function ProjectsPage() {
                 </SelectContent>
               </Select>
               <Select value={sortBy} onValueChange={(v) => setSortBy(v as "recent" | "name")}>
-                <SelectTrigger className="px-3 py-2.5 bg-white border-[#E5E7EB] rounded-[14px] text-sm flex-shrink-0 w-auto min-w-[100px]">
+                <SelectTrigger className="px-3 py-2.5 bg-white dark:bg-gray-900 border-[#E5E7EB] dark:border-gray-700 rounded-[14px] text-sm flex-shrink-0 w-auto min-w-[100px]">
                   <SelectValue placeholder="Recent" />
                 </SelectTrigger>
                 <SelectContent>
@@ -320,16 +320,16 @@ export default function ProjectsPage() {
                   <SelectItem value="name">Name</SelectItem>
                 </SelectContent>
               </Select>
-              <div className="flex bg-white border border-[#E5E7EB] rounded-[14px] overflow-hidden flex-shrink-0">
+              <div className="flex bg-white dark:bg-gray-900 border border-[#E5E7EB] dark:border-gray-700 rounded-[14px] overflow-hidden flex-shrink-0">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-2.5 ${viewMode === "grid" ? "bg-gray-100 text-[#2563EB]" : "text-[#4B5563] hover:bg-gray-50"} transition-colors`}
+                  className={`p-2.5 ${viewMode === "grid" ? "bg-gray-100 dark:bg-gray-800 text-[#2563EB]" : "text-[#4B5563] dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"} transition-colors`}
                 >
                   <BsGrid3X3Gap />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-2.5 ${viewMode === "list" ? "bg-gray-100 text-[#2563EB]" : "text-[#4B5563] hover:bg-gray-50"} transition-colors`}
+                  className={`p-2.5 ${viewMode === "list" ? "bg-gray-100 dark:bg-gray-800 text-[#2563EB]" : "text-[#4B5563] dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"} transition-colors`}
                 >
                   <BsList />
                 </button>
@@ -341,22 +341,22 @@ export default function ProjectsPage() {
           {isLoading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {[...Array(10)].map((_, i) => (
-                <div key={i} className="bg-white rounded-[14px] border border-[#E5E7EB] overflow-hidden animate-pulse">
-                  <div className="aspect-[4/3] bg-gray-100" />
+                <div key={i} className="bg-white dark:bg-gray-900 rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 overflow-hidden animate-pulse">
+                  <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-800" />
                   <div className="p-3">
-                    <div className="h-4 bg-gray-100 rounded w-3/4 mb-2" />
-                    <div className="h-3 bg-gray-100 rounded w-1/2" />
+                    <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-3/4 mb-2" />
+                    <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-1/2" />
                   </div>
                 </div>
               ))}
             </div>
           ) : filteredProjects.length === 0 ? (
-            <div className="text-center py-16 sm:py-20 bg-white rounded-[20px] border border-[#E5E7EB]">
+            <div className="text-center py-16 sm:py-20 bg-white dark:bg-gray-900 rounded-[20px] border border-[#E5E7EB] dark:border-gray-700">
               <BsFolder2Open className="text-4xl sm:text-5xl text-gray-300 mx-auto mb-4" />
-              <h3 className="text-base sm:text-lg font-medium text-[#0A0A0A] mb-2">
+              <h3 className="text-base sm:text-lg font-medium text-[#0A0A0A] dark:text-white mb-2">
                 {projects.length === 0 ? "No projects yet" : "No matching projects"}
               </h3>
-              <p className="text-[#4B5563] mb-5 text-sm px-4">
+              <p className="text-[#4B5563] dark:text-gray-400 mb-5 text-sm px-4">
                 {projects.length === 0 ? "Create your first design" : "Try different filters"}
               </p>
               <Button asChild>
@@ -375,10 +375,10 @@ export default function ProjectsPage() {
                 return (
                   <div
                     key={project.id}
-                    className="group relative bg-white rounded-[14px] overflow-hidden border border-[#E5E7EB] hover:shadow-lg hover:border-gray-300 transition-all cursor-pointer active:scale-[0.98]"
+                    className="group relative bg-white dark:bg-gray-900 rounded-[14px] overflow-hidden border border-[#E5E7EB] dark:border-gray-700 hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 transition-all cursor-pointer active:scale-[0.98]"
                     onClick={() => !isRenaming && openProject(project)}
                   >
-                    <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
+                    <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-800 relative overflow-hidden">
                       {project.thumbnail ? (
                         <img src={project.thumbnail} alt={project.name} className="w-full h-full object-cover" />
                       ) : (
@@ -402,9 +402,9 @@ export default function ProjectsPage() {
                           autoFocus
                         />
                       ) : (
-                        <h3 className="font-medium text-[#0A0A0A] truncate text-xs sm:text-sm">{project.name}</h3>
+                        <h3 className="font-medium text-[#0A0A0A] dark:text-white truncate text-xs sm:text-sm">{project.name}</h3>
                       )}
-                      <p className="text-[10px] sm:text-xs text-[#4B5563] mt-0.5">{formatDate(project.updatedAt)}</p>
+                      <p className="text-[10px] sm:text-xs text-[#4B5563] dark:text-gray-400 mt-0.5">{formatDate(project.updatedAt)}</p>
                     </div>
 
                     <DropdownMenu>
@@ -413,7 +413,7 @@ export default function ProjectsPage() {
                           onClick={(e) => e.stopPropagation()}
                           className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-[10px] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white shadow-sm"
                         >
-                          <BsThreeDotsVertical className="text-gray-600 text-sm" />
+                          <BsThreeDotsVertical className="text-gray-600 dark:text-gray-300 text-sm" />
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="min-w-[120px]">
@@ -437,17 +437,17 @@ export default function ProjectsPage() {
               })}
             </div>
           ) : (
-            <div className="bg-white rounded-[14px] border border-[#E5E7EB] divide-y divide-gray-100">
+            <div className="bg-white dark:bg-gray-900 rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-800">
               {filteredProjects.map((project) => {
                 const Icon = typeIcons[project.type] || BsImage;
                 const colorClass = typeColors[project.type] || "bg-gray-500";
                 return (
                   <div
                     key={project.id}
-                    className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 hover:bg-[#F9FAFB] cursor-pointer transition-colors active:bg-gray-100"
+                    className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 cursor-pointer transition-colors active:bg-gray-100 dark:bg-gray-800 dark:active:bg-gray-700"
                     onClick={() => openProject(project)}
                   >
-                    <div className="w-14 h-10 sm:w-16 sm:h-12 bg-gray-100 rounded-[10px] overflow-hidden flex-shrink-0 relative">
+                    <div className="w-14 h-10 sm:w-16 sm:h-12 bg-gray-100 dark:bg-gray-800 rounded-[10px] overflow-hidden flex-shrink-0 relative">
                       {project.thumbnail ? (
                         <img src={project.thumbnail} alt={project.name} className="w-full h-full object-cover" />
                       ) : (
@@ -457,12 +457,12 @@ export default function ProjectsPage() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-[#0A0A0A] truncate text-sm">{project.name}</h3>
+                      <h3 className="font-medium text-[#0A0A0A] dark:text-white truncate text-sm">{project.name}</h3>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className={`w-4 h-4 ${colorClass} rounded flex items-center justify-center`}>
                           <Icon className="text-white text-[8px]" />
                         </span>
-                        <span className="text-xs text-[#4B5563]">{typeLabels[project.type]} · {formatDate(project.updatedAt)}</span>
+                        <span className="text-xs text-[#4B5563] dark:text-gray-400">{typeLabels[project.type]} · {formatDate(project.updatedAt)}</span>
                       </div>
                     </div>
 
@@ -470,7 +470,7 @@ export default function ProjectsPage() {
                       <DropdownMenuTrigger asChild>
                         <button
                           onClick={(e) => e.stopPropagation()}
-                          className="p-2 hover:bg-gray-100 rounded-[10px]"
+                          className="p-2 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-[10px]"
                         >
                           <BsThreeDotsVertical className="text-gray-400" />
                         </button>

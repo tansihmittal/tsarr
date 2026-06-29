@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
   return (
-    <Html lang="en" data-theme="bumblebee">
+    <Html lang="en">
       <Head>
         {/* Service Worker Registration Link - for PWA detection */}
         <link rel="serviceworker" href="/sw.js" />
@@ -51,6 +51,12 @@ export default function Document() {
         {/* <meta name="msvalidate.01" content="your-bing-verification-code" /> */}
       </Head>
       <body className="antialiased">
+        {/* Theme init — runs before paint to prevent flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.classList.add('dark');document.documentElement.setAttribute('data-theme','dark');}else{document.documentElement.setAttribute('data-theme','bumblebee');}}catch(_){}`,
+          }}
+        />
         {/* Immediate service worker registration - must be synchronous for PWABuilder detection */}
         <script
           dangerouslySetInnerHTML={{

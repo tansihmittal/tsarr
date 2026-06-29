@@ -102,7 +102,7 @@ const QrCodeLayout: React.FC = () => {
                 Download PNG
               </Button>
             </div>
-            <div className="flex items-center justify-center rounded-[20px] border border-[#E5E7EB] bg-[#EFF6FF] min-h-[380px] py-8">
+            <div className="flex items-center justify-center rounded-[20px] border border-[#E5E7EB] dark:border-gray-700 bg-[#EFF6FF] dark:bg-blue-900/30 min-h-[380px] py-8">
               <div className="shadow-2xl rounded-[10px] overflow-hidden">
                 <canvas ref={canvasRef} />
               </div>
@@ -112,8 +112,8 @@ const QrCodeLayout: React.FC = () => {
           {/* Controls */}
           <div className="flex flex-col gap-3 py-4">
             {/* Preset type */}
-            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
-              <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider mb-3">
+            <div className="bg-[#F3F4F6] dark:bg-gray-800 rounded-[20px] p-4 backdrop-blur-sm">
+              <p className="text-xs font-semibold text-[#4B5563]/6 dark:text-gray-400/60 dark:text-gray-400 uppercase tracking-wider mb-3">
                 Type
               </p>
               <div className="flex flex-wrap gap-1.5 mb-3">
@@ -145,12 +145,12 @@ const QrCodeLayout: React.FC = () => {
             </div>
 
             {/* Size */}
-            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
+            <div className="bg-[#F3F4F6] dark:bg-gray-800 rounded-[20px] p-4 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider">
+                <p className="text-xs font-semibold text-[#4B5563]/6 dark:text-gray-400/60 dark:text-gray-400 uppercase tracking-wider">
                   Size
                 </p>
-                <span className="text-xs font-mono text-[#4B5563]">
+                <span className="text-xs font-mono text-[#4B5563] dark:text-gray-400">
                   {size}px
                 </span>
               </div>
@@ -161,19 +161,19 @@ const QrCodeLayout: React.FC = () => {
                 value={[size]}
                 onValueChange={([v]) => setSize(v)}
               />
-              <div className="flex justify-between text-xs text-[#4B5563]/60 mt-1">
+              <div className="flex justify-between text-xs text-[#4B5563]/6 dark:text-gray-400/60 dark:text-gray-400 mt-1">
                 <span>128</span>
                 <span>1024</span>
               </div>
             </div>
 
             {/* Margin */}
-            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
+            <div className="bg-[#F3F4F6] dark:bg-gray-800 rounded-[20px] p-4 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider">
+                <p className="text-xs font-semibold text-[#4B5563]/6 dark:text-gray-400/60 dark:text-gray-400 uppercase tracking-wider">
                   Margin
                 </p>
-                <span className="text-xs font-mono text-[#4B5563]">
+                <span className="text-xs font-mono text-[#4B5563] dark:text-gray-400">
                   {margin}
                 </span>
               </div>
@@ -187,40 +187,40 @@ const QrCodeLayout: React.FC = () => {
             </div>
 
             {/* Colors */}
-            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
-              <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider mb-3">
+            <div className="bg-[#F3F4F6] dark:bg-gray-800 rounded-[20px] p-4 backdrop-blur-sm">
+              <p className="text-xs font-semibold text-[#4B5563]/6 dark:text-gray-400/60 dark:text-gray-400 uppercase tracking-wider mb-3">
                 Colors
               </p>
               <div className="flex flex-col gap-2">
                 <label className="flex items-center justify-between">
-                  <span className="text-sm text-[#4B5563]">
+                  <span className="text-sm text-[#4B5563] dark:text-gray-400">
                     Foreground
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono text-[#4B5563]/60">
+                    <span className="text-xs font-mono text-[#4B5563]/6 dark:text-gray-400/60 dark:text-gray-400">
                       {fgColor.toUpperCase()}
                     </span>
                     <input
                       type="color"
                       value={fgColor}
                       onChange={(e) => setFgColor(e.target.value)}
-                      className="w-8 h-7 rounded cursor-pointer border border-[#E5E7EB]"
+                      className="w-8 h-7 rounded cursor-pointer border border-[#E5E7EB] dark:border-gray-700"
                     />
                   </div>
                 </label>
                 <label className="flex items-center justify-between">
-                  <span className="text-sm text-[#4B5563]">
+                  <span className="text-sm text-[#4B5563] dark:text-gray-400">
                     Background
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono text-[#4B5563]/60">
+                    <span className="text-xs font-mono text-[#4B5563]/6 dark:text-gray-400/60 dark:text-gray-400">
                       {bgColor.toUpperCase()}
                     </span>
                     <input
                       type="color"
                       value={bgColor}
                       onChange={(e) => setBgColor(e.target.value)}
-                      className="w-8 h-7 rounded cursor-pointer border border-[#E5E7EB]"
+                      className="w-8 h-7 rounded cursor-pointer border border-[#E5E7EB] dark:border-gray-700"
                     />
                   </div>
                 </label>
@@ -228,8 +228,8 @@ const QrCodeLayout: React.FC = () => {
             </div>
 
             {/* Error correction */}
-            <div className="bg-[#F3F4F6] rounded-[20px] p-4 backdrop-blur-sm">
-              <p className="text-xs font-semibold text-[#4B5563]/60 uppercase tracking-wider mb-3">
+            <div className="bg-[#F3F4F6] dark:bg-gray-800 rounded-[20px] p-4 backdrop-blur-sm">
+              <p className="text-xs font-semibold text-[#4B5563]/6 dark:text-gray-400/60 dark:text-gray-400 uppercase tracking-wider mb-3">
                 Error Correction
               </p>
               <div className="grid grid-cols-4 gap-1.5">
@@ -245,7 +245,7 @@ const QrCodeLayout: React.FC = () => {
                   </Button>
                 ))}
               </div>
-              <p className="text-xs text-[#4B5563]/60 mt-2">
+              <p className="text-xs text-[#4B5563]/6 dark:text-gray-400/60 dark:text-gray-400 mt-2">
                 H = most resilient · L = more data
               </p>
             </div>

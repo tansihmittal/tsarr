@@ -280,7 +280,7 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, pro
       </div>
 
       {/* Editor Canvas Area */}
-      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 border border-[#E5E7EB]/80 overflow-hidden py-8">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/3 dark:bg-gray-800/30 dark:bg-gray-800/50 border border-[#E5E7EB]/8 dark:border-gray-700/80 dark:border-gray-700 overflow-hidden py-8">
         <div
           ref={previewRef}
           style={{

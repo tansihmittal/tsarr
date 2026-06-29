@@ -1098,7 +1098,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     <section className={`flex flex-col transition-opacity duration-300 ${state.videoUrl ? "opacity-100" : "opacity-90"}`}>
       <Tabs defaultValue="captions">
       {/* Tab Buttons */}
-      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] mb-3">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-3">
         <TabsTrigger value="captions" className="gap-1.5 rounded-[10px] text-xs"><MdSubtitles className="w-3.5 h-3.5" /> Captions</TabsTrigger>
         <TabsTrigger value="style" className="gap-1.5 rounded-[10px] text-xs"><MdStyle className="w-3.5 h-3.5" /> Style</TabsTrigger>
         <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
@@ -1106,15 +1106,15 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
       {/* Captions Panel */}
       <TabsContent value="captions">
-        <div className="rounded-[10px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Captions" />
 
           {/* Auto-Transcribe Button */}
-          <div className="p-3 border-b border-[#E5E7EB]">
+          <div className="p-3 border-b border-[#E5E7EB] dark:border-gray-700">
             {/* Words per caption setting */}
             <div className="mb-3">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-[#0A0A0A] font-medium">Words per Caption</span>
+                <span className="text-sm text-[#0A0A0A] dark:text-white font-medium">Words per Caption</span>
                 <span className="px-2 py-0.5 text-xs bg-[#2563EB]/20 text-[#2563EB] rounded-full font-semibold">
                   {state.wordsPerCaption === 0 ? "Auto" : `${state.wordsPerCaption} ${state.wordsPerCaption === 1 ? "word" : "words"}`}
                 </span>
@@ -1125,7 +1125,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                   className={`flex-1 py-2 rounded-[10px] text-sm font-medium transition-colors ${
                     state.wordsPerCaption === 0
                       ? "bg-[#2563EB] text-white"
-                      : "bg-[#F9FAFB] hover:bg-[#F3F4F6] text-[#0A0A0A]"
+                      : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800 text-[#0A0A0A] dark:text-white"
                   }`}
                 >
                   Auto
@@ -1137,7 +1137,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                     className={`flex-1 py-2 rounded-[10px] text-sm font-medium transition-colors ${
                       state.wordsPerCaption === num
                         ? "bg-[#2563EB] text-white"
-                        : "bg-[#F9FAFB] hover:bg-[#F3F4F6] text-[#0A0A0A]"
+                        : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800 text-[#0A0A0A] dark:text-white"
                     }`}
                   >
                     {num}
@@ -1162,10 +1162,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             {state.isTranscribing && (
               <div className="mt-3">
                 <div className="flex justify-between items-center mb-1">
-                  <span className="text-xs text-gray-500">{state.transcriptionProgress}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{state.transcriptionProgress}</span>
                   <span className="text-xs font-semibold text-[#2563EB]">{Math.round(state.transcriptionPercent)}%</span>
                 </div>
-                <div className="h-2 bg-[#F9FAFB] rounded-full overflow-hidden">
+                <div className="h-2 bg-[#F9FAFB] dark:bg-gray-800/50 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full transition-all duration-300"
                     style={{ width: `${state.transcriptionPercent}%` }}
@@ -1194,7 +1194,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           {/* Caption List */}
           <div className="px-3 pb-3 space-y-2">
             {state.captions.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <MdSubtitles className="w-12 h-12 mx-auto mb-2 opacity-30" />
                 <p className="text-sm">No captions yet</p>
                 <p className="text-xs mt-1">Click &quot;Add Caption&quot; to get started</p>
@@ -1229,7 +1229,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
               <div className="p-3">
                 {/* Quality Selection */}
                 <div className="mb-3">
-                  <span className="text-xs text-gray-500 font-medium block mb-1.5">Quality</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Quality</span>
                   <div className="grid grid-cols-4 gap-2">
                     {(["720p", "1080p", "4k", "original"] as const).map((quality) => (
                       <button
@@ -1238,7 +1238,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                         className={`px-2 py-2 rounded-[10px] text-xs font-medium transition-colors ${
                           exportQuality === quality
                             ? "bg-[#2563EB] text-white"
-                            : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"
+                            : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800"
                         }`}
                       >
                         {quality === "original" ? "Orig" : quality}
@@ -1249,7 +1249,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
                 {/* Format Selection */}
                 <div className="mb-3">
-                  <span className="text-xs text-gray-500 font-medium block mb-1.5">Format</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Format</span>
                   <div className="grid grid-cols-3 gap-1.5 mb-1">
                     {(["webm", "mp4", "mov"] as const).map((format) => (
                       <button
@@ -1258,7 +1258,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                         className={`px-2 py-1.5 rounded-[10px] text-xs font-medium transition-colors uppercase ${
                           exportFormat === format
                             ? "bg-[#2563EB] text-white"
-                            : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"
+                            : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800"
                         }`}
                       >
                         {format}
@@ -1273,7 +1273,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                         className={`px-2 py-1.5 rounded-[10px] text-xs font-medium transition-colors uppercase ${
                           exportFormat === format
                             ? "bg-[#2563EB] text-white"
-                            : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"
+                            : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800"
                         }`}
                       >
                         {format}
@@ -1300,13 +1300,13 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
                 {isExportingVideo && (
                   <div className="mb-3">
-                    <div className="h-2 bg-[#F9FAFB] rounded-full overflow-hidden">
+                    <div className="h-2 bg-[#F9FAFB] dark:bg-gray-800/50 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-300"
                         style={{ width: `${exportProgress}%` }}
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1 text-center">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
                       Rendering video with burned-in captions...
                     </p>
                   </div>
@@ -1321,42 +1321,42 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
               <div className="p-3 grid grid-cols-3 gap-2">
                 <button
                   onClick={exportSRT}
-                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] hover:bg-[#F9FAFB] rounded-[14px] transition-colors"
+                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-[14px] transition-colors"
                 >
                   <BsDownload className="w-5 h-5 text-[#2563EB]" />
                   <span className="text-xs font-medium">SRT</span>
                 </button>
                 <button
                   onClick={exportVTT}
-                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] hover:bg-[#F9FAFB] rounded-[14px] transition-colors"
+                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-[14px] transition-colors"
                 >
                   <BsDownload className="w-5 h-5 text-[#2563EB]" />
                   <span className="text-xs font-medium">VTT</span>
                 </button>
                 <button
                   onClick={exportASS}
-                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] hover:bg-[#F9FAFB] rounded-[14px] transition-colors"
+                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-[14px] transition-colors"
                 >
                   <BsDownload className="w-5 h-5 text-[#2563EB]" />
                   <span className="text-xs font-medium">ASS</span>
                 </button>
                 <button
                   onClick={exportJSON}
-                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] hover:bg-[#F9FAFB] rounded-[14px] transition-colors"
+                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-[14px] transition-colors"
                 >
                   <BsDownload className="w-5 h-5 text-[#2563EB]" />
                   <span className="text-xs font-medium">JSON</span>
                 </button>
                 <button
                   onClick={exportCSV}
-                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] hover:bg-[#F9FAFB] rounded-[14px] transition-colors"
+                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-[14px] transition-colors"
                 >
                   <BsDownload className="w-5 h-5 text-[#2563EB]" />
                   <span className="text-xs font-medium">CSV</span>
                 </button>
                 <button
                   onClick={exportTXT}
-                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] hover:bg-[#F9FAFB] rounded-[14px] transition-colors"
+                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-[14px] transition-colors"
                 >
                   <BsDownload className="w-5 h-5 text-[#2563EB]" />
                   <span className="text-xs font-medium">TXT</span>
@@ -1369,7 +1369,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
       {/* Style Panel */}
       <TabsContent value="style">
-        <div className="rounded-[10px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Caption Style" />
 
           {/* Font Family */}
@@ -1381,7 +1381,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 updateStyle({ fontFamily: v });
               }}
             >
-              <SelectTrigger className="h-9 text-sm max-w-[150px] bg-[#F3F4F6] border-0">
+              <SelectTrigger className="h-9 text-sm max-w-[150px] bg-[#F3F4F6] dark:bg-gray-800 border-0">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -1393,10 +1393,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </Control>
 
           {/* Font Size */}
-          <div className="p-4 border-b border-[#E5E7EB]">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[#0A0A0A] font-medium">Font Size</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Font Size</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.fontSize}px
               </span>
             </div>
@@ -1414,10 +1414,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </div>
 
           {/* Font Weight */}
-          <div className="p-4 border-b border-[#E5E7EB]">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[#0A0A0A] font-medium">Font Weight</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Font Weight</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.fontWeight}
               </span>
             </div>
@@ -1452,10 +1452,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </Control>
 
           {/* Background Opacity */}
-          <div className="p-4 border-b border-[#E5E7EB]">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[#0A0A0A] font-medium">Background Opacity</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Background Opacity</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {Math.round(state.style.backgroundOpacity * 100)}%
               </span>
             </div>
@@ -1479,7 +1479,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                   className={`px-3 py-1 rounded text-xs font-medium transition-colors capitalize ${
                     state.style.position === pos
                       ? "bg-[#2563EB] text-white"
-                      : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"
+                      : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800"
                   }`}
                 >
                   {pos}
@@ -1491,10 +1491,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           {/* Custom Position Controls */}
           {state.style.position === "custom" && (
             <>
-              <div className="p-4 border-b border-[#E5E7EB]">
+              <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-[#0A0A0A] font-medium">Horizontal (X)</span>
-                  <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium">
+                  <span className="text-[#0A0A0A] dark:text-white font-medium">Horizontal (X)</span>
+                  <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                     {Math.round(state.style.customX)}%
                   </span>
                 </div>
@@ -1506,10 +1506,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                   className="w-full"
                 />
               </div>
-              <div className="p-4 border-b border-[#E5E7EB]">
+              <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-[#0A0A0A] font-medium">Vertical (Y)</span>
-                  <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium">
+                  <span className="text-[#0A0A0A] dark:text-white font-medium">Vertical (Y)</span>
+                  <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                     {Math.round(state.style.customY)}%
                   </span>
                 </div>
@@ -1530,7 +1530,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
               value={state.style.animation}
               onValueChange={(v) => updateStyle({ animation: v as CaptionStyle["animation"] })}
             >
-              <SelectTrigger className="h-9 text-sm bg-[#F3F4F6] border-0">
+              <SelectTrigger className="h-9 text-sm bg-[#F3F4F6] dark:bg-gray-800 border-0">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -1564,10 +1564,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </Control>
 
           {/* Text Stroke */}
-          <div className="p-4 border-b border-[#E5E7EB]">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[#0A0A0A] font-medium">Text Stroke</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Text Stroke</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.strokeWidth}px
               </span>
             </div>
@@ -1594,7 +1594,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
               value={state.style.textTransform}
               onValueChange={(v) => updateStyle({ textTransform: v as CaptionStyle["textTransform"] })}
             >
-              <SelectTrigger className="h-9 text-sm bg-[#F3F4F6] border-0">
+              <SelectTrigger className="h-9 text-sm bg-[#F3F4F6] dark:bg-gray-800 border-0">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -1615,10 +1615,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </Control>
 
           {/* Border Radius */}
-          <div className="p-4 border-b border-[#E5E7EB]">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[#0A0A0A] font-medium">Border Radius</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Border Radius</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.borderRadius}px
               </span>
             </div>
@@ -1632,10 +1632,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </div>
 
           {/* Padding */}
-          <div className="p-4 border-b border-[#E5E7EB]">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[#0A0A0A] font-medium">Padding</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Padding</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.padding}px
               </span>
             </div>
@@ -1651,10 +1651,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           <PanelHeading title="Advanced Text Options" />
 
           {/* Opacity */}
-          <div className="p-4 border-b border-[#E5E7EB]">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[#0A0A0A] font-medium">Opacity</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Opacity</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.opacity}%
               </span>
             </div>
@@ -1668,10 +1668,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </div>
 
           {/* Letter Spacing */}
-          <div className="p-4 border-b border-[#E5E7EB]">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[#0A0A0A] font-medium">Letter Spacing</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Letter Spacing</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.letterSpacing}px
               </span>
             </div>
@@ -1685,10 +1685,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </div>
 
           {/* Rotation */}
-          <div className="p-4 border-b border-[#E5E7EB]">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[#0A0A0A] font-medium">Rotation</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Rotation</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.rotation}°
               </span>
             </div>
@@ -1704,8 +1704,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           <PanelHeading title="3D Tilt Effects" />
 
           {/* 3D Tilt Presets */}
-          <div className="p-4 border-b border-[#E5E7EB]">
-            <span className="text-[#0A0A0A] font-medium text-sm block mb-2">Tilt Presets</span>
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
+            <span className="text-[#0A0A0A] dark:text-white font-medium text-sm block mb-2">Tilt Presets</span>
             <div className="grid grid-cols-3 gap-1.5">
               {[
                 { id: "none", name: "None", tiltX: 0, tiltY: 0 },
@@ -1723,7 +1723,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                   className={`px-2 py-1.5 rounded text-[10px] font-medium transition-colors ${
                     state.style.tiltX === preset.tiltX && state.style.tiltY === preset.tiltY
                       ? "bg-[#2563EB] text-white"
-                      : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"
+                      : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800"
                   }`}
                 >
                   {preset.name}
@@ -1733,10 +1733,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </div>
 
           {/* Tilt X */}
-          <div className="p-4 border-b border-[#E5E7EB]">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[#0A0A0A] font-medium">Tilt X</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Tilt X</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.tiltX}°
               </span>
             </div>
@@ -1750,10 +1750,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </div>
 
           {/* Tilt Y */}
-          <div className="p-4 border-b border-[#E5E7EB]">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[#0A0A0A] font-medium">Tilt Y</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Tilt Y</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.tiltY}°
               </span>
             </div>
@@ -1776,9 +1776,9 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
           {/* Reflection Opacity - only show when reflection is enabled */}
           {state.style.reflection && (
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Reflection Opacity</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Reflection Opacity</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {Math.round((state.style.reflectionOpacity || 0.3) * 100)}%
                 </span>
@@ -1798,9 +1798,9 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
       {/* Presets Panel */}
       <TabsContent value="presets">
-        <div className="rounded-[10px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Style Presets" />
-          <p className="text-xs text-gray-500 px-4 py-2">
+          <p className="text-xs text-gray-500 dark:text-gray-400 px-4 py-2">
             Click a preset to apply it to your captions
           </p>
           <div className="grid grid-cols-2 gap-3 p-3">
@@ -1808,7 +1808,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
               <button
                 key={preset.id}
                 onClick={() => updateStyle(preset.style as Partial<CaptionStyle>)}
-                className="group relative overflow-hidden rounded-[14px] border border-[#E5E7EB] hover:border-[#2563EB] transition-all hover:shadow-lg"
+                className="group relative overflow-hidden rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB] transition-all hover:shadow-lg"
               >
                 <div className="h-16 w-full flex items-center justify-center bg-gray-900">
                   <span
@@ -1824,8 +1824,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                     Sample
                   </span>
                 </div>
-                <div className="p-2 bg-white text-center border-t border-[#E5E7EB]">
-                  <span className="text-xs font-medium text-[#0A0A0A]">
+                <div className="p-2 bg-white dark:bg-gray-900 text-center border-t border-[#E5E7EB] dark:border-gray-700">
+                  <span className="text-xs font-medium text-[#0A0A0A] dark:text-white">
                     {preset.name}
                   </span>
                 </div>
@@ -1834,7 +1834,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </div>
 
           {/* Reset to Default */}
-          <div className="p-3 border-t border-[#E5E7EB]">
+          <div className="p-3 border-t border-[#E5E7EB] dark:border-gray-700">
             <Button
               variant="secondary"
               onClick={() => updateStyle(DEFAULT_STYLE)}
@@ -1885,17 +1885,17 @@ const CaptionItem = ({
   }, [isSelected]);
 
   return (
-    <div className={`border rounded-[14px] overflow-hidden transition-all ${isSelected ? "border-[#2563EB] bg-[#2563EB]/5" : "border-[#E5E7EB] bg-white"}`}>
+    <div className={`border rounded-[14px] overflow-hidden transition-all ${isSelected ? "border-[#2563EB] bg-[#2563EB]/5" : "border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900"}`}>
       {/* Header */}
       <div
-        className="flex items-center justify-between p-3 cursor-pointer hover:bg-[#F3F4F6] transition-colors"
+        className="flex items-center justify-between p-3 cursor-pointer hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors"
         onClick={() => { setIsExpanded(!isExpanded); onSelect(); }}
       >
         <div className="flex items-center gap-2">
           {isExpanded ? (
-            <BiChevronUp className="w-4 h-4 text-gray-500" />
+            <BiChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
           ) : (
-            <BiChevronDown className="w-4 h-4 text-gray-500" />
+            <BiChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
           )}
           <span className="font-medium text-sm">#{index + 1}</span>
           <span className="text-xs text-gray-400 truncate max-w-[100px]">
@@ -1912,10 +1912,10 @@ const CaptionItem = ({
           </button>
           <button
             onClick={onDuplicate}
-            className="p-1.5 hover:bg-[#F9FAFB] rounded-[10px] transition-colors"
+            className="p-1.5 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 rounded-[10px] transition-colors"
             title="Duplicate"
           >
-            <BsFiles className="w-3.5 h-3.5 text-gray-500" />
+            <BsFiles className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
           </button>
           <button
             onClick={onDelete}
@@ -1929,14 +1929,14 @@ const CaptionItem = ({
 
       {/* Content */}
       {isExpanded && (
-        <div className="p-3 pt-0 space-y-3 border-t border-[#E5E7EB]">
+        <div className="p-3 pt-0 space-y-3 border-t border-[#E5E7EB] dark:border-gray-700">
           {/* Text */}
           <div>
-            <span className="text-xs text-gray-500 font-medium block mb-1.5">Caption Text</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Caption Text</span>
             <Textarea
               value={caption.text}
               onChange={(e) => onUpdate({ text: e.target.value })}
-              className="w-full bg-[#F3F4F6] border-0 text-sm resize-none"
+              className="w-full bg-[#F3F4F6] dark:bg-gray-800 border-0 text-sm resize-none"
               rows={2}
               placeholder="Enter caption text"
             />
@@ -1945,7 +1945,7 @@ const CaptionItem = ({
           {/* Timing */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <span className="text-xs text-gray-500 font-medium block mb-1.5">Start Time</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Start Time</span>
               <Input
                 type="text"
                 value={formatTime(caption.startTime)}
@@ -1955,11 +1955,11 @@ const CaptionItem = ({
                     onUpdate({ startTime: time });
                   }
                 }}
-                className="bg-[#F3F4F6] border-0 text-sm font-mono h-9"
+                className="bg-[#F3F4F6] dark:bg-gray-800 border-0 text-sm font-mono h-9"
               />
             </div>
             <div>
-              <span className="text-xs text-gray-500 font-medium block mb-1.5">End Time</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">End Time</span>
               <Input
                 type="text"
                 value={formatTime(caption.endTime)}
@@ -1969,7 +1969,7 @@ const CaptionItem = ({
                     onUpdate({ endTime: time });
                   }
                 }}
-                className="bg-[#F3F4F6] border-0 text-sm font-mono h-9"
+                className="bg-[#F3F4F6] dark:bg-gray-800 border-0 text-sm font-mono h-9"
               />
             </div>
           </div>

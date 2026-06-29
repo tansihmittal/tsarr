@@ -945,7 +945,7 @@ const DrawingCanvas: React.FC = () => {
             }
           }}
         >
-          <div className="bg-white rounded-[14px] shadow-2xl p-5 min-w-[320px] max-w-[500px]">
+          <div className="bg-white dark:bg-gray-900 rounded-[14px] shadow-2xl p-5 min-w-[320px] max-w-[500px]">
             <div className="mb-4">
               <div className="space-y-1.5">
                 <Label>Font Size</Label>
@@ -958,7 +958,7 @@ const DrawingCanvas: React.FC = () => {
                   }
                 />
               </div>
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                 <span>14px</span>
                 <span className="font-medium">{textInput.fontSize}px</span>
                 <span>72px</span>
@@ -983,12 +983,12 @@ const DrawingCanvas: React.FC = () => {
                 color: strokeColor,
                 fontSize: `${Math.min(textInput.fontSize, 32)}px`,
               }}
-              className="w-full border-2 border-[#E5E7EB] rounded-[10px] p-3 min-h-[100px] resize-none focus:border-[#2563EB] focus:outline-none transition-colors"
+              className="w-full border-2 border-[#E5E7EB] dark:border-gray-700 rounded-[10px] p-3 min-h-[100px] resize-none focus:border-[#2563EB] focus:outline-none transition-colors bg-white dark:bg-gray-900 text-[#0A0A0A] dark:text-white"
               placeholder="Type your text here..."
               autoFocus
             />
             <div className="flex justify-between items-center mt-4">
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">
                 Ctrl+Enter to save, Esc to cancel
               </span>
               <div className="flex gap-2">

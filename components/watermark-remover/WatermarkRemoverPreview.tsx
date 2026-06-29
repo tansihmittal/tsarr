@@ -147,20 +147,20 @@ const WatermarkRemoverPreview: React.FC<Props> = ({
           <ToolbarButton title="Reset Image" disabled><BsRepeat /></ToolbarButton>
           <ToolbarButton title="Reset Canvas" disabled><BiReset /></ToolbarButton>
         </div>
-        <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 border border-[#E5E7EB] overflow-hidden">
-          <div className={`p-6 sm:p-8 bg-white relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-[#2563EB]" : ""}`} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
+        <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 dark:bg-gray-800/30 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden">
+          <div className={`p-6 sm:p-8 bg-white dark:bg-gray-900 relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-[#2563EB]" : ""}`} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
             <div className="flex gap-1 flex-col mb-6">
               <div className="flex items-start gap-4 sm:gap-6">
-                <h2 className="font-bold text-2xl text-[#0A0A0A]">Watermark Remover</h2>
+                <h2 className="font-bold text-2xl text-[#0A0A0A] dark:text-white">Watermark Remover</h2>
                 <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
               </div>
-              <span className="text-sm text-gray-500 mt-1">Remove watermarks from images with intelligent inpainting</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">Remove watermarks from images with intelligent inpainting</span>
             </div>
             <label className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer ${isDragging ? "border-[#2563EB] bg-[#2563EB]/5 scale-[1.02]" : "border-gray-300 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"}`}>
               <div className={`p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300 ${isDragging ? "scale-110" : ""}`}><BsUpload className="text-[#2563EB] text-2xl" /></div>
               <input type="file" hidden accept={IMAGE_ACCEPT} onChange={handleFileInput} />
-              <h3 className="text-gray-700 font-medium"><span className="text-[#2563EB] hover:underline">Click to upload</span> or drag and drop</h3>
-              <div className="flex items-center gap-2 text-sm text-gray-500"><BsClipboard className="text-xs" /><span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span></div>
+              <h3 className="text-gray-700 dark:text-gray-200 font-medium"><span className="text-[#2563EB] hover:underline">Click to upload</span> or drag and drop</h3>
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"><BsClipboard className="text-xs" /><span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span></div>
               <span className="text-xs text-gray-400">JPG, PNG, WebP up to 30MB</span>
             </label>
             <div className="grid grid-cols-2 gap-3 mt-6">
@@ -198,7 +198,7 @@ const WatermarkRemoverPreview: React.FC<Props> = ({
       </div>
 
       <div className="flex justify-between mb-2 w-full">
-        <span className="text-xs text-gray-500 bg-[#F9FAFB] px-3 py-1 rounded-full">
+        <span className="text-xs text-gray-500 dark:text-gray-400 bg-[#F9FAFB] dark:bg-gray-800 px-3 py-1 rounded-full">
           {state.imageWidth} × {state.imageHeight} px
         </span>
         <span className="text-xs text-amber-600 bg-amber-50 px-3 py-1 rounded-full">
@@ -208,7 +208,7 @@ const WatermarkRemoverPreview: React.FC<Props> = ({
 
       <div
         ref={containerRef}
-        className={`relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 border ${isDragging ? "border-[#2563EB] border-dashed bg-[#2563EB]/5" : "border-[#E5E7EB]"} overflow-hidden`}
+        className={`relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 dark:bg-gray-800/30 border ${isDragging ? "border-[#2563EB] border-dashed bg-[#2563EB]/5" : "border-[#E5E7EB] dark:border-gray-700"} overflow-hidden`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}

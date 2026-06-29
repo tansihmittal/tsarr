@@ -477,7 +477,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
 
       {/* Editor Area */}
       <div
-        className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F3F4F6] border border-[#E5E7EB]"
+        className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F3F4F6] dark:bg-gray-800 border border-[#E5E7EB] dark:border-gray-700"
         style={{ overflow: "visible" }}
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
         onDragLeave={() => setIsDragging(false)}
@@ -594,7 +594,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                 {/* Transcription Progress Overlay - Veed.io style */}
                 {state.isTranscribing && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
-                    <div className="bg-white p-8 rounded-[20px] shadow-2xl min-w-[320px] text-center">
+                    <div className="bg-white dark:bg-gray-900 p-8 rounded-[20px] shadow-2xl min-w-[320px] text-center">
                       {/* Circular Progress */}
                       <div className="relative w-24 h-24 mx-auto mb-6">
                         <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
@@ -641,7 +641,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                       </h3>
 
                       {/* Status text */}
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
                         {state.transcriptionProgress || "...this may take a minute, hang tight!"}
                       </p>
                     </div>
@@ -651,11 +651,11 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
             </div>
 
             {/* Timeline */}
-            <div className="p-4 bg-white border-t border-[#E5E7EB]">
+            <div className="p-4 bg-white dark:bg-gray-900 border-t border-[#E5E7EB] dark:border-gray-700">
               {/* Time Display */}
               <div className="flex justify-between items-center mb-2 text-sm">
                 <span className="font-mono text-[#2563EB]">{formatTime(localTime)}</span>
-                <span className="font-mono text-gray-500">{formatTime(state.videoDuration || 0)}</span>
+                <span className="font-mono text-gray-500 dark:text-gray-400">{formatTime(state.videoDuration || 0)}</span>
               </div>
 
               {/* Progress Bar - Simplified for better performance */}
@@ -748,15 +748,15 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
           </div>
         ) : (
           /* Upload Prompt */
-          <div className={`p-6 sm:p-8 bg-white relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-[#2563EB]" : ""}`}>
+          <div className={`p-6 sm:p-8 bg-white dark:bg-gray-900 relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-[#2563EB]" : ""}`}>
             <div className="flex gap-1 flex-col mb-6">
               <div className="flex items-start gap-4 sm:gap-6">
-                <h2 className="font-bold text-2xl text-[#0A0A0A] bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
+                <h2 className="font-bold text-2xl text-[#0A0A0A] dark:text-white bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
                   Upload Your Video
                 </h2>
                 <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
               </div>
-              <span className="text-sm text-gray-500 mt-1">
+              <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Add captions and subtitles to your videos
               </span>
             </div>
@@ -775,7 +775,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                 id="video-upload-main"
                 onChange={handleFileChange}
               />
-              <h3 className="text-gray-700 font-medium">
+              <h3 className="text-gray-700 dark:text-gray-200 font-medium">
                 <span className="text-[#2563EB] hover:underline cursor-pointer">
                   Click to upload
                 </span>{" "}
@@ -808,15 +808,15 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
       {/* Floating Edit Modal - Outside video container to avoid clipping */}
       {isEditing && currentCaption && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-[20px] shadow-2xl p-6 min-w-[400px] max-w-[600px] mx-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Edit Caption</h3>
+          <div className="bg-white dark:bg-gray-900 rounded-[20px] shadow-2xl p-6 min-w-[400px] max-w-[600px] mx-4">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Edit Caption</h3>
             <input
               ref={editInputRef}
               type="text"
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
               onKeyDown={handleEditKeyDown}
-              className="w-full px-4 py-3 text-lg border-2 border-gray-200 rounded-[14px] focus:border-[#2563EB] focus:outline-none transition-colors"
+              className="w-full px-4 py-3 text-lg border-2 border-gray-200 dark:border-gray-700 rounded-[14px] focus:border-[#2563EB] focus:outline-none transition-colors"
               style={{
                 fontFamily: state.style.fontFamily,
                 fontWeight: state.style.fontWeight,

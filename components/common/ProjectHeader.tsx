@@ -71,7 +71,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
         tsarr.in
       </Link>
 
-      <span className="text-gray-300">|</span>
+      <span className="text-gray-300 dark:text-gray-600">|</span>
 
       {/* Project name */}
       <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             onClick={() => setIsEditing(true)}
             className="flex items-center gap-1.5 px-2 py-1 h-auto rounded-[10px] group"
           >
-            <span className="font-medium text-[#0A0A0A] text-sm max-w-[150px] truncate">
+            <span className="font-medium text-[#0A0A0A] dark:text-white text-sm max-w-[150px] truncate">
               {projectName}
             </span>
             <BsPencil className="text-[#4B5563] text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -118,7 +118,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       {/* Save status */}
       <div className="flex items-center gap-2 ml-2">
         {isSaving ? (
-          <div className="flex items-center gap-1.5 text-[#4B5563] text-xs">
+          <div className="flex items-center gap-1.5 text-[#4B5563] dark:text-gray-400 text-xs">
             <BsCloudArrowUp className="animate-pulse" />
             <span>Saving...</span>
           </div>
@@ -142,7 +142,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       {/* Projects link */}
       <Link
         href="/projects"
-        className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[#4B5563] hover:text-[#0A0A0A] hover:bg-[#F9FAFB] rounded-[10px] transition-colors ml-auto"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:hover:text-white hover:bg-[#F9FAFB] dark:hover:bg-gray-800 rounded-[10px] transition-colors ml-auto"
       >
         <BsFolder2 />
         <span className="hidden sm:inline">My Projects</span>

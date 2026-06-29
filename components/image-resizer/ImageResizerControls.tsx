@@ -80,16 +80,16 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
       <Tabs defaultValue="size">
-      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] mb-3">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-3">
         <TabsTrigger value="size" className="gap-1.5 rounded-[10px] text-xs"><BiRuler className="w-3.5 h-3.5" /> Size</TabsTrigger>
         <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BiImage className="w-3.5 h-3.5" /> Presets</TabsTrigger>
         <TabsTrigger value="output" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Output</TabsTrigger>
       </TabsList>
 
       <TabsContent value="size">
-        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <PanelHeading title="Image" />
-        <div className="p-4 border-b border-[#E5E7EB]">
+        <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
           <input ref={fileInputRef} type="file" accept={IMAGE_ACCEPT} onChange={handleFileChange} className="hidden" />
           <div className="grid grid-cols-2 gap-2 mb-3">
             <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-2"><BsUpload /> {state.originalImage ? "Change" : "Upload"}</Button>
@@ -99,8 +99,8 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
             <div className="flex items-center gap-3">
               <img src={state.originalImage} alt="Preview" className="w-16 h-16 rounded-[10px] object-cover" />
               <div className="text-sm">
-                <div className="font-medium text-[#0A0A0A]">{state.originalWidth} × {state.originalHeight}</div>
-                <div className="text-gray-500">Original size</div>
+                <div className="font-medium text-[#0A0A0A] dark:text-white">{state.originalWidth} × {state.originalHeight}</div>
+                <div className="text-gray-500 dark:text-gray-400">Original size</div>
               </div>
             </div>
           )}
@@ -108,15 +108,15 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
 
           <div className="relative rounded-md">
             <PanelHeading title="Resize Mode" />
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => updateState({ resizeMode: "pixels" })} className={`p-3 rounded-[10px] text-center transition-all ${state.resizeMode === "pixels" ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"}`}>
+                <button onClick={() => updateState({ resizeMode: "pixels" })} className={`p-3 rounded-[10px] text-center transition-all ${state.resizeMode === "pixels" ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>
                   <div className="font-semibold text-sm">Pixels</div>
-                  <div className={`text-xs ${state.resizeMode === "pixels" ? "text-white/70" : "text-gray-500"}`}>Exact dimensions</div>
+                  <div className={`text-xs ${state.resizeMode === "pixels" ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>Exact dimensions</div>
                 </button>
-                <button onClick={() => updateState({ resizeMode: "percentage" })} className={`p-3 rounded-[10px] text-center transition-all ${state.resizeMode === "percentage" ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"}`}>
+                <button onClick={() => updateState({ resizeMode: "percentage" })} className={`p-3 rounded-[10px] text-center transition-all ${state.resizeMode === "percentage" ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>
                   <div className="font-semibold text-sm">Percentage</div>
-                  <div className={`text-xs ${state.resizeMode === "percentage" ? "text-white/70" : "text-gray-500"}`}>Scale by %</div>
+                  <div className={`text-xs ${state.resizeMode === "percentage" ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>Scale by %</div>
                 </button>
               </div>
             </div>
@@ -135,14 +135,14 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
                     {state.maintainAspectRatio ? "Locked" : "Unlocked"}
                   </Button>
                 </Control>
-                <div className="p-4 border-b border-[#E5E7EB]">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="grid grid-cols-2 gap-3 mb-3">
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Width (px)</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400 block mb-1">Width (px)</label>
                       <Input type="number" value={state.targetWidth} onChange={(e) => updateState({ targetWidth: Number(e.target.value) })} className="h-9 text-sm w-full" min="1" max="8000" />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Height (px)</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400 block mb-1">Height (px)</label>
                       <Input type="number" value={state.targetHeight} onChange={(e) => updateState({ targetHeight: Number(e.target.value) })} className="h-9 text-sm w-full" min="1" max="8000" />
                     </div>
                   </div>
@@ -159,9 +159,9 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
             ) : (
               <>
                 <PanelHeading title="Scale Percentage" />
-                <div className="p-4 border-b border-[#E5E7EB]">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs text-gray-500 font-medium">Scale</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Scale</span>
                     <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.percentage}%</span>
                   </div>
                   <Slider min={10} max={200} value={[state.percentage]} onValueChange={([v]) => updateState({ percentage: v })} className="w-full mb-3" />
@@ -170,7 +170,7 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
                       <Button key={p} size="sm" variant={state.percentage === p ? "default" : "secondary"} className="h-7 text-xs px-3" onClick={() => updateState({ percentage: p })}>{p}%</Button>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-500 mt-3">Output: {dims.width} × {dims.height} px</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">Output: {dims.width} × {dims.height} px</p>
                 </div>
               </>
             )}
@@ -178,18 +178,18 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
         </div>
         </TabsContent>
         <TabsContent value="presets">
-          <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+          <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
             <PanelHeading title="Preset Sizes" />
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-2 gap-2">
                 {presetSizes.map((preset) => (
                   <button
                     key={preset.id}
                     onClick={() => updateState({ targetWidth: preset.width, targetHeight: preset.height, resizeMode: "pixels", maintainAspectRatio: false })}
-                    className={`p-3 rounded-[10px] text-left transition-all ${state.targetWidth === preset.width && state.targetHeight === preset.height ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"}`}
+                    className={`p-3 rounded-[10px] text-left transition-all ${state.targetWidth === preset.width && state.targetHeight === preset.height ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
                   >
                     <div className="font-semibold text-sm">{preset.name}</div>
-                    <div className={`text-xs ${state.targetWidth === preset.width && state.targetHeight === preset.height ? "text-white/70" : "text-gray-500"}`}>{preset.width}×{preset.height}</div>
+                    <div className={`text-xs ${state.targetWidth === preset.width && state.targetHeight === preset.height ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>{preset.width}×{preset.height}</div>
                   </button>
                 ))}
               </div>
@@ -197,18 +197,18 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
           </div>
         </TabsContent>
         <TabsContent value="output">
-          <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+          <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
             <PanelHeading title="Format" />
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-4 gap-2">
                 {outputFormats.map((format) => (
                   <button
                     key={format.id}
                     onClick={() => updateState({ outputFormat: format.id as ImageResizerState["outputFormat"] })}
-                    className={`p-3 rounded-[10px] text-center transition-all ${state.outputFormat === format.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"}`}
+                    className={`p-3 rounded-[10px] text-center transition-all ${state.outputFormat === format.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
                   >
                     <div className="font-semibold text-sm">{format.name}</div>
-                    <div className={`text-xs ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500"}`}>{format.desc}</div>
+                    <div className={`text-xs ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>{format.desc}</div>
                   </button>
                 ))}
               </div>
@@ -217,9 +217,9 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
             {!["png", "gif", "bmp", "tiff", "ico"].includes(state.outputFormat) && (
               <>
                 <PanelHeading title="Quality" />
-                <div className="p-4 border-b border-[#E5E7EB]">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs text-gray-500 font-medium">Quality</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Quality</span>
                     <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.quality}%</span>
                   </div>
                   <Slider min={10} max={100} value={[state.quality]} onValueChange={([v]) => updateState({ quality: v })} className="w-full" />
@@ -228,12 +228,12 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
             )}
 
             <PanelHeading title="Export" />
-            <div className="p-4 border-b border-[#E5E7EB]">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <Button onClick={onExport} disabled={!state.originalImage} className="w-full gap-2 shadow-lg shadow-[#2563EB]/20">
                 <BsDownload className="text-lg" />
                 Export {state.outputFormat.toUpperCase()} ({dims.width}×{dims.height})
               </Button>
-              <p className="text-xs text-gray-500 mt-2 text-center">{dims.width} × {dims.height} px</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">{dims.width} × {dims.height} px</p>
             </div>
           </div>
         </TabsContent>

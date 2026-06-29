@@ -43,6 +43,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 // Map TopoJSON URLs
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -329,7 +330,7 @@ const DataPointRow: React.FC<{
   };
 
   return (
-    <div className="p-2 bg-[#F9FAFB] rounded-[10px] space-y-1">
+    <div className="p-2 bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] space-y-1">
       <div className="flex items-center gap-2">
         <Input
           type="text"
@@ -429,7 +430,7 @@ const FlowRow: React.FC<{
   };
 
   return (
-    <div className="p-2 bg-[#F9FAFB] rounded-[10px] space-y-2">
+    <div className="p-2 bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] space-y-2">
       <div className="flex items-center gap-2">
         <Input
           type="text"
@@ -457,7 +458,7 @@ const FlowRow: React.FC<{
           <BsTrash />
         </Button>
       </div>
-      <div className="text-[10px] text-gray-500">
+      <div className="text-[10px] text-gray-500 dark:text-gray-400">
         {flow.from[0] !== 0 && flow.to[0] !== 0 ? (
           <span className="flex items-center gap-1"><BsGeoAlt className="inline" /> {flow.from[0].toFixed(2)}, {flow.from[1].toFixed(2)} → {flow.to[0].toFixed(2)}, {flow.to[1].toFixed(2)}</span>
         ) : (
@@ -489,7 +490,6 @@ const MapMakerLayout: React.FC = () => {
   const [flowColor, setFlowColor] = useState("#6366f1");
   const [padding, setPadding] = useState(40);
   const [borderRadius, setBorderRadius] = useState(16);
-  const [activeTab, setActiveTab] = useState<"data" | "style" | "presets">("data");
   const [customPresets, setCustomPresets] = useState<MapPreset[]>([]);
   const [newPresetName, setNewPresetName] = useState("");
   const [zoom, setZoom] = useState(1);
@@ -1039,14 +1039,14 @@ const MapMakerLayout: React.FC = () => {
     if (!showLegend || mapType === "marker") return null;
     const colors = colorSchemes[colorScheme];
     return (
-      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-[10px] p-3 shadow-lg hidden lg:block">
-        <div className="text-xs font-semibold text-gray-700 mb-2">Legend</div>
+      <div className="absolute bottom-4 left-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-[10px] p-3 shadow-lg hidden lg:block">
+        <div className="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-2">Legend</div>
         <div className="flex items-center gap-1">
-          <span className="text-[10px] text-gray-500">{minValue.toLocaleString()}</span>
+          <span className="text-[10px] text-gray-500 dark:text-gray-400">{minValue.toLocaleString()}</span>
           {colors.map((c, i) => (
             <div key={i} className="w-6 h-3 rounded-sm" style={{ backgroundColor: c }} />
           ))}
-          <span className="text-[10px] text-gray-500">{maxValue.toLocaleString()}</span>
+          <span className="text-[10px] text-gray-500 dark:text-gray-400">{maxValue.toLocaleString()}</span>
         </div>
       </div>
     );
@@ -1079,7 +1079,7 @@ const MapMakerLayout: React.FC = () => {
             </div>
 
             {/* Map Container */}
-            <div className="relative flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#EFF6FF] border border-[#E5E7EB] overflow-hidden">
+            <div className="relative flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#EFF6FF] dark:bg-blue-900/20 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden">
               <div
                 ref={mapContainerRef}
                 className="w-full h-full flex flex-col items-center justify-center relative"
@@ -1220,23 +1220,22 @@ const MapMakerLayout: React.FC = () => {
           </div>
 
           {/* Controls Panel */}
-          <div className="bg-white rounded-[20px] shadow-lg p-5 h-fit max-h-[85vh] overflow-y-auto">
-            <div className="grid grid-cols-3 bg-[#F9FAFB] rounded-[10px] p-1 mb-5">
-              {(["data", "style", "presets"] as const).map((tab) => (
-                <button key={tab} onClick={() => setActiveTab(tab)} className={`py-2 px-3 text-sm font-medium rounded-md capitalize transition-all ${activeTab === tab ? "bg-white shadow-sm" : "hover:bg-white/50"}`}>
-                  {tab}
-                </button>
-              ))}
-            </div>
+          <div className="bg-white dark:bg-gray-900 rounded-[20px] shadow-lg p-5 h-fit max-h-[85vh] overflow-y-auto">
+            <Tabs defaultValue="data">
+            <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-5">
+              <TabsTrigger value="data" className="rounded-[10px] text-xs">Data</TabsTrigger>
+              <TabsTrigger value="style" className="rounded-[10px] text-xs">Style</TabsTrigger>
+              <TabsTrigger value="presets" className="rounded-[10px] text-xs">Presets</TabsTrigger>
+            </TabsList>
 
-            {activeTab === "data" && (
+            <TabsContent value="data">
               <div className="space-y-5">
                 {/* Map Type */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Map Type</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Map Type</Label>
                   <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                     {mapTypes.map((t) => (
-                      <button key={t.id} onClick={() => setMapType(t.id)} className={`p-2 rounded-[10px] text-center transition-all ${mapType === t.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2 ring-offset-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6] text-[#0A0A0A]"}`}>
+                      <button key={t.id} onClick={() => setMapType(t.id)} className={`p-2 rounded-[10px] text-center transition-all ${mapType === t.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2 ring-offset-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 text-[#0A0A0A] dark:text-white"}`}>
                         <div className="text-lg">{t.icon}</div>
                         <div className="text-[9px] font-semibold">{t.name}</div>
                       </button>
@@ -1246,10 +1245,10 @@ const MapMakerLayout: React.FC = () => {
 
                 {/* Region */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Region</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Region</Label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {regionOptions.map((r) => (
-                      <button key={r.id} onClick={() => setRegion(r.id)} className={`py-2 px-1 rounded-[10px] text-[10px] font-medium transition-all ${region === r.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"}`}>
+                      <button key={r.id} onClick={() => setRegion(r.id)} className={`py-2 px-1 rounded-[10px] text-[10px] font-medium transition-all ${region === r.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800"}`}>
                         {r.name}
                       </button>
                     ))}
@@ -1258,19 +1257,19 @@ const MapMakerLayout: React.FC = () => {
 
                 {/* Custom Region Controls */}
                 {region === "custom" && (
-                  <div className="p-3 bg-[#F9FAFB] rounded-[10px] space-y-3">
+                  <div className="p-3 bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] space-y-3">
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <Label className="text-[10px] text-[#4B5563] block mb-1">Center Lng</Label>
+                        <Label className="text-[10px] text-[#4B5563] dark:text-gray-400 block mb-1">Center Lng</Label>
                         <Input type="number" value={customCenter[0]} onChange={(e) => setCustomCenter([parseFloat(e.target.value) || 0, customCenter[1]])} className="h-7 text-xs px-2 w-full" />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-[#4B5563] block mb-1">Center Lat</Label>
+                        <Label className="text-[10px] text-[#4B5563] dark:text-gray-400 block mb-1">Center Lat</Label>
                         <Input type="number" value={customCenter[1]} onChange={(e) => setCustomCenter([customCenter[0], parseFloat(e.target.value) || 0])} className="h-7 text-xs px-2 w-full" />
                       </div>
                     </div>
                     <div>
-                      <Label className="text-[10px] text-[#4B5563] block mb-1">Scale: {customScale}</Label>
+                      <Label className="text-[10px] text-[#4B5563] dark:text-gray-400 block mb-1">Scale: {customScale}</Label>
                       <Slider min={50} max={2000} value={[customScale]} onValueChange={([v]) => setCustomScale(v)} />
                     </div>
                   </div>
@@ -1278,25 +1277,25 @@ const MapMakerLayout: React.FC = () => {
 
                 {/* Title */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Map Title</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Map Title</Label>
                   <DebouncedInput value={title} onChange={setTitle} className="h-9 text-xs" placeholder="Enter title" />
                 </div>
 
                 {/* Zoom */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Zoom: {zoom.toFixed(1)}x</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Zoom: {zoom.toFixed(1)}x</Label>
                   <Slider min={0.5} max={4} step={0.1} value={[zoom]} onValueChange={([v]) => setZoom(v)} />
                 </div>
 
                 {/* Import Data */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Import Data</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Import Data</Label>
                   <div className="flex gap-2">
                     <input ref={fileInputRef} type="file" accept=".csv,.tsv,.txt" onChange={handleFileUpload} className="hidden" />
                     <Button size="sm" variant="secondary" className="flex-1 gap-1" onClick={() => fileInputRef.current?.click()}><BsUpload /> CSV</Button>
                     <Button size="sm" variant="secondary" className="flex-1 gap-1" onClick={() => toast("Paste from Excel (Ctrl+V)")}><BsTable /> Paste</Button>
                   </div>
-                  <div className="text-[10px] text-gray-500 mt-2 space-y-1">
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-2 space-y-1">
                     <p><strong>Points:</strong> name, value, lng, lat</p>
                     <p><strong>Flow:</strong> from, to, value</p>
                     <p className="text-gray-400">Example: Delhi, Mumbai, 100</p>
@@ -1307,7 +1306,7 @@ const MapMakerLayout: React.FC = () => {
                 {mapType !== "flow" && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <Label className="text-sm font-medium text-[#4B5563]">Data Points ({data.length})</Label>
+                      <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400">Data Points ({data.length})</Label>
                       <Button size="sm" variant="ghost" className="h-7 text-xs px-2 gap-1" onClick={addDataPoint}><BsPlus /> Add</Button>
                     </div>
                     <div className="space-y-2 max-h-[200px] overflow-y-auto">
@@ -1330,7 +1329,7 @@ const MapMakerLayout: React.FC = () => {
                 {mapType === "flow" && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <Label className="text-sm font-medium text-[#4B5563]">Flow Routes ({flows.length})</Label>
+                      <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400">Flow Routes ({flows.length})</Label>
                       <Button size="sm" variant="ghost" className="h-7 text-xs px-2 gap-1" onClick={addFlow}><BsPlus /> Add</Button>
                     </div>
                     <div className="space-y-2 max-h-[200px] overflow-y-auto">
@@ -1347,13 +1346,13 @@ const MapMakerLayout: React.FC = () => {
                   </div>
                 )}
               </div>
-            )}
+            </TabsContent>
 
-            {activeTab === "style" && (
+            <TabsContent value="style">
               <div className="space-y-5">
                 {/* Color Scheme */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Color Scheme</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Color Scheme</Label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {(Object.keys(colorSchemes) as (keyof typeof colorSchemes)[]).map((scheme) => (
                       <button key={scheme} onClick={() => setColorScheme(scheme)} className={`p-2 rounded-[10px] transition-all ${colorScheme === scheme ? "ring-2 ring-[#2563EB] ring-offset-2" : ""}`}>
@@ -1371,10 +1370,10 @@ const MapMakerLayout: React.FC = () => {
                 {/* Marker Icon (for marker type) */}
                 {mapType === "marker" && (
                   <div>
-                    <Label className="text-sm font-medium text-[#4B5563] block mb-2">Default Marker Icon</Label>
+                    <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Default Marker Icon</Label>
                     <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
                       {markerIcons.map((ic) => (
-                        <button key={ic.id} onClick={() => setMarkerIcon(ic.id)} className={`p-2 rounded-[10px] text-center transition-all ${markerIcon === ic.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"}`}>
+                        <button key={ic.id} onClick={() => setMarkerIcon(ic.id)} className={`p-2 rounded-[10px] text-center transition-all ${markerIcon === ic.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800"}`}>
                           <div className="text-lg">{ic.icon}</div>
                         </button>
                       ))}
@@ -1385,36 +1384,36 @@ const MapMakerLayout: React.FC = () => {
                 {/* Marker Size */}
                 {mapType === "marker" && (
                   <div>
-                    <Label className="text-sm font-medium text-[#4B5563] block mb-2">Marker Size: {markerSize}px</Label>
+                    <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Marker Size: {markerSize}px</Label>
                     <Slider min={4} max={20} value={[markerSize]} onValueChange={([v]) => setMarkerSize(v)} />
                   </div>
                 )}
 
                 {/* Background */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Background</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Background</Label>
                   <BackgroundPicker background={background} onBackgroundChange={setBackground} showTilt={false} />
                 </div>
 
                 {/* Colors */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs text-[#4B5563] block mb-1">Default Fill</Label>
+                    <Label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-1">Default Fill</Label>
                     <input type="color" value={defaultFill} onChange={(e) => setDefaultFill(e.target.value)} className="w-full h-8 rounded cursor-pointer" />
                   </div>
                   <div>
-                    <Label className="text-xs text-[#4B5563] block mb-1">Stroke</Label>
+                    <Label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-1">Stroke</Label>
                     <input type="color" value={strokeColor} onChange={(e) => setStrokeColor(e.target.value)} className="w-full h-8 rounded cursor-pointer" />
                   </div>
                   {mapType === "marker" && (
                     <div>
-                      <Label className="text-xs text-[#4B5563] block mb-1">Marker</Label>
+                      <Label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-1">Marker</Label>
                       <input type="color" value={markerColor} onChange={(e) => setMarkerColor(e.target.value)} className="w-full h-8 rounded cursor-pointer" />
                     </div>
                   )}
                   {mapType === "flow" && (
                     <div>
-                      <Label className="text-xs text-[#4B5563] block mb-1">Flow</Label>
+                      <Label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-1">Flow</Label>
                       <input type="color" value={flowColor} onChange={(e) => setFlowColor(e.target.value)} className="w-full h-8 rounded cursor-pointer" />
                     </div>
                   )}
@@ -1422,18 +1421,18 @@ const MapMakerLayout: React.FC = () => {
 
                 {/* Stroke Width */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Stroke Width: {strokeWidth}</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Stroke Width: {strokeWidth}</Label>
                   <Slider min={0} max={2} step={0.1} value={[strokeWidth]} onValueChange={([v]) => setStrokeWidth(v)} />
                 </div>
 
                 {/* Padding & Border Radius */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs text-[#4B5563] block mb-1">Padding: {padding}px</Label>
+                    <Label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-1">Padding: {padding}px</Label>
                     <Slider min={0} max={80} value={[padding]} onValueChange={([v]) => setPadding(v)} />
                   </div>
                   <div>
-                    <Label className="text-xs text-[#4B5563] block mb-1">Radius: {borderRadius}px</Label>
+                    <Label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-1">Radius: {borderRadius}px</Label>
                     <Slider min={0} max={40} value={[borderRadius]} onValueChange={([v]) => setBorderRadius(v)} />
                   </div>
                 </div>
@@ -1450,13 +1449,13 @@ const MapMakerLayout: React.FC = () => {
                   </div>
                 </div>
               </div>
-            )}
+            </TabsContent>
 
-            {activeTab === "presets" && (
+            <TabsContent value="presets">
               <div className="space-y-5">
                 {/* Save Custom Preset */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Save Current as Preset</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Save Current as Preset</Label>
                   <div className="flex gap-2">
                     <Input type="text" value={newPresetName} onChange={(e) => setNewPresetName(e.target.value)} className="h-9 text-xs flex-1" placeholder="Preset name" />
                     <Button size="sm" className="gap-1" onClick={saveAsPreset}><BsBookmark /> Save</Button>
@@ -1466,16 +1465,16 @@ const MapMakerLayout: React.FC = () => {
                 {/* Custom Presets */}
                 {customPresets.length > 0 && (
                   <div>
-                    <Label className="text-sm font-medium text-[#4B5563] block mb-2">Your Presets</Label>
+                    <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Your Presets</Label>
                     <div className="grid grid-cols-2 gap-2">
                       {customPresets.map((p) => (
                         <div key={p.id} className="relative group">
-                          <button onClick={() => loadPreset(p)} className="w-full p-3 bg-[#F9FAFB] rounded-[10px] text-left hover:bg-[#F3F4F6] transition-all">
+                          <button onClick={() => loadPreset(p)} className="w-full p-3 bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] text-left hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 transition-all">
                             <div className="flex items-center gap-2">
                               <BsBookmarkFill className="text-[#2563EB]" />
                               <span className="text-sm font-medium truncate">{p.name}</span>
                             </div>
-                            <div className="text-[10px] text-gray-500 mt-1">{p.mapType} • {p.region}</div>
+                            <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">{p.mapType} • {p.region}</div>
                           </button>
                           <Button size="sm" variant="ghost" className="absolute top-1 right-1 h-7 text-xs px-2 text-red-500 opacity-0 group-hover:opacity-100" onClick={() => deleteCustomPreset(p.id)}><BsTrash /></Button>
                         </div>
@@ -1486,21 +1485,22 @@ const MapMakerLayout: React.FC = () => {
 
                 {/* Default Presets */}
                 <div>
-                  <Label className="text-sm font-medium text-[#4B5563] block mb-2">Templates</Label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Templates</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {defaultPresets.map((p) => (
-                      <button key={p.id} onClick={() => loadPreset(p)} className="p-3 bg-[#F9FAFB] rounded-[10px] text-left hover:bg-[#F3F4F6] transition-all">
+                      <button key={p.id} onClick={() => loadPreset(p)} className="p-3 bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] text-left hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 transition-all">
                         <div className="flex items-center gap-2">
-                          <BsGlobe className="text-gray-500" />
+                          <BsGlobe className="text-gray-500 dark:text-gray-400" />
                           <span className="text-sm font-medium truncate">{p.name}</span>
                         </div>
-                        <div className="text-[10px] text-gray-500 mt-1">{p.mapType} • {p.region}</div>
+                        <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">{p.mapType} • {p.region}</div>
                       </button>
                     ))}
                   </div>
                 </div>
               </div>
-            )}
+            </TabsContent>
+            </Tabs>
           </div>
         </div>
       </section>

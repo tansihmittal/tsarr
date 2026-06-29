@@ -254,7 +254,7 @@ const TextBehindImageControls = ({
     >
       <Tabs defaultValue="options">
       {/* Top Buttons Container */}
-      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] mb-3">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-3">
         <TabsTrigger value="options" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Options</TabsTrigger>
         <TabsTrigger value="layers" className="gap-1.5 rounded-[10px] text-xs"><BsLayers className="w-3.5 h-3.5" /> Layers</TabsTrigger>
         <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
@@ -262,7 +262,7 @@ const TextBehindImageControls = ({
 
       {/* Options Panel */}
       <TabsContent value="options">
-        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <div className="relative rounded-[14px]">
             {/* Upload Section */}
             <PanelHeading title="Image" />
@@ -292,7 +292,7 @@ const TextBehindImageControls = ({
                         className={`w-8 h-8 rounded-[10px] text-xs font-medium transition-all duration-200 ${
                           state.exportScale === scale
                             ? "bg-[#2563EB] text-white"
-                            : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"
+                            : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                         }`}
                       >
                         {scale}x
@@ -310,7 +310,7 @@ const TextBehindImageControls = ({
                         className={`px-3 py-1.5 rounded-[10px] text-xs font-medium transition-all duration-200 ${
                           state.exportFormat === format
                             ? "bg-[#2563EB] text-white"
-                            : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"
+                            : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                         }`}
                       >
                         {format.toUpperCase()}
@@ -325,7 +325,7 @@ const TextBehindImageControls = ({
       </TabsContent>
       {/* Layers Panel */}
       <TabsContent value="layers">
-        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Text Layers" />
 
           {/* Add Layer Button */}
@@ -359,9 +359,9 @@ const TextBehindImageControls = ({
       </TabsContent>
       {/* Presets Panel */}
       <TabsContent value="presets">
-        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Text Style Presets" />
-          <p className="text-xs text-gray-500 px-4 py-2">
+          <p className="text-xs text-gray-500 dark:text-gray-400 px-4 py-2">
             Click a preset to apply it to the selected layer, or add a new layer with that style.
           </p>
           <div className="grid grid-cols-2 gap-3 p-3">
@@ -380,7 +380,7 @@ const TextBehindImageControls = ({
                     updateLayer(state.textLayers[0].id, resetAndApply as Partial<TextLayer>);
                   }
                 }}
-                className="group relative overflow-hidden rounded-[14px] border border-[#E5E7EB] hover:border-[#2563EB] transition-all hover:shadow-lg"
+                className="group relative overflow-hidden rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB] transition-all hover:shadow-lg"
               >
                 <div
                   className="h-16 w-full flex items-center justify-center"
@@ -401,8 +401,8 @@ const TextBehindImageControls = ({
                     Aa
                   </span>
                 </div>
-                <div className="p-2 bg-white text-center border-t border-[#E5E7EB]/50">
-                  <span className="text-xs font-medium text-[#0A0A0A]">
+                <div className="p-2 bg-white dark:bg-gray-900 text-center border-t border-[#E5E7EB]/5 dark:border-gray-700/50 dark:border-gray-700">
+                  <span className="text-xs font-medium text-[#0A0A0A] dark:text-white">
                     {preset.name}
                   </span>
                 </div>
@@ -411,8 +411,8 @@ const TextBehindImageControls = ({
           </div>
 
           {/* Add new layer with preset */}
-          <div className="p-3 border-t border-[#E5E7EB]/50">
-            <p className="text-xs text-gray-500 mb-2">Or add a new layer:</p>
+          <div className="p-3 border-t border-[#E5E7EB]/5 dark:border-gray-700/50 dark:border-gray-700">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Or add a new layer:</p>
             <Button
               variant="secondary"
               onClick={() => {
@@ -482,30 +482,30 @@ const LayerItem = ({
   };
 
   return (
-    <div className="border border-[#E5E7EB] rounded-[14px] overflow-hidden bg-white">
+    <div className="border border-[#E5E7EB] dark:border-gray-700 rounded-[14px] overflow-hidden bg-white dark:bg-gray-900">
       {/* Layer Header */}
       <div
-        className="flex items-center justify-between p-3 cursor-pointer hover:bg-[#EFF6FF] transition-colors"
+        className="flex items-center justify-between p-3 cursor-pointer hover:bg-[#EFF6FF] dark:bg-blue-900/20 dark:hover:bg-blue-900/30 transition-colors"
         onClick={onToggle}
       >
         <div className="flex items-center gap-2">
           {isExpanded ? (
-            <BiChevronUp className="w-4 h-4 text-gray-500" />
+            <BiChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
           ) : (
-            <BiChevronDown className="w-4 h-4 text-gray-500" />
+            <BiChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
           )}
-          <span className="font-medium text-sm">Layer {index + 1}</span>
-          <span className="text-xs text-gray-400 truncate max-w-[80px]">
+          <span className="font-medium text-sm dark:text-gray-200">Layer {index + 1}</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 truncate max-w-[80px]">
             {layer.text || "Empty"}
           </span>
         </div>
         <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={onDuplicate}
-            className="p-1.5 hover:bg-[#F9FAFB] rounded-[10px] transition-colors"
+            className="p-1.5 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-[10px] transition-colors"
             title="Duplicate"
           >
-            <BsFiles className="w-3.5 h-3.5 text-gray-500" />
+            <BsFiles className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
           </button>
           {canDelete && (
             <button
@@ -521,15 +521,15 @@ const LayerItem = ({
 
       {/* Layer Content */}
       {isExpanded && (
-        <div className="p-3 pt-0 space-y-3 border-t border-[#E5E7EB]/60">
+        <div className="p-3 pt-0 space-y-3 border-t border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700">
           {/* Text Input */}
           <div>
-            <span className="text-xs text-gray-500 font-medium block mb-1.5">Text</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Text</span>
             <input
               type="text"
               value={layer.text}
               onChange={(e) => onUpdate({ text: e.target.value })}
-              className="w-full px-3 py-2 bg-[#EFF6FF] border-0 rounded-[10px] focus:ring-2 focus:ring-[#2563EB] text-sm"
+              className="w-full px-3 py-2 bg-[#EFF6FF] dark:bg-blue-900/30 border-0 rounded-[10px] focus:ring-2 focus:ring-[#2563EB] text-sm dark:text-gray-200"
               placeholder="Enter text"
             />
           </div>
@@ -537,13 +537,13 @@ const LayerItem = ({
           {/* Font Family - Searchable Picker */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs text-gray-500 font-medium">Font Family</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Font Family</span>
               <span className="text-xs text-[#2563EB]">{GOOGLE_FONTS.length} fonts</span>
             </div>
             <div className="relative">
               <button
                 onClick={() => setShowFontPicker(!showFontPicker)}
-                className="w-full px-3 py-2 bg-[#EFF6FF] border-0 rounded-[10px] text-sm text-left flex items-center justify-between hover:bg-[#F9FAFB] transition-colors"
+                className="w-full px-3 py-2 bg-[#EFF6FF] dark:bg-blue-900/30 border-0 rounded-[10px] text-sm text-left flex items-center justify-between hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors dark:text-gray-200"
                 style={{ fontFamily: layer.fontFamily }}
               >
                 <span>{layer.fontFamily}</span>
@@ -551,9 +551,9 @@ const LayerItem = ({
               </button>
 
               {showFontPicker && (
-                <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-[#E5E7EB] rounded-[14px] shadow-xl max-h-[300px] overflow-hidden">
+                <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-[#E5E7EB] dark:border-gray-700 rounded-[14px] shadow-xl max-h-[300px] overflow-hidden">
                   {/* Search */}
-                  <div className="p-2 border-b border-[#E5E7EB] sticky top-0 bg-white">
+                  <div className="p-2 border-b border-[#E5E7EB] dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900">
                     <div className="relative">
                       <BsSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3" />
                       <input
@@ -561,14 +561,14 @@ const LayerItem = ({
                         value={fontSearch}
                         onChange={(e) => setFontSearch(e.target.value)}
                         placeholder="Search fonts..."
-                        className="w-full pl-8 pr-3 py-1.5 bg-[#EFF6FF] border-0 rounded-[10px] text-xs focus:ring-2 focus:ring-[#2563EB]"
+                        className="w-full pl-8 pr-3 py-1.5 bg-[#EFF6FF] dark:bg-blue-900/30 border-0 rounded-[10px] text-xs focus:ring-2 focus:ring-[#2563EB] dark:text-gray-200"
                         autoFocus
                       />
                     </div>
                   </div>
 
                   {/* Category Filter */}
-                  <div className="p-2 border-b border-[#E5E7EB] flex gap-1 flex-wrap sticky top-[52px] bg-white">
+                  <div className="p-2 border-b border-[#E5E7EB] dark:border-gray-700 flex gap-1 flex-wrap sticky top-[52px] bg-white dark:bg-gray-900">
                     {FONT_CATEGORIES.map((cat) => (
                       <button
                         key={cat.id}
@@ -576,7 +576,7 @@ const LayerItem = ({
                         className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
                           fontCategory === cat.id
                             ? "bg-[#2563EB] text-white"
-                            : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"
+                            : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700 dark:text-gray-300"
                         }`}
                       >
                         {cat.name}
@@ -591,17 +591,17 @@ const LayerItem = ({
                         key={font.name}
                         onClick={() => handleFontSelect(font.name)}
                         onMouseEnter={() => loadFont(font.name)}
-                        className={`w-full px-3 py-2 text-left text-sm hover:bg-[#2563EB]/10 transition-colors flex items-center justify-between ${
+                        className={`w-full px-3 py-2 text-left text-sm hover:bg-[#2563EB]/10 transition-colors flex items-center justify-between dark:text-gray-300 dark:hover:bg-[#2563EB]/20 ${
                           layer.fontFamily === font.name ? "bg-[#2563EB]/10 text-[#2563EB]" : ""
                         }`}
                         style={{ fontFamily: font.name }}
                       >
                         <span>{font.name}</span>
-                        <span className="text-[10px] text-gray-400 capitalize">{font.category}</span>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 capitalize">{font.category}</span>
                       </button>
                     ))}
                     {filteredFonts.length === 0 && (
-                      <div className="px-3 py-4 text-center text-xs text-gray-400">
+                      <div className="px-3 py-4 text-center text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">
                         No fonts found
                       </div>
                     )}
@@ -613,21 +613,21 @@ const LayerItem = ({
 
           {/* Font Size */}
           <div>
-            <span className="text-xs text-gray-500 font-medium block mb-1.5">Size</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Size</span>
             <input
               type="number"
               min="10"
               max="500"
               value={layer.fontSize}
               onChange={(e) => onUpdate({ fontSize: parseInt(e.target.value) || 10 })}
-              className="w-full px-3 py-2 bg-[#EFF6FF] border-0 rounded-[10px] focus:ring-2 focus:ring-[#2563EB] text-sm"
+              className="w-full px-3 py-2 bg-[#EFF6FF] dark:bg-blue-900/30 border-0 rounded-[10px] focus:ring-2 focus:ring-[#2563EB] text-sm dark:text-gray-200"
             />
           </div>
 
           {/* Font Weight */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs text-gray-500 font-medium">Font Weight</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Font Weight</span>
               <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                 {layer.fontWeight}
               </span>
@@ -643,7 +643,7 @@ const LayerItem = ({
 
           {/* Color */}
           <div>
-            <span className="text-xs text-gray-500 font-medium block mb-1.5">Color</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Color</span>
             <div className="flex items-center gap-2">
               <input
                 type="color"
@@ -655,7 +655,7 @@ const LayerItem = ({
                 type="text"
                 value={layer.textColor}
                 onChange={(e) => onUpdate({ textColor: e.target.value })}
-                className="flex-1 px-3 py-2 bg-[#EFF6FF] border-0 rounded-[10px] focus:ring-2 focus:ring-[#2563EB] text-xs font-mono"
+                className="flex-1 px-3 py-2 bg-[#EFF6FF] dark:bg-blue-900/30 border-0 rounded-[10px] focus:ring-2 focus:ring-[#2563EB] text-xs font-mono dark:text-gray-200"
               />
             </div>
           </div>
@@ -664,7 +664,7 @@ const LayerItem = ({
           <div className="grid grid-cols-2 gap-2">
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Opacity</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Opacity</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {Math.round(layer.opacity * 100)}%
                 </span>
@@ -679,7 +679,7 @@ const LayerItem = ({
             </div>
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Rotation</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Rotation</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {layer.rotation}°
                 </span>
@@ -696,7 +696,7 @@ const LayerItem = ({
           {/* Letter Spacing */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs text-gray-500 font-medium">Letter Spacing</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Letter Spacing</span>
               <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                 {layer.letterSpacing}px
               </span>
@@ -712,7 +712,7 @@ const LayerItem = ({
           {/* 3D Tilt Effects */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs text-gray-500 font-medium">3D Tilt Presets</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">3D Tilt Presets</span>
             </div>
             <div className="grid grid-cols-4 gap-1 mb-2">
               {TILT_PRESETS.slice(0, 8).map((preset) => (
@@ -727,7 +727,7 @@ const LayerItem = ({
                   className={`px-1.5 py-1 rounded text-[9px] font-medium transition-colors ${
                     layer.tiltX === preset.tiltX && layer.tiltY === preset.tiltY
                       ? "bg-[#2563EB] text-white"
-                      : "bg-[#F9FAFB] hover:bg-[#E5E7EB]"
+                      : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700 dark:text-gray-300"
                   }`}
                   title={`X: ${preset.tiltX}°, Y: ${preset.tiltY}°`}
                 >
@@ -740,7 +740,7 @@ const LayerItem = ({
           <div className="grid grid-cols-2 gap-2">
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Tilt X</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Tilt X</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {layer.tiltX}°
                 </span>
@@ -754,7 +754,7 @@ const LayerItem = ({
             </div>
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Tilt Y</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Tilt Y</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {layer.tiltY}°
                 </span>
@@ -771,7 +771,7 @@ const LayerItem = ({
           {/* Curve Text */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs text-gray-500 font-medium">Curve</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Curve</span>
               <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                 {layer.curve}
               </span>
@@ -786,7 +786,7 @@ const LayerItem = ({
 
           {/* 3D Reflection */}
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500 font-medium">3D Reflection</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">3D Reflection</span>
             <Switch
               checked={layer.reflection}
               onCheckedChange={(v: boolean) => onUpdate({ reflection: v })}
@@ -797,7 +797,7 @@ const LayerItem = ({
           {layer.reflection && (
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Reflection Opacity</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Reflection Opacity</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {Math.round(layer.reflectionOpacity * 100)}%
                 </span>
@@ -814,7 +814,7 @@ const LayerItem = ({
 
           {/* Text Shadow */}
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500 font-medium">Text Shadow</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Text Shadow</span>
             <Switch
               checked={layer.shadowEnabled}
               onCheckedChange={(v: boolean) => onUpdate({ shadowEnabled: v })}
@@ -826,7 +826,7 @@ const LayerItem = ({
             <>
               {/* Shadow Color */}
               <div>
-                <span className="text-xs text-gray-500 font-medium block mb-1.5">Shadow Color</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Shadow Color</span>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
@@ -839,7 +839,7 @@ const LayerItem = ({
                       <button
                         key={color}
                         onClick={() => onUpdate({ shadowColor: color })}
-                        className="w-6 h-6 rounded border border-[#E5E7EB]"
+                        className="w-6 h-6 rounded border border-[#E5E7EB] dark:border-gray-700"
                         style={{ backgroundColor: color }}
                       />
                     ))}
@@ -850,7 +850,7 @@ const LayerItem = ({
               {/* Shadow Blur */}
               <div>
                 <div className="flex justify-between items-center mb-1.5">
-                  <span className="text-xs text-gray-500 font-medium">Shadow Blur</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Shadow Blur</span>
                   <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                     {layer.shadowBlur}
                   </span>
@@ -867,7 +867,7 @@ const LayerItem = ({
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs text-gray-500 font-medium">Offset X</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Offset X</span>
                     <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                       {layer.shadowOffsetX}
                     </span>
@@ -881,7 +881,7 @@ const LayerItem = ({
                 </div>
                 <div>
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs text-gray-500 font-medium">Offset Y</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Offset Y</span>
                     <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                       {layer.shadowOffsetY}
                     </span>
@@ -899,7 +899,7 @@ const LayerItem = ({
 
           {/* Position */}
           <div>
-            <span className="text-xs text-gray-500 font-medium block mb-1.5">Position</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Position</span>
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <div className="flex justify-between items-center mb-1">

@@ -349,7 +349,7 @@ const BubbleBlasterPreview = ({
       </div>
 
       {/* Canvas area */}
-      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#EFF6FF]/30 border border-[#E5E7EB] overflow-hidden">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#EFF6FF]/30 dark:bg-blue-900/20 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden">
         {state.image ? (
           <div className="relative p-6">
             <div className="relative">
@@ -371,15 +371,15 @@ const BubbleBlasterPreview = ({
             {/* Processing overlay */}
             {state.isProcessing && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm rounded-[14px]">
-                <div className="bg-white p-5 rounded-[14px] shadow-2xl min-w-[240px]">
-                  <div className="h-2 bg-[#F9FAFB] rounded-full overflow-hidden mb-3">
+                <div className="bg-white dark:bg-gray-900 p-5 rounded-[14px] shadow-2xl min-w-[240px]">
+                  <div className="h-2 bg-[#F9FAFB] dark:bg-gray-800 rounded-full overflow-hidden mb-3">
                     <div
                       className="h-full bg-[#2563EB] rounded-full transition-all duration-300"
                       style={{ width: `${state.processingPercent}%` }}
                     />
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#0A0A0A]">
+                    <span className="text-[#0A0A0A] dark:text-white">
                       {state.processingProgress}
                     </span>
                     <span className="font-bold text-[#2563EB]">
@@ -460,15 +460,15 @@ const DropZone = ({
   };
 
   return (
-    <div className="p-6 sm:p-8 bg-white relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale max-w-lg w-full">
+    <div className="p-6 sm:p-8 bg-white dark:bg-gray-900 relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale max-w-lg w-full">
       <div className="flex gap-1 flex-col mb-6">
         <div className="flex items-start gap-4 sm:gap-6">
-          <h2 className="font-bold text-2xl text-[#0A0A0A] bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
+          <h2 className="font-bold text-2xl text-[#0A0A0A] dark:text-white bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
             Bubble Blaster
           </h2>
           <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
         </div>
-        <span className="text-sm text-gray-500 mt-1">
+        <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Remove text from manga speech bubbles instantly
         </span>
       </div>
@@ -496,17 +496,17 @@ const DropZone = ({
           ref={fileInputRef}
           onChange={handleChange}
         />
-        <h3 className="text-gray-700 font-medium">
+        <h3 className="text-gray-700 dark:text-gray-200 font-medium">
           <span className="text-[#2563EB] hover:underline cursor-pointer">
             Click to upload
           </span>{" "}
           or drag and drop
         </h3>
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
           <BsClipboard className="text-xs" />
           <span>
             or press{" "}
-            <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">
+            <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">
               Ctrl+V
             </kbd>{" "}
             to paste
@@ -522,11 +522,11 @@ const DropZone = ({
         {isDragActive ? "DROP TO UPLOAD" : "UPLOAD MANGA PAGE"}
       </Button>
 
-      <div className="mt-6 p-4 bg-[#EFF6FF] rounded-[14px]">
-        <h3 className="font-medium text-sm text-[#0A0A0A] mb-2">
+      <div className="mt-6 p-4 bg-[#EFF6FF] dark:bg-blue-900/20 rounded-[14px]">
+        <h3 className="font-medium text-sm text-[#0A0A0A] dark:text-white mb-2">
           How it works:
         </h3>
-        <ol className="text-xs text-gray-500 space-y-1">
+        <ol className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
           <li>1. Upload a manga/comic page</li>
           <li>2. Bubbles are auto-detected (or draw manually)</li>
           <li>3. Click &quot;Blast!&quot; to remove text</li>

@@ -193,8 +193,8 @@ const TTSMain: React.FC<Props> = () => {
     children: ReactNode; title: string; onTap?: () => void; disabled?: boolean; loading?: boolean;
   }) => (
     <div
-      className={`text-[#0A0A0A] bg-white py-2.5 px-4 flex items-center justify-center gap-2.5 border border-[#E5E7EB] rounded-[10px] transition-all duration-200 ${
-        disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-[#F9FAFB] hover:border-[#2563EB]/20 hover:shadow-sm cursor-pointer"
+      className={`text-[#0A0A0A] dark:text-white bg-white dark:bg-gray-900 py-2.5 px-4 flex items-center justify-center gap-2.5 border border-[#E5E7EB] dark:border-gray-700 rounded-[10px] transition-all duration-200 ${
+        disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-[#F9FAFB] dark:hover:bg-gray-800 hover:border-[#2563EB]/20 hover:shadow-sm cursor-pointer"
       }`}
       onClick={disabled ? undefined : onTap}
     >
@@ -221,12 +221,12 @@ const TTSMain: React.FC<Props> = () => {
             <BiDownload />
           </OptionButton>
           {showDownloadMenu && audioBlob && (
-            <div className="absolute top-full mt-2 right-0 bg-white border border-[#E5E7EB] rounded-[10px] shadow-lg z-50 min-w-[140px]">
+            <div className="absolute top-full mt-2 right-0 bg-white dark:bg-gray-900 border border-[#E5E7EB] dark:border-gray-700 rounded-[10px] shadow-lg z-50 min-w-[140px]">
               {["wav", "mp3", "ogg"].map((fmt) => (
                 <button
                   key={fmt}
                   onClick={() => handleDownload(fmt)}
-                  className="w-full px-4 py-2.5 text-left hover:bg-[#F9FAFB] first:rounded-t-[10px] last:rounded-b-[10px] text-sm font-medium"
+                  className="w-full px-4 py-2.5 text-left hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 first:rounded-t-[10px] last:rounded-b-[10px] text-sm font-medium"
                 >
                   {fmt.toUpperCase()}
                 </button>
@@ -243,7 +243,7 @@ const TTSMain: React.FC<Props> = () => {
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs bg-[#2563EB]/10 text-[#2563EB] px-3 py-1 rounded-full font-medium flex items-center gap-1"><BsCpu /> Kokoro 82M</span>
           {currentVoice && (
-            <span className="text-xs bg-[#F3F4F6] text-[#0A0A0A] px-3 py-1 rounded-full font-medium flex items-center gap-1">
+            <span className="text-xs bg-[#F3F4F6] dark:bg-gray-800 text-[#0A0A0A] dark:text-white px-3 py-1 rounded-full font-medium flex items-center gap-1">
               <BsMic /> {currentVoice.name}
             </span>
           )}
@@ -253,16 +253,16 @@ const TTSMain: React.FC<Props> = () => {
             </span>
           )}
           {settings.voice2 && (
-            <span className="text-xs bg-[#EFF6FF] text-[#2563EB] px-3 py-1 rounded-full font-medium flex items-center gap-1">
+            <span className="text-xs bg-[#EFF6FF] dark:bg-blue-900/20 text-[#2563EB] px-3 py-1 rounded-full font-medium flex items-center gap-1">
               <BsShuffle /> Blended
             </span>
           )}
         </div>
-        <span className="text-xs text-[#4B5563] bg-[#F3F4F6] px-3 py-1 rounded-full">{text.length} chars</span>
+        <span className="text-xs text-[#4B5563] dark:text-gray-400 bg-[#F3F4F6] dark:bg-gray-800 px-3 py-1 rounded-full">{text.length} chars</span>
       </div>
 
       {/* Main Editor Area */}
-      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex flex-col rounded-[20px] bg-[#F9FAFB] border border-[#E5E7EB] overflow-hidden">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex flex-col rounded-[20px] bg-[#F9FAFB] dark:bg-gray-800 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden">
         <div className="flex-1 p-4">
           <textarea
             value={text}
@@ -275,7 +275,7 @@ Examples:
 • Kokoro is an 82 million parameter neural TTS model.
 
 Long text is automatically chunked into sentences for better quality."
-            className="w-full h-full min-h-[300px] bg-transparent resize-none outline-none text-[#0A0A0A] text-lg leading-relaxed placeholder:text-gray-400"
+            className="w-full h-full min-h-[300px] bg-transparent resize-none outline-none text-[#0A0A0A] dark:text-white text-lg leading-relaxed placeholder:text-gray-400"
             disabled={isGenerating}
           />
         </div>
@@ -286,28 +286,28 @@ Long text is automatically chunked into sentences for better quality."
             <div className="w-full bg-[#E5E7EB] rounded-full h-2.5 overflow-hidden">
               <div className="bg-gradient-to-r from-[#2563EB] to-[#60A5FA] h-2.5 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
             </div>
-            <p className="text-xs text-[#4B5563] mt-2 text-center">{progressStatus}</p>
+            <p className="text-xs text-[#4B5563] dark:text-gray-400 mt-2 text-center">{progressStatus}</p>
           </div>
         )}
 
         {/* Audio Player */}
         {audioUrl && !isGenerating && (
-          <div className="border-t border-[#E5E7EB] p-4 bg-white/50">
+          <div className="border-t border-[#E5E7EB] dark:border-gray-700 p-4 bg-white/50">
             <audio ref={audioRef} src={audioUrl} className="hidden" />
             <div className="flex items-center gap-4">
               <button onClick={handlePlayPause} className="w-12 h-12 rounded-full bg-[#2563EB] text-white flex items-center justify-center hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/30">
                 {isPlaying ? <BsPause className="text-xl" /> : <BsPlay className="text-xl ml-0.5" />}
               </button>
-              <button onClick={handleStop} className="w-10 h-10 rounded-full bg-[#F3F4F6] text-[#0A0A0A] flex items-center justify-center hover:bg-[#E5E7EB] transition-all">
+              <button onClick={handleStop} className="w-10 h-10 rounded-full bg-[#F3F4F6] dark:bg-gray-800 text-[#0A0A0A] dark:text-white flex items-center justify-center hover:bg-[#E5E7EB] dark:hover:bg-gray-700 transition-all">
                 <BsStop className="text-lg" />
               </button>
-              <div className="flex-1 h-10 bg-[#F3F4F6] rounded-[10px] flex items-center justify-center gap-0.5 px-4 overflow-hidden">
+              <div className="flex-1 h-10 bg-[#F3F4F6] dark:bg-gray-800 rounded-[10px] flex items-center justify-center gap-0.5 px-4 overflow-hidden">
                 {[...Array(40)].map((_, i) => (
                   <div key={i} className={`w-1 bg-[#2563EB]/60 rounded-full transition-all duration-150 ${isPlaying ? "animate-pulse" : ""}`}
                     style={{ height: `${Math.sin(i * 0.3) * 12 + 16}px`, animationDelay: `${i * 30}ms`, opacity: isPlaying ? 1 : 0.5 }} />
                 ))}
               </div>
-              <button onClick={() => setShowDownloadMenu(!showDownloadMenu)} className="w-10 h-10 rounded-full bg-[#F3F4F6] text-[#0A0A0A] flex items-center justify-center hover:bg-[#E5E7EB] transition-all" title="Download">
+              <button onClick={() => setShowDownloadMenu(!showDownloadMenu)} className="w-10 h-10 rounded-full bg-[#F3F4F6] dark:bg-gray-800 text-[#0A0A0A] dark:text-white flex items-center justify-center hover:bg-[#E5E7EB] dark:hover:bg-gray-700 transition-all" title="Download">
                 <BiDownload className="text-lg" />
               </button>
             </div>

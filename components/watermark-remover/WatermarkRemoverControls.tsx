@@ -65,16 +65,16 @@ const WatermarkRemoverControls: React.FC<Props> = ({
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
       <Tabs defaultValue="selection">
-      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] mb-3">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-3">
         <TabsTrigger value="selection" className="gap-1.5 rounded-[10px] text-xs"><BiEraser className="w-3.5 h-3.5" /> Select</TabsTrigger>
         <TabsTrigger value="process" className="gap-1.5 rounded-[10px] text-xs"><BsMagic className="w-3.5 h-3.5" /> Process</TabsTrigger>
         <TabsTrigger value="output" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Output</TabsTrigger>
       </TabsList>
 
       <TabsContent value="selection">
-        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Image" />
-          <div className="p-4 border-b border-[#E5E7EB]/60">
+          <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
             <input ref={fileInputRef} type="file" accept={IMAGE_ACCEPT} onChange={handleFileChange} className="hidden" />
             <div className="grid grid-cols-2 gap-2 mb-3">
               <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-2">
@@ -88,22 +88,22 @@ const WatermarkRemoverControls: React.FC<Props> = ({
               <div className="flex items-center gap-3">
                 <img src={state.originalImage} alt="Preview" className="w-16 h-16 rounded-[10px] object-cover" />
                 <div className="text-sm">
-                  <div className="font-medium text-[#0A0A0A]">{state.imageWidth} × {state.imageHeight}</div>
-                  <div className="text-gray-500">Original size</div>
+                  <div className="font-medium text-[#0A0A0A] dark:text-white">{state.imageWidth} × {state.imageHeight}</div>
+                  <div className="text-gray-500 dark:text-gray-400">Original size</div>
                 </div>
               </div>
             )}
           </div>
           <div className="relative rounded-md">
             <PanelHeading title="Selection Tool" />
-            <div className="p-4 border-b border-[#E5E7EB]/60">
-              <p className="text-sm text-gray-600 mb-4">
+            <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                 Click and drag on the image to select watermark areas you want to remove.
               </p>
 
-              <div className="bg-[#EFF6FF] rounded-[10px] p-4 mb-4">
+              <div className="bg-[#EFF6FF] dark:bg-blue-900/20 rounded-[10px] p-4 mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-[#0A0A0A]">Selected Areas</span>
+                  <span className="text-sm font-medium text-[#0A0A0A] dark:text-white">Selected Areas</span>
                   <span className="text-xs bg-[#2563EB]/10 text-[#2563EB] px-2 py-1 rounded-full">
                     {state.selections.length} area{state.selections.length !== 1 ? "s" : ""}
                   </span>
@@ -111,13 +111,13 @@ const WatermarkRemoverControls: React.FC<Props> = ({
                 {state.selections.length > 0 ? (
                   <div className="space-y-2 max-h-32 overflow-y-auto">
                     {state.selections.map((sel, idx) => (
-                      <div key={sel.id} className="flex items-center justify-between text-xs bg-white rounded px-2 py-1">
+                      <div key={sel.id} className="flex items-center justify-between text-xs bg-white dark:bg-gray-800 rounded px-2 py-1">
                         <span>Area {idx + 1}: {Math.round(sel.width)}×{Math.round(sel.height)}</span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-gray-500">No areas selected yet</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">No areas selected yet</p>
                 )}
               </div>
 
@@ -133,8 +133,8 @@ const WatermarkRemoverControls: React.FC<Props> = ({
             </div>
 
             <PanelHeading title="Tips" />
-            <div className="p-4 border-b border-[#E5E7EB]/60">
-              <ul className="text-xs text-gray-600 space-y-2">
+            <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
+              <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-2">
                 <li className="flex items-start gap-2">
                   <span className="text-[#2563EB]">•</span>
                   <span>Select the watermark area as precisely as possible</span>
@@ -154,17 +154,17 @@ const WatermarkRemoverControls: React.FC<Props> = ({
         </TabsContent>
 
         <TabsContent value="process">
-        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <div className="relative rounded-md">
             <PanelHeading title="Remove Watermark" />
-            <div className="p-4 border-b border-[#E5E7EB]/60">
-              <p className="text-sm text-gray-600 mb-4">
+            <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                 Process the selected areas to remove watermarks using edge-aware interpolation.
               </p>
 
               {state.isProcessing && (
                 <div className="mb-4">
-                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                  <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
                     <span>Processing...</span>
                     <span>{state.processingProgress}%</span>
                   </div>
@@ -206,8 +206,8 @@ const WatermarkRemoverControls: React.FC<Props> = ({
             </div>
 
             <PanelHeading title="Tips" />
-            <div className="p-4 border-b border-[#E5E7EB]/60">
-              <ul className="text-xs text-gray-600 space-y-2">
+            <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
+              <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-2">
                 <li className="flex items-start gap-2">
                   <span className="text-[#2563EB]">•</span>
                   <span>Works best on smooth gradients (sky, water, walls)</span>
@@ -224,22 +224,22 @@ const WatermarkRemoverControls: React.FC<Props> = ({
             </div>
 
             <PanelHeading title="Status" />
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Image loaded</span>
+                  <span className="text-gray-600 dark:text-gray-300">Image loaded</span>
                   <span className={state.originalImage ? "text-green-600" : "text-gray-400"}>
                     {state.originalImage ? "✓" : "—"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Areas selected</span>
+                  <span className="text-gray-600 dark:text-gray-300">Areas selected</span>
                   <span className={state.selections.length > 0 ? "text-green-600" : "text-gray-400"}>
                     {state.selections.length > 0 ? `✓ (${state.selections.length})` : "—"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Processed</span>
+                  <span className="text-gray-600 dark:text-gray-300">Processed</span>
                   <span className={state.processedImage ? "text-green-600" : "text-gray-400"}>
                     {state.processedImage ? "✓" : "—"}
                   </span>
@@ -251,19 +251,19 @@ const WatermarkRemoverControls: React.FC<Props> = ({
         </TabsContent>
 
         <TabsContent value="output">
-        <div className="rounded-[14px] border border-[#E5E7EB] bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <div className="relative rounded-md">
             <PanelHeading title="Format" />
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
               <div className="grid grid-cols-3 gap-2">
                 {outputFormats.map((format) => (
                   <button
                     key={format.id}
                     onClick={() => updateState({ outputFormat: format.id as WatermarkRemoverState["outputFormat"] })}
-                    className={`p-3 rounded-[10px] text-center transition-all ${state.outputFormat === format.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"}`}
+                    className={`p-3 rounded-[10px] text-center transition-all ${state.outputFormat === format.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800"}`}
                   >
                     <div className="font-semibold text-sm">{format.name}</div>
-                    <div className={`text-xs ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500"}`}>{format.desc}</div>
+                    <div className={`text-xs ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>{format.desc}</div>
                   </button>
                 ))}
               </div>
@@ -272,9 +272,9 @@ const WatermarkRemoverControls: React.FC<Props> = ({
             {state.outputFormat !== "png" && (
               <>
                 <PanelHeading title="Quality" />
-                <div className="p-4 border-b border-[#E5E7EB]/60">
+                <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs text-gray-500 font-medium">Quality</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Quality</span>
                     <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.quality}%</span>
                   </div>
                   <Slider
@@ -288,7 +288,7 @@ const WatermarkRemoverControls: React.FC<Props> = ({
             )}
 
             <PanelHeading title="Export" />
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/60 dark:border-gray-700/60">
               <Button
                 onClick={onExport}
                 disabled={!state.originalImage}
@@ -297,7 +297,7 @@ const WatermarkRemoverControls: React.FC<Props> = ({
                 <BsDownload className="text-lg" />
                 Export {state.outputFormat.toUpperCase()}
               </Button>
-              <p className="text-xs text-gray-500 mt-2 text-center">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
                 {state.processedImage ? "Exports processed image" : "Exports original image"}
               </p>
             </div>

@@ -8,11 +8,11 @@ interface Props {
   onChange: (patch: Partial<MapOptions>) => void;
 }
 
-const label = "text-[11px] font-semibold text-[#4B5563]/60 uppercase tracking-wider";
+const label = "text-[11px] font-semibold text-[#4B5563]/60 dark:text-gray-400/60 uppercase tracking-wider";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-[14px] border border-[#E5E7EB] p-3 space-y-2.5">
+    <div className="bg-white dark:bg-gray-900 rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 p-3 space-y-2.5">
       <p className={label}>{title}</p>
       {children}
     </div>
@@ -30,7 +30,7 @@ function Toggle({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-xs text-[#4B5563]/80">{text}</span>
+      <span className="text-xs text-[#4B5563]/80 dark:text-gray-400/80">{text}</span>
       <Switch checked={checked} onCheckedChange={onChange} />
     </div>
   );
@@ -48,18 +48,18 @@ function ColorRow({
   const safe = /^#[0-9a-fA-F]{6}$/.test(value) ? value : "#000000";
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className="text-xs text-[#4B5563]/80">{text}</span>
+      <span className="text-xs text-[#4B5563]/80 dark:text-gray-400/80">{text}</span>
       <div className="flex items-center gap-1.5">
         <input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-[78px] rounded-[8px] border border-[#E5E7EB] bg-white px-2 py-1 text-[11px] font-mono text-[#0A0A0A] focus:outline-none focus:border-[#60A5FA]"
+          className="w-[78px] rounded-[8px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-1 text-[11px] dark:text-white font-mono text-[#0A0A0A] dark:text-white focus:outline-none focus:border-[#60A5FA]"
         />
         <input
           type="color"
           value={safe}
           onChange={(e) => onChange(e.target.value)}
-          className="w-7 h-7 rounded-[8px] border border-[#E5E7EB] bg-white p-0.5 cursor-pointer"
+          className="w-7 h-7 rounded-[8px] border border-[#E5E7EB] dark:border-gray-700 bg-white p-0.5 cursor-pointer"
         />
       </div>
     </div>
@@ -86,8 +86,8 @@ function RangeRow({
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-[#4B5563]/80">{text}</span>
-        <span className="text-[11px] font-mono text-[#4B5563]/60">
+        <span className="text-xs text-[#4B5563]/80 dark:text-gray-400/80">{text}</span>
+        <span className="text-[11px] font-mono text-[#4B5563]/60 dark:text-gray-400/60">
           {value}
           {suffix || ""}
         </span>
@@ -147,7 +147,7 @@ const ImapMapOptions: React.FC<Props> = ({ options: o, onChange }) => {
               onChange={(v) => onChange({ maxZoom: v })}
               suffix="×"
             />
-            <p className="text-[11px] text-[#4B5563]/45 leading-relaxed">
+            <p className="text-[11px] text-[#4B5563]/45 dark:text-gray-400/45 leading-relaxed">
               Works in Preview and the exported embed (scroll to zoom, drag to
               pan).
             </p>
@@ -183,7 +183,7 @@ const ImapMapOptions: React.FC<Props> = ({ options: o, onChange }) => {
           value={o.backgroundColor}
           onChange={(v) => onChange({ backgroundColor: v })}
         />
-        <p className="text-[11px] text-[#4B5563]/45 leading-relaxed">
+        <p className="text-[11px] text-[#4B5563]/45 dark:text-gray-400/45 leading-relaxed">
           Shows through transparent images and around letterboxed areas.
         </p>
       </Section>
@@ -225,9 +225,9 @@ const ImapMapOptions: React.FC<Props> = ({ options: o, onChange }) => {
           rows={4}
           spellCheck={false}
           placeholder={`.imap-spot { /* … */ }`}
-          className="w-full rounded-[10px] border border-[#E5E7EB] bg-white px-2.5 py-2 text-[11px] font-mono text-[#0A0A0A] placeholder:text-[#4B5563]/40 focus:outline-none focus:border-[#60A5FA] resize-none"
+          className="w-full rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-800 px-2.5 py-2 text-[11px] dark:text-white font-mono text-[#0A0A0A] dark:text-white placeholder:text-[#4B5563]/40 dark:text-gray-400/40 focus:outline-none focus:border-[#60A5FA] resize-none"
         />
-        <p className="text-[11px] text-[#4B5563]/45 leading-relaxed">
+        <p className="text-[11px] text-[#4B5563]/45 dark:text-gray-400/45 leading-relaxed">
           Injected into preview &amp; exports. Style <code>.imap-spot</code>,{" "}
           <code>.imap-tt</code>, etc.
         </p>
@@ -240,9 +240,9 @@ const ImapMapOptions: React.FC<Props> = ({ options: o, onChange }) => {
           rows={4}
           spellCheck={false}
           placeholder={`// runs in the embed`}
-          className="w-full rounded-[10px] border border-[#E5E7EB] bg-white px-2.5 py-2 text-[11px] font-mono text-[#0A0A0A] placeholder:text-[#4B5563]/40 focus:outline-none focus:border-[#60A5FA] resize-none"
+          className="w-full rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-800 px-2.5 py-2 text-[11px] dark:text-white font-mono text-[#0A0A0A] dark:text-white placeholder:text-[#4B5563]/40 dark:text-gray-400/40 focus:outline-none focus:border-[#60A5FA] resize-none"
         />
-        <p className="text-[11px] text-[#4B5563]/45 leading-relaxed">
+        <p className="text-[11px] text-[#4B5563]/45 dark:text-gray-400/45 leading-relaxed">
           Runs in the exported embed only (not the editor). Wrapped in a
           try/catch.
         </p>

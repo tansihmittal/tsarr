@@ -175,28 +175,28 @@ export default function SettingsPage() {
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Head>
 
-      <div className="min-h-screen bg-[#F9FAFB] pb-24 lg:pb-8" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+      <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-800/50 pb-24 lg:pb-8" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
         {/* Header */}
-        <header className="bg-white/95 backdrop-blur-lg border-b border-[#E5E7EB]/80 sticky top-0 z-50">
+        <header className="bg-white/95 dark:bg-gray-900 backdrop-blur-lg border-b border-[#E5E7EB]/80 dark:border-gray-700 sticky top-0 z-50">
           <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
-            <Link href="/app" className="p-2 -ml-2 text-[#4B5563] hover:text-[#0A0A0A] hover:bg-gray-100 rounded-[14px] transition-colors">
+            <Link href="/app" className="p-2 -ml-2 text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-[14px] transition-colors">
               <BsArrowLeft className="text-lg" />
             </Link>
-            <h1 className="text-lg font-semibold text-[#0A0A0A]">Settings</h1>
+            <h1 className="text-lg font-semibold text-[#0A0A0A] dark:text-white">Settings</h1>
           </div>
         </header>
 
         <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
           {/* Storage Section */}
-          <section className="bg-white rounded-[20px] border border-[#E5E7EB] overflow-hidden">
-            <div className="p-4 border-b border-gray-100">
+          <section className="bg-white dark:bg-gray-900 rounded-[20px] border border-[#E5E7EB] dark:border-gray-700 overflow-hidden">
+            <div className="p-4 border-b border-gray-100 dark:border-gray-800">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-indigo-100 rounded-[14px] flex items-center justify-center">
                   <BsFolder2 className="text-[#2563EB] text-lg" />
                 </div>
                 <div>
-                  <h2 className="font-semibold text-[#0A0A0A]">Storage</h2>
-                  <p className="text-sm text-[#4B5563]">Manage your local data</p>
+                  <h2 className="font-semibold text-[#0A0A0A] dark:text-white">Storage</h2>
+                  <p className="text-sm text-[#4B5563] dark:text-gray-400">Manage your local data</p>
                 </div>
               </div>
             </div>
@@ -205,66 +205,66 @@ export default function SettingsPage() {
               {/* Storage Bar */}
               <div>
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-[#4B5563]">Used Space</span>
-                  <span className="font-medium text-[#0A0A0A]">
+                  <span className="text-[#4B5563] dark:text-gray-400">Used Space</span>
+                  <span className="font-medium text-[#0A0A0A] dark:text-white">
                     {formatBytes(storageInfo.used)} / {formatBytes(storageInfo.total)}
                   </span>
                 </div>
-                <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                   <div
                     className={`h-full ${storageColor} rounded-full transition-all duration-500`}
                     style={{ width: `${storagePercentage}%` }}
                   />
                 </div>
-                <p className="text-xs text-[#4B5563] mt-1.5">
+                <p className="text-xs text-[#4B5563] dark:text-gray-400 mt-1.5">
                   {storagePercentage.toFixed(1)}% used
                 </p>
               </div>
 
               {/* Stats */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-[#F9FAFB] rounded-[14px]">
-                  <div className="flex items-center gap-2 text-[#4B5563] mb-1">
+                <div className="p-3 bg-[#F9FAFB] dark:bg-gray-800/50 rounded-[14px]">
+                  <div className="flex items-center gap-2 text-[#4B5563] dark:text-gray-400 mb-1">
                     <BsFolder2 className="text-sm" />
                     <span className="text-xs">Projects</span>
                   </div>
-                  <p className="text-xl font-semibold text-[#0A0A0A]">{storageInfo.projectCount}</p>
+                  <p className="text-xl font-semibold text-[#0A0A0A] dark:text-white">{storageInfo.projectCount}</p>
                 </div>
-                <div className="p-3 bg-[#F9FAFB] rounded-[14px]">
-                  <div className="flex items-center gap-2 text-[#4B5563] mb-1">
+                <div className="p-3 bg-[#F9FAFB] dark:bg-gray-800/50 rounded-[14px]">
+                  <div className="flex items-center gap-2 text-[#4B5563] dark:text-gray-400 mb-1">
                     <BsImage className="text-sm" />
                     <span className="text-xs">With Thumbnails</span>
                   </div>
-                  <p className="text-xl font-semibold text-[#0A0A0A]">{storageInfo.imageCount}</p>
+                  <p className="text-xl font-semibold text-[#0A0A0A] dark:text-white">{storageInfo.imageCount}</p>
                 </div>
               </div>
             </div>
           </section>
 
           {/* Data Management */}
-          <section className="bg-white rounded-[20px] border border-[#E5E7EB] overflow-hidden">
-            <div className="p-4 border-b border-gray-100">
+          <section className="bg-white dark:bg-gray-900 rounded-[20px] border border-[#E5E7EB] dark:border-gray-700 overflow-hidden">
+            <div className="p-4 border-b border-gray-100 dark:border-gray-800">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-emerald-100 rounded-[14px] flex items-center justify-center">
                   <BsGear className="text-emerald-600 text-lg" />
                 </div>
                 <div>
-                  <h2 className="font-semibold text-[#0A0A0A]">Data Management</h2>
-                  <p className="text-sm text-[#4B5563]">Export or clear your data</p>
+                  <h2 className="font-semibold text-[#0A0A0A] dark:text-white">Data Management</h2>
+                  <p className="text-sm text-[#4B5563] dark:text-gray-400">Export or clear your data</p>
                 </div>
               </div>
             </div>
 
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 dark:divide-gray-800">
               <button
                 onClick={handleExportData}
-                className="w-full p-4 flex items-center justify-between hover:bg-[#F9FAFB] transition-colors active:bg-gray-100"
+                className="w-full p-4 flex items-center justify-between hover:bg-[#F9FAFB] dark:hover:bg-gray-800 transition-colors active:bg-gray-100 dark:active:bg-gray-700"
               >
                 <div className="flex items-center gap-3">
-                  <BsDownload className="text-[#4B5563] text-lg" />
+                  <BsDownload className="text-[#4B5563] dark:text-gray-400 text-lg" />
                   <div className="text-left">
-                    <p className="font-medium text-[#0A0A0A]">Export Data</p>
-                    <p className="text-sm text-[#4B5563]">Download all projects as JSON</p>
+                    <p className="font-medium text-[#0A0A0A] dark:text-white">Export Data</p>
+                    <p className="text-sm text-[#4B5563] dark:text-gray-400">Download all projects as JSON</p>
                   </div>
                 </div>
                 <BsChevronRight className="text-gray-400" />
@@ -278,7 +278,7 @@ export default function SettingsPage() {
                   <BsTrash className="text-red-500 text-lg" />
                   <div className="text-left">
                     <p className="font-medium text-red-600">Clear All Data</p>
-                    <p className="text-sm text-[#4B5563]">Delete all projects and cached data</p>
+                    <p className="text-sm text-[#4B5563] dark:text-gray-400">Delete all projects and cached data</p>
                   </div>
                 </div>
                 <BsChevronRight className="text-gray-400" />
@@ -288,20 +288,20 @@ export default function SettingsPage() {
 
           {/* Notifications Section */}
           {notificationsSupported && (
-            <section className="bg-white rounded-[20px] border border-[#E5E7EB] overflow-hidden">
-              <div className="p-4 border-b border-gray-100">
+            <section className="bg-white dark:bg-gray-900 rounded-[20px] border border-[#E5E7EB] dark:border-gray-700 overflow-hidden">
+              <div className="p-4 border-b border-gray-100 dark:border-gray-800">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-amber-100 rounded-[14px] flex items-center justify-center">
                     <BsBell className="text-amber-600 text-lg" />
                   </div>
                   <div>
-                    <h2 className="font-semibold text-[#0A0A0A]">Notifications</h2>
-                    <p className="text-sm text-[#4B5563]">Get creative reminders</p>
+                    <h2 className="font-semibold text-[#0A0A0A] dark:text-white">Notifications</h2>
+                    <p className="text-sm text-[#4B5563] dark:text-gray-400">Get creative reminders</p>
                   </div>
                 </div>
               </div>
 
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-gray-100 dark:divide-gray-800">
                 <div className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {notificationPermission === 'granted' ? (
@@ -310,8 +310,8 @@ export default function SettingsPage() {
                       <BsBellSlash className="text-gray-400 text-lg" />
                     )}
                     <div>
-                      <p className="font-medium text-[#0A0A0A]">Push Notifications</p>
-                      <p className="text-sm text-[#4B5563]">
+                      <p className="font-medium text-[#0A0A0A] dark:text-white">Push Notifications</p>
+                      <p className="text-sm text-[#4B5563] dark:text-gray-400">
                         {notificationPermission === 'granted'
                           ? "Enabled - you'll receive creative reminders"
                           : notificationPermission === 'denied'
@@ -348,33 +348,33 @@ export default function SettingsPage() {
           )}
 
           {/* About Section */}
-          <section className="bg-white rounded-[20px] border border-[#E5E7EB] overflow-hidden">
-            <div className="p-4 border-b border-gray-100">
+          <section className="bg-white dark:bg-gray-900 rounded-[20px] border border-[#E5E7EB] dark:border-gray-700 overflow-hidden">
+            <div className="p-4 border-b border-gray-100 dark:border-gray-800">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 rounded-[14px] flex items-center justify-center">
                   <BsInfoCircle className="text-[#2563EB] text-lg" />
                 </div>
                 <div>
-                  <h2 className="font-semibold text-[#0A0A0A]">About</h2>
-                  <p className="text-sm text-[#4B5563]">App information</p>
+                  <h2 className="font-semibold text-[#0A0A0A] dark:text-white">About</h2>
+                  <p className="text-sm text-[#4B5563] dark:text-gray-400">App information</p>
                 </div>
               </div>
             </div>
 
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 dark:divide-gray-800">
               <div className="p-4 flex items-center justify-between">
-                <span className="text-[#4B5563]">Version</span>
-                <span className="font-medium text-[#0A0A0A]">1.0.0</span>
+                <span className="text-[#4B5563] dark:text-gray-400">Version</span>
+                <span className="font-medium text-[#0A0A0A] dark:text-white">1.0.0</span>
               </div>
               <div className="p-4 flex items-center justify-between">
-                <span className="text-[#4B5563]">Data Storage</span>
-                <span className="font-medium text-[#0A0A0A]">Local Only</span>
+                <span className="text-[#4B5563] dark:text-gray-400">Data Storage</span>
+                <span className="font-medium text-[#0A0A0A] dark:text-white">Local Only</span>
               </div>
               <Link
                 href="/"
-                className="p-4 flex items-center justify-between hover:bg-[#F9FAFB] transition-colors"
+                className="p-4 flex items-center justify-between hover:bg-[#F9FAFB] dark:hover:bg-gray-800 transition-colors"
               >
-                <span className="text-[#4B5563]">Visit Website</span>
+                <span className="text-[#4B5563] dark:text-gray-400">Visit Website</span>
                 <BsChevronRight className="text-gray-400" />
               </Link>
             </div>

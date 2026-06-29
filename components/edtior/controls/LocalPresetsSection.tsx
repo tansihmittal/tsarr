@@ -78,7 +78,7 @@ const LocalPresetsSection: React.FC<LocalPresetsSectionProps> = ({
       <div className="h-[90px] flex items-center justify-center w-full">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
-          <span className="text-[#0A0A0A] text-sm">Loading...</span>
+          <span className="text-[#0A0A0A] dark:text-white text-sm">Loading...</span>
         </div>
       </div>
     );
@@ -140,7 +140,7 @@ const PresetTile: React.FC<PresetTileProps> = ({
 
   return (
     <div
-      className="group relative overflow-hidden rounded-[14px] border border-[#E5E7EB]/80 hover:border-[#2563EB]/40 transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-[#2563EB]/10 hover:-translate-y-0.5 stagger-item"
+      className="group relative overflow-hidden rounded-[14px] border border-[#E5E7EB]/80 dark:border-gray-700/80 hover:border-[#2563EB]/40 transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-[#2563EB]/10 hover:-translate-y-0.5 stagger-item"
       style={{ animationDelay: `${index * 0.05}s` }}
       data-testid="preset-tile"
       data-preset-name={preset.name}
@@ -153,9 +153,9 @@ const PresetTile: React.FC<PresetTileProps> = ({
         {/* Shimmer overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
       </div>
-      <div className="p-2 bg-white flex items-center justify-between border-t border-[#E5E7EB]/50">
+      <div className="p-2 bg-white dark:bg-gray-900 flex items-center justify-between border-t border-[#E5E7EB]/5 dark:border-gray-700/50 dark:border-gray-700/50">
         <span
-          className="text-xs font-semibold text-[#0A0A0A] truncate flex-1 group-hover:text-[#2563EB] transition-colors"
+          className="text-xs font-semibold text-[#0A0A0A] dark:text-white truncate flex-1 group-hover:text-[#2563EB] transition-colors"
           data-testid="preset-name"
         >
           {preset.name}
@@ -177,8 +177,8 @@ const PresetTile: React.FC<PresetTileProps> = ({
 
 const EmptyState: React.FC = () => {
   return (
-    <div className="h-[100px] flex flex-col items-center justify-center w-full text-center p-4 rounded-[14px] border-2 border-dashed border-[#E5E7EB]">
-      <span className="text-sm font-medium text-gray-500">
+    <div className="h-[100px] flex flex-col items-center justify-center w-full text-center p-4 rounded-[14px] border-2 border-dashed border-[#E5E7EB] dark:border-gray-700">
+      <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
         No custom presets yet
       </span>
       <span className="text-xs text-gray-400 mt-1">

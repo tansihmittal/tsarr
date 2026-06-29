@@ -34,7 +34,7 @@ const SplashScreen = ({ onComplete, minDuration = 1200 }: SplashScreenProps) => 
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white transition-opacity duration-300 ${
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white dark:bg-gray-900 transition-opacity duration-300 ${
         fadeOut ? "opacity-0" : "opacity-100"
       }`}
     >
@@ -46,10 +46,10 @@ const SplashScreen = ({ onComplete, minDuration = 1200 }: SplashScreenProps) => 
       </div>
 
       {/* App name */}
-      <h1 className="text-2xl font-bold text-gray-900 mb-1 tracking-tight">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
         tsarr.in
       </h1>
-      <p className="text-gray-500 text-sm font-medium mb-2">
+      <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-2">
         Screenshot Editor
       </p>
       
@@ -59,7 +59,7 @@ const SplashScreen = ({ onComplete, minDuration = 1200 }: SplashScreenProps) => 
       </p>
 
       {/* Progress bar */}
-      <div className="w-48 h-1 bg-gray-100 rounded-full overflow-hidden">
+      <div className="w-48 h-1 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
         <div 
           className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full transition-all duration-100 ease-out"
           style={{ width: `${progress}%` }}
@@ -67,7 +67,7 @@ const SplashScreen = ({ onComplete, minDuration = 1200 }: SplashScreenProps) => 
       </div>
       
       {/* Loading text */}
-      <p className="text-gray-400 text-xs mt-3">
+      <p className="text-gray-400 dark:text-gray-500 dark:text-gray-400 text-xs mt-3">
         Loading...
       </p>
     </div>

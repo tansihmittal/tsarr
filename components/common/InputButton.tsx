@@ -13,7 +13,7 @@ const InputButton: React.FC<Props> = ({ title, value, onTap }) => {
   return (
     <div className="p-4 pt-2 grid gap-2">
       <Textarea
-        className="outline-none border-[2px] border-[#E5E7EB] rounded-md p-2"
+        className="outline-none border-[2px] border-[#E5E7EB] dark:border-gray-700 rounded-md p-2"
         spellCheck={false}
         rows={3}
         value={textareaData}

@@ -249,22 +249,22 @@ const ColorPaletteLayout: React.FC = () => {
 
             {!imageUrl ? (
               <div
-                className="flex flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-[#E5E7EB] bg-[#F9FAFB]/40 min-h-[420px] cursor-pointer hover:border-[#2563EB]/50 transition-colors"
+                className="flex flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-[#E5E7EB] dark:border-gray-700 bg-[#F9FAFB]/4 dark:bg-gray-800/40 dark:bg-gray-800/50 min-h-[420px] cursor-pointer hover:border-[#2563EB]/50 transition-colors"
                 onDrop={handleDrop}
                 onDragOver={(e) => e.preventDefault()}
                 onClick={() => fileInputRef.current?.click()}
               >
-                <BsImage className="w-12 h-12 text-[#4B5563]/20 mb-4" />
-                <p className="text-[#4B5563]/50 text-sm mb-1">
+                <BsImage className="w-12 h-12 text-[#4B5563]/20 dark:text-gray-400/20 mb-4" />
+                <p className="text-[#4B5563]/50 dark:text-gray-400/50 text-sm mb-1">
                   Drop image here or click to upload
                 </p>
-                <p className="text-[#4B5563]/30 text-xs">
+                <p className="text-[#4B5563]/30 dark:text-gray-400/30 text-xs">
                   Or paste (Ctrl/Cmd+V) anywhere
                 </p>
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                <div className="rounded-[20px] overflow-hidden border border-[#E5E7EB] bg-[#F9FAFB]/40 flex items-center justify-center min-h-[240px]">
+                <div className="rounded-[20px] overflow-hidden border border-[#E5E7EB] dark:border-gray-700 bg-[#F9FAFB]/40 dark:bg-gray-800/40 flex items-center justify-center min-h-[240px]">
                   <img
                     ref={imgRef}
                     src={imageUrl}
@@ -276,7 +276,7 @@ const ColorPaletteLayout: React.FC = () => {
                 {isProcessing ? (
                   <div className="flex items-center justify-center gap-2 py-8">
                     <span className="loading loading-spinner loading-md text-[#2563EB]" />
-                    <span className="text-sm text-[#4B5563]/60">
+                    <span className="text-sm text-[#4B5563]/60 dark:text-gray-400/60">
                       Extracting colors…
                     </span>
                   </div>
@@ -306,22 +306,22 @@ const ColorPaletteLayout: React.FC = () => {
                         {palette.map((color) => (
                           <button
                             key={color.hex}
-                            className="group relative rounded-[14px] overflow-hidden border border-[#E5E7EB] shadow-sm hover:shadow-md transition-shadow"
+                            className="group relative rounded-[14px] overflow-hidden border border-[#E5E7EB] dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
                             onClick={() => copyHex(color.hex)}
                           >
                             <div
                               className="h-16"
                               style={{ backgroundColor: color.hex }}
                             />
-                            <div className="p-2 bg-white flex items-center justify-between">
-                              <span className="text-xs font-mono font-medium text-[#0A0A0A]/80">
+                            <div className="p-2 bg-white dark:bg-gray-900 flex items-center justify-between">
+                              <span className="text-xs font-mono font-medium text-[#0A0A0A]/80 dark:text-white/80">
                                 {color.hex.toUpperCase()}
                               </span>
                               <BsClipboard
                                 className={`w-3 h-3 transition-colors ${
                                   copiedHex === color.hex
                                     ? "text-green-500"
-                                    : "text-[#4B5563]/30 group-hover:text-[#4B5563]/60"
+                                    : "text-[#4B5563]/30 dark:text-gray-400/30 group-hover:text-[#4B5563]/60 dark:text-gray-400/60"
                                 }`}
                               />
                             </div>
@@ -330,8 +330,8 @@ const ColorPaletteLayout: React.FC = () => {
                       </div>
 
                       {/* RGB values */}
-                      <div className="bg-[#F9FAFB]/60 rounded-[20px] p-4 backdrop-blur-sm">
-                        <p className="text-xs font-semibold text-[#4B5563]/50 uppercase tracking-wider mb-3">
+                      <div className="bg-[#F9FAFB]/60 dark:bg-gray-800/60 rounded-[20px] p-4 backdrop-blur-sm">
+                        <p className="text-xs font-semibold text-[#4B5563]/50 dark:text-gray-400/50 uppercase tracking-wider mb-3">
                           RGB Values
                         </p>
                         <div className="space-y-1.5">
@@ -341,13 +341,13 @@ const ColorPaletteLayout: React.FC = () => {
                               className="flex items-center gap-3"
                             >
                               <div
-                                className="w-5 h-5 rounded-full flex-shrink-0 border border-[#E5E7EB]"
+                                className="w-5 h-5 rounded-full flex-shrink-0 border border-[#E5E7EB] dark:border-gray-700"
                                 style={{ backgroundColor: color.hex }}
                               />
-                              <span className="text-xs font-mono text-[#4B5563]/60">
+                              <span className="text-xs font-mono text-[#4B5563]/60 dark:text-gray-400/60">
                                 {color.hex.toUpperCase()}
                               </span>
-                              <span className="text-xs font-mono text-[#4B5563]/40 ml-auto">
+                              <span className="text-xs font-mono text-[#4B5563]/40 dark:text-gray-400/40 ml-auto">
                                 rgb({color.rgb.r}, {color.rgb.g}, {color.rgb.b})
                               </span>
                             </div>
@@ -374,8 +374,8 @@ const ColorPaletteLayout: React.FC = () => {
               }}
             />
 
-            <div className="bg-[#F9FAFB]/60 rounded-[20px] p-4 backdrop-blur-sm">
-              <p className="text-xs font-semibold text-[#4B5563]/50 uppercase tracking-wider mb-3">
+            <div className="bg-[#F9FAFB]/60 dark:bg-gray-800/60 rounded-[20px] p-4 backdrop-blur-sm">
+              <p className="text-xs font-semibold text-[#4B5563]/50 dark:text-gray-400/50 uppercase tracking-wider mb-3">
                 Image
               </p>
               <Button
@@ -402,12 +402,12 @@ const ColorPaletteLayout: React.FC = () => {
               )}
             </div>
 
-            <div className="bg-[#F9FAFB]/60 rounded-[20px] p-4 backdrop-blur-sm">
+            <div className="bg-[#F9FAFB]/60 dark:bg-gray-800/60 rounded-[20px] p-4 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
-                <Label className="text-xs font-semibold text-[#4B5563]/50 uppercase tracking-wider">
+                <Label className="text-xs font-semibold text-[#4B5563]/50 dark:text-gray-400/50 uppercase tracking-wider">
                   Number of Colors
                 </Label>
-                <span className="text-xs font-mono text-[#4B5563]/70">
+                <span className="text-xs font-mono text-[#4B5563]/70 dark:text-gray-400/70">
                   {numColors}
                 </span>
               </div>
@@ -418,7 +418,7 @@ const ColorPaletteLayout: React.FC = () => {
                 value={[numColors]}
                 onValueChange={([v]) => setNumColors(v)}
               />
-              <div className="flex justify-between text-xs text-[#4B5563]/40 mt-1">
+              <div className="flex justify-between text-xs text-[#4B5563]/40 dark:text-gray-400/40 mt-1">
                 <span>2</span>
                 <span>12</span>
               </div>
@@ -442,11 +442,11 @@ const ColorPaletteLayout: React.FC = () => {
             )}
 
             {palette.length > 0 && (
-              <div className="bg-[#F9FAFB]/60 rounded-[20px] p-4 backdrop-blur-sm">
-                <p className="text-xs font-semibold text-[#4B5563]/50 uppercase tracking-wider mb-3">
+              <div className="bg-[#F9FAFB]/60 dark:bg-gray-800/60 rounded-[20px] p-4 backdrop-blur-sm">
+                <p className="text-xs font-semibold text-[#4B5563]/50 dark:text-gray-400/50 uppercase tracking-wider mb-3">
                   Tips
                 </p>
-                <ul className="space-y-1.5 text-xs text-[#4B5563]/50">
+                <ul className="space-y-1.5 text-xs text-[#4B5563]/50 dark:text-gray-400/50">
                   <li>• Click any color card to copy its hex</li>
                   <li>• Click the color strip to copy too</li>
                   <li>• Export saves as PNG palette</li>

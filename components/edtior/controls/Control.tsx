@@ -10,13 +10,13 @@ interface Props {
 const Control: React.FC<Props> = ({ title, value, children, onTap }) => {
   return (
     <div
-      className="control-item flex justify-between items-center p-[1rem] border-b border-[#E5E7EB]/60 cursor-pointer overflow-hidden group"
+      className="control-item flex justify-between items-center p-[1rem] border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60 cursor-pointer overflow-hidden group"
       onClick={onTap}
     >
       <div className="flex justify-between items-center gap-2 shrink-0">
-        <span className="text-[#0A0A0A] font-medium">{title}</span>
+        <span className="text-[#0A0A0A] dark:text-white font-medium">{title}</span>
         {value != null && (
-          <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] rounded-full font-medium text-gray-600 transition-colors group-hover:bg-[#2563EB]/10 group-hover:text-[#2563EB]">
+          <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium text-gray-600 dark:text-gray-400 transition-colors group-hover:bg-[#2563EB]/10 group-hover:text-[#2563EB]">
             {value}
           </span>
         )}

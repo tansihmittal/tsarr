@@ -217,14 +217,14 @@ const ControlPanel: React.FC<Props> = () => {
     >
       <Tabs defaultValue="options">
       {/* Top Buttons Container */}
-      <TabsList className="w-full grid grid-cols-2 rounded-[12px] bg-[#F9FAFB] mb-3">
+      <TabsList className="w-full grid grid-cols-2 rounded-[12px] bg-[#F9FAFB] dark:bg-gray-800/50 mb-3">
         <TabsTrigger value="options" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Options</TabsTrigger>
         <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
       </TabsList>
 
       {/* options panel wrapper */}
       <TabsContent value="options">
-        <div className="rounded-[14px] border border-[#E5E7EB]/80 bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[14px] border border-[#E5E7EB]/8 dark:border-gray-700/80 dark:border-gray-700/80 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           {picker != null && <NullScreen />}
           {/* inner scrolling wrapper */}
           <div className="relative rounded-[14px]">
@@ -241,7 +241,7 @@ const ControlPanel: React.FC<Props> = () => {
                         onClick={() => setDrawingTool(tool.id)}
                         className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all duration-200 text-sm ${drawingTool === tool.id
                             ? "bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/30 scale-105"
-                            : "hover:bg-[#F9FAFB] text-[#0A0A0A] hover:scale-105"
+                            : "hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 text-[#0A0A0A] dark:text-white hover:scale-105"
                           }`}
                         title={tool.title}
                       >
@@ -252,7 +252,7 @@ const ControlPanel: React.FC<Props> = () => {
 
                   {/* Stroke Color */}
                   <div className="mb-4">
-                    <span className="text-xs text-gray-500 font-medium block mb-2">Stroke</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-2">Stroke</span>
                     <div className="flex gap-2 items-center">
                       {strokeColors.map((color) => (
                         <button
@@ -276,7 +276,7 @@ const ControlPanel: React.FC<Props> = () => {
 
                   {/* Fill Color */}
                   <div className="mb-4">
-                    <span className="text-xs text-gray-500 font-medium block mb-2">Fill</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-2">Fill</span>
                     <div className="flex gap-2 items-center">
                       {fillColors.map((color, i) => (
                         <button
@@ -286,7 +286,7 @@ const ControlPanel: React.FC<Props> = () => {
                               ? "ring-2 ring-[#2563EB] ring-offset-2 scale-110"
                               : "hover:scale-110 hover:shadow-md"
                             } ${color === "transparent"
-                              ? "border-dashed border-gray-300"
+                              ? "border-dashed border-gray-300 dark:border-gray-600"
                               : "border-transparent"
                             }`}
                           style={{
@@ -312,7 +312,7 @@ const ControlPanel: React.FC<Props> = () => {
                   {/* Stroke Width & Style Row */}
                   <div className="flex gap-3 mb-4">
                     <div className="flex-1">
-                      <span className="text-xs text-gray-500 font-medium block mb-2">Width</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-2">Width</span>
                       <div className="flex gap-1.5">
                         {[1, 2, 4].map((w) => (
                           <button
@@ -320,7 +320,7 @@ const ControlPanel: React.FC<Props> = () => {
                             onClick={() => setStrokeWidth(w)}
                             className={`flex-1 py-2.5 rounded-[10px] flex items-center justify-center transition-all duration-200 ${strokeWidth === w
                                 ? "bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/20"
-                                : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"
+                                : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
                               }`}
                           >
                             <div
@@ -336,7 +336,7 @@ const ControlPanel: React.FC<Props> = () => {
                       </div>
                     </div>
                     <div className="flex-1">
-                      <span className="text-xs text-gray-500 font-medium block mb-2">Style</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-2">Style</span>
                       <div className="flex gap-1.5">
                         {(["solid", "dashed", "dotted"] as const).map((style) => (
                           <button
@@ -344,7 +344,7 @@ const ControlPanel: React.FC<Props> = () => {
                             onClick={() => setStrokeStyle(style)}
                             className={`flex-1 py-2.5 rounded-[10px] flex items-center justify-center transition-all duration-200 ${strokeStyle === style
                                 ? "bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/20"
-                                : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"
+                                : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
                               }`}
                           >
                             <svg width="20" height="2" viewBox="0 0 20 2">
@@ -368,7 +368,7 @@ const ControlPanel: React.FC<Props> = () => {
 
                   {/* Sloppiness */}
                   <div className="mb-4">
-                    <span className="text-xs text-gray-500 font-medium block mb-2">Sloppiness</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-2">Sloppiness</span>
                     <div className="flex gap-1.5">
                       {[
                         { value: 0, label: "None" },
@@ -380,7 +380,7 @@ const ControlPanel: React.FC<Props> = () => {
                           onClick={() => setSloppiness(item.value)}
                           className={`flex-1 py-2 rounded-[10px] text-xs font-medium transition-all duration-200 ${sloppiness === item.value
                               ? "bg-[#2563EB] text-white shadow-md shadow-[#2563EB]/20"
-                              : "bg-[#F9FAFB] hover:bg-[#F3F4F6]"
+                              : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 text-[#0A0A0A] dark:text-white"
                             }`}
                         >
                           {item.label}
@@ -392,7 +392,7 @@ const ControlPanel: React.FC<Props> = () => {
                   {/* Opacity */}
                   <div className="mb-4">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs text-gray-500 font-medium">Opacity</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Opacity</span>
                       <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{opacity}%</span>
                     </div>
                     <Slider
@@ -406,7 +406,7 @@ const ControlPanel: React.FC<Props> = () => {
                   {/* Clear Button */}
                   <button
                     onClick={clearAnnotations}
-                    className="w-full py-2.5 rounded-[10px] bg-[#F9FAFB] hover:bg-red-50 hover:text-red-500 text-xs font-medium flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-sm"
+                    className="w-full py-2.5 rounded-[10px] bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 text-xs font-medium text-[#0A0A0A] dark:text-white flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-sm"
                   >
                     <BiTrash className="text-sm" /> Clear All Annotations
                   </button>
@@ -492,9 +492,9 @@ const ControlPanel: React.FC<Props> = () => {
               )}
             </div>
 
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Scale</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Scale</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {scale}
                 </span>
@@ -507,9 +507,9 @@ const ControlPanel: React.FC<Props> = () => {
                 onValueChange={([v]) => onValueChanged("scale", v)}
               />
             </div>
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Border Radius</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Border Radius</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {borderRadius}
                 </span>
@@ -522,9 +522,9 @@ const ControlPanel: React.FC<Props> = () => {
                 onValueChange={([v]) => onValueChanged("borderRadius", v)}
               />
             </div>
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Padding</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Padding</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {padding}
                 </span>
@@ -543,7 +543,7 @@ const ControlPanel: React.FC<Props> = () => {
               <div className="flex gap-1">
                 {tiltDirectionArray.map((dir) => (
                   <span
-                    className={`text-[#0A0A0A] h-8 w-8 rounded-[4px] flex justify-center items-center border-2 border-[#E5E7EB] ${tilt.name == dir.name && "bg-[#F9FAFB]"
+                    className={`text-[#0A0A0A] dark:text-white h-8 w-8 rounded-[4px] flex justify-center items-center border-2 border-[#E5E7EB] dark:border-gray-700 ${tilt.name == dir.name && "bg-[#F9FAFB] dark:bg-gray-800"
                       }`}
                     key={dir.id}
                     onClick={() => {
@@ -556,9 +556,9 @@ const ControlPanel: React.FC<Props> = () => {
                 ))}
               </div>
             </Control>
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Left</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Left</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {left}
                 </span>
@@ -571,9 +571,9 @@ const ControlPanel: React.FC<Props> = () => {
                 onValueChange={([v]) => onValueChanged("left", v)}
               />
             </div>
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Top</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Top</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {right}
                 </span>
@@ -586,9 +586,9 @@ const ControlPanel: React.FC<Props> = () => {
                 onValueChange={([v]) => onValueChanged("right", v)}
               />
             </div>
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Rotate</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Rotate</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {rotate}°
                 </span>
@@ -622,9 +622,9 @@ const ControlPanel: React.FC<Props> = () => {
                 </>
               )}
             </div>
-            <div className="p-4 border-b border-[#E5E7EB]/60">
+            <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Roundness</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Roundness</span>
                 <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {canvasRoundness}
                 </span>
@@ -670,7 +670,7 @@ const ControlPanel: React.FC<Props> = () => {
         </div>
       </TabsContent>
       <TabsContent value="presets">
-        <div className="rounded-[14px] border border-[#E5E7EB]/80 bg-white shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <div className="rounded-[14px] border border-[#E5E7EB]/8 dark:border-gray-700/80 dark:border-gray-700/80 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Quick Presets" />
           {/* Built-in quick presets */}
           <QuickPresets />
@@ -684,7 +684,7 @@ const ControlPanel: React.FC<Props> = () => {
             <Presets />
           ) : (
             <div className="h-[60px] flex items-center justify-center w-full">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
                 Login to save cloud presets
               </span>
             </div>
@@ -815,7 +815,7 @@ const QuickPresets: React.FC = () => {
         <button
           key={preset.id}
           onClick={() => applyPreset(preset)}
-          className="group relative overflow-hidden rounded-[14px] border border-[#E5E7EB]/80 hover:border-[#2563EB]/40 transition-all duration-300 hover:shadow-lg hover:shadow-[#2563EB]/10 hover:-translate-y-0.5 press-effect stagger-item"
+          className="group relative overflow-hidden rounded-[14px] border border-[#E5E7EB]/8 dark:border-gray-700/80 dark:border-gray-700/80 hover:border-[#2563EB]/40 transition-all duration-300 hover:shadow-lg hover:shadow-[#2563EB]/10 hover:-translate-y-0.5 press-effect stagger-item"
           style={{ animationDelay: `${index * 0.05}s` }}
         >
           <div
@@ -830,8 +830,8 @@ const QuickPresets: React.FC = () => {
             {/* Shimmer overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
           </div>
-          <div className="p-2 bg-white text-center border-t border-[#E5E7EB]/50">
-            <span className="text-xs font-semibold text-[#0A0A0A] group-hover:text-[#2563EB] transition-colors">{preset.name}</span>
+          <div className="p-2 bg-white dark:bg-gray-900 text-center border-t border-[#E5E7EB]/5 dark:border-gray-700/50 dark:border-gray-700/50">
+            <span className="text-xs font-semibold text-[#0A0A0A] dark:text-white group-hover:text-[#2563EB] dark:group-hover:text-[#2563EB] transition-colors">{preset.name}</span>
           </div>
         </button>
       ))}

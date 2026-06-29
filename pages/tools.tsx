@@ -116,12 +116,12 @@ export default function ToolsPage() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(toolsListSchema) }} />
       </Head>
 
-      <div className="min-h-screen bg-[#F9FAFB] pb-24 lg:pb-0" style={{ fontFamily: FONT }}>
+      <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-800/50 pb-24 lg:pb-0" style={{ fontFamily: FONT }}>
 
         {/* ── Header ── */}
-        <header className="bg-white/95 backdrop-blur-lg border-b border-[#E5E7EB] sticky top-0 z-50">
+        <header className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-b border-[#E5E7EB] dark:border-gray-700 sticky top-0 z-50">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-            <Link href="/" className="text-base font-semibold text-[#0A0A0A]">
+            <Link href="/" className="text-base font-semibold text-[#0A0A0A] dark:text-white">
               tsarr.in
             </Link>
             <nav className="flex items-center gap-2">
@@ -142,12 +142,12 @@ export default function ToolsPage() {
           {/* ── Page title ── */}
           <div className="mb-8">
             <h1
-              className="font-normal text-[#0A0A0A] mb-1"
+              className="font-normal text-[#0A0A0A] dark:text-white mb-1"
               style={{ fontSize: "clamp(28px,4vw,40px)", lineHeight: 1.1, letterSpacing: "-1.5px" }}
             >
               All Tools
             </h1>
-            <p className="text-[#4B5563]" style={{ fontSize: 16 }}>
+            <p className="text-[#4B5563] dark:text-gray-400" style={{ fontSize: 16 }}>
               {toolsData.length}+ free tools for screenshots, images, videos, and more.
             </p>
           </div>
@@ -182,8 +182,8 @@ export default function ToolsPage() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                     selectedCategory === cat
-                      ? "bg-[#0A0A0A] text-white"
-                      : "bg-white text-[#4B5563] border border-[#E5E7EB] hover:border-[#60A5FA] hover:text-[#0A0A0A]"
+                      ? "bg-[#0A0A0A] dark:bg-white text-white dark:text-gray-900"
+                      : "bg-white dark:bg-gray-900 text-[#4B5563] dark:text-gray-400 border border-[#E5E7EB] dark:border-gray-700 hover:border-[#60A5FA] hover:text-[#0A0A0A] dark:hover:text-white"
                   }`}
                 >
                   {cat === "all" ? "All" : cat}
@@ -196,7 +196,7 @@ export default function ToolsPage() {
           {recentProjects.length > 0 && !searchQuery && selectedCategory === "all" && (
             <section className="mb-10">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-medium text-[#0A0A0A]" style={{ fontSize: 16 }}>
+                <h2 className="font-medium text-[#0A0A0A] dark:text-white" style={{ fontSize: 16 }}>
                   Continue editing
                 </h2>
                 <Button variant="link" size="sm" asChild>
@@ -209,7 +209,7 @@ export default function ToolsPage() {
                 {recentProjects.slice(0, 5).map((project) => (
                   <Link key={project.id} href={`${typeRoutes[project.type]}?project=${project.id}`} className="block flex-shrink-0 w-[140px] sm:w-auto">
                     <Card className="overflow-hidden hover:border-[#60A5FA]">
-                      <div className="aspect-[4/3] bg-[#F3F4F6] relative overflow-hidden">
+                      <div className="aspect-[4/3] bg-[#F3F4F6] dark:bg-gray-800 relative overflow-hidden">
                         {project.thumbnail ? (
                           <img src={project.thumbnail} alt={project.name} className="w-full h-full object-cover" />
                         ) : (
@@ -219,7 +219,7 @@ export default function ToolsPage() {
                         )}
                       </div>
                       <CardContent className="p-2.5">
-                        <p className="font-medium text-[#0A0A0A] text-sm truncate">{project.name}</p>
+                        <p className="font-medium text-[#0A0A0A] dark:text-white text-sm truncate">{project.name}</p>
                       </CardContent>
                     </Card>
                   </Link>
@@ -231,7 +231,7 @@ export default function ToolsPage() {
           {/* ── Tools grid ── */}
           <section>
             <div className="flex items-center gap-2 mb-4">
-              <h2 className="font-medium text-[#0A0A0A]" style={{ fontSize: 16 }}>
+              <h2 className="font-medium text-[#0A0A0A] dark:text-white" style={{ fontSize: 16 }}>
                 {selectedCategory === "all"
                   ? hasUsageData ? "Your tools" : "All tools"
                   : selectedCategory}
@@ -247,10 +247,10 @@ export default function ToolsPage() {
             </div>
 
             {filteredTools.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-[20px] border border-[#E5E7EB]">
-                <BsSearch className="text-4xl text-[#E5E7EB] mx-auto mb-3" />
-                <h3 className="font-medium text-[#0A0A0A] mb-1">No tools found</h3>
-                <p className="text-sm text-[#4B5563]">Try a different search term</p>
+              <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-[20px] border border-[#E5E7EB] dark:border-gray-700">
+                <BsSearch className="text-4xl text-[#E5E7EB] dark:text-gray-700 mx-auto mb-3" />
+                <h3 className="font-medium text-[#0A0A0A] dark:text-white mb-1">No tools found</h3>
+                <p className="text-sm text-[#4B5563] dark:text-gray-400">Try a different search term</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -262,7 +262,7 @@ export default function ToolsPage() {
                   return (
                     <Card
                       key={i}
-                      className="group cursor-pointer bg-white hover:border-[#DBEAFE] hover:bg-[#EFF6FF] p-4"
+                      className="group cursor-pointer bg-white dark:bg-gray-900 hover:border-[#DBEAFE] hover:bg-[#EFF6FF] dark:hover:bg-blue-900/30 p-4"
                       onClick={() => handleToolClick(tool.slug, tool.href)}
                     >
                       <div className="flex items-start gap-3">
@@ -275,10 +275,10 @@ export default function ToolsPage() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-[#0A0A0A] mb-0.5 group-hover:text-[#2563EB] transition-colors" style={{ fontSize: 14 }}>
+                          <h3 className="font-medium text-[#0A0A0A] dark:text-white mb-0.5 group-hover:text-[#2563EB] transition-colors" style={{ fontSize: 14 }}>
                             {tool.title}
                           </h3>
-                          <p className="text-[#4B5563] line-clamp-2" style={{ fontSize: 12 }}>
+                          <p className="text-[#4B5563] dark:text-gray-400 line-clamp-2" style={{ fontSize: 12 }}>
                             {tool.shortDesc}
                           </p>
                         </div>
@@ -303,12 +303,12 @@ export default function ToolsPage() {
             style={{ background: "linear-gradient(145deg, #EFF6FF 0%, #DBEAFE 60%, #EFF6FF 100%)" }}
           >
             <h2
-              className="font-normal text-[#0A0A0A] mb-2"
+              className="font-normal text-[#0A0A0A] dark:text-white mb-2"
               style={{ fontSize: "clamp(20px,3vw,28px)", lineHeight: 1.1, letterSpacing: "-1px" }}
             >
               Ready to create?
             </h2>
-            <p className="text-[#4B5563] mb-6" style={{ fontSize: 15 }}>
+            <p className="text-[#4B5563] dark:text-gray-400 mb-6" style={{ fontSize: 15 }}>
               All tools are free. No login required.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -323,11 +323,11 @@ export default function ToolsPage() {
         </main>
 
         {/* ── Footer ── */}
-        <footer className="border-t border-[#E5E7EB] bg-white mt-12 hidden lg:block">
+        <footer className="border-t border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 mt-12 hidden lg:block">
           <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-[#4B5563]" style={{ fontSize: 14 }}>
+            <p className="text-[#4B5563] dark:text-gray-400" style={{ fontSize: 14 }}>
               © 2025 tsarr.in ·{" "}
-              <a href="https://tanishmittal.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#0A0A0A] transition-colors">
+              <a href="https://tanishmittal.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#0A0A0A] dark:hover:text-white transition-colors">
                 Tanish Mittal
               </a>
             </p>
@@ -337,7 +337,7 @@ export default function ToolsPage() {
                 { href: "https://x.com/glowdopera", icon: <BsTwitter className="w-4 h-4" /> },
                 { href: "https://linkedin.com/in/tanishmittal02", icon: <BsLinkedin className="w-4 h-4" /> },
               ].map(({ href, icon }) => (
-                <a key={href} href={href} target="_blank" rel="noopener noreferrer" className="text-[#4B5563] hover:text-[#0A0A0A] transition-colors">
+                <a key={href} href={href} target="_blank" rel="noopener noreferrer" className="text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:hover:text-white transition-colors">
                   {icon}
                 </a>
               ))}

@@ -179,16 +179,16 @@ const DropZone: React.FC<Props> = () => {
   };
 
   return (
-    <div className="p-6 sm:p-8 bg-white relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale">
+    <div className="p-6 sm:p-8 bg-white dark:bg-gray-900 relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale">
       {/* header */}
       <div className="flex gap-1 flex-col mb-6">
         <div className="flex items-start gap-4 sm:gap-6">
-          <h2 className="font-bold text-2xl text-[#0A0A0A] bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
+          <h2 className="font-bold text-2xl text-[#0A0A0A] dark:text-white bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
             Upload and Start Editing
           </h2>
           <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
         </div>
-        <span className="text-sm text-gray-500 mt-1">
+        <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Transform boring screenshots into stunning visuals
         </span>
       </div>
@@ -199,7 +199,7 @@ const DropZone: React.FC<Props> = () => {
         className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer ${
           isDragActive
             ? "border-[#2563EB] bg-[#2563EB]/5 scale-[1.02]"
-            : "border-gray-300 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"
+            : "border-gray-300 dark:border-gray-600 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"
         }`}
       >
         <div className={`p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300 ${isDragActive ? "scale-110" : ""}`}>
@@ -215,15 +215,15 @@ const DropZone: React.FC<Props> = () => {
           onChange={handleImageUpload}
           {...getInputProps()}
         />
-        <h3 className="text-gray-700 font-medium">
+        <h3 className="text-gray-700 dark:text-gray-300 font-medium">
           <span className="text-[#2563EB] hover:underline cursor-pointer" onClick={handleFilePickerClick}>
             Click to upload
           </span>{" "}
           or drag and drop
         </h3>
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
           <BsClipboard className="text-xs" />
-          <span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span>
+          <span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span>
         </div>
         <span className="text-xs text-gray-400">PNG, JPG, WEBP up to 30MB</span>
       </div>
@@ -264,20 +264,20 @@ const DropZone: React.FC<Props> = () => {
       }}>
         <DialogContent className="w-full max-w-md p-6 gap-0">
           <DialogHeader className="mb-5">
-            <DialogTitle className="text-lg font-semibold text-[#0A0A0A]">
+            <DialogTitle className="text-lg font-semibold text-[#0A0A0A] dark:text-white">
               Screenshot from URL
             </DialogTitle>
           </DialogHeader>
 
           {/* URL Input */}
           <div className="mb-4">
-            <label className="text-xs text-gray-500 font-medium block mb-1.5">Website URL</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Website URL</label>
             <input
               type="url"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
               placeholder="https://example.com"
-              className="w-full px-4 py-3 border-2 border-[#E5E7EB] rounded-[12px] focus:border-[#2563EB] focus:outline-none transition-colors bg-white text-sm"
+              className="w-full px-4 py-3 border-2 border-[#E5E7EB] dark:border-gray-700 rounded-[12px] focus:border-[#2563EB] focus:outline-none transition-colors bg-white dark:bg-gray-900 text-sm dark:text-white"
               autoFocus
               onKeyDown={(e) => e.key === "Enter" && handleUrlCapture()}
             />
@@ -285,7 +285,7 @@ const DropZone: React.FC<Props> = () => {
 
           {/* Device Selection */}
           <div className="mb-4">
-            <label className="text-xs text-gray-500 font-medium block mb-1.5">Device View</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Device View</label>
             <div className="grid grid-cols-3 gap-2">
               {(["desktop", "tablet", "mobile"] as const).map((device) => (
                 <button
@@ -294,7 +294,7 @@ const DropZone: React.FC<Props> = () => {
                   className={`py-2.5 rounded-[10px] text-xs font-medium transition-all capitalize ${
                     captureDevice === device
                       ? "bg-[#2563EB] text-white shadow-sm"
-                      : "bg-[#F3F4F6] hover:bg-[#E5E7EB] text-gray-700"
+                      : "bg-[#F3F4F6] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   {device}
@@ -309,14 +309,14 @@ const DropZone: React.FC<Props> = () => {
           </div>
 
           {/* Full Page Option */}
-          <div className="flex items-center justify-between mb-4 px-4 py-3 bg-[#F9FAFB] rounded-[12px]">
-            <span className="text-sm text-[#0A0A0A] font-medium">Capture full page</span>
+          <div className="flex items-center justify-between mb-4 px-4 py-3 bg-[#F9FAFB] dark:bg-gray-800/50 rounded-[12px]">
+            <span className="text-sm text-[#0A0A0A] dark:text-white font-medium">Capture full page</span>
             <Switch checked={captureFullPage} onCheckedChange={setCaptureFullPage} />
           </div>
 
           {/* Custom Size */}
           <div className="mb-6">
-            <label className="text-xs text-gray-500 font-medium block mb-1.5">
+            <label className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">
               Custom Size <span className="font-normal">(optional)</span>
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -325,14 +325,14 @@ const DropZone: React.FC<Props> = () => {
                 value={customWidth}
                 onChange={(e) => setCustomWidth(e.target.value ? Number(e.target.value) : "")}
                 placeholder="Width"
-                className="w-full px-4 py-2.5 border-2 border-[#E5E7EB] rounded-[12px] focus:border-[#2563EB] focus:outline-none text-sm bg-white transition-colors"
+                className="w-full px-4 py-2.5 border-2 border-[#E5E7EB] dark:border-gray-700 rounded-[12px] focus:border-[#2563EB] focus:outline-none text-sm bg-white dark:bg-gray-900 dark:text-white transition-colors"
               />
               <input
                 type="number"
                 value={customHeight}
                 onChange={(e) => setCustomHeight(e.target.value ? Number(e.target.value) : "")}
                 placeholder="Height"
-                className="w-full px-4 py-2.5 border-2 border-[#E5E7EB] rounded-[12px] focus:border-[#2563EB] focus:outline-none text-sm bg-white transition-colors"
+                className="w-full px-4 py-2.5 border-2 border-[#E5E7EB] dark:border-gray-700 rounded-[12px] focus:border-[#2563EB] focus:outline-none text-sm bg-white dark:bg-gray-900 dark:text-white transition-colors"
               />
             </div>
             {(customWidth || customHeight) && (

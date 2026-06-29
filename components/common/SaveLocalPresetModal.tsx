@@ -82,18 +82,18 @@ const SaveLocalPresetModal: React.FC<SaveLocalPresetModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleClose(); }}>
-      <DialogContent className="rounded-[20px] shadow-2xl border border-[#E5E7EB]">
+      <DialogContent className="rounded-[20px] shadow-2xl border border-[#E5E7EB] dark:border-gray-700">
         {!showOverwriteConfirm ? (
           <>
             <DialogHeader>
-              <DialogTitle className="font-bold text-xl text-gray-800">Save as Local Preset</DialogTitle>
-              <DialogDescription className="text-sm text-gray-500">
+              <DialogTitle className="font-bold text-xl text-gray-800 dark:text-gray-200">Save as Local Preset</DialogTitle>
+              <DialogDescription className="text-sm text-gray-500 dark:text-gray-400">
                 Your preset will be saved locally in your browser
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-1.5">
-              <Label className="font-medium text-gray-600">Preset Name</Label>
+              <Label className="font-medium text-gray-600 dark:text-gray-400">Preset Name</Label>
               <Input
                 value={presetName}
                 onChange={(e) => {
@@ -126,7 +126,7 @@ const SaveLocalPresetModal: React.FC<SaveLocalPresetModalProps> = ({
               </Button>
               <Button
                 variant="ghost"
-                className="font-medium rounded-[10px] hover:bg-[#F9FAFB]"
+                className="font-medium rounded-[10px] hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800"
                 onClick={handleClose}
               >
                 Cancel
@@ -140,9 +140,9 @@ const SaveLocalPresetModal: React.FC<SaveLocalPresetModalProps> = ({
                 <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
                   <BsExclamationTriangle className="text-amber-600 text-xl" />
                 </div>
-                <DialogTitle className="font-bold text-xl text-gray-800">Overwrite Preset?</DialogTitle>
+                <DialogTitle className="font-bold text-xl text-gray-800 dark:text-gray-200">Overwrite Preset?</DialogTitle>
               </div>
-              <DialogDescription className="text-gray-600">
+              <DialogDescription className="text-gray-600 dark:text-gray-400">
                 A preset named <span className="font-semibold text-[#2563EB]">&quot;{presetName.trim()}&quot;</span> already exists. Do you want to overwrite it with your current settings?
               </DialogDescription>
             </DialogHeader>
@@ -156,7 +156,7 @@ const SaveLocalPresetModal: React.FC<SaveLocalPresetModalProps> = ({
               </Button>
               <Button
                 variant="ghost"
-                className="font-medium rounded-[10px] hover:bg-[#F9FAFB]"
+                className="font-medium rounded-[10px] hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800"
                 onClick={handleCancelOverwrite}
               >
                 Keep Both
