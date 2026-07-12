@@ -292,6 +292,24 @@ function esc(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
+// Hotspot links are exported into embeddable HTML that runs on third-party
+// sites, and are also followed directly in the editor's own Preview mode —
+// so an unsanitized "javascript:" URL would execute wherever the map lands.
+// Only allow schemes that can't run script; everything else (including
+// relative paths, "#anchors", and bare "example.com") is left untouched.
+const SAFE_LINK_SCHEMES = /^(https?:|mailto:|tel:)/i;
+const DANGEROUS_LINK_SCHEMES = /^\s*(javascript|data|vbscript):/i;
+export function sanitizeHref(url: string | undefined): string {
+  const href = (url || "").trim();
+  if (!href) return "";
+  if (DANGEROUS_LINK_SCHEMES.test(href)) return "";
+  if (href.includes(":") && !SAFE_LINK_SCHEMES.test(href)) {
+    // has a scheme we don't recognize (not a relative/anchor link) - block it
+    return "";
+  }
+  return href;
+}
+
 function styleVarsFor(s: Shape): string {
   const v: string[] = [];
   if (s.hoverFill) v.push(`--hf:${s.hoverFill}`);
@@ -377,9 +395,9 @@ function shapeSvg(s: Shape, interactive: boolean): string {
   let inner = shapeGeometrySvg(s, interactive);
   const titleEl = s.title ? `<title>${esc(s.title)}</title>` : "";
   inner = `${inner}${titleEl}`;
-  const isLink = interactive && s.action !== "none" && s.action !== "tooltip" && s.link;
-  if (isLink) {
-    return `<a href="${esc(s.link!)}" target="${s.linkTarget || "_blank"}" rel="noopener">${inner}</a>`;
+  const safeHref = interactive && s.action !== "none" && s.action !== "tooltip" ? sanitizeHref(s.link) : "";
+  if (safeHref) {
+    return `<a href="${esc(safeHref)}" target="${s.linkTarget || "_blank"}" rel="noopener">${inner}</a>`;
   }
   return inner;
 }

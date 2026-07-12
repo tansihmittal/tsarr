@@ -410,7 +410,7 @@ const BackgroundRemoverLayout: React.FC = () => {
                       ))}
                     </div>
                     {exportFormat === "jpeg" && bgOption === "transparent" && (
-                      <p className="text-xs text-amber-600 mt-3">JPG doesn't support transparency — white bg will be used</p>
+                      <p className="text-xs text-amber-600 mt-3">JPG doesn&apos;t support transparency — white bg will be used</p>
                     )}
                   </div>
 

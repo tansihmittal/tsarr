@@ -7,7 +7,7 @@ import {
   useState,
   ChangeEvent,
 } from "react";
-import { BsClipboard, BsRepeat, BsUpload } from "react-icons/bs";
+import { BsClipboard, BsRepeat, BsUpload, BsStars } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { TfiExport } from "react-icons/tfi";
 import { BubbleBlasterState } from "./BubbleBlasterLayout";
@@ -393,7 +393,7 @@ const BubbleBlasterPreview = ({
             {/* Status bar */}
             {!state.isProcessing && state.bubbles.length > 0 && (
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/80 text-white text-xs px-4 py-2 rounded-full flex items-center gap-3">
-                <span><span class="inline-block w-3 h-3 rounded-full bg-current" /> {state.bubbles.length} bubbles</span>
+                <span><span className="inline-block w-3 h-3 rounded-full bg-current" /> {state.bubbles.length} bubbles</span>
                 <span className="text-[#60A5FA]">{selectedCount} selected</span>
                 {processedCount > 0 && (
                   <span className="text-green-400">

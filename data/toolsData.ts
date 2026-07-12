@@ -658,5 +658,31 @@ export const toolsData: ToolData[] = [
       "Real estate virtual tours"
     ],
     keywords: ["image map", "image map creator", "clickable image", "hotspot creator", "interactive image", "image annotation tool"]
+  },
+  {
+    slug: "app-icon-generator",
+    title: "App Icon Generator",
+    shortDesc: "iOS, Android, Web & macOS icon sets",
+    description: "Upload one image and generate a complete app icon set for iOS, Android, Web/Favicon, and macOS as a single ZIP download.",
+    longDescription: "Stop resizing icons by hand. Upload a single square image and the App Icon Generator produces every size and file each platform actually expects: a full Xcode AppIcon.appiconset with Contents.json for iOS, launcher mipmaps plus a Play Store icon for Android, a favicon.ico alongside apple-touch-icon, android-chrome icons, and a web manifest for the browser, and an AppIcon.iconset folder for macOS (ready for iconutil). Adjust the background color and padding, preview with rounded corners, choose which platforms to include, and download it all as one ZIP.",
+    metaDescription: "Free app icon generator. Upload one image, export iOS, Android, Web/Favicon, and macOS icon sets as a ZIP. Contents.json, manifest, favicon.ico included.",
+    href: "/app-icon-generator",
+    category: "Utilities",
+    features: [
+      "Full Xcode AppIcon.appiconset with generated Contents.json",
+      "Android launcher mipmaps (mdpi–xxxhdpi) plus Play Store icon",
+      "favicon.ico, apple-touch-icon, android-chrome icons, and web manifest",
+      "macOS AppIcon.iconset folder (run iconutil for a .icns)",
+      "Background color and padding controls with rounded-corner preview",
+      "Toggle platforms on/off before exporting",
+      "One-click ZIP download, all generated locally in your browser"
+    ],
+    useCases: [
+      "Preparing app icons for an iOS or Android release",
+      "Generating favicons and web app manifest icons for a new site",
+      "Producing a macOS app icon set for Xcode or a DMG",
+      "Quickly re-exporting icons after a logo redesign"
+    ],
+    keywords: ["app icon generator", "ios icon generator", "android icon generator", "favicon generator", "appicon.appiconset", "icon set generator"]
   }
 ];

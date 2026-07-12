@@ -51,7 +51,7 @@ type FFmpegInstance = any;
 const formats: {
   id: OutputFormat;
   name: string;
-  icon: string;
+  icon: JSX.Element;
   type: "video" | "audio";
 }[] = [
   { id: "mp4",  name: "MP4",  icon: <BsCameraVideo />,     type: "video" },

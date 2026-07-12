@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import type { Shape, ImapDocument, ShapeType } from "./types";
-import { TOOL_FONT, pinGeometry, pinPath, getActiveArtboard } from "./types";
+import { TOOL_FONT, pinGeometry, pinPath, getActiveArtboard, sanitizeHref } from "./types";
 
 export type Tool =
   | "select"
@@ -569,10 +569,10 @@ const ImapCanvas: React.FC<Props> = ({
 
   const renderShape = (s: Shape) => {
     const body = renderShapeBody(s, !preview);
-    const isLink = preview && s.action !== "none" && s.action !== "tooltip" && s.link;
-    if (isLink) {
+    const safeHref = preview && s.action !== "none" && s.action !== "tooltip" ? sanitizeHref(s.link) : "";
+    if (safeHref) {
       return (
-        <a key={s.id} href={s.link} target={s.linkTarget || "_blank"} rel="noopener noreferrer">
+        <a key={s.id} href={safeHref} target={s.linkTarget || "_blank"} rel="noopener noreferrer">
           {s.title ? <title>{s.title}</title> : null}
           {body}
         </a>

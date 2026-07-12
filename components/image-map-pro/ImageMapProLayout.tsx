@@ -60,29 +60,17 @@ import {
 } from "./types";
 import ImapMapOptions from "./ImapMapOptions";
 import { maskToPolygons, maskToBBox } from "./maskToPolygon";
+import {
+  loadAllProjects,
+  saveProjectRecord,
+  deleteProjectRecord,
+  describeStorageError,
+  type StoredProject,
+} from "./projectDb";
 
-const PROJECTS_KEY = "imp-projects-v2";
 // 30 entries × shallow Shape refs. Base64 href strings are interned in JS so
 // they're shared across history — actual memory cost is just array overhead.
 const MAX_HISTORY = 30;
-
-interface StoredProject {
-  id: string;
-  name: string;
-  doc: ImapDocument;
-  updatedAt: number;
-}
-
-function loadProjects(): StoredProject[] {
-  try {
-    return JSON.parse(localStorage.getItem(PROJECTS_KEY) || "[]");
-  } catch {
-    return [];
-  }
-}
-function persistProjects(list: StoredProject[]) {
-  localStorage.setItem(PROJECTS_KEY, JSON.stringify(list));
-}
 
 function emptyDoc(): ImapDocument {
   const ab = createArtboard("Artboard 1");
@@ -173,7 +161,7 @@ const ImageMapProLayout: React.FC = () => {
   const selected = getActiveArtboard(doc).shapes.find((s) => s.id === selectedId) || null;
 
   useEffect(() => {
-    setProjects(loadProjects());
+    loadAllProjects().then(setProjects);
   }, []);
 
   // ---------- shape state + history ----------
@@ -771,20 +759,26 @@ const ImageMapProLayout: React.FC = () => {
   };
 
   // ---------- projects ----------
-  const saveProject = () => {
-    const list = loadProjects();
+  const saveProject = async () => {
     const entry: StoredProject = {
       id: doc.id,
       name: doc.name,
       doc: { ...docRef.current, updatedAt: Date.now() },
       updatedAt: Date.now(),
     };
-    const idx = list.findIndex((p) => p.id === doc.id);
-    if (idx >= 0) list[idx] = entry;
-    else list.push(entry);
-    persistProjects(list);
-    setProjects(list);
-    toast.success("Project saved");
+    try {
+      await saveProjectRecord(entry);
+      setProjects((prev) => {
+        const idx = prev.findIndex((p) => p.id === entry.id);
+        const next = idx >= 0 ? [...prev] : [entry, ...prev];
+        if (idx >= 0) next[idx] = entry;
+        return next.sort((a, b) => b.updatedAt - a.updatedAt);
+      });
+      toast.success("Project saved");
+    } catch (error) {
+      console.error("Image Map Pro: failed to save project", error);
+      toast.error(describeStorageError(error));
+    }
   };
 
   const openProject = (p: StoredProject) => {
@@ -796,11 +790,15 @@ const ImageMapProLayout: React.FC = () => {
     setPreview(false);
   };
 
-  const deleteProject = (id: string) => {
-    const list = loadProjects().filter((p) => p.id !== id);
-    persistProjects(list);
-    setProjects(list);
-    toast.success("Project deleted");
+  const deleteProject = async (id: string) => {
+    try {
+      await deleteProjectRecord(id);
+      setProjects((prev) => prev.filter((p) => p.id !== id));
+      toast.success("Project deleted");
+    } catch (error) {
+      console.error("Image Map Pro: failed to delete project", error);
+      toast.error("Couldn't delete the project. Please try again.");
+    }
   };
 
   const newProject = () => {

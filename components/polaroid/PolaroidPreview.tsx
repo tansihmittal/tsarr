@@ -1,7 +1,7 @@
 import { useRef, ChangeEvent, useCallback, useEffect } from "react";
 import { normalizeImageFile, IMAGE_ACCEPT } from "@/utils/imageFile";
 import ToolbarButton from "../common/ToolbarButton";
-import { BsClipboard, BsRepeat, BsUpload, BsShare } from "react-icons/bs";
+import { BsClipboard, BsRepeat, BsUpload, BsShare, BsStars } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { TfiExport } from "react-icons/tfi";
 import { PolaroidState } from "./types";
@@ -382,11 +382,11 @@ const PolaroidPreview = ({ state, polaroidRef, onImageUpload, onReset, projectNa
                       )}
                       {/* Light leak overlay */}
                       {state.lightLeak !== 'none' && (
-                        <div className="absolute inset-0 z-21 pointer-events-none" style={{ background: getLightLeakStyle() }} />
+                        <div className="absolute inset-0 z-30 pointer-events-none" style={{ background: getLightLeakStyle() }} />
                       )}
                       {/* Film grain overlay */}
                       {state.grain && (
-                        <div className="absolute inset-0 z-22 pointer-events-none" style={getGrainOverlay() || {}} />
+                        <div className="absolute inset-0 z-40 pointer-events-none" style={getGrainOverlay() || {}} />
                       )}
                       <img src={state.image} alt="Polaroid" className="w-full h-full object-cover" style={{ filter: getFilterStyle() }} />
                     </div>
