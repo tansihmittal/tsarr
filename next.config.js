@@ -131,6 +131,32 @@ const nextConfig = {
           },
         ],
       },
+      {
+        // Baseline hardening headers on every response. No Content-Security-Policy
+        // here deliberately — this app loads resources from many third-party
+        // origins (Stripe, Supabase, Google OAuth, Replicate, fonts, etc.) across
+        // 20+ tool pages, and a CSP needs each of those audited per-page before
+        // it's safe to enforce without breaking something.
+        source: "/(.*)",
+        headers: [
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+        ],
+      },
     ];
   },
 };

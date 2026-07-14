@@ -1,16 +1,26 @@
 // API route to save FCM tokens for push notifications
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { firestore } from '@/lib/firebase-admin';
+import { isRateLimited } from '@/lib/rateLimit';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  if (isRateLimited(req, res, { limit: 20, windowMs: 60_000, keyPrefix: 'notif-subscribe' })) {
+    return;
+  }
+
   const { token, userId } = req.body;
 
-  if (!token) {
+  // FCM tokens are long opaque strings — a basic shape/length check filters
+  // out junk without needing to know FCM's exact internal format.
+  if (!token || typeof token !== 'string' || token.length < 32 || token.length > 4096) {
     return res.status(400).json({ error: 'FCM token is required' });
+  }
+  if (userId !== undefined && (typeof userId !== 'string' || userId.length > 128)) {
+    return res.status(400).json({ error: 'Invalid userId' });
   }
 
   if (!firestore) {

@@ -96,5 +96,13 @@
     "postcss": "^8.4.21",
     "tailwindcss": "^3.2.7",
     "vitest": "^1.6.0"
+  },
+  "resolutions": {
+    "firebase-admin/**/protobufjs": "7.6.5",
+    "fast-xml-parser": "4.5.7",
+    "tar": "7.5.20",
+    "qs": "6.15.3",
+    "yaml": "2.9.0",
+    "uuid": "11.1.1"
   }
 }

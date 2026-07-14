@@ -1,5 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import puppeteer from "puppeteer-core";
+import { isRateLimited } from "@/lib/rateLimit";
+import { assertSafeUrl, isBlockedIp, UnsafeUrlError } from "@/lib/ssrfGuard";
+import { isIP } from "net";
+import { promises as dns } from "dns";
 
 const CHROMIUM_CDN =
   "https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.tar";
@@ -61,6 +65,12 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  // Each request launches a full headless Chromium instance — expensive
+  // compute with no auth in front of it, so keep the ceiling tight.
+  if (isRateLimited(req, res, { limit: 5, windowMs: 60_000, keyPrefix: "screenshot" })) {
+    return;
+  }
+
   let browser = null;
   try {
     const { url, device = "desktop", fullPage = false, width, height } =
@@ -76,9 +86,10 @@ export default async function handler(
 
     let validUrl: URL;
     try {
-      validUrl = new URL(url);
-    } catch {
-      return res.status(400).json({ error: "Invalid URL format" });
+      validUrl = await assertSafeUrl(url);
+    } catch (e) {
+      const message = e instanceof UnsafeUrlError ? e.message : "Invalid URL format";
+      return res.status(400).json({ error: message });
     }
 
     const profile = deviceProfiles[device] ?? deviceProfiles.desktop;
@@ -100,6 +111,40 @@ export default async function handler(
     });
 
     const page = await browser.newPage();
+
+    // Re-validate every request the page makes (including redirect hops and
+    // its own subresource fetches) — the initial URL check alone doesn't
+    // stop a redirect or an <img>/fetch on the page from targeting an
+    // internal address (DNS rebinding, or the page itself probing your
+    // network from inside it).
+    await page.setRequestInterception(true);
+    page.on("request", async (request) => {
+      try {
+        const reqUrl = new URL(request.url());
+        if (reqUrl.protocol !== "http:" && reqUrl.protocol !== "https:") {
+          // Allow non-network schemes (data:, blob:, about:) through untouched.
+          if (["data:", "blob:", "about:"].includes(reqUrl.protocol)) {
+            return request.continue();
+          }
+          return request.abort("blockedbyclient");
+        }
+        const hostname = reqUrl.hostname.toLowerCase();
+        if (hostname === "localhost" || hostname.endsWith(".localhost")) {
+          return request.abort("blockedbyclient");
+        }
+        if (isIP(hostname)) {
+          if (isBlockedIp(hostname)) return request.abort("blockedbyclient");
+          return request.continue();
+        }
+        const addresses = await dns.lookup(hostname, { all: true }).catch(() => []);
+        if (addresses.length === 0 || addresses.some((a) => isBlockedIp(a.address))) {
+          return request.abort("blockedbyclient");
+        }
+        return request.continue();
+      } catch {
+        return request.abort("blockedbyclient");
+      }
+    });
 
     await page.setUserAgent(profile.userAgent);
     await page.setViewport({

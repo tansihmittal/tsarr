@@ -1,16 +1,33 @@
 // API route to send push notifications via Firebase Cloud Messaging
 // Protect this endpoint with authentication in production!
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { timingSafeEqual } from 'crypto';
 import { messaging, firestore } from '@/lib/firebase-admin';
+import { isRateLimited } from '@/lib/rateLimit';
+
+function safeCompare(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) {
+    timingSafeEqual(bufA, bufA);
+    return false;
+  }
+  return timingSafeEqual(bufA, bufB);
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  if (isRateLimited(req, res, { limit: 10, windowMs: 60_000, keyPrefix: 'notif-send' })) {
+    return;
+  }
+
   // Authentication check - use a secret API key
   const apiKey = req.headers['x-api-key'];
-  if (apiKey !== process.env.NOTIFICATION_API_KEY) {
+  const expected = process.env.NOTIFICATION_API_KEY;
+  if (typeof apiKey !== 'string' || !expected || !safeCompare(apiKey, expected)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 

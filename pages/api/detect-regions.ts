@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { isRateLimited } from "@/lib/rateLimit";
 
 // Two server-side modes for AI Detect:
 //   • "enumerate" → GPT-4o-mini VLM lists & boxes all distinct parts/objects in
@@ -186,6 +187,12 @@ export default async function handler(
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Only POST requests allowed" });
+  }
+
+  // Every call here is billed (Replicate: GPT-4o-mini + SAM3) — keep the
+  // ceiling tight since there's no per-user auth/quota in front of it.
+  if (isRateLimited(req, res, { limit: 10, windowMs: 60_000, keyPrefix: "detect-regions" })) {
+    return;
   }
 
   const { imageBase64, prompts, instruction, mode } = req.body;
