@@ -1,9 +1,11 @@
 -- Run this in your Supabase SQL Editor (https://app.supabase.com → SQL Editor)
 
 -- ─── Projects Table ──────────────────────────────────────────────────────────────
+-- user_id defaults to auth.uid() because the app's insert/upsert calls never set it
+-- explicitly — they rely on Postgres filling it in from the caller's JWT.
 create table if not exists projects (
   id          text        primary key,
-  user_id     uuid        not null references auth.users(id) on delete cascade,
+  user_id     uuid        not null default auth.uid() references auth.users(id) on delete cascade,
   name        text        not null,
   type        text        not null,
   thumbnail   text,
@@ -26,7 +28,7 @@ create policy "Users can manage their own projects"
 -- ─── Presets Table ──────────────────────────────────────────────────────────────
 create table if not exists presets (
   id          uuid        default gen_random_uuid() primary key,
-  user_id     uuid        not null references auth.users(id) on delete cascade,
+  user_id     uuid        not null default auth.uid() references auth.users(id) on delete cascade,
   preset_name text        not null,
   data        jsonb       not null,
   created_at  timestamptz default now()

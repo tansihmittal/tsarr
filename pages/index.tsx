@@ -604,6 +604,23 @@ export default function Home() {
                     </li>
                   </ul>
                 </div>
+                <div>
+                  <h4 className="font-medium text-[#0A0A0A] dark:text-white mb-3" style={{ fontSize: 14 }}>
+                    Legal
+                  </h4>
+                  <ul className="space-y-2">
+                    <li>
+                      <Link href="/privacy" className="text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:text-white dark:hover:text-white transition-colors" style={{ fontSize: 14 }}>
+                        Privacy Policy
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/terms" className="text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:text-white dark:hover:text-white transition-colors" style={{ fontSize: 14 }}>
+                        Terms of Service
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
             <div className="mt-12 pt-8 border-t border-[#F3F4F6] dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">

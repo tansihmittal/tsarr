@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import { Poppins } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { useEffect, useState } from "react";
 
 // local
@@ -74,6 +75,7 @@ export default function App({ Component, pageProps }: AppProps) {
             <MobileNav />
             <InstallPrompt />
             <Analytics />
+            <SpeedInsights />
             <Toaster
               toastOptions={{
                 style: {
