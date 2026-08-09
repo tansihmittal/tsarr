@@ -3,6 +3,7 @@ import { gradients, solidGradients } from "@/data/gradients";
 import { directionArray } from "@/data/misc";
 import { BackgroundType, GradientProps } from "@/interface";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 import BackgroundTile from "./BackgroundTile";
 
@@ -66,25 +67,25 @@ const BackgroundPickerWidget: React.FC<Props> = ({ closePicker }) => {
   };
 
   return (
-    <div className="absolute right-0 top-full py-2 px-4 bg-base-100 z-20 border-[2px] border-base-200 rounded-md max-h-[70vh] overflow-y-auto w-[90vw] sm:w-[380px]">
+    <div className="absolute right-0 top-full py-2 px-4 bg-white dark:bg-gray-900 z-20 border-[2px] border-[#E5E7EB] dark:border-gray-700 rounded-md max-h-[70vh] overflow-y-auto w-[90vw] sm:w-[380px]">
       {/* Tab selecter */}
-      <div className="grid grid-cols-3 bg-base-200 rounded-md p-[0.125rem] mb-3">
+      <div className="grid grid-cols-3 bg-[#F9FAFB] dark:bg-gray-800/50 rounded-md p-[0.125rem] mb-3">
         <span
-          className={`cursor-pointer text-center rounded-md inline-block font-medium py-2 px-3 text-sm ${isActive == "gradient" && "bg-base-100"
+          className={`cursor-pointer text-center rounded-md inline-block font-medium py-2 px-3 text-sm ${isActive == "gradient" && "bg-white dark:bg-gray-900"
             }`}
           onClick={() => setIsActive("gradient")}
         >
           Gradient
         </span>
         <span
-          className={`cursor-pointer text-center rounded-md inline-block font-medium py-2 px-3 text-sm ${isActive == "solid" && "bg-base-100"
+          className={`cursor-pointer text-center rounded-md inline-block font-medium py-2 px-3 text-sm ${isActive == "solid" && "bg-white dark:bg-gray-900"
             }`}
           onClick={() => setIsActive("solid")}
         >
           Solid
         </span>
         <span
-          className={`cursor-pointer text-center rounded-md inline-block font-medium py-2 px-3 text-sm ${isActive == "custom" && "bg-base-100"
+          className={`cursor-pointer text-center rounded-md inline-block font-medium py-2 px-3 text-sm ${isActive == "custom" && "bg-white dark:bg-gray-900"
             }`}
           onClick={() => setIsActive("custom")}
         >
@@ -125,7 +126,7 @@ const BackgroundPickerWidget: React.FC<Props> = ({ closePicker }) => {
         <div className="flex flex-col gap-3">
           {/* Preview */}
           <div
-            className="w-full h-16 rounded-lg border-2 border-base-200"
+            className="w-full h-16 rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700"
             style={{ background: customGradient.background }}
           />
 
@@ -137,7 +138,7 @@ const BackgroundPickerWidget: React.FC<Props> = ({ closePicker }) => {
                 value={customGradient.color1}
                 type="color"
                 name="color1"
-                className="w-8 h-8 cursor-pointer rounded border border-base-200 p-0"
+                className="w-8 h-8 cursor-pointer rounded border border-[#E5E7EB] dark:border-gray-700 p-0"
                 onChange={(e) =>
                   onCustomGradientChangeRealtime(e.target.name, e.target.value)
                 }
@@ -149,7 +150,7 @@ const BackgroundPickerWidget: React.FC<Props> = ({ closePicker }) => {
                 value={customGradient.color2}
                 type="color"
                 name="color2"
-                className="w-8 h-8 cursor-pointer rounded border border-base-200 p-0"
+                className="w-8 h-8 cursor-pointer rounded border border-[#E5E7EB] dark:border-gray-700 p-0"
                 onChange={(e) =>
                   onCustomGradientChangeRealtime(e.target.name, e.target.value)
                 }
@@ -161,7 +162,7 @@ const BackgroundPickerWidget: React.FC<Props> = ({ closePicker }) => {
                 value={customGradient.color3 || "#ffffff"}
                 type="color"
                 name="color3"
-                className="w-8 h-8 cursor-pointer rounded border border-base-200 p-0"
+                className="w-8 h-8 cursor-pointer rounded border border-[#E5E7EB] dark:border-gray-700 p-0"
                 onChange={(e) =>
                   onCustomGradientChangeRealtime(e.target.name, e.target.value)
                 }
@@ -173,9 +174,9 @@ const BackgroundPickerWidget: React.FC<Props> = ({ closePicker }) => {
           <div className="flex gap-1 flex-wrap">
             {directionArray.map((dir) => (
               <span
-                className={`h-9 w-9 p-2 border flex items-center justify-center rounded-md border-base-200 cursor-pointer hover:bg-base-200 ${customGradient.direction == dir.name
-                  ? "bg-base-200"
-                  : "bg-base-100"
+                className={`h-9 w-9 p-2 border flex items-center justify-center rounded-md border-[#E5E7EB] dark:border-gray-700 cursor-pointer hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 ${customGradient.direction == dir.name
+                  ? "bg-[#F9FAFB] dark:bg-gray-800/50"
+                  : "bg-white dark:bg-gray-900"
                   }`}
                 key={dir.id}
                 onClick={() => onCustomGradientChangeRealtime("direction", dir.name)}
@@ -185,12 +186,13 @@ const BackgroundPickerWidget: React.FC<Props> = ({ closePicker }) => {
             ))}
           </div>
 
-          <button
-            className="btn btn-sm w-full font-medium"
+          <Button
+            size="sm"
+            className="w-full font-medium"
             onClick={() => applyCustomGradient()}
           >
             Apply & Close
-          </button>
+          </Button>
         </div>
       )}
     </div>

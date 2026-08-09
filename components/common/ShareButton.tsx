@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BsShare, BsCheck2 } from "react-icons/bs";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
 
 interface ShareButtonProps {
   getImageBlob: () => Promise<Blob | null>;
@@ -8,8 +9,8 @@ interface ShareButtonProps {
   className?: string;
 }
 
-const ShareButton: React.FC<ShareButtonProps> = ({ 
-  getImageBlob, 
+const ShareButton: React.FC<ShareButtonProps> = ({
+  getImageBlob,
   title = "Share",
   className = ""
 }) => {
@@ -17,7 +18,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({
 
   const handleShare = async () => {
     setIsSharing(true);
-    
+
     try {
       const blob = await getImageBlob();
       if (!blob) {
@@ -27,7 +28,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({
       }
 
       const file = new File([blob], "tsarr-creation.png", { type: "image/png" });
-      const shareText = "Created with tsarr.in - Free Screenshot Editor ✨";
+      const shareText = "Created with tsarr.in - Free Screenshot Editor";
       const shareUrl = "https://tsarr.in";
 
       // Check if Web Share API is available with files support
@@ -65,10 +66,10 @@ const ShareButton: React.FC<ShareButtonProps> = ({
   };
 
   return (
-    <button
+    <Button
       onClick={handleShare}
       disabled={isSharing}
-      className={`flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg font-medium transition-all hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 ${className}`}
+      className={`flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-[10px] font-medium transition-all hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 ${className}`}
     >
       {isSharing ? (
         <>
@@ -81,7 +82,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({
           <span>{title}</span>
         </>
       )}
-    </button>
+    </Button>
   );
 };
 

@@ -8,11 +8,11 @@ const IconTile: React.FC<Props> = ({ title, onTap, active }) => {
   return (
     <div
       onClick={onTap}
-      className={`rounded-lg border-2 border-base-200 py-2.5 px-3 cursor-pointer transition-all duration-200 hover:border-primary/30 hover:bg-primary/5 hover:shadow-sm press-effect ${
-        active && "bg-primary/10 border-primary/40 shadow-sm"
+      className={`rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 py-2.5 px-3 cursor-pointer transition-all duration-200 hover:border-[#2563EB]/30 hover:bg-[#2563EB]/5 hover:shadow-sm press-effect ${
+        active && "bg-[#2563EB]/10 border-[#2563EB]/40 shadow-sm"
       }`}
     >
-      <span className={`font-medium ${active ? "text-primary" : ""}`}>{title}</span>
+      <span className={`font-medium ${active ? "text-[#2563EB]" : ""}`}>{title}</span>
     </div>
   );
 };

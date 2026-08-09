@@ -10,6 +10,7 @@ import {
   BsArrowUpRight,
   BsArrowsFullscreen,
 } from "react-icons/bs";
+import { Button } from "@/components/ui/button";
 
 export interface BackgroundConfig {
   type: "gradient" | "solid" | "custom";
@@ -113,13 +114,13 @@ const BackgroundPicker: React.FC<Props> = ({
   return (
     <div className="space-y-3">
       {/* Tabs */}
-      <div className="grid grid-cols-3 bg-base-200 rounded-md p-0.5">
+      <div className="grid grid-cols-3 bg-[#F9FAFB] dark:bg-gray-800/50 rounded-md p-0.5">
         {(["gradient", "solid", "custom"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`py-2 px-3 text-xs font-medium rounded-md capitalize transition-all ${
-              activeTab === tab ? "bg-base-100 shadow-sm" : "hover:bg-base-100/50"
+              activeTab === tab ? "bg-white dark:bg-gray-900 shadow-sm" : "hover:bg-white/50"
             }`}
           >
             {tab}
@@ -135,7 +136,7 @@ const BackgroundPicker: React.FC<Props> = ({
               key={grad.id}
               onClick={() => handleGradientSelect(grad)}
               className={`h-10 rounded-md border-2 transition-all hover:scale-105 ${
-                background.background === grad.background ? "border-primary" : "border-transparent"
+                background.background === grad.background ? "border-[#2563EB]" : "border-transparent"
               }`}
               style={{ background: grad.background }}
             />
@@ -151,7 +152,7 @@ const BackgroundPicker: React.FC<Props> = ({
               key={solid.id}
               onClick={() => handleSolidSelect(solid)}
               className={`h-10 rounded-md border-2 transition-all hover:scale-105 ${
-                background.background === solid.background ? "border-primary" : "border-transparent"
+                background.background === solid.background ? "border-[#2563EB]" : "border-transparent"
               }`}
               style={{ background: solid.color1 }}
             />
@@ -164,14 +165,14 @@ const BackgroundPicker: React.FC<Props> = ({
         <div className="space-y-3">
           {/* Preview */}
           <div
-            className="w-full h-14 rounded-lg border-2 border-base-200"
+            className="w-full h-14 rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700"
             style={{ background: background.background }}
           />
 
           {/* Color pickers */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">C1</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">C1</span>
               <input
                 type="color"
                 value={customGradient.color1}
@@ -180,7 +181,7 @@ const BackgroundPicker: React.FC<Props> = ({
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">C2</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">C2</span>
               <input
                 type="color"
                 value={customGradient.color2}
@@ -189,7 +190,7 @@ const BackgroundPicker: React.FC<Props> = ({
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">C3</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">C3</span>
               <input
                 type="color"
                 value={customGradient.color3 || "#ffffff"}
@@ -207,8 +208,8 @@ const BackgroundPicker: React.FC<Props> = ({
                 onClick={() => updateCustomGradient("direction", dir.name)}
                 className={`h-8 w-8 flex items-center justify-center rounded-md border transition-all ${
                   customGradient.direction === dir.name
-                    ? "bg-primary text-white border-primary"
-                    : "border-base-200 hover:bg-base-200"
+                    ? "bg-[#2563EB] text-white border-[#2563EB]"
+                    : "border-[#E5E7EB] dark:border-gray-700 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800"
                 }`}
               >
                 {dirIcons[dir.name]}
@@ -225,20 +226,22 @@ const BackgroundPicker: React.FC<Props> = ({
               onChange={handleCustomImageUpload}
               className="hidden"
             />
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
+              className="w-full"
               onClick={() => fileInputRef.current?.click()}
-              className="btn btn-sm btn-outline w-full"
             >
               Upload Custom Image
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
       {/* Tilt options */}
       {showTilt && onTiltChange && (
-        <div className="pt-2 border-t border-base-200">
-          <span className="text-xs text-gray-500 font-medium block mb-2">Tilt Effect</span>
+        <div className="pt-2 border-t border-[#E5E7EB] dark:border-gray-700">
+          <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-2">Tilt Effect</span>
           <div className="flex gap-1">
             {tiltOptions.map((t) => (
               <button
@@ -246,8 +249,8 @@ const BackgroundPicker: React.FC<Props> = ({
                 onClick={() => onTiltChange({ name: t.name, value: t.value })}
                 className={`h-8 w-8 flex items-center justify-center rounded-md border transition-all ${
                   tilt?.name === t.name
-                    ? "bg-primary text-white border-primary"
-                    : "border-base-200 hover:bg-base-200"
+                    ? "bg-[#2563EB] text-white border-[#2563EB]"
+                    : "border-[#E5E7EB] dark:border-gray-700 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800"
                 }`}
               >
                 {t.icon}

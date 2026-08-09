@@ -1,10 +1,13 @@
 import { RefObject, useEffect, useCallback, useState, useRef } from "react";
 import { WatermarkRemoverState, SelectionArea } from "./WatermarkRemoverLayout";
 import { TfiExport } from "react-icons/tfi";
-import { BsClipboard, BsUpload, BsRepeat } from "react-icons/bs";
+import { BsClipboard, BsUpload, BsRepeat, BsStars } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import ToolbarButton from "../common/ToolbarButton";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { IMAGE_ACCEPT } from "@/utils/imageFile";
 
 interface Props {
   state: WatermarkRemoverState;
@@ -16,14 +19,14 @@ interface Props {
   removeSelection: (id: string) => void;
 }
 
-const WatermarkRemoverPreview: React.FC<Props> = ({ 
-  state, 
-  canvasRef, 
-  onExport, 
-  onCopy, 
+const WatermarkRemoverPreview: React.FC<Props> = ({
+  state,
+  canvasRef,
+  onExport,
+  onCopy,
   onImageUpload,
   addSelection,
-  removeSelection 
+  removeSelection
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
@@ -104,12 +107,12 @@ const WatermarkRemoverPreview: React.FC<Props> = ({
     if (!isSelecting || !selectionStart) return;
     const coords = getRelativeCoords(e);
     if (!coords) return;
-    
+
     const x = Math.min(selectionStart.x, coords.x);
     const y = Math.min(selectionStart.y, coords.y);
     const width = Math.abs(coords.x - selectionStart.x);
     const height = Math.abs(coords.y - selectionStart.y);
-    
+
     setCurrentRect({ x, y, width, height });
   };
 
@@ -139,30 +142,35 @@ const WatermarkRemoverPreview: React.FC<Props> = ({
     return (
       <div className="flex items-center justify-start flex-col h-full w-full">
         <div className="flex flex-wrap gap-2 w-full mb-3 justify-end opacity-80" style={{ pointerEvents: "none" }}>
-          <div className="dropdown"><label tabIndex={0}><ToolbarButton title="Export Image" disabled><TfiExport /></ToolbarButton></label></div>
+          <ToolbarButton title="Export Image" disabled><TfiExport /></ToolbarButton>
           <ToolbarButton title="Copy" disabled><BsClipboard /></ToolbarButton>
-          <label><ToolbarButton title="Reset Image" disabled><BsRepeat /></ToolbarButton></label>
+          <ToolbarButton title="Reset Image" disabled><BsRepeat /></ToolbarButton>
           <ToolbarButton title="Reset Canvas" disabled><BiReset /></ToolbarButton>
         </div>
-        <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
-          <div className={`p-6 sm:p-8 bg-base-100 relative z-20 rounded-2xl shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-primary" : ""}`} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
+        <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 dark:bg-gray-800/30 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden">
+          <div className={`p-6 sm:p-8 bg-white dark:bg-gray-900 relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-[#2563EB]" : ""}`} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
             <div className="flex gap-1 flex-col mb-6">
               <div className="flex items-start gap-4 sm:gap-6">
-                <h2 className="font-bold text-2xl text-primary-content">Watermark Remover</h2>
-                <div className="text-2xl text-primary animate-pulse-soft">✦</div>
+                <h2 className="font-bold text-2xl text-[#0A0A0A] dark:text-white">Watermark Remover</h2>
+                <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
               </div>
-              <span className="text-sm text-gray-500 mt-1">Remove watermarks from images with intelligent inpainting</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">Remove watermarks from images with intelligent inpainting</span>
             </div>
-            <label className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-2xl border-dashed transition-all duration-300 cursor-pointer ${isDragging ? "border-primary bg-primary/5 scale-[1.02]" : "border-gray-300 hover:border-primary/50 hover:bg-primary/5"}`}>
-              <div className={`p-4 rounded-full bg-primary/10 transition-transform duration-300 ${isDragging ? "scale-110" : ""}`}><BsUpload className="text-primary text-2xl" /></div>
-              <input type="file" hidden accept="image/*" onChange={handleFileInput} />
-              <h3 className="text-gray-700 font-medium"><span className="text-primary hover:underline">Click to upload</span> or drag and drop</h3>
-              <div className="flex items-center gap-2 text-sm text-gray-500"><BsClipboard className="text-xs" /><span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span></div>
+            <label className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer ${isDragging ? "border-[#2563EB] bg-[#2563EB]/5 scale-[1.02]" : "border-gray-300 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"}`}>
+              <div className={`p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300 ${isDragging ? "scale-110" : ""}`}><BsUpload className="text-[#2563EB] text-2xl" /></div>
+              <input type="file" hidden accept={IMAGE_ACCEPT} onChange={handleFileInput} />
+              <h3 className="text-gray-700 dark:text-gray-200 font-medium"><span className="text-[#2563EB] hover:underline">Click to upload</span> or drag and drop</h3>
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"><BsClipboard className="text-xs" /><span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span></div>
               <span className="text-xs text-gray-400">JPG, PNG, WebP up to 30MB</span>
             </label>
             <div className="grid grid-cols-2 gap-3 mt-6">
-              <label className="btn btn-primary rounded-xl font-semibold w-full shadow-lg shadow-primary/20 cursor-pointer"><input type="file" hidden accept="image/*" onChange={handleFileInput} />{isDragging ? "DROP TO UPLOAD" : "START EDITING"}</label>
-              <button onClick={handlePaste} className="btn btn-outline rounded-xl font-semibold w-full gap-2"><BsClipboard className="text-lg" />PASTE IMAGE</button>
+              <label className="cursor-pointer">
+                <Button className="rounded-[14px] font-semibold w-full shadow-lg shadow-[#2563EB]/20 pointer-events-none">
+                  {isDragging ? "DROP TO UPLOAD" : "START EDITING"}
+                </Button>
+                <input type="file" hidden accept={IMAGE_ACCEPT} onChange={handleFileInput} />
+              </label>
+              <Button variant="secondary" onClick={handlePaste} className="rounded-[14px] font-semibold w-full gap-2"><BsClipboard className="text-lg" />PASTE IMAGE</Button>
             </div>
           </div>
         </div>
@@ -176,19 +184,21 @@ const WatermarkRemoverPreview: React.FC<Props> = ({
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
       <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
-        <div className="dropdown">
-          <label tabIndex={0}><ToolbarButton title="Export Image"><TfiExport /></ToolbarButton></label>
-          <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50">
-            <li onClick={onExport}><a>Export as {state.outputFormat.toUpperCase()}</a></li>
-          </ul>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span><ToolbarButton title="Export Image"><TfiExport /></ToolbarButton></span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-[200px]">
+            <DropdownMenuItem onClick={onExport}>Export as {state.outputFormat.toUpperCase()}</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>
-        <label htmlFor="watermark-change-image"><input type="file" hidden accept="image/*" id="watermark-change-image" onChange={handleFileInput} /><ToolbarButton title="Reset Image"><BsRepeat /></ToolbarButton></label>
+        <label htmlFor="watermark-change-image"><input type="file" hidden accept={IMAGE_ACCEPT} id="watermark-change-image" onChange={handleFileInput} /><ToolbarButton title="Reset Image"><BsRepeat /></ToolbarButton></label>
         <ToolbarButton title="Reset Canvas" onTap={handleReset}><BiReset /></ToolbarButton>
       </div>
-      
+
       <div className="flex justify-between mb-2 w-full">
-        <span className="text-xs text-gray-500 bg-base-200 px-3 py-1 rounded-full">
+        <span className="text-xs text-gray-500 dark:text-gray-400 bg-[#F9FAFB] dark:bg-gray-800 px-3 py-1 rounded-full">
           {state.imageWidth} × {state.imageHeight} px
         </span>
         <span className="text-xs text-amber-600 bg-amber-50 px-3 py-1 rounded-full">
@@ -196,20 +206,20 @@ const WatermarkRemoverPreview: React.FC<Props> = ({
         </span>
       </div>
 
-      <div 
+      <div
         ref={containerRef}
-        className={`relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border ${isDragging ? "border-primary border-dashed bg-primary/5" : "border-base-200/80"} overflow-hidden`} 
-        onDrop={handleDrop} 
-        onDragOver={handleDragOver} 
+        className={`relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 dark:bg-gray-800/30 border ${isDragging ? "border-[#2563EB] border-dashed bg-[#2563EB]/5" : "border-[#E5E7EB] dark:border-gray-700"} overflow-hidden`}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
       >
         <div className="relative flex items-center justify-center p-4">
           <div className="relative">
-            <img 
+            <img
               ref={imageRef}
-              src={displayImage} 
+              src={displayImage}
               alt="Preview"
-              className="max-w-full max-h-[550px] rounded-lg shadow-2xl shadow-black/10 select-none"
+              className="max-w-full max-h-[550px] rounded-[10px] shadow-2xl shadow-black/10 select-none"
               style={{ cursor: "crosshair" }}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
@@ -217,7 +227,7 @@ const WatermarkRemoverPreview: React.FC<Props> = ({
               onMouseLeave={handleMouseUp}
               draggable={false}
             />
-            
+
             {/* Selection overlays */}
             {state.selections.map((sel) => (
               <div
@@ -241,11 +251,11 @@ const WatermarkRemoverPreview: React.FC<Props> = ({
                 </button>
               </div>
             ))}
-            
+
             {/* Current selection being drawn */}
             {currentRect && currentRect.width > 0 && currentRect.height > 0 && (
               <div
-                className="absolute border-2 border-dashed border-primary bg-primary/10 pointer-events-none"
+                className="absolute border-2 border-dashed border-[#2563EB] bg-[#2563EB]/10 pointer-events-none"
                 style={{
                   left: currentRect.x * scale.scaleX,
                   top: currentRect.y * scale.scaleY,

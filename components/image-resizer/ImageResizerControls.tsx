@@ -1,12 +1,16 @@
 import { useState, useRef } from "react";
 import { ImageResizerState } from "./ImageResizerLayout";
+import { normalizeImageFile, IMAGE_ACCEPT } from "@/utils/imageFile";
 import { BiRuler, BiImage } from "react-icons/bi";
 import { IoMdOptions } from "react-icons/io";
 import { BsUpload, BsClipboard, BsDownload, BsLockFill, BsUnlock } from "react-icons/bs";
 import { toast } from "react-hot-toast";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 
 interface Props {
   state: ImageResizerState;
@@ -36,15 +40,18 @@ const outputFormats = [
   { id: "jpeg", name: "JPG", desc: "Smaller" },
   { id: "webp", name: "WebP", desc: "Modern" },
   { id: "avif", name: "AVIF", desc: "Best" },
+  { id: "gif", name: "GIF", desc: "Animation" },
+  { id: "bmp", name: "BMP", desc: "Uncompressed" },
+  { id: "tiff", name: "TIFF", desc: "Print" },
+  { id: "ico", name: "ICO", desc: "Icon" },
 ];
 
 const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUpload, onExport, getOutputDimensions }) => {
-  const [selectedTab, setSelectedTab] = useState("size");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) onImageUpload(file);
+    if (file) onImageUpload(await normalizeImageFile(file));
   };
 
   const handlePaste = async () => {
@@ -72,43 +79,44 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="grid grid-cols-3 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Size" isActive={selectedTab === "size"} onClick={() => setSelectedTab("size")}><BiRuler /></ControlTabButton>
-        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BiImage /></ControlTabButton>
-        <ControlTabButton title="Output" isActive={selectedTab === "output"} onClick={() => setSelectedTab("output")}><IoMdOptions /></ControlTabButton>
-      </div>
+      <Tabs defaultValue="size">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-3">
+        <TabsTrigger value="size" className="gap-1.5 rounded-[10px] text-xs"><BiRuler className="w-3.5 h-3.5" /> Size</TabsTrigger>
+        <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BiImage className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+        <TabsTrigger value="output" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Output</TabsTrigger>
+      </TabsList>
 
-      <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <TabsContent value="size">
+        <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <PanelHeading title="Image" />
-        <div className="p-4 border-b border-base-200/60">
-          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+        <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
+          <input ref={fileInputRef} type="file" accept={IMAGE_ACCEPT} onChange={handleFileChange} className="hidden" />
           <div className="grid grid-cols-2 gap-2 mb-3">
-            <button onClick={() => fileInputRef.current?.click()} className="btn btn-outline btn-sm gap-2"><BsUpload /> {state.originalImage ? "Change" : "Upload"}</button>
-            <button onClick={handlePaste} className="btn btn-outline btn-sm gap-2"><BsClipboard /> Paste</button>
+            <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-2"><BsUpload /> {state.originalImage ? "Change" : "Upload"}</Button>
+            <Button variant="secondary" size="sm" onClick={handlePaste} className="gap-2"><BsClipboard /> Paste</Button>
           </div>
           {state.originalImage && (
             <div className="flex items-center gap-3">
-              <img src={state.originalImage} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
+              <img src={state.originalImage} alt="Preview" className="w-16 h-16 rounded-[10px] object-cover" />
               <div className="text-sm">
-                <div className="font-medium text-primary-content">{state.originalWidth} × {state.originalHeight}</div>
-                <div className="text-gray-500">Original size</div>
+                <div className="font-medium text-[#0A0A0A] dark:text-white">{state.originalWidth} × {state.originalHeight}</div>
+                <div className="text-gray-500 dark:text-gray-400">Original size</div>
               </div>
             </div>
           )}
         </div>
 
-        {selectedTab === "size" ? (
           <div className="relative rounded-md">
             <PanelHeading title="Resize Mode" />
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => updateState({ resizeMode: "pixels" })} className={`p-3 rounded-lg text-center transition-all ${state.resizeMode === "pixels" ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>
+                <button onClick={() => updateState({ resizeMode: "pixels" })} className={`p-3 rounded-[10px] text-center transition-all ${state.resizeMode === "pixels" ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>
                   <div className="font-semibold text-sm">Pixels</div>
-                  <div className={`text-xs ${state.resizeMode === "pixels" ? "text-white/70" : "text-gray-500"}`}>Exact dimensions</div>
+                  <div className={`text-xs ${state.resizeMode === "pixels" ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>Exact dimensions</div>
                 </button>
-                <button onClick={() => updateState({ resizeMode: "percentage" })} className={`p-3 rounded-lg text-center transition-all ${state.resizeMode === "percentage" ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>
+                <button onClick={() => updateState({ resizeMode: "percentage" })} className={`p-3 rounded-[10px] text-center transition-all ${state.resizeMode === "percentage" ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>
                   <div className="font-semibold text-sm">Percentage</div>
-                  <div className={`text-xs ${state.resizeMode === "percentage" ? "text-white/70" : "text-gray-500"}`}>Scale by %</div>
+                  <div className={`text-xs ${state.resizeMode === "percentage" ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>Scale by %</div>
                 </button>
               </div>
             </div>
@@ -117,28 +125,33 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
               <>
                 <PanelHeading title="Dimensions" />
                 <Control title="Lock Aspect Ratio">
-                  <button onClick={() => updateState({ maintainAspectRatio: !state.maintainAspectRatio })} className={`btn btn-sm ${state.maintainAspectRatio ? "btn-primary" : "btn-outline"} gap-1`}>
+                  <Button
+                    size="sm"
+                    variant={state.maintainAspectRatio ? "default" : "secondary"}
+                    onClick={() => updateState({ maintainAspectRatio: !state.maintainAspectRatio })}
+                    className="gap-1"
+                  >
                     {state.maintainAspectRatio ? <BsLockFill /> : <BsUnlock />}
                     {state.maintainAspectRatio ? "Locked" : "Unlocked"}
-                  </button>
+                  </Button>
                 </Control>
-                <div className="p-4 border-b border-base-200/60">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="grid grid-cols-2 gap-3 mb-3">
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Width (px)</label>
-                      <input type="number" value={state.targetWidth} onChange={(e) => updateState({ targetWidth: Number(e.target.value) })} className="input input-sm input-bordered w-full" min="1" max="8000" />
+                      <label className="text-xs text-gray-500 dark:text-gray-400 block mb-1">Width (px)</label>
+                      <Input type="number" value={state.targetWidth} onChange={(e) => updateState({ targetWidth: Number(e.target.value) })} className="h-9 text-sm w-full" min="1" max="8000" />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Height (px)</label>
-                      <input type="number" value={state.targetHeight} onChange={(e) => updateState({ targetHeight: Number(e.target.value) })} className="input input-sm input-bordered w-full" min="1" max="8000" />
+                      <label className="text-xs text-gray-500 dark:text-gray-400 block mb-1">Height (px)</label>
+                      <Input type="number" value={state.targetHeight} onChange={(e) => updateState({ targetHeight: Number(e.target.value) })} className="h-9 text-sm w-full" min="1" max="8000" />
                     </div>
                   </div>
                   {state.originalWidth > 0 && (
                     <div className="flex gap-2 flex-wrap">
-                      <button onClick={() => updateState({ targetWidth: state.originalWidth, targetHeight: state.originalHeight })} className="btn btn-xs btn-outline">Original</button>
-                      <button onClick={() => updateState({ targetWidth: Math.round(state.originalWidth / 2), targetHeight: Math.round(state.originalHeight / 2) })} className="btn btn-xs btn-outline">50%</button>
-                      <button onClick={() => updateState({ targetWidth: Math.round(state.originalWidth / 4), targetHeight: Math.round(state.originalHeight / 4) })} className="btn btn-xs btn-outline">25%</button>
-                      <button onClick={() => updateState({ targetWidth: state.originalWidth * 2, targetHeight: state.originalHeight * 2 })} className="btn btn-xs btn-outline">2x</button>
+                      <Button size="sm" variant="secondary" className="h-7 text-xs px-3" onClick={() => updateState({ targetWidth: state.originalWidth, targetHeight: state.originalHeight })}>Original</Button>
+                      <Button size="sm" variant="secondary" className="h-7 text-xs px-3" onClick={() => updateState({ targetWidth: Math.round(state.originalWidth / 2), targetHeight: Math.round(state.originalHeight / 2) })}>50%</Button>
+                      <Button size="sm" variant="secondary" className="h-7 text-xs px-3" onClick={() => updateState({ targetWidth: Math.round(state.originalWidth / 4), targetHeight: Math.round(state.originalHeight / 4) })}>25%</Button>
+                      <Button size="sm" variant="secondary" className="h-7 text-xs px-3" onClick={() => updateState({ targetWidth: state.originalWidth * 2, targetHeight: state.originalHeight * 2 })}>2x</Button>
                     </div>
                   )}
                 </div>
@@ -146,83 +159,85 @@ const ImageResizerControls: React.FC<Props> = ({ state, updateState, onImageUplo
             ) : (
               <>
                 <PanelHeading title="Scale Percentage" />
-                <div className="p-4 border-b border-base-200/60">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs text-gray-500 font-medium">Scale</span>
-                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.percentage}%</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Scale</span>
+                    <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.percentage}%</span>
                   </div>
-                  <input type="range" min="10" max="200" value={state.percentage} onChange={(e) => updateState({ percentage: Number(e.target.value) })} className="range range-xs range-primary w-full mb-3" />
+                  <Slider min={10} max={200} value={[state.percentage]} onValueChange={([v]) => updateState({ percentage: v })} className="w-full mb-3" />
                   <div className="flex gap-2 flex-wrap">
                     {[25, 50, 75, 100, 150, 200].map(p => (
-                      <button key={p} onClick={() => updateState({ percentage: p })} className={`btn btn-xs ${state.percentage === p ? "btn-primary" : "btn-outline"}`}>{p}%</button>
+                      <Button key={p} size="sm" variant={state.percentage === p ? "default" : "secondary"} className="h-7 text-xs px-3" onClick={() => updateState({ percentage: p })}>{p}%</Button>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-500 mt-3">Output: {dims.width} × {dims.height} px</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">Output: {dims.width} × {dims.height} px</p>
                 </div>
               </>
             )}
           </div>
-
-        ) : selectedTab === "presets" ? (
-          <div className="relative rounded-md">
+        </div>
+        </TabsContent>
+        <TabsContent value="presets">
+          <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
             <PanelHeading title="Preset Sizes" />
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-2 gap-2">
                 {presetSizes.map((preset) => (
                   <button
                     key={preset.id}
                     onClick={() => updateState({ targetWidth: preset.width, targetHeight: preset.height, resizeMode: "pixels", maintainAspectRatio: false })}
-                    className={`p-3 rounded-lg text-left transition-all ${state.targetWidth === preset.width && state.targetHeight === preset.height ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}
+                    className={`p-3 rounded-[10px] text-left transition-all ${state.targetWidth === preset.width && state.targetHeight === preset.height ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
                   >
                     <div className="font-semibold text-sm">{preset.name}</div>
-                    <div className={`text-xs ${state.targetWidth === preset.width && state.targetHeight === preset.height ? "text-white/70" : "text-gray-500"}`}>{preset.width}×{preset.height}</div>
+                    <div className={`text-xs ${state.targetWidth === preset.width && state.targetHeight === preset.height ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>{preset.width}×{preset.height}</div>
                   </button>
                 ))}
               </div>
             </div>
           </div>
-        ) : (
-          <div className="relative rounded-md">
+        </TabsContent>
+        <TabsContent value="output">
+          <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
             <PanelHeading title="Format" />
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-4 gap-2">
                 {outputFormats.map((format) => (
                   <button
                     key={format.id}
                     onClick={() => updateState({ outputFormat: format.id as ImageResizerState["outputFormat"] })}
-                    className={`p-3 rounded-lg text-center transition-all ${state.outputFormat === format.id ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}
+                    className={`p-3 rounded-[10px] text-center transition-all ${state.outputFormat === format.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
                   >
                     <div className="font-semibold text-sm">{format.name}</div>
-                    <div className={`text-xs ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500"}`}>{format.desc}</div>
+                    <div className={`text-xs ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>{format.desc}</div>
                   </button>
                 ))}
               </div>
             </div>
 
-            {state.outputFormat !== "png" && (
+            {!["png", "gif", "bmp", "tiff", "ico"].includes(state.outputFormat) && (
               <>
                 <PanelHeading title="Quality" />
-                <div className="p-4 border-b border-base-200/60">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs text-gray-500 font-medium">Quality</span>
-                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.quality}%</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Quality</span>
+                    <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.quality}%</span>
                   </div>
-                  <input type="range" min="10" max="100" value={state.quality} onChange={(e) => updateState({ quality: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+                  <Slider min={10} max={100} value={[state.quality]} onValueChange={([v]) => updateState({ quality: v })} className="w-full" />
                 </div>
               </>
             )}
 
             <PanelHeading title="Export" />
-            <div className="p-4 border-b border-base-200/60">
-              <button onClick={onExport} disabled={!state.originalImage} className="btn btn-primary w-full gap-2 shadow-lg shadow-primary/20 disabled:opacity-50">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
+              <Button onClick={onExport} disabled={!state.originalImage} className="w-full gap-2 shadow-lg shadow-[#2563EB]/20">
                 <BsDownload className="text-lg" />
                 Export {state.outputFormat.toUpperCase()} ({dims.width}×{dims.height})
-              </button>
-              <p className="text-xs text-gray-500 mt-2 text-center">{dims.width} × {dims.height} px</p>
+              </Button>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">{dims.width} × {dims.height} px</p>
             </div>
           </div>
-        )}
-      </div>
+        </TabsContent>
+      </Tabs>
     </section>
   );
 };

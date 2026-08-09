@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, memo } from "react";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CarouselEditorState, SlideContent } from "./CarouselEditorLayout";
 import { BiSlideshow, BiPlus, BiTrash, BiUser, BiChevronRight } from "react-icons/bi";
 import { IoMdOptions } from "react-icons/io";
@@ -11,6 +11,11 @@ import { toast } from "react-hot-toast";
 import BackgroundPicker, { BackgroundConfig } from "../common/BackgroundPicker";
 import { gereateRandomGradient } from "@/utils/randomGradient";
 import useCustomPresets from "@/hooks/useCustomPresets";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 interface Props {
   state: CarouselEditorState;
@@ -141,7 +146,6 @@ const presets = [
 ];
 
 const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
-  const [selectedTab, setSelectedTab] = useState("slides");
   const [showBgPicker, setShowBgPicker] = useState(false);
   const [imageUrlInput, setImageUrlInput] = useState("");
   const [appIconUrlInput, setAppIconUrlInput] = useState("");
@@ -151,7 +155,7 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
   const profileImageRef = useRef<HTMLInputElement>(null);
   const customBgInputRef = useRef<HTMLInputElement>(null);
 
-  const { presets: customPresets, savePreset, deletePreset } = useCustomPresets<CarouselPresetData>(PRESET_STORAGE_KEY);
+  const { presets: customPresets, savePreset, deletePreset } = useCustomPresets<CarouselPresetData>(PRESET_STORAGE_KEY, "carousel-editor");
 
   const currentSlide = state.slides[state.currentSlide];
 
@@ -287,138 +291,131 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="grid grid-cols-4 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Slides" isActive={selectedTab === "slides"} onClick={() => setSelectedTab("slides")}><BiSlideshow /></ControlTabButton>
-        <ControlTabButton title="Profile" isActive={selectedTab === "profile"} onClick={() => setSelectedTab("profile")}><BiUser /></ControlTabButton>
-        <ControlTabButton title="Style" isActive={selectedTab === "style"} onClick={() => setSelectedTab("style")}><IoMdOptions /></ControlTabButton>
-        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BsBookmarkFill /></ControlTabButton>
-      </div>
+      <Tabs defaultValue="slides">
+      <TabsList className="w-full grid grid-cols-4 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-3">
+        <TabsTrigger value="slides" className="gap-1 rounded-[10px] text-xs"><BiSlideshow className="w-3.5 h-3.5" /> Slides</TabsTrigger>
+        <TabsTrigger value="profile" className="gap-1 rounded-[10px] text-xs"><BiUser className="w-3.5 h-3.5" /> Profile</TabsTrigger>
+        <TabsTrigger value="style" className="gap-1 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Style</TabsTrigger>
+        <TabsTrigger value="presets" className="gap-1 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+      </TabsList>
 
-      <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
-        {selectedTab === "slides" ? (
+      <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <TabsContent value="slides">
           <div className="relative rounded-md">
             <PanelHeading title="Slides" />
-            <div className="p-3 border-b border-base-200/60">
+            <div className="p-3 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex flex-wrap gap-2 mb-3">
                 {state.slides.map((slide, index) => (
-                  <button key={slide.id} onClick={() => updateState({ currentSlide: index })} className={`relative px-3 py-2 rounded-lg text-sm font-medium transition-all ${index === state.currentSlide ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>
+                  <button key={slide.id} onClick={() => updateState({ currentSlide: index })} className={`relative px-3 py-2 rounded-[10px] text-sm font-medium transition-all ${index === state.currentSlide ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>
                     {index + 1}
                     {state.slides.length > 1 && (
-                      <span onClick={(e) => { e.stopPropagation(); deleteSlide(slide.id); }} className="absolute -top-1 -right-1 w-4 h-4 bg-error text-white rounded-full text-xs flex items-center justify-center hover:bg-error/80"><BiTrash className="text-[10px]" /></span>
+                      <span onClick={(e) => { e.stopPropagation(); deleteSlide(slide.id); }} className="absolute -top-1 -right-1 w-4 h-4 bg-[#EF4444] text-white rounded-full text-xs flex items-center justify-center hover:bg-[#DC2626]"><BiTrash className="text-[10px]" /></span>
                     )}
                   </button>
                 ))}
-                <button onClick={addSlide} className="px-3 py-2 rounded-lg text-sm font-medium bg-base-200 hover:bg-base-300 flex items-center gap-1"><BiPlus /> Add</button>
+                <button onClick={addSlide} className="px-3 py-2 rounded-[10px] text-sm font-medium bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700 flex items-center gap-1"><BiPlus /> Add</button>
               </div>
             </div>
 
             <PanelHeading title="Content" />
-            <div className="p-4 border-b border-base-200/60">
-              <label className="text-xs text-gray-500 block mb-1">Headline</label>
-              <DebouncedInput value={currentSlide.headline} onChange={(v) => updateSlide(currentSlide.id, { headline: v })} className="input input-sm input-bordered w-full mb-3" placeholder="Main headline" />
-              <label className="text-xs text-gray-500 block mb-1">Subheadline</label>
-              <DebouncedInput value={currentSlide.subheadline} onChange={(v) => updateSlide(currentSlide.id, { subheadline: v })} className="input input-sm input-bordered w-full mb-3" placeholder="Subheadline" />
-              <label className="text-xs text-gray-500 block mb-1">Description</label>
-              <DebouncedTextarea value={currentSlide.description} onChange={(v) => updateSlide(currentSlide.id, { description: v })} className="w-full h-20 p-3 text-sm bg-base-200 rounded-lg border-2 border-base-300 focus:border-primary focus:outline-none resize-none" placeholder="Description text" />
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
+              <label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-1">Headline</label>
+              <DebouncedInput value={currentSlide.headline} onChange={(v) => updateSlide(currentSlide.id, { headline: v })} className="w-full mb-3 h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 focus:outline-none focus:border-[#2563EB]" placeholder="Main headline" />
+              <label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-1">Subheadline</label>
+              <DebouncedInput value={currentSlide.subheadline} onChange={(v) => updateSlide(currentSlide.id, { subheadline: v })} className="w-full mb-3 h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 focus:outline-none focus:border-[#2563EB]" placeholder="Subheadline" />
+              <label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-1">Description</label>
+              <DebouncedTextarea value={currentSlide.description} onChange={(v) => updateSlide(currentSlide.id, { description: v })} className="w-full h-20 p-3 text-sm bg-[#F9FAFB] dark:bg-gray-800/50 rounded-[14px] border-2 border-[#E5E7EB] dark:border-gray-700 focus:border-[#2563EB] focus:outline-none resize-none" placeholder="Description text" />
             </div>
 
             <PanelHeading title="App Showcase" />
             <Control title="Website URL">
-              <DebouncedInput value={currentSlide.websiteUrl} onChange={(v) => updateSlide(currentSlide.id, { websiteUrl: v })} className="input input-sm input-bordered w-[140px]" placeholder="example.com" />
+              <DebouncedInput value={currentSlide.websiteUrl} onChange={(v) => updateSlide(currentSlide.id, { websiteUrl: v })} className="w-[140px] h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 focus:outline-none focus:border-[#2563EB]" placeholder="example.com" />
             </Control>
-            <div className="p-4 border-b border-base-200/60">
-              <label className="text-xs text-gray-500 block mb-2">App Icon</label>
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
+              <label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-2">App Icon</label>
               <div className="flex items-center gap-2 mb-2">
                 {currentSlide.appIcon ? (
-                  <img src={currentSlide.appIcon} alt="App Icon" className="w-12 h-12 rounded-xl object-cover" />
+                  <img src={currentSlide.appIcon} alt="App Icon" className="w-12 h-12 rounded-[14px] object-cover" />
                 ) : (
-                  <div className="w-12 h-12 rounded-xl bg-base-200 flex items-center justify-center text-gray-400"><BsImage /></div>
+                  <div className="w-12 h-12 rounded-[14px] bg-[#F9FAFB] dark:bg-gray-800/50 flex items-center justify-center text-[#4B5563] dark:text-gray-400"><BsImage /></div>
                 )}
-                <button onClick={() => appIconInputRef.current?.click()} className="btn btn-sm btn-outline">Upload</button>
-                {currentSlide.appIcon && <button onClick={() => updateSlide(currentSlide.id, { appIcon: "" })} className="btn btn-sm btn-ghost text-error">Remove</button>}
+                <Button size="sm" variant="secondary" onClick={() => appIconInputRef.current?.click()}>Upload</Button>
+                {currentSlide.appIcon && <Button size="sm" variant="ghost" className="text-[#EF4444]" onClick={() => updateSlide(currentSlide.id, { appIcon: "" })}>Remove</Button>}
               </div>
               <input ref={appIconInputRef} type="file" accept="image/*" onChange={handleAppIconUpload} className="hidden" />
               <div className="flex gap-2">
-                <input type="text" value={appIconUrlInput} onChange={(e) => setAppIconUrlInput(e.target.value)} placeholder="Or paste image URL" className="input input-sm input-bordered flex-1" />
-                <button onClick={handleAppIconUrl} className="btn btn-sm btn-primary"><BsLink /></button>
+                <input type="text" value={appIconUrlInput} onChange={(e) => setAppIconUrlInput(e.target.value)} placeholder="Or paste image URL" className="flex-1 h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 focus:outline-none focus:border-[#2563EB]" />
+                <Button size="sm" onClick={handleAppIconUrl}><BsLink /></Button>
               </div>
             </div>
 
             <PanelHeading title="Slide Image" />
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex items-center gap-2 mb-3">
                 {currentSlide.image ? (
-                  <img src={currentSlide.image} alt="Slide" className="w-20 h-14 rounded-lg object-cover" />
+                  <img src={currentSlide.image} alt="Slide" className="w-20 h-14 rounded-[10px] object-cover" />
                 ) : (
-                  <div className="w-20 h-14 rounded-lg bg-base-200 flex items-center justify-center text-gray-400"><BsImage className="text-xl" /></div>
+                  <div className="w-20 h-14 rounded-[10px] bg-[#F9FAFB] dark:bg-gray-800/50 flex items-center justify-center text-[#4B5563] dark:text-gray-400"><BsImage className="text-xl" /></div>
                 )}
-                <button onClick={() => fileInputRef.current?.click()} className="btn btn-sm btn-outline">Upload</button>
-                {currentSlide.image && <button onClick={() => updateSlide(currentSlide.id, { image: "" })} className="btn btn-sm btn-ghost text-error">Remove</button>}
+                <Button size="sm" variant="secondary" onClick={() => fileInputRef.current?.click()}>Upload</Button>
+                {currentSlide.image && <Button size="sm" variant="ghost" className="text-[#EF4444]" onClick={() => updateSlide(currentSlide.id, { image: "" })}>Remove</Button>}
               </div>
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
               <div className="flex gap-2">
-                <input type="text" value={imageUrlInput} onChange={(e) => setImageUrlInput(e.target.value)} placeholder="Or paste image URL" className="input input-sm input-bordered flex-1" onKeyDown={(e) => e.key === "Enter" && handleImageUrl()} />
-                <button onClick={handleImageUrl} className="btn btn-sm btn-primary"><BsLink /></button>
+                <input type="text" value={imageUrlInput} onChange={(e) => setImageUrlInput(e.target.value)} placeholder="Or paste image URL" className="flex-1 h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 focus:outline-none focus:border-[#2563EB]" onKeyDown={(e) => e.key === "Enter" && handleImageUrl()} />
+                <Button size="sm" onClick={handleImageUrl}><BsLink /></Button>
               </div>
             </div>
 
             <PanelHeading title="Number/Step" />
             <Control title="Show Number">
-              <label className="custom-toggle">
-                <input type="checkbox" checked={currentSlide.showNumber} onChange={(e) => updateSlide(currentSlide.id, { showNumber: e.target.checked })} />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={currentSlide.showNumber} onCheckedChange={(v: boolean) => updateSlide(currentSlide.id, { showNumber: v })} />
             </Control>
             {currentSlide.showNumber && (
               <Control title="Number Text">
-                <DebouncedInput value={currentSlide.number} onChange={(v) => updateSlide(currentSlide.id, { number: v })} className="input input-sm input-bordered w-[80px]" placeholder="01" />
+                <DebouncedInput value={currentSlide.number} onChange={(v) => updateSlide(currentSlide.id, { number: v })} className="w-[80px] h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 focus:outline-none focus:border-[#2563EB]" placeholder="01" />
               </Control>
             )}
 
             <PanelHeading title="CTA Button" />
             <Control title="Show CTA">
-              <label className="custom-toggle">
-                <input type="checkbox" checked={currentSlide.ctaVisible} onChange={(e) => updateSlide(currentSlide.id, { ctaVisible: e.target.checked })} />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={currentSlide.ctaVisible} onCheckedChange={(v: boolean) => updateSlide(currentSlide.id, { ctaVisible: v })} />
             </Control>
             {currentSlide.ctaVisible && (
               <Control title="CTA Text">
-                <DebouncedInput value={currentSlide.ctaText} onChange={(v) => updateSlide(currentSlide.id, { ctaText: v })} className="input input-sm input-bordered w-[120px]" placeholder="Swipe →" />
+                <DebouncedInput value={currentSlide.ctaText} onChange={(v) => updateSlide(currentSlide.id, { ctaText: v })} className="w-[120px] h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 focus:outline-none focus:border-[#2563EB]" placeholder="Swipe →" />
               </Control>
             )}
           </div>
-        ) : selectedTab === "profile" ? (
+        </TabsContent>
+        <TabsContent value="profile">
           <div className="relative rounded-md">
             <PanelHeading title="Profile" />
             <Control title="Show Profile">
-              <label className="custom-toggle">
-                <input type="checkbox" checked={state.showProfile} onChange={(e) => updateState({ showProfile: e.target.checked })} />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={state.showProfile} onCheckedChange={(v: boolean) => updateState({ showProfile: v })} />
             </Control>
             {state.showProfile && (
               <>
-                <div className="p-4 border-b border-base-200/60">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full overflow-hidden bg-base-200 flex items-center justify-center cursor-pointer hover:opacity-80" onClick={() => profileImageRef.current?.click()}>
-                      {state.profileImage ? <img src={state.profileImage} alt="Profile" className="w-full h-full object-cover" /> : <span className="text-2xl text-gray-400">+</span>}
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-[#F9FAFB] dark:bg-gray-800/50 flex items-center justify-center cursor-pointer hover:opacity-80" onClick={() => profileImageRef.current?.click()}>
+                      {state.profileImage ? <img src={state.profileImage} alt="Profile" className="w-full h-full object-cover" /> : <span className="text-2xl text-[#4B5563] dark:text-gray-400">+</span>}
                     </div>
                     <input ref={profileImageRef} type="file" accept="image/*" onChange={handleProfileImageUpload} className="hidden" />
-                    <button onClick={() => profileImageRef.current?.click()} className="btn btn-sm btn-outline">Upload</button>
-                    {state.profileImage && <button onClick={() => updateState({ profileImage: "" })} className="btn btn-sm btn-ghost text-error">Remove</button>}
+                    <Button size="sm" variant="secondary" onClick={() => profileImageRef.current?.click()}>Upload</Button>
+                    {state.profileImage && <Button size="sm" variant="ghost" className="text-[#EF4444]" onClick={() => updateState({ profileImage: "" })}>Remove</Button>}
                   </div>
                 </div>
                 <Control title="Name">
-                  <DebouncedInput value={state.profileName} onChange={(v) => updateState({ profileName: v })} className="input input-sm input-bordered w-[140px]" placeholder="Your Name" />
+                  <DebouncedInput value={state.profileName} onChange={(v) => updateState({ profileName: v })} className="w-[140px] h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 focus:outline-none focus:border-[#2563EB]" placeholder="Your Name" />
                 </Control>
                 <Control title="Handle">
-                  <DebouncedInput value={state.profileHandle} onChange={(v) => updateState({ profileHandle: v })} className="input input-sm input-bordered w-[140px]" placeholder="@username" />
+                  <DebouncedInput value={state.profileHandle} onChange={(v) => updateState({ profileHandle: v })} className="w-[140px] h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 focus:outline-none focus:border-[#2563EB]" placeholder="@username" />
                 </Control>
                 <Control title="Position">
                   <div className="flex gap-1">
                     {(["top", "bottom"] as const).map((pos) => (
-                      <button key={pos} onClick={() => updateState({ profilePosition: pos })} className={`px-3 py-1 rounded text-xs capitalize ${state.profilePosition === pos ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>{pos}</button>
+                      <button key={pos} onClick={() => updateState({ profilePosition: pos })} className={`px-3 py-1 rounded text-xs capitalize ${state.profilePosition === pos ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>{pos}</button>
                     ))}
                   </div>
                 </Control>
@@ -427,16 +424,13 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
 
             <PanelHeading title="Swipe Indicator" />
             <Control title="Show Indicator">
-              <label className="custom-toggle">
-                <input type="checkbox" checked={state.showSwipeIndicator} onChange={(e) => updateState({ showSwipeIndicator: e.target.checked })} />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={state.showSwipeIndicator} onCheckedChange={(v: boolean) => updateState({ showSwipeIndicator: v })} />
             </Control>
             {state.showSwipeIndicator && (
               <Control title="Style">
                 <div className="flex gap-1">
                   {(["dots", "arrows", "numbers"] as const).map((style) => (
-                    <button key={style} onClick={() => updateState({ swipeIndicatorStyle: style })} className={`px-2 py-1 rounded text-xs capitalize ${state.swipeIndicatorStyle === style ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>{style}</button>
+                    <button key={style} onClick={() => updateState({ swipeIndicatorStyle: style })} className={`px-2 py-1 rounded text-xs capitalize ${state.swipeIndicatorStyle === style ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>{style}</button>
                   ))}
                 </div>
               </Control>
@@ -444,27 +438,30 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
 
             <PanelHeading title="Page Numbers" />
             <Control title="Show Page Number">
-              <label className="custom-toggle">
-                <input type="checkbox" checked={state.showPageNumber} onChange={(e) => updateState({ showPageNumber: e.target.checked })} />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={state.showPageNumber} onCheckedChange={(v: boolean) => updateState({ showPageNumber: v })} />
             </Control>
             {state.showPageNumber && (
               <Control title="Position">
-                <select value={state.pageNumberPosition} onChange={(e) => updateState({ pageNumberPosition: e.target.value as CarouselEditorState["pageNumberPosition"] })} className="select select-sm select-bordered">
-                  <option value="top-left">Top Left</option>
-                  <option value="top-right">Top Right</option>
-                  <option value="bottom-left">Bottom Left</option>
-                  <option value="bottom-right">Bottom Right</option>
-                </select>
+                <Select value={state.pageNumberPosition} onValueChange={(v) => updateState({ pageNumberPosition: v as CarouselEditorState["pageNumberPosition"] })}>
+                  <SelectTrigger className="w-[140px] h-9 text-sm rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border-[#E5E7EB] dark:border-gray-700">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="top-left">Top Left</SelectItem>
+                    <SelectItem value="top-right">Top Right</SelectItem>
+                    <SelectItem value="bottom-left">Bottom Left</SelectItem>
+                    <SelectItem value="bottom-right">Bottom Right</SelectItem>
+                  </SelectContent>
+                </Select>
               </Control>
             )}
           </div>
-        ) : selectedTab === "style" ? (
+        </TabsContent>
+        <TabsContent value="style">
           <div className="relative rounded-md">
             <PanelHeading title="Background" />
-            <div className="p-4 border-b border-base-200/60">
-              <div className="w-full h-12 rounded-lg border-2 border-base-200 cursor-pointer hover:border-primary transition-all mb-3" style={{ background: state.background.background }} onClick={() => setShowBgPicker(!showBgPicker)} />
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
+              <div className="w-full h-12 rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 cursor-pointer hover:border-[#2563EB] transition-all mb-3" style={{ background: state.background.background }} onClick={() => setShowBgPicker(!showBgPicker)} />
               {showBgPicker && (
                 <BackgroundPicker background={state.background} onBackgroundChange={(bg: BackgroundConfig) => updateState({ background: bg })} tilt={{ name: "none", value: "none" }} onTiltChange={() => {}} showTilt={false} />
               )}
@@ -481,57 +478,62 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
             <Control title="Aspect Ratio">
               <div className="flex gap-1">
                 {aspectRatios.map((ar) => (
-                  <button key={ar.id} onClick={() => updateState({ aspectRatio: { name: ar.name, value: ar.value } })} className={`px-2 py-1 rounded text-xs ${state.aspectRatio.value === ar.value ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>{ar.name}</button>
+                  <button key={ar.id} onClick={() => updateState({ aspectRatio: { name: ar.name, value: ar.value } })} className={`px-2 py-1 rounded text-xs ${state.aspectRatio.value === ar.value ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>{ar.name}</button>
                 ))}
               </div>
             </Control>
             <Control title="Layout">
-              <select value={state.slideLayout} onChange={(e) => updateState({ slideLayout: e.target.value as CarouselEditorState["slideLayout"] })} className="select select-sm select-bordered">
-                <option value="app-showcase">App Showcase</option>
-                <option value="text-only">Text Only</option>
-                <option value="image-top">Image Top</option>
-                <option value="image-bottom">Image Bottom</option>
-              </select>
+              <Select value={state.slideLayout} onValueChange={(v) => updateState({ slideLayout: v as CarouselEditorState["slideLayout"] })}>
+                <SelectTrigger className="w-[160px] h-9 text-sm rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border-[#E5E7EB] dark:border-gray-700">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="app-showcase">App Showcase</SelectItem>
+                  <SelectItem value="text-only">Text Only</SelectItem>
+                  <SelectItem value="image-top">Image Top</SelectItem>
+                  <SelectItem value="image-bottom">Image Bottom</SelectItem>
+                </SelectContent>
+              </Select>
             </Control>
             <Control title="Text Align">
               <div className="flex gap-1">
                 {(["left", "center", "right"] as const).map((align) => (
-                  <button key={align} onClick={() => updateState({ textAlign: align })} className={`px-3 py-1 rounded text-xs capitalize ${state.textAlign === align ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>{align}</button>
+                  <button key={align} onClick={() => updateState({ textAlign: align })} className={`px-3 py-1 rounded text-xs capitalize ${state.textAlign === align ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>{align}</button>
                 ))}
               </div>
             </Control>
 
             <PanelHeading title="Image Settings" />
-            <div className="py-3 px-4 border-b border-base-200/60">
-              <span className="text-primary-content block mb-2 text-sm font-medium">Image Shadow</span>
+            <div className="py-3 px-4 border-b border-[#E5E7EB] dark:border-gray-700">
+              <span className="text-[#0A0A0A] dark:text-white block mb-2 text-sm font-medium">Image Shadow</span>
               <div className="grid grid-cols-3 gap-2">
                 {imageShadows.map((shadow) => (
-                  <button key={shadow.id} onClick={() => updateState({ imageShadow: shadow.value })} className={`py-2 px-3 rounded-lg text-xs font-medium transition-all ${state.imageShadow === shadow.value ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>{shadow.name}</button>
+                  <button key={shadow.id} onClick={() => updateState({ imageShadow: shadow.value })} className={`py-2 px-3 rounded-[10px] text-xs font-medium transition-all ${state.imageShadow === shadow.value ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>{shadow.name}</button>
                 ))}
               </div>
             </div>
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Image Radius</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.imageRadius}px</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Image Radius</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.imageRadius}px</span>
               </div>
-              <input type="range" min="0" max="32" value={state.imageRadius} onChange={(e) => updateState({ imageRadius: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+              <Slider min={0} max={32} value={[state.imageRadius]} onValueChange={([v]) => updateState({ imageRadius: v })} />
             </div>
 
             <PanelHeading title="Spacing" />
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Padding</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.padding}px</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Padding</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.padding}px</span>
               </div>
-              <input type="range" min="0" max="80" value={state.padding} onChange={(e) => updateState({ padding: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+              <Slider min={0} max={80} value={[state.padding]} onValueChange={([v]) => updateState({ padding: v })} />
             </div>
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Border Radius</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.borderRadius}px</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Border Radius</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.borderRadius}px</span>
               </div>
-              <input type="range" min="0" max="48" value={state.borderRadius} onChange={(e) => updateState({ borderRadius: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+              <Slider min={0} max={48} value={[state.borderRadius]} onValueChange={([v]) => updateState({ borderRadius: v })} />
             </div>
 
             <PanelHeading title="Colors" />
@@ -549,78 +551,84 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
             </Control>
 
             <PanelHeading title="Typography" />
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Headline Size</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.headlineSize}px</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Headline Size</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.headlineSize}px</span>
               </div>
-              <input type="range" min="18" max="48" value={state.headlineSize} onChange={(e) => updateState({ headlineSize: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+              <Slider min={18} max={48} value={[state.headlineSize]} onValueChange={([v]) => updateState({ headlineSize: v })} />
             </div>
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Subheadline Size</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.subheadlineSize}px</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Subheadline Size</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.subheadlineSize}px</span>
               </div>
-              <input type="range" min="12" max="32" value={state.subheadlineSize} onChange={(e) => updateState({ subheadlineSize: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+              <Slider min={12} max={32} value={[state.subheadlineSize]} onValueChange={([v]) => updateState({ subheadlineSize: v })} />
             </div>
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Description Size</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.descriptionSize}px</span>
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Description Size</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.descriptionSize}px</span>
               </div>
-              <input type="range" min="10" max="24" value={state.descriptionSize} onChange={(e) => updateState({ descriptionSize: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+              <Slider min={10} max={24} value={[state.descriptionSize]} onValueChange={([v]) => updateState({ descriptionSize: v })} />
             </div>
             <Control title="Headline Weight">
-              <select value={state.headlineWeight} onChange={(e) => updateState({ headlineWeight: e.target.value })} className="select select-sm select-bordered">
-                <option value="400">Normal</option>
-                <option value="500">Medium</option>
-                <option value="600">Semibold</option>
-                <option value="700">Bold</option>
-                <option value="800">Extra Bold</option>
-              </select>
+              <Select value={state.headlineWeight} onValueChange={(v) => updateState({ headlineWeight: v })}>
+                <SelectTrigger className="w-[140px] h-9 text-sm rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border-[#E5E7EB] dark:border-gray-700">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="400">Normal</SelectItem>
+                  <SelectItem value="500">Medium</SelectItem>
+                  <SelectItem value="600">Semibold</SelectItem>
+                  <SelectItem value="700">Bold</SelectItem>
+                  <SelectItem value="800">Extra Bold</SelectItem>
+                </SelectContent>
+              </Select>
             </Control>
           </div>
 
-        ) : (
+        </TabsContent>
+        <TabsContent value="presets">
           <div className="p-4">
             {/* Save Custom Preset */}
-            <div className="mb-4 p-3 bg-base-200/50 rounded-lg">
-              <p className="text-xs text-gray-500 mb-2">Save current style as preset</p>
+            <div className="mb-4 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 rounded-[10px]">
+              <p className="text-xs text-[#4B5563] dark:text-gray-400 mb-2">Save current style as preset</p>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={newPresetName}
                   onChange={(e) => setNewPresetName(e.target.value)}
                   placeholder="Preset name"
-                  className="input input-sm input-bordered flex-1"
+                  className="flex-1 h-9 text-sm px-3 rounded-full bg-white dark:bg-gray-900 border border-[#E5E7EB] dark:border-gray-700 focus:outline-none focus:border-[#2563EB]"
                   onKeyDown={(e) => e.key === "Enter" && handleSavePreset()}
                 />
-                <button onClick={handleSavePreset} className="btn btn-sm btn-primary">Save</button>
+                <Button size="sm" onClick={handleSavePreset}>Save</Button>
               </div>
             </div>
 
             {/* Custom Presets */}
             {customPresets.length > 0 && (
               <div className="mb-4">
-                <p className="text-xs text-gray-500 mb-2 font-medium">Your Presets</p>
+                <p className="text-xs text-[#4B5563] dark:text-gray-400 mb-2 font-medium">Your Presets</p>
                 <div className="grid grid-cols-1 gap-3">
                   {customPresets.map((preset) => (
                     <div key={preset.id} className="group relative">
                       <button
                         onClick={() => applyCustomPreset(preset.data)}
-                        className="w-full overflow-hidden rounded-lg border-2 border-base-200 hover:border-primary transition-all text-left"
+                        className="w-full overflow-hidden rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB] transition-all text-left"
                       >
                         <div className="flex items-center gap-3 p-3">
-                          <div className="w-16 h-16 rounded-lg flex-shrink-0" style={{ background: preset.data.background.background }} />
+                          <div className="w-16 h-16 rounded-[10px] flex-shrink-0" style={{ background: preset.data.background.background }} />
                           <div className="flex-1 min-w-0">
-                            <div className="font-semibold text-primary-content">{preset.name}</div>
-                            <div className="text-xs text-gray-500">{preset.data.slideLayout} • {preset.data.aspectRatio.name}</div>
+                            <div className="font-semibold text-[#0A0A0A] dark:text-white">{preset.name}</div>
+                            <div className="text-xs text-[#4B5563] dark:text-gray-400">{preset.data.slideLayout} • {preset.data.aspectRatio.name}</div>
                           </div>
                         </div>
                       </button>
                       <button
                         onClick={() => deletePreset(preset.id)}
-                        className="absolute top-2 right-2 w-6 h-6 bg-error text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error/80"
+                        className="absolute top-2 right-2 w-6 h-6 bg-[#EF4444] text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#DC2626]"
                       >
                         <BsTrash />
                       </button>
@@ -631,23 +639,24 @@ const CarouselControls: React.FC<Props> = ({ state, updateState }) => {
             )}
 
             {/* Default Presets */}
-            <p className="text-xs text-gray-500 mb-2 font-medium">Default Presets</p>
+            <p className="text-xs text-[#4B5563] dark:text-gray-400 mb-2 font-medium">Default Presets</p>
             <div className="grid grid-cols-1 gap-3">
               {presets.map((preset) => (
-                <button key={preset.id} onClick={() => applyPreset(preset)} className="group relative overflow-hidden rounded-lg border-2 border-base-200 hover:border-primary transition-all text-left">
+                <button key={preset.id} onClick={() => applyPreset(preset)} className="group relative overflow-hidden rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB] transition-all text-left">
                   <div className="flex items-center gap-3 p-3">
-                    <div className="w-16 h-16 rounded-lg flex-shrink-0" style={{ background: preset.preview }} />
+                    <div className="w-16 h-16 rounded-[10px] flex-shrink-0" style={{ background: preset.preview }} />
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-primary-content">{preset.name}</div>
-                      <div className="text-xs text-gray-500 truncate">{preset.slides.length} slides • {preset.slides[0].headline}</div>
+                      <div className="font-semibold text-[#0A0A0A] dark:text-white">{preset.name}</div>
+                      <div className="text-xs text-[#4B5563] dark:text-gray-400 truncate">{preset.slides.length} slides • {preset.slides[0].headline}</div>
                     </div>
                   </div>
                 </button>
               ))}
             </div>
           </div>
-        )}
+        </TabsContent>
       </div>
+      </Tabs>
     </section>
   );
 };

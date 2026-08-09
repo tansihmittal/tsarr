@@ -1,9 +1,17 @@
 import { useEditorContext } from "@/context/Editor";
 import { ChangeEvent, useCallback, useRef, useState } from "react";
-import { BsUpload, BsClipboard, BsLink45Deg } from "react-icons/bs";
+import { BsUpload, BsClipboard, BsLink45Deg, BsStars } from "react-icons/bs";
 
 import { FileRejection, useDropzone } from "react-dropzone";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Props {}
 
@@ -39,7 +47,7 @@ const DropZone: React.FC<Props> = () => {
 
       if (updateData) {
         updateData("selectedImage", fileUrl);
-        
+
         // Get image dimensions
         const img = new window.Image();
         img.onload = () => {
@@ -80,14 +88,14 @@ const DropZone: React.FC<Props> = () => {
       setLoading(false);
       return;
     }
-    
+
     setLoading(true);
     const fileUrl = URL.createObjectURL(file);
 
     if (updateData) {
       // Set image immediately
       updateData("selectedImage", fileUrl);
-      
+
       // Get image dimensions
       const img = new window.Image();
       img.onload = () => {
@@ -101,7 +109,7 @@ const DropZone: React.FC<Props> = () => {
     } else {
       setLoading(false);
     }
-    
+
     // Reset input value to allow re-uploading same file
     e.target.value = '';
   };
@@ -113,7 +121,6 @@ const DropZone: React.FC<Props> = () => {
       return;
     }
 
-    // Validate URL
     let url = urlInput.trim();
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
       url = "https://" + url;
@@ -123,50 +130,40 @@ const DropZone: React.FC<Props> = () => {
     const loadingToast = toast.loading("Capturing screenshot...");
 
     try {
-      const deviceSizes = {
-        desktop: { width: 1920, height: 1080 },
-        tablet: { width: 768, height: 1024 },
-        mobile: { width: 375, height: 812 },
+      const body: Record<string, unknown> = {
+        url,
+        device: captureDevice,
+        fullPage: captureFullPage,
       };
-
-      const dimensions = customWidth && customHeight 
-        ? { width: Number(customWidth), height: Number(customHeight) }
-        : deviceSizes[captureDevice];
-
-      // Use microlink API for screenshots with device scale factor for better quality
-      let apiUrl: string;
-      const baseParams = `url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=${dimensions.width}&viewport.height=${dimensions.height}&viewport.deviceScaleFactor=2`;
-      
-      if (captureFullPage) {
-        apiUrl = `https://api.microlink.io/?${baseParams}&screenshot.fullPage=true`;
-      } else {
-        apiUrl = `https://api.microlink.io/?${baseParams}`;
+      if (customWidth && customHeight) {
+        body.width = Number(customWidth);
+        body.height = Number(customHeight);
       }
 
-      const response = await fetch(apiUrl);
-      
+      const response = await fetch("/api/screenshot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
       if (!response.ok) {
-        throw new Error("Failed to capture screenshot");
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to capture screenshot");
       }
 
-      // The response is the actual image, convert to blob URL
       const blob = await response.blob();
       const imageUrl = URL.createObjectURL(blob);
 
-      // Get actual image dimensions from the loaded image
       const img = new window.Image();
       img.onload = () => {
         if (updateData) {
-          // Use actual image dimensions, not requested dimensions
           updateData("imageDimensions", { width: img.naturalWidth, height: img.naturalHeight });
           updateData("selectedImage", imageUrl);
         }
       };
       img.onerror = () => {
-        // Fallback if image fails to load dimensions
         if (updateData) {
           updateData("selectedImage", imageUrl);
-          updateData("imageDimensions", { width: dimensions.width, height: dimensions.height });
         }
       };
       img.src = imageUrl;
@@ -182,31 +179,32 @@ const DropZone: React.FC<Props> = () => {
   };
 
   return (
-    <div className="p-6 sm:p-8 bg-base-100 relative z-20 rounded-2xl shadow-xl shadow-black/5 animate-fade-in-scale">
+    <div className="p-6 sm:p-8 bg-white dark:bg-gray-900 relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale">
       {/* header */}
       <div className="flex gap-1 flex-col mb-6">
         <div className="flex items-start gap-4 sm:gap-6">
-          <h2 className="font-bold text-2xl text-primary-content bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
+          <h2 className="font-bold text-2xl text-[#0A0A0A] dark:text-white bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
             Upload and Start Editing
           </h2>
-          <div className="text-2xl text-primary animate-pulse-soft">✦</div>
+          <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
         </div>
-        <span className="text-sm text-gray-500 mt-1">
+        <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Transform boring screenshots into stunning visuals
         </span>
       </div>
+
       {/* upload */}
       <div
         {...getRootProps()}
-        className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-2xl border-dashed transition-all duration-300 cursor-pointer ${
-          isDragActive 
-            ? "border-primary bg-primary/5 scale-[1.02]" 
-            : "border-gray-300 hover:border-primary/50 hover:bg-primary/5"
+        className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer ${
+          isDragActive
+            ? "border-[#2563EB] bg-[#2563EB]/5 scale-[1.02]"
+            : "border-gray-300 dark:border-gray-600 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"
         }`}
       >
-        <div className={`p-4 rounded-full bg-primary/10 transition-transform duration-300 ${isDragActive ? "scale-110" : ""}`}>
+        <div className={`p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300 ${isDragActive ? "scale-110" : ""}`}>
           <BsUpload
-            className="text-primary text-2xl"
+            className="text-[#2563EB] text-2xl"
             onClick={handleFilePickerClick}
           />
         </div>
@@ -217,15 +215,15 @@ const DropZone: React.FC<Props> = () => {
           onChange={handleImageUpload}
           {...getInputProps()}
         />
-        <h3 className="text-gray-700 font-medium">
-          <span className="text-primary hover:underline cursor-pointer" onClick={handleFilePickerClick}>
+        <h3 className="text-gray-700 dark:text-gray-300 font-medium">
+          <span className="text-[#2563EB] hover:underline cursor-pointer" onClick={handleFilePickerClick}>
             Click to upload
           </span>{" "}
           or drag and drop
         </h3>
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
           <BsClipboard className="text-xs" />
-          <span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span>
+          <span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span>
         </div>
         <span className="text-xs text-gray-400">PNG, JPG, WEBP up to 30MB</span>
       </div>
@@ -239,142 +237,140 @@ const DropZone: React.FC<Props> = () => {
           onChange={handleImageUpload}
           ref={filePicker}
         />
-        <button
+        <Button
           disabled={loading}
-          className="btn btn-primary rounded-xl font-semibold w-full shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5"
+          className="rounded-[14px] font-semibold w-full shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all duration-200 hover:-translate-y-0.5"
           onClick={handleFilePickerClick}
         >
           {isDragActive ? "DROP TO UPLOAD" : "START EDITING"}
-        </button>
-        <button
+        </Button>
+        <Button
           disabled={loading}
-          className="btn btn-outline rounded-xl font-semibold w-full hover:shadow-md transition-all duration-200 gap-2"
+          variant="secondary"
+          className="rounded-[14px] font-semibold w-full hover:shadow-md transition-all duration-200 gap-2"
           onClick={() => setShowUrlModal(true)}
         >
           <BsLink45Deg className="text-lg" />
           FROM URL
-        </button>
+        </Button>
       </div>
 
       {/* URL Screenshot Modal */}
-      {showUrlModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-base-100 rounded-2xl shadow-2xl p-8 w-full max-w-xl mx-4 animate-fade-in-scale">
-            <h3 className="text-xl font-semibold text-primary-content mb-6">
+      <Dialog open={showUrlModal} onOpenChange={(open) => {
+        if (!open) {
+          setShowUrlModal(false);
+          setUrlInput("");
+        }
+      }}>
+        <DialogContent className="w-full max-w-md p-6 gap-0">
+          <DialogHeader className="mb-5">
+            <DialogTitle className="text-lg font-semibold text-[#0A0A0A] dark:text-white">
               Screenshot from URL
-            </h3>
-            
-            {/* URL Input */}
-            <div className="mb-5">
-              <label className="text-sm text-gray-500 font-medium block mb-2">Website URL</label>
+            </DialogTitle>
+          </DialogHeader>
+
+          {/* URL Input */}
+          <div className="mb-4">
+            <label className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Website URL</label>
+            <input
+              type="url"
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              placeholder="https://example.com"
+              className="w-full px-4 py-3 border-2 border-[#E5E7EB] dark:border-gray-700 rounded-[12px] focus:border-[#2563EB] focus:outline-none transition-colors bg-white dark:bg-gray-900 text-sm dark:text-white"
+              autoFocus
+              onKeyDown={(e) => e.key === "Enter" && handleUrlCapture()}
+            />
+          </div>
+
+          {/* Device Selection */}
+          <div className="mb-4">
+            <label className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Device View</label>
+            <div className="grid grid-cols-3 gap-2">
+              {(["desktop", "tablet", "mobile"] as const).map((device) => (
+                <button
+                  key={device}
+                  onClick={() => setCaptureDevice(device)}
+                  className={`py-2.5 rounded-[10px] text-xs font-medium transition-all capitalize ${
+                    captureDevice === device
+                      ? "bg-[#2563EB] text-white shadow-sm"
+                      : "bg-[#F3F4F6] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+                  }`}
+                >
+                  {device}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-gray-400 mt-1.5">
+              {captureDevice === "desktop" && "1920 × 1080"}
+              {captureDevice === "tablet" && "768 × 1024"}
+              {captureDevice === "mobile" && "375 × 812"}
+            </p>
+          </div>
+
+          {/* Full Page Option */}
+          <div className="flex items-center justify-between mb-4 px-4 py-3 bg-[#F9FAFB] dark:bg-gray-800/50 rounded-[12px]">
+            <span className="text-sm text-[#0A0A0A] dark:text-white font-medium">Capture full page</span>
+            <Switch checked={captureFullPage} onCheckedChange={setCaptureFullPage} />
+          </div>
+
+          {/* Custom Size */}
+          <div className="mb-6">
+            <label className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">
+              Custom Size <span className="font-normal">(optional)</span>
+            </label>
+            <div className="grid grid-cols-2 gap-2">
               <input
-                type="url"
-                value={urlInput}
-                onChange={(e) => setUrlInput(e.target.value)}
-                placeholder="https://example.com"
-                className="w-full px-4 py-3.5 border-2 border-base-200 rounded-xl focus:border-primary focus:outline-none transition-colors bg-base-100 text-base"
-                autoFocus
-                onKeyDown={(e) => e.key === "Enter" && handleUrlCapture()}
+                type="number"
+                value={customWidth}
+                onChange={(e) => setCustomWidth(e.target.value ? Number(e.target.value) : "")}
+                placeholder="Width"
+                className="w-full px-4 py-2.5 border-2 border-[#E5E7EB] dark:border-gray-700 rounded-[12px] focus:border-[#2563EB] focus:outline-none text-sm bg-white dark:bg-gray-900 dark:text-white transition-colors"
+              />
+              <input
+                type="number"
+                value={customHeight}
+                onChange={(e) => setCustomHeight(e.target.value ? Number(e.target.value) : "")}
+                placeholder="Height"
+                className="w-full px-4 py-2.5 border-2 border-[#E5E7EB] dark:border-gray-700 rounded-[12px] focus:border-[#2563EB] focus:outline-none text-sm bg-white dark:bg-gray-900 dark:text-white transition-colors"
               />
             </div>
-
-            {/* Device Selection */}
-            <div className="mb-5">
-              <label className="text-sm text-gray-500 font-medium block mb-2">Device View</label>
-              <div className="grid grid-cols-3 gap-3">
-                {(["desktop", "tablet", "mobile"] as const).map((device) => (
-                  <button
-                    key={device}
-                    onClick={() => setCaptureDevice(device)}
-                    className={`py-3 rounded-lg text-sm font-medium transition-all duration-200 capitalize ${
-                      captureDevice === device
-                        ? "bg-primary text-primary-content shadow-md"
-                        : "bg-base-200 hover:bg-base-300"
-                    }`}
-                  >
-                    {device}
-                  </button>
-                ))}
-              </div>
-              <div className="text-xs text-gray-400 mt-2">
-                {captureDevice === "desktop" && "1920 × 1080"}
-                {captureDevice === "tablet" && "768 × 1024"}
-                {captureDevice === "mobile" && "375 × 812"}
-              </div>
-            </div>
-
-            {/* Full Page Option */}
-            <div className="mb-5 flex items-center justify-between py-2">
-              <label className="text-sm text-primary-content font-medium">Capture full page</label>
-              <label className="custom-toggle">
-                <input
-                  type="checkbox"
-                  checked={captureFullPage}
-                  onChange={(e) => setCaptureFullPage(e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
-            </div>
-
-            {/* Custom Size */}
-            <div className="mb-5">
-              <label className="text-sm text-gray-500 font-medium block mb-2">Custom Size (optional)</label>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="number"
-                  value={customWidth}
-                  onChange={(e) => setCustomWidth(e.target.value ? Number(e.target.value) : "")}
-                  placeholder="Width"
-                  className="w-full px-4 py-3 border-2 border-base-200 rounded-lg focus:border-primary focus:outline-none text-sm bg-base-100"
-                />
-                <input
-                  type="number"
-                  value={customHeight}
-                  onChange={(e) => setCustomHeight(e.target.value ? Number(e.target.value) : "")}
-                  placeholder="Height"
-                  className="w-full px-4 py-3 border-2 border-base-200 rounded-lg focus:border-primary focus:outline-none text-sm bg-base-100"
-                />
-              </div>
-              {(customWidth || customHeight) && (
-                <button
-                  onClick={() => { setCustomWidth(""); setCustomHeight(""); }}
-                  className="mt-2 text-xs text-gray-400 hover:text-red-500 transition-colors"
-                >
-                  Clear custom size
-                </button>
-              )}
-            </div>
-
-            {/* Actions */}
-            <div className="flex justify-end gap-4 mt-8">
+            {(customWidth || customHeight) && (
               <button
-                onClick={() => {
-                  setShowUrlModal(false);
-                  setUrlInput("");
-                }}
-                className="px-6 py-2.5 text-gray-600 hover:bg-base-200 rounded-lg transition-colors font-medium"
-                disabled={isCapturing}
+                onClick={() => { setCustomWidth(""); setCustomHeight(""); }}
+                className="mt-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors"
               >
-                Cancel
+                Clear custom size
               </button>
-              <button
-                onClick={handleUrlCapture}
-                disabled={isCapturing || !urlInput.trim()}
-                className="px-8 py-2.5 bg-primary text-primary-content rounded-lg hover:bg-primary-focus transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
-              >
-                {isCapturing ? (
-                  <>
-                    <span className="loading loading-spinner loading-sm"></span>
-                    Capturing...
-                  </>
-                ) : (
-                  "Capture"
-                )}
-              </button>
-            </div>
+            )}
           </div>
-        </div>
-      )}
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="ghost"
+              onClick={() => { setShowUrlModal(false); setUrlInput(""); }}
+              disabled={isCapturing}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUrlCapture}
+              disabled={isCapturing || !urlInput.trim()}
+              className="gap-2 min-w-[100px]"
+            >
+              {isCapturing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  Capturing...
+                </>
+              ) : (
+                "Capture"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

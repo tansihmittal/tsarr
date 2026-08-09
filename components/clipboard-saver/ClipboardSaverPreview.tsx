@@ -1,9 +1,11 @@
 import { RefObject, useCallback, useState } from "react";
-import { BsClipboard, BsUpload, BsRepeat } from "react-icons/bs";
+import { BsClipboard, BsUpload, BsRepeat, BsStars } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { TfiExport } from "react-icons/tfi";
 import { toast } from "react-hot-toast";
 import ToolbarButton from "../common/ToolbarButton";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 export type OutputFormat = "png" | "jpeg" | "webp" | "avif" | "gif" | "bmp" | "ico";
 
@@ -51,50 +53,52 @@ const ClipboardSaverPreview: React.FC<Props> = ({ image, canvasRef, onPaste, onD
     return (
       <div className="flex items-center justify-start flex-col h-full w-full">
         <div className="flex flex-wrap gap-2 w-full mb-3 justify-end opacity-80" style={{ pointerEvents: "none" }}>
-          <div className="dropdown">
-            <label tabIndex={0}><ToolbarButton title="Export Image" disabled><TfiExport /></ToolbarButton></label>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <span><ToolbarButton title="Export Image" disabled><TfiExport /></ToolbarButton></span>
+            </DropdownMenuTrigger>
+          </DropdownMenu>
           <ToolbarButton title="Copy" disabled><BsClipboard /></ToolbarButton>
           <ToolbarButton title="Reset Image" disabled><BsRepeat /></ToolbarButton>
           <ToolbarButton title="Reset Canvas" disabled><BiReset /></ToolbarButton>
         </div>
         <div
-          className={`relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden`}
+          className={`relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#EFF6FF]/3 dark:bg-blue-900/200 dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden`}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
         >
-          <div className={`p-6 sm:p-8 bg-base-100 relative z-20 rounded-2xl shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-primary" : ""}`}>
+          <div className={`p-6 sm:p-8 bg-white dark:bg-gray-900 relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-[#2563EB]" : ""}`}>
             <div className="flex gap-1 flex-col mb-6">
               <div className="flex items-start gap-4 sm:gap-6">
-                <h2 className="font-bold text-2xl text-primary-content">Clipboard to Image</h2>
-                <div className="text-2xl text-primary animate-pulse-soft">✦</div>
+                <h2 className="font-bold text-2xl text-[#0A0A0A] dark:text-white">Clipboard to Image</h2>
+                <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
               </div>
-              <span className="text-sm text-gray-500 mt-1">Paste any image from clipboard and download in your preferred format</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">Paste any image from clipboard and download in your preferred format</span>
             </div>
             <div
               onClick={onPaste}
-              className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-2xl border-dashed transition-all duration-300 cursor-pointer ${isDragging ? "border-primary bg-primary/5 scale-[1.02]" : "border-gray-300 hover:border-primary/50 hover:bg-primary/5"}`}
+              className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer ${isDragging ? "border-[#2563EB] bg-[#2563EB]/5 scale-[1.02]" : "border-gray-300 dark:border-gray-600 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"}`}
             >
-              <div className={`p-4 rounded-full bg-primary/10 transition-transform duration-300 ${isDragging ? "scale-110" : ""}`}>
-                <BsClipboard className="text-primary text-2xl" />
+              <div className={`p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300 ${isDragging ? "scale-110" : ""}`}>
+                <BsClipboard className="text-[#2563EB] text-2xl" />
               </div>
-              <h3 className="text-gray-700 font-medium">
-                <span className="text-primary hover:underline">Click to paste</span> or drag and drop an image
+              <h3 className="text-gray-700 dark:text-gray-300 font-medium">
+                <span className="text-[#2563EB] hover:underline">Click to paste</span> or drag and drop an image
               </h3>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                 <BsUpload className="text-xs" />
-                <span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Ctrl+V</kbd> to paste from clipboard</span>
+                <span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">Ctrl+V</kbd> to paste from clipboard</span>
               </div>
-              <span className="text-xs text-gray-400">PNG, JPG, WebP, GIF and more</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">PNG, JPG, WebP, GIF and more</span>
             </div>
             <div className="grid grid-cols-2 gap-3 mt-6">
-              <button onClick={onPaste} className="btn btn-primary rounded-xl font-semibold w-full shadow-lg shadow-primary/20">
+              <Button onClick={onPaste} className="rounded-[14px] font-semibold w-full shadow-lg shadow-[#2563EB]/20">
                 {isDragging ? "DROP TO UPLOAD" : "PASTE IMAGE"}
-              </button>
-              <button className="btn btn-outline rounded-xl font-semibold w-full gap-2" disabled>
+              </Button>
+              <Button variant="secondary" className="rounded-[14px] font-semibold w-full gap-2" disabled>
                 <BsClipboard className="text-lg" />WAITING...
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -105,23 +109,25 @@ const ClipboardSaverPreview: React.FC<Props> = ({ image, canvasRef, onPaste, onD
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
       <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
-        <div className="dropdown">
-          <label tabIndex={0}><ToolbarButton title="Export Image"><TfiExport /></ToolbarButton></label>
-          <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50">
-            <li onClick={onDownload}><a>Download as {outputFormat.toUpperCase()}</a></li>
-          </ul>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span><ToolbarButton title="Export Image"><TfiExport /></ToolbarButton></span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-full min-w-[262px]">
+            <DropdownMenuItem onClick={onDownload}>Download as {outputFormat.toUpperCase()}</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>
         <ToolbarButton title="New Image" onTap={onPaste}><BsRepeat /></ToolbarButton>
         <ToolbarButton title="Reset Canvas" onTap={handleReset}><BiReset /></ToolbarButton>
       </div>
       <div className="flex justify-end mb-2 w-full">
-        <span className="text-xs text-gray-500 bg-base-200 px-3 py-1 rounded-full">
+        <span className="text-xs text-gray-500 dark:text-gray-400 bg-[#F9FAFB] dark:bg-gray-800/50 px-3 py-1 rounded-full">
           {image.width} × {image.height} px
         </span>
       </div>
       <div
-        className={`relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border ${isDragging ? "border-primary border-dashed bg-primary/5" : "border-base-200/80"} overflow-hidden`}
+        className={`relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#EFF6FF]/3 dark:bg-blue-900/200 dark:bg-blue-900/30 border ${isDragging ? "border-[#2563EB] border-dashed bg-[#2563EB]/5" : "border-[#E5E7EB] dark:border-gray-700"} overflow-hidden`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -129,7 +135,7 @@ const ClipboardSaverPreview: React.FC<Props> = ({ image, canvasRef, onPaste, onD
         <div className="relative flex items-center justify-center p-4">
           <canvas
             ref={canvasRef}
-            className="max-w-full max-h-[550px] rounded-lg shadow-2xl shadow-black/10"
+            className="max-w-full max-h-[550px] rounded-[10px] shadow-2xl shadow-black/10"
             style={{ background: "repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%) 50% / 20px 20px" }}
           />
         </div>

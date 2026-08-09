@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import Navigation from "../common/Navigation";
 import CodePreview from "./CodePreview";
 import CodeControls from "./CodeControls";
-import { downloadimagePng, downloadimageJpeg, downloadimageSvg, copyToClipboard } from "../edtior/Editor/downloads";
+import { downloadimagePng, downloadimageJpeg, downloadimageSvg, downloadimageWebp, copyToClipboard } from "../edtior/Editor/downloads";
 import { BackgroundConfig } from "../common/BackgroundPicker";
 import { useProject } from "@/hooks/useProject";
 import { getProjectAsync } from "@/utils/projectStorage";
@@ -22,7 +22,7 @@ export interface CodeEditorState {
   windowTitle: string;
   shadow: string;
   opacity: number;
-  
+
   // Editor Settings
   lineStart: number;
   fontFamily: string;
@@ -41,11 +41,11 @@ export interface CodeEditorState {
   reflection: boolean;
   reflectionOpacity: number;
   watermark: { visible: boolean; text: string };
-  
+
   // New: Tilt and noise
   tilt: { name: string; value: string };
   noise: boolean;
-  
+
   // Transforms (like screenshot editor)
   scale: number;
   canvasRoundness: number;
@@ -72,7 +72,7 @@ const CodeEditorLayout: React.FC = () => {
   const previewRef = useRef<HTMLDivElement>(null);
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [projectLoaded, setProjectLoaded] = useState(false);
-  
+
   // Project system - Canva-style auto-save
   const project = useProject({
     type: "code",
@@ -99,7 +99,7 @@ const CodeEditorLayout: React.FC = () => {
     windowTitle: "index.js",
     shadow: "0 25px 50px -12px rgba(0, 0, 0, 0.4)",
     opacity: 100,
-    
+
     // Editor Settings
     lineStart: 1,
     fontFamily: "'JetBrains Mono', monospace",
@@ -118,11 +118,11 @@ const CodeEditorLayout: React.FC = () => {
     reflection: false,
     reflectionOpacity: 0.3,
     watermark: { visible: false, text: "" },
-    
+
     // Tilt and noise
     tilt: { name: "to center", value: "rotate(0)" },
     noise: false,
-    
+
     // Transforms
     scale: 1,
     canvasRoundness: 0,
@@ -146,7 +146,7 @@ const CodeEditorLayout: React.FC = () => {
   // Auto-save with debounce (2 seconds after last change)
   useEffect(() => {
     if (!state.code || state.code === defaultCode) return;
-    
+
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current);
     }
@@ -167,13 +167,15 @@ const CodeEditorLayout: React.FC = () => {
     setState((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleExport = (format: "png" | "jpeg" | "svg", scale: number = 2) => {
+  const handleExport = (format: "png" | "jpeg" | "svg" | "webp", scale: number = 2) => {
     if (!previewRef.current) return;
-    
+
     if (format === "png") {
       downloadimagePng(previewRef.current, scale);
     } else if (format === "jpeg") {
       downloadimageJpeg(previewRef.current, scale);
+    } else if (format === "webp") {
+      downloadimageWebp(previewRef.current, scale);
     } else {
       downloadimageSvg(previewRef.current, scale);
     }
@@ -188,15 +190,18 @@ const CodeEditorLayout: React.FC = () => {
   };
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main
+      className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0"
+      style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
+    >
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
         <div className="flex flex-col lg:grid lg:gap-5 lg:grid-cols-[3fr_1.5fr]">
-          <CodePreview 
-            state={state} 
-            previewRef={previewRef} 
-            onExport={handleExport} 
+          <CodePreview
+            state={state}
+            previewRef={previewRef}
+            onExport={handleExport}
             onCopy={handleCopy}
             projectName={project.projectName}
             onProjectNameChange={project.setProjectName}

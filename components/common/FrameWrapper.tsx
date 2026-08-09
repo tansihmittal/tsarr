@@ -15,7 +15,7 @@ const FrameWrapper: React.FC<Props> = ({ children, frame }) => {
     const isDark = frame === "macOsDark";
     return (
       <div
-        className={`flex flex-col rounded-lg overflow-hidden border ${isDark ? "border-gray-700 shadow-2xl" : "border-gray-200 shadow-xl"}`}
+        className={`flex flex-col rounded-[10px] overflow-hidden border ${isDark ? "border-gray-700 shadow-2xl" : "border-[#E5E7EB] dark:border-gray-700 shadow-xl"}`}
       >
         <div
           className={`flex items-center gap-2 px-4 py-2 ${isDark ? "bg-[#2D2D2D]" : "bg-[#F6F6F6]"}`}
@@ -29,7 +29,7 @@ const FrameWrapper: React.FC<Props> = ({ children, frame }) => {
             type="text"
             value={frameTitle}
             onChange={(e) => updateData && updateData("frameTitle", e.target.value)}
-            className={`flex-1 text-center text-xs bg-transparent border-none outline-none ${isDark ? "text-gray-400" : "text-gray-600"}`}
+            className={`flex-1 text-center text-xs bg-transparent border-none outline-none ${isDark ? "text-gray-400" : "text-gray-600 dark:text-gray-300"}`}
             placeholder="Title"
           />
         </div>
@@ -42,7 +42,7 @@ const FrameWrapper: React.FC<Props> = ({ children, frame }) => {
     const isDark = frame === "browserDark";
     return (
       <div
-        className={`flex flex-col rounded-lg overflow-hidden border ${isDark ? "border-gray-700 shadow-2xl" : "border-gray-200 shadow-xl"}`}
+        className={`flex flex-col rounded-[10px] overflow-hidden border ${isDark ? "border-gray-700 shadow-2xl" : "border-[#E5E7EB] dark:border-gray-700 shadow-xl"}`}
       >
         <div
           className={`flex items-center gap-2 px-4 py-3 ${isDark ? "bg-[#202124]" : "bg-[#F1F3F4]"}`}
@@ -56,7 +56,7 @@ const FrameWrapper: React.FC<Props> = ({ children, frame }) => {
             type="text"
             value={frameUrl}
             onChange={(e) => updateData && updateData("frameUrl", e.target.value)}
-            className={`flex-1 h-6 rounded px-3 text-[10px] bg-transparent border-none outline-none ${isDark ? "bg-[#35363A] text-gray-400" : "bg-white text-gray-500"}`}
+            className={`flex-1 h-6 rounded px-3 text-[10px] bg-transparent border-none outline-none ${isDark ? "bg-[#35363A] text-gray-400" : "bg-white text-gray-500 dark:text-gray-400"}`}
             style={{ backgroundColor: isDark ? "#35363A" : "white" }}
             placeholder="https://example.com"
           />
@@ -79,7 +79,7 @@ const FrameWrapper: React.FC<Props> = ({ children, frame }) => {
             type="text"
             value={frameTitle}
             onChange={(e) => updateData && updateData("frameTitle", e.target.value)}
-            className={`text-[11px] bg-transparent border-none outline-none ${isDark ? "text-gray-400" : "text-gray-600"}`}
+            className={`text-[11px] bg-transparent border-none outline-none ${isDark ? "text-gray-400" : "text-gray-600 dark:text-gray-300"}`}
             placeholder="Window Title"
           />
           <div className="flex gap-4 items-center">

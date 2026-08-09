@@ -5,10 +5,10 @@ import dynamic from "next/dynamic";
 const TTSClient = dynamic(() => import("@/components/tts/TTSClient"), {
   ssr: false,
   loading: () => (
-    <div className="min-h-screen flex items-center justify-center editor-bg">
+    <div className="min-h-screen flex items-center justify-center bg-[#F9FAFB] dark:bg-gray-800/50">
       <div className="text-center">
-        <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
-        <p className="text-gray-500">Loading Text-to-Speech...</p>
+        <div className="w-10 h-10 border-4 border-[#E5E7EB] border-t-[#2563EB] rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-[#4B5563] dark:text-gray-400">Loading Text-to-Speech...</p>
       </div>
     </div>
   ),

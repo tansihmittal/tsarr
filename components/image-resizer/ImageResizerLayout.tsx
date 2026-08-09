@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
 import ImageResizerPreview from "./ImageResizerPreview";
 import ImageResizerControls from "./ImageResizerControls";
+import { normalizeImageFile } from "@/utils/imageFile";
 
 export interface ImageResizerState {
   originalImage: string;
@@ -13,7 +14,7 @@ export interface ImageResizerState {
   maintainAspectRatio: boolean;
   resizeMode: "pixels" | "percentage" | "preset";
   percentage: number;
-  outputFormat: "png" | "jpeg" | "webp" | "avif";
+  outputFormat: "png" | "jpeg" | "webp" | "avif" | "gif" | "bmp" | "tiff" | "ico";
   quality: number;
 }
 
@@ -48,7 +49,8 @@ const ImageResizerLayout: React.FC = () => {
     });
   };
 
-  const handleImageUpload = useCallback((file: File) => {
+  const handleImageUpload = useCallback(async (file: File) => {
+    const normalized = await normalizeImageFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
@@ -65,7 +67,7 @@ const ImageResizerLayout: React.FC = () => {
       };
       img.src = e.target?.result as string;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(normalized);
   }, []);
 
   const getOutputDimensions = useCallback(() => {
@@ -90,9 +92,14 @@ const ImageResizerLayout: React.FC = () => {
       jpeg: "image/jpeg",
       webp: "image/webp",
       avif: "image/avif",
+      gif: "image/gif",
+      bmp: "image/bmp",
+      tiff: "image/tiff",
+      ico: "image/x-icon",
     };
+    const noQualityFormats = ["png", "gif", "bmp", "tiff", "ico"];
     const mimeType = mimeTypes[state.outputFormat] || "image/png";
-    const quality = state.outputFormat === "png" ? undefined : state.quality / 100;
+    const quality = noQualityFormats.includes(state.outputFormat) ? undefined : state.quality / 100;
     const dims = getOutputDimensions();
 
     canvas.toBlob((blob) => {
@@ -118,7 +125,7 @@ const ImageResizerLayout: React.FC = () => {
   }, []);
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">

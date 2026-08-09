@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
+import { useRouter } from "next/router";
 import Navigation from "../common/Navigation";
 import { PolaroidState } from "./types";
 import PolaroidPreview from "./PolaroidPreview";
@@ -8,8 +9,17 @@ import { getProjectAsync } from "@/utils/projectStorage";
 import { imageToBase64 } from "@/utils/imageStorage";
 
 const PolaroidLayout = () => {
+  const router = useRouter();
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [projectLoaded, setProjectLoaded] = useState(false);
+  // Only reload saved state when the page was opened on an *existing*
+  // project (?project= already in the URL at mount). Without this, the
+  // very first autosave of a brand-new project adds ?project=<id> to the
+  // URL itself, which flips project.projectId from null -> a real id just
+  // like resuming would — re-triggering this same load path and clobbering
+  // whatever the user has typed (e.g. a caption) in the moment since that
+  // first save was captured.
+  const resumingExistingProject = useRef<boolean | null>(null);
 
   // Project system - Canva-style auto-save
   const project = useProject({
@@ -61,8 +71,16 @@ const PolaroidLayout = () => {
 
   const polaroidRef = useRef<HTMLDivElement>(null);
 
-  // Load project data when project ID is in URL
+  // Capture, once, whether this page load already had a project in the URL
+  // (resuming) vs. started blank (a fresh autosave will add ?project= later).
   useEffect(() => {
+    if (!router.isReady || resumingExistingProject.current !== null) return;
+    resumingExistingProject.current = typeof router.query.project === "string";
+  }, [router.isReady, router.query.project]);
+
+  // Load project data — only when genuinely resuming an existing project.
+  useEffect(() => {
+    if (!resumingExistingProject.current) return;
     if (project.projectId && !projectLoaded) {
       getProjectAsync(project.projectId).then(savedProject => {
         if (savedProject?.data) {
@@ -76,7 +94,7 @@ const PolaroidLayout = () => {
   // Auto-save with debounce (2 seconds after last change)
   useEffect(() => {
     if (!state.image) return;
-    
+
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current);
     }
@@ -153,10 +171,10 @@ const PolaroidLayout = () => {
   }, []);
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
-      <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
+      <section className="max-w-screen-xl mx-auto px-3 sm:px-4 lg:px-6 relative">
         <div className="flex flex-col lg:grid lg:gap-5 lg:grid-cols-[3fr_1.5fr]">
           <PolaroidPreview
             state={state}

@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
   return (
-    <Html lang="en" data-theme="bumblebee">
+    <Html lang="en">
       <Head>
         {/* Service Worker Registration Link - for PWA detection */}
         <link rel="serviceworker" href="/sw.js" />
@@ -33,7 +33,7 @@ export default function Document() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Bebas+Neue&family=Anton&family=Oswald:wght@200;300;400;500;600;700&family=Lobster&family=Pacifico&family=Dancing+Script:wght@400;500;600;700&family=Permanent+Marker&family=Bangers&family=Abril+Fatface&family=Alfa+Slab+One&family=Caveat:wght@400;500;600;700&family=Indie+Flower&family=Shadows+Into+Light&family=Patrick+Hand&family=Gloria+Hallelujah&display=swap"
+          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Bebas+Neue&family=Anton&family=Oswald:wght@200;300;400;500;600;700&family=Lobster&family=Pacifico&family=Dancing+Script:wght@400;500;600;700&family=Permanent+Marker&family=Bangers&family=Abril+Fatface&family=Alfa+Slab+One&family=Caveat:wght@400;500;600;700&family=Indie+Flower&family=Shadows+Into+Light&family=Patrick+Hand&family=Gloria+Hallelujah&display=swap"
           rel="stylesheet"
         />
         
@@ -51,6 +51,12 @@ export default function Document() {
         {/* <meta name="msvalidate.01" content="your-bing-verification-code" /> */}
       </Head>
       <body className="antialiased">
+        {/* Theme init — runs before paint to prevent flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.classList.add('dark');document.documentElement.setAttribute('data-theme','dark');}else{document.documentElement.setAttribute('data-theme','bumblebee');}}catch(_){}`,
+          }}
+        />
         {/* Immediate service worker registration - must be synchronous for PWABuilder detection */}
         <script
           dangerouslySetInnerHTML={{

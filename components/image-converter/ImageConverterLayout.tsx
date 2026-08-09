@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
 import ImageConverterPreview from "./ImageConverterPreview";
 import ImageConverterControls from "./ImageConverterControls";
+import { normalizeImageFile } from "@/utils/imageFile";
 
 export interface ImageConverterState {
   originalImage: string;
@@ -38,7 +39,10 @@ const ImageConverterLayout: React.FC = () => {
     return mimeType.toUpperCase();
   };
 
-  const handleImageUpload = useCallback((file: File) => {
+  const handleImageUpload = useCallback(async (file: File) => {
+    const originalFormat = getFormatFromFile(file);
+    const originalSize = file.size;
+    const normalized = await normalizeImageFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
@@ -47,14 +51,14 @@ const ImageConverterLayout: React.FC = () => {
           originalImage: e.target?.result as string,
           originalWidth: img.width,
           originalHeight: img.height,
-          originalFormat: getFormatFromFile(file),
-          originalSize: file.size,
+          originalFormat,
+          originalSize,
         });
         toast.success("Image loaded!");
       };
       img.src = e.target?.result as string;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(normalized);
   }, []);
 
   const handleExport = useCallback(async () => {
@@ -76,7 +80,7 @@ const ImageConverterLayout: React.FC = () => {
       tga: "image/x-tga",
       heic: "image/heic",
     };
-    
+
     // Formats that don't support quality
     const noQualityFormats = ["png", "gif", "bmp", "ico", "tiff", "tga"];
     const mimeType = mimeTypes[state.outputFormat] || "image/png";
@@ -85,7 +89,7 @@ const ImageConverterLayout: React.FC = () => {
     // Note: TIFF, TGA, HEIC may not be supported by all browsers
     // They will fall back to PNG if not supported
     canvas.toBlob((blob) => {
-      if (!blob) { 
+      if (!blob) {
         // Fallback to PNG if format not supported
         canvas.toBlob((fallbackBlob) => {
           if (!fallbackBlob) { toast.error("Failed to convert"); return; }
@@ -120,7 +124,7 @@ const ImageConverterLayout: React.FC = () => {
   }, []);
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">

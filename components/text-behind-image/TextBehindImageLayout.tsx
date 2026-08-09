@@ -43,7 +43,7 @@ export interface TextBehindImageState {
   backgroundColor: string;
   textLayers: TextLayer[];
   selectedLayerId: string | null;
-  exportFormat: "png" | "jpeg" | "webp";
+  exportFormat: "png" | "jpeg" | "webp" | "avif";
   exportScale: number;
   // Background removal
   foregroundImage: string | null;
@@ -275,7 +275,7 @@ const TextBehindImageLayout = () => {
   };
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       {/* Subtle grid pattern overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />

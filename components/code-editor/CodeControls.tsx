@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, ChangeEvent } from "react";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CodeEditorState } from "./CodeEditorLayout";
 import { BiCode, BiChevronRight, BiReset } from "react-icons/bi";
 import { IoMdOptions } from "react-icons/io";
@@ -21,6 +21,11 @@ import { boxShadows } from "@/data/gradients";
 import { tiltDirectionArray } from "@/data/misc";
 import { gereateRandomGradient } from "@/utils/randomGradient";
 import useCustomPresets from "@/hooks/useCustomPresets";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup, SelectLabel } from "@/components/ui/select";
 
 interface Props {
   state: CodeEditorState;
@@ -219,12 +224,11 @@ const presets = [
 ];
 
 const CodeControls: React.FC<Props> = ({ state, updateState }) => {
-  const [selectedTab, setSelectedTab] = useState("code");
   const [showBgPicker, setShowBgPicker] = useState(false);
   const [newPresetName, setNewPresetName] = useState("");
   const customBgInputRef = useRef<HTMLInputElement>(null);
 
-  const { presets: customPresets, savePreset, deletePreset } = useCustomPresets<CodePresetData>(PRESET_STORAGE_KEY);
+  const { presets: customPresets, savePreset, deletePreset } = useCustomPresets<CodePresetData>(PRESET_STORAGE_KEY, "code-editor");
 
   // Debounced inputs for text fields to prevent cursor jumping
   const windowTitleInput = useDebouncedInput(
@@ -317,108 +321,118 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
     <section
       className="flex flex-col transition-opacity duration-300 opacity-100"
     >
+      <Tabs defaultValue="code">
       {/* Top Buttons Container - Code, Style, Presets */}
-      <div className="grid grid-cols-3 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Code" isActive={selectedTab === "code"} onClick={() => setSelectedTab("code")}><BiCode /></ControlTabButton>
-        <ControlTabButton title="Style" isActive={selectedTab === "style"} onClick={() => setSelectedTab("style")}><IoMdOptions /></ControlTabButton>
-        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BsBookmarkFill /></ControlTabButton>
-      </div>
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-3">
+        <TabsTrigger value="code" className="gap-1.5 rounded-[10px] text-xs"><BiCode className="w-3.5 h-3.5" /> Code</TabsTrigger>
+        <TabsTrigger value="style" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Style</TabsTrigger>
+        <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+      </TabsList>
 
       {/* Panel Content */}
-      <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
-        {selectedTab === "code" ? (
+      <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <TabsContent value="code">
           <div className="p-4">
             <textarea
               value={state.code}
               onChange={(e) => updateState("code", e.target.value)}
-              className="w-full h-[calc(100vh-320px)] p-4 font-mono text-sm bg-base-200 rounded-lg border-2 border-base-300 focus:border-primary focus:outline-none resize-none"
+              className="w-full h-[calc(100vh-320px)] p-4 font-mono text-sm bg-[#F9FAFB] dark:bg-gray-800/50 rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 focus:border-[#2563EB] focus:outline-none resize-none"
               placeholder="Paste your code here..."
               spellCheck={false}
             />
           </div>
-        ) : selectedTab === "style" ? (
+        </TabsContent>
+        <TabsContent value="style">
           <div className="relative rounded-md">
             <PanelHeading title="Editor Settings" />
-            
+
             {/* Language */}
             <Control title="Language" value={languagesList.find(l => l.id === state.language)?.name}>
-              <select
+              <Select
                 value={state.language}
-                onChange={(e) => updateState("language", e.target.value)}
-                className="select select-sm select-bordered max-w-[120px]"
+                onValueChange={(v) => updateState("language", v)}
               >
-                {languagesList.map((lang) => (
-                  <option key={lang.id} value={lang.id}>{lang.name}</option>
-                ))}
-              </select>
+                <SelectTrigger className="max-w-[120px] h-9 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {languagesList.map((lang) => (
+                    <SelectItem key={lang.id} value={lang.id}>{lang.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Control>
 
             {/* Theme */}
             <Control title="Theme" value={themesList.find(t => t.id === state.theme)?.name}>
-              <select
+              <Select
                 value={state.theme}
-                onChange={(e) => updateState("theme", e.target.value)}
-                className="select select-sm select-bordered max-w-[150px]"
+                onValueChange={(v) => updateState("theme", v)}
               >
-                <optgroup label="Dark Themes">
-                  {themesList.filter(t => t.isDark).map((theme) => (
-                    <option key={theme.id} value={theme.id}>{theme.name}</option>
-                  ))}
-                </optgroup>
-                <optgroup label="Light Themes">
-                  {themesList.filter(t => !t.isDark).map((theme) => (
-                    <option key={theme.id} value={theme.id}>{theme.name}</option>
-                  ))}
-                </optgroup>
-              </select>
+                <SelectTrigger className="max-w-[150px] h-9 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Dark Themes</SelectLabel>
+                    {themesList.filter(t => t.isDark).map((theme) => (
+                      <SelectItem key={theme.id} value={theme.id}>{theme.name}</SelectItem>
+                    ))}
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>Light Themes</SelectLabel>
+                    {themesList.filter(t => !t.isDark).map((theme) => (
+                      <SelectItem key={theme.id} value={theme.id}>{theme.name}</SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </Control>
 
             {/* Font Size */}
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Font Size</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Font Size</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.fontSize}px
                 </span>
               </div>
-              <input
-                type="range"
-                min="10"
-                max="24"
-                value={state.fontSize}
-                onChange={(e) => updateState("fontSize", Number(e.target.value))}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={10}
+                max={24}
+                value={[state.fontSize]}
+                onValueChange={([v]) => updateState("fontSize", v)}
               />
             </div>
 
             {/* Font Family */}
             <Control title="Font Family" value={fontFamilies.find(f => f.value === state.fontFamily)?.name}>
-              <select
+              <Select
                 value={state.fontFamily}
-                onChange={(e) => updateState("fontFamily", e.target.value)}
-                className="select select-sm select-bordered max-w-[140px]"
+                onValueChange={(v) => updateState("fontFamily", v)}
               >
-                {fontFamilies.map((font) => (
-                  <option key={font.id} value={font.value}>{font.name}</option>
-                ))}
-              </select>
+                <SelectTrigger className="max-w-[140px] h-9 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {fontFamilies.map((font) => (
+                    <SelectItem key={font.id} value={font.value}>{font.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Control>
 
             {/* Line Numbers */}
             <Control title="Line Numbers">
-              <label className="custom-toggle">
-                <input
-                  type="checkbox"
-                  checked={state.lineNumbers}
-                  onChange={(e) => updateState("lineNumbers", e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
+              <Switch
+                checked={state.lineNumbers}
+                onCheckedChange={(v: boolean) => updateState("lineNumbers", v)}
+              />
             </Control>
 
             {/* Line Start */}
             <Control title="Line Start" value={String(state.lineStart)}>
-              <input
+              <Input
                 type="number"
                 min="1"
                 value={state.lineStart}
@@ -426,52 +440,52 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
                   const value = parseInt(e.target.value);
                   updateState("lineStart", value > 0 ? value : 1);
                 }}
-                className="input input-sm input-bordered max-w-[80px]"
+                className="h-9 text-sm max-w-[80px]"
               />
             </Control>
 
             {/* Ligatures */}
             <Control title="Ligatures">
-              <label className="custom-toggle">
-                <input
-                  type="checkbox"
-                  checked={state.ligatures}
-                  onChange={(e) => updateState("ligatures", e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
+              <Switch
+                checked={state.ligatures}
+                onCheckedChange={(v: boolean) => updateState("ligatures", v)}
+              />
             </Control>
 
             <PanelHeading title="Image Options" />
 
             {/* Aspect Ratio */}
             <Control title="Aspect Ratio" value={state.aspectRatio.name}>
-              <select
+              <Select
                 value={state.aspectRatio.value}
-                onChange={(e) => {
-                  const selected = aspectRatios.find(ar => ar.value === e.target.value);
+                onValueChange={(v) => {
+                  const selected = aspectRatios.find(ar => ar.value === v);
                   if (selected) {
                     updateState("aspectRatio", { name: selected.name, value: selected.value });
                   }
                 }}
-                className="select select-sm select-bordered max-w-[120px]"
               >
-                {aspectRatios.map((ratio) => (
-                  <option key={ratio.id} value={ratio.value}>{ratio.name}</option>
-                ))}
-              </select>
+                <SelectTrigger className="max-w-[120px] h-9 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {aspectRatios.map((ratio) => (
+                    <SelectItem key={ratio.id} value={ratio.value}>{ratio.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Control>
 
             {/* Shadow - Grid like screenshot editor */}
-            <div className="py-3 px-4 border-b border-base-200/60">
-              <span className="text-primary-content font-medium block mb-2">Shadow</span>
+            <div className="py-3 px-4 border-b border-[#E5E7EB] dark:border-gray-700">
+              <span className="text-[#0A0A0A] dark:text-white font-medium block mb-2">Shadow</span>
               <div className="grid grid-cols-3 gap-2">
                 {boxShadows.map((shadow) => (
                   <button
                     key={shadow.id}
                     onClick={() => updateState("shadow", shadow.value)}
-                    className={`py-2 px-3 rounded-lg text-xs font-medium transition-all ${
-                      state.shadow === shadow.value ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"
+                    className={`py-2 px-3 rounded-[10px] text-xs font-medium transition-all ${
+                      state.shadow === shadow.value ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                     }`}
                   >
                     {shadow.name}
@@ -481,57 +495,51 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             </div>
 
             {/* Scale */}
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Scale</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Scale</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.scale}
                 </span>
               </div>
-              <input
-                type="range"
-                min="0.5"
-                max="1.5"
-                step="0.05"
-                value={state.scale}
-                onChange={(e) => updateState("scale", Number(e.target.value))}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={0.5}
+                max={1.5}
+                step={0.05}
+                value={[state.scale]}
+                onValueChange={([v]) => updateState("scale", v)}
               />
             </div>
 
             {/* Border Radius */}
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Border Radius</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Border Radius</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.borderRadius}
                 </span>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="32"
-                value={state.borderRadius}
-                onChange={(e) => updateState("borderRadius", Number(e.target.value))}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={0}
+                max={32}
+                value={[state.borderRadius]}
+                onValueChange={([v]) => updateState("borderRadius", v)}
               />
             </div>
 
             {/* Padding */}
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Padding</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Padding</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.padding}
                 </span>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="160"
-                value={state.padding}
-                onChange={(e) => updateState("padding", Number(e.target.value))}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={0}
+                max={160}
+                value={[state.padding]}
+                onValueChange={([v]) => updateState("padding", v)}
               />
             </div>
 
@@ -542,8 +550,8 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
               <div className="flex gap-1">
                 {tiltDirectionArray.map((dir) => (
                   <span
-                    className={`text-primary-content h-8 w-8 rounded-[4px] flex justify-center items-center border-2 border-base-200 cursor-pointer hover:bg-base-200 ${
-                      state.tilt.name === dir.name && "bg-base-200"
+                    className={`text-[#0A0A0A] dark:text-white h-8 w-8 rounded-[4px] flex justify-center items-center border-2 border-[#E5E7EB] dark:border-gray-700 cursor-pointer hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 ${
+                      state.tilt.name === dir.name && "bg-[#F9FAFB] dark:bg-gray-800"
                     }`}
                     key={dir.id}
                     onClick={() => updateState("tilt", { name: dir.name, value: dir.value })}
@@ -555,59 +563,53 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             </Control>
 
             {/* Left */}
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Left</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Left</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.left}
                 </span>
               </div>
-              <input
-                type="range"
-                min="-100"
-                max="100"
-                step="5"
-                value={state.left}
-                onChange={(e) => updateState("left", Number(e.target.value))}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={-100}
+                max={100}
+                step={5}
+                value={[state.left]}
+                onValueChange={([v]) => updateState("left", v)}
               />
             </div>
 
             {/* Top */}
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Top</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Top</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.top}
                 </span>
               </div>
-              <input
-                type="range"
-                min="-100"
-                max="100"
-                step="5"
-                value={state.top}
-                onChange={(e) => updateState("top", Number(e.target.value))}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={-100}
+                max={100}
+                step={5}
+                value={[state.top]}
+                onValueChange={([v]) => updateState("top", v)}
               />
             </div>
 
             {/* Rotate */}
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Rotate</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Rotate</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.rotate}°
                 </span>
               </div>
-              <input
-                type="range"
-                min="-90"
-                max="90"
-                step="5"
-                value={state.rotate}
-                onChange={(e) => updateState("rotate", Number(e.target.value))}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={-90}
+                max={90}
+                step={5}
+                value={[state.rotate]}
+                onValueChange={([v]) => updateState("rotate", v)}
               />
             </div>
 
@@ -619,10 +621,10 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             <PanelHeading title="Background Options" />
 
             {/* Background */}
-            <div className="py-3 px-4 border-b border-base-200">
-              <span className="text-primary-content block mb-2">Background</span>
+            <div className="py-3 px-4 border-b border-[#E5E7EB] dark:border-gray-700">
+              <span className="text-[#0A0A0A] dark:text-white block mb-2">Background</span>
               <div
-                className="w-full h-12 rounded-lg border-2 border-base-200 cursor-pointer hover:border-primary transition-all mb-3"
+                className="w-full h-12 rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 cursor-pointer hover:border-[#2563EB] transition-all mb-3"
                 style={{ background: state.background.background }}
                 onClick={() => setShowBgPicker(!showBgPicker)}
               />
@@ -638,21 +640,19 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             </div>
 
             {/* Canvas Roundness */}
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Roundness</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Roundness</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {state.canvasRoundness}
                 </span>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="20"
-                step="1"
-                value={state.canvasRoundness}
-                onChange={(e) => updateState("canvasRoundness", Number(e.target.value))}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={0}
+                max={20}
+                step={1}
+                value={[state.canvasRoundness]}
+                onValueChange={([v]) => updateState("canvasRoundness", v)}
               />
             </div>
 
@@ -680,26 +680,18 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
 
             {/* Noise Effect */}
             <Control title="Noise">
-              <label className="custom-toggle">
-                <input
-                  type="checkbox"
-                  checked={state.noise}
-                  onChange={(e) => updateState("noise", e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
+              <Switch
+                checked={state.noise}
+                onCheckedChange={(v: boolean) => updateState("noise", v)}
+              />
             </Control>
 
             {/* Frame Visibility */}
             <Control title="Frame Visible">
-              <label className="custom-toggle">
-                <input
-                  type="checkbox"
-                  checked={state.frameVisible}
-                  onChange={(e) => updateState("frameVisible", e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
+              <Switch
+                checked={state.frameVisible}
+                onCheckedChange={(v: boolean) => updateState("frameVisible", v)}
+              />
             </Control>
 
             <PanelHeading title="Window Settings" />
@@ -713,8 +705,8 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
                     onClick={() => updateState("windowStyle", style)}
                     className={`px-3 py-1 rounded text-xs capitalize ${
                       state.windowStyle === style
-                        ? "bg-primary text-white"
-                        : "bg-base-200 hover:bg-base-300"
+                        ? "bg-[#2563EB] text-white"
+                        : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                     }`}
                   >
                     {style}
@@ -725,25 +717,21 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
 
             {/* Window Title */}
             <Control title="Window Title">
-              <input
+              <Input
                 type="text"
                 value={windowTitleInput.localValue}
                 onChange={(e) => windowTitleInput.handleChange(e.target.value)}
-                className="input input-sm input-bordered max-w-[140px]"
+                className="h-9 text-sm max-w-[140px]"
                 placeholder="Title"
               />
             </Control>
 
             {/* Header Visibility */}
             <Control title="Header Visible">
-              <label className="custom-toggle">
-                <input
-                  type="checkbox"
-                  checked={state.headerVisible}
-                  onChange={(e) => updateState("headerVisible", e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
+              <Switch
+                checked={state.headerVisible}
+                onCheckedChange={(v: boolean) => updateState("headerVisible", v)}
+              />
             </Control>
 
             {/* Window Background */}
@@ -755,8 +743,8 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
                     onClick={() => updateState("windowBackground", bg)}
                     className={`px-3 py-1 rounded text-xs capitalize ${
                       state.windowBackground === bg
-                        ? "bg-primary text-white"
-                        : "bg-base-200 hover:bg-base-300"
+                        ? "bg-[#2563EB] text-white"
+                        : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                     }`}
                   >
                     {bg}
@@ -767,15 +755,19 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
 
             {/* Shadow Style */}
             <Control title="Shadow Style" value={shadowStyles.find(s => s.id === state.shadowStyle)?.name}>
-              <select
+              <Select
                 value={state.shadowStyle}
-                onChange={(e) => updateState("shadowStyle", e.target.value as typeof state.shadowStyle)}
-                className="select select-sm select-bordered max-w-[120px]"
+                onValueChange={(v) => updateState("shadowStyle", v as typeof state.shadowStyle)}
               >
-                {shadowStyles.map((shadow) => (
-                  <option key={shadow.id} value={shadow.id}>{shadow.name}</option>
-                ))}
-              </select>
+                <SelectTrigger className="max-w-[120px] h-9 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {shadowStyles.map((shadow) => (
+                    <SelectItem key={shadow.id} value={shadow.id}>{shadow.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Control>
 
             {/* Border Style */}
@@ -787,8 +779,8 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
                     onClick={() => updateState("borderStyle", border.id as typeof state.borderStyle)}
                     className={`px-3 py-1 rounded text-xs capitalize ${
                       state.borderStyle === border.id
-                        ? "bg-primary text-white"
-                        : "bg-base-200 hover:bg-base-300"
+                        ? "bg-[#2563EB] text-white"
+                        : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                     }`}
                   >
                     {border.name}
@@ -799,102 +791,93 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
 
             {/* Reflection */}
             <Control title="Reflection">
-              <label className="custom-toggle">
-                <input
-                  type="checkbox"
-                  checked={state.reflection}
-                  onChange={(e) => updateState("reflection", e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
+              <Switch
+                checked={state.reflection}
+                onCheckedChange={(v: boolean) => updateState("reflection", v)}
+              />
             </Control>
 
             {/* Reflection Opacity - only show when reflection is enabled */}
             {state.reflection && (
-              <div className="p-4 border-b border-base-200/60">
+              <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                 <div className="flex justify-between items-center mb-1.5">
-                  <span className="text-xs text-gray-500 font-medium">Reflection Opacity</span>
-                  <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                  <span className="text-xs text-[#4B5563] dark:text-gray-400 font-medium">Reflection Opacity</span>
+                  <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                     {Math.round(state.reflectionOpacity * 100)}%
                   </span>
                 </div>
-                <input
-                  type="range"
-                  min="0.1"
-                  max="0.8"
-                  step="0.05"
-                  value={state.reflectionOpacity}
-                  onChange={(e) => updateState("reflectionOpacity", parseFloat(e.target.value))}
-                  className="range range-xs range-primary w-full"
+                <Slider
+                  min={0.1}
+                  max={0.8}
+                  step={0.05}
+                  value={[state.reflectionOpacity]}
+                  onValueChange={([v]) => updateState("reflectionOpacity", v)}
                 />
               </div>
             )}
 
             {/* Watermark */}
             <Control title="Watermark">
-              <label className="custom-toggle">
-                <input
-                  type="checkbox"
-                  checked={state.watermark.visible}
-                  onChange={(e) => updateState("watermark", { ...state.watermark, visible: e.target.checked })}
-                />
-                <span className="slider"></span>
-              </label>
+              <Switch
+                checked={state.watermark.visible}
+                onCheckedChange={(v: boolean) => updateState("watermark", { ...state.watermark, visible: v })}
+              />
             </Control>
 
             {/* Watermark Text */}
             {state.watermark.visible && (
               <Control title="Watermark Text">
-                <input
+                <Input
                   type="text"
                   value={watermarkTextInput.localValue}
                   onChange={(e) => watermarkTextInput.handleChange(e.target.value)}
-                  className="input input-sm input-bordered max-w-[140px]"
+                  className="h-9 text-sm max-w-[140px]"
                   placeholder="Your watermark"
                 />
               </Control>
             )}
           </div>
-        ) : (
+        </TabsContent>
+        <TabsContent value="presets">
           <div className="p-4">
             {/* Save Custom Preset */}
-            <div className="mb-4 p-3 bg-base-200/50 rounded-lg">
-              <p className="text-xs text-gray-500 mb-2">Save current style as preset</p>
+            <div className="mb-4 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 rounded-[10px]">
+              <p className="text-xs text-[#4B5563] dark:text-gray-400 mb-2">Save current style as preset</p>
               <div className="flex gap-2">
-                <input
+                <Input
                   type="text"
                   value={newPresetName}
                   onChange={(e) => setNewPresetName(e.target.value)}
                   placeholder="Preset name"
-                  className="input input-sm input-bordered flex-1"
+                  className="h-9 text-sm flex-1"
                   onKeyDown={(e) => e.key === "Enter" && handleSavePreset()}
                 />
-                <button onClick={handleSavePreset} className="btn btn-sm btn-primary">Save</button>
+                <Button onClick={handleSavePreset} size="sm">Save</Button>
               </div>
             </div>
 
             {/* Custom Presets */}
             {customPresets.length > 0 && (
               <div className="mb-4">
-                <p className="text-xs text-gray-500 mb-2 font-medium">Your Presets</p>
+                <p className="text-xs text-[#4B5563] dark:text-gray-400 mb-2 font-medium">Your Presets</p>
                 <div className="grid grid-cols-2 gap-3">
                   {customPresets.map((preset) => (
                     <div key={preset.id} className="group relative">
                       <button
                         onClick={() => applyCustomPreset(preset.data)}
-                        className="w-full overflow-hidden rounded-lg border-2 border-base-200 hover:border-primary transition-all"
+                        className="w-full overflow-hidden rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB] transition-all"
                       >
-                        <div 
+                        <div
                           className="h-16 w-full"
                           style={{ background: preset.data.background.background }}
                         />
-                        <div className="p-2 bg-base-100 text-center">
-                          <span className="text-xs font-medium text-primary-content">{preset.name}</span>
+                        <div className="p-2 bg-white dark:bg-gray-900 text-center">
+                          <span className="text-xs font-medium text-[#0A0A0A] dark:text-white">{preset.name}</span>
                         </div>
                       </button>
                       <button
                         onClick={() => deletePreset(preset.id)}
-                        className="absolute top-1 right-1 w-6 h-6 bg-error text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error/80"
+                        className="absolute top-1 right-1 w-6 h-6 bg-[#EF4444] text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#DC2626]"
                       >
                         <BsTrash />
                       </button>
@@ -905,37 +888,38 @@ const CodeControls: React.FC<Props> = ({ state, updateState }) => {
             )}
 
             {/* Default Presets */}
-            <p className="text-xs text-gray-500 mb-2 font-medium">Default Presets</p>
+            <p className="text-xs text-[#4B5563] dark:text-gray-400 mb-2 font-medium">Default Presets</p>
             <div className="grid grid-cols-2 gap-3">
               {presets.map((preset) => (
                 <button
                   key={preset.id}
                   onClick={() => applyPreset(preset)}
-                  className="group relative overflow-hidden rounded-lg border-2 border-base-200 hover:border-primary transition-all"
+                  className="group relative overflow-hidden rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB] transition-all"
                 >
-                  <div 
+                  <div
                     className="h-20 w-full"
                     style={{ background: preset.preview }}
                   >
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div 
+                      <div
                         className="w-3/4 h-10 rounded-md shadow-lg"
-                        style={{ 
+                        style={{
                           backgroundColor: preset.settings.theme.includes('light') ? '#fff' : '#1a1a2e',
                           opacity: 0.9
                         }}
                       />
                     </div>
                   </div>
-                  <div className="p-2 bg-base-100 text-center">
-                    <span className="text-xs font-medium text-primary-content">{preset.name}</span>
+                  <div className="p-2 bg-white dark:bg-gray-900 text-center">
+                    <span className="text-xs font-medium text-[#0A0A0A] dark:text-white">{preset.name}</span>
                   </div>
                 </button>
               ))}
             </div>
           </div>
-        )}
+        </TabsContent>
       </div>
+      </Tabs>
     </section>
   );
 };

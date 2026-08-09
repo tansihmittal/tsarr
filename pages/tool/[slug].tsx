@@ -133,18 +133,18 @@ export default function ToolPage({ tool, relatedTools }: ToolPageProps) {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
       </Head>
 
-      <div className="min-h-screen bg-white text-gray-900 antialiased">
+      <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white antialiased">
         {/* Header */}
-        <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+        <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-900 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-            <Link href="/" className="text-lg font-semibold text-gray-900">
+            <Link href="/" className="text-lg font-semibold text-gray-900 dark:text-white">
               tsarr.in
             </Link>
             <nav className="flex items-center gap-2">
-              <Link href="/projects" className="p-2 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100">
+              <Link href="/projects" className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
                 <BsFolder2 />
               </Link>
-              <Link href="/tools" className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">
+              <Link href="/tools" className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
                 Tools
               </Link>
               <Link href={tool.href} className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
@@ -156,25 +156,25 @@ export default function ToolPage({ tool, relatedTools }: ToolPageProps) {
 
         <main>
           {/* Hero */}
-          <section className="pt-8 pb-12 px-4 sm:px-6 border-b border-gray-100 bg-gradient-to-b from-gray-50 to-white">
+          <section className="pt-8 pb-12 px-4 sm:px-6 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-b from-gray-50 dark:from-gray-800/50 to-white dark:to-gray-900">
             <div className="max-w-6xl mx-auto">
               {/* Breadcrumb */}
-              <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-                <Link href="/" className="hover:text-gray-900">Home</Link>
+              <nav className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
+                <Link href="/" className="hover:text-gray-900 dark:hover:text-white">Home</Link>
                 <span>/</span>
-                <Link href="/tools" className="hover:text-gray-900">Tools</Link>
+                <Link href="/tools" className="hover:text-gray-900 dark:hover:text-white">Tools</Link>
                 <span>/</span>
-                <span className="text-gray-900 font-medium">{tool.title}</span>
+                <span className="text-gray-900 dark:text-white font-medium">{tool.title}</span>
               </nav>
-              
+
               <div className="max-w-3xl">
                 <span className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full mb-4">
                   {tool.category}
                 </span>
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
                   {tool.title}
                 </h1>
-                <p className="text-lg sm:text-xl text-gray-600 mb-8 leading-relaxed">
+                <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
                   {tool.description}
                 </p>
                 <div className="flex flex-wrap gap-3">
@@ -182,7 +182,7 @@ export default function ToolPage({ tool, relatedTools }: ToolPageProps) {
                     Open {tool.title}
                     <BsArrowRight />
                   </Link>
-                  <Link href="/tools" className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 font-medium rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
+                  <Link href="/tools" className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
                     <BsArrowLeft />
                     All Tools
                   </Link>
@@ -195,31 +195,31 @@ export default function ToolPage({ tool, relatedTools }: ToolPageProps) {
           <section className="py-12 px-4 sm:px-6">
             <div className="max-w-6xl mx-auto">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-xl">
+                <div className="flex items-start gap-4 p-5 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
                   <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <BsLightning className="text-green-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">100% Free</h3>
-                    <p className="text-sm text-gray-600">No hidden costs, no premium tiers. All features available for free.</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">100% Free</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">No hidden costs, no premium tiers. All features available for free.</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-xl">
+                <div className="flex items-start gap-4 p-5 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
                   <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <BsShield className="text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Privacy First</h3>
-                    <p className="text-sm text-gray-600">All processing happens in your browser. Files never leave your device.</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Privacy First</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">All processing happens in your browser. Files never leave your device.</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-xl">
+                <div className="flex items-start gap-4 p-5 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
                   <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <BsGlobe className="text-purple-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">No Login Required</h3>
-                    <p className="text-sm text-gray-600">Start using immediately. No account, no signup, no hassle.</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">No Login Required</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Start using immediately. No account, no signup, no hassle.</p>
                   </div>
                 </div>
               </div>
@@ -227,25 +227,25 @@ export default function ToolPage({ tool, relatedTools }: ToolPageProps) {
           </section>
 
           {/* Features & About */}
-          <section className="py-12 px-4 sm:px-6 bg-gray-50 border-y border-gray-100">
+          <section className="py-12 px-4 sm:px-6 bg-gray-50 dark:bg-gray-800/50 border-y border-gray-100 dark:border-gray-800">
             <div className="max-w-6xl mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Features</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Features</h2>
                   <ul className="space-y-4">
                     {tool.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-3">
                         <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <BsCheck className="text-green-600 text-sm" />
                         </div>
-                        <span className="text-gray-700">{feature}</span>
+                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">About {tool.title}</h2>
-                  <p className="text-gray-600 leading-relaxed">{tool.longDescription}</p>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">About {tool.title}</h2>
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{tool.longDescription}</p>
                 </div>
               </div>
             </div>
@@ -254,11 +254,11 @@ export default function ToolPage({ tool, relatedTools }: ToolPageProps) {
           {/* Use Cases */}
           <section className="py-12 px-4 sm:px-6">
             <div className="max-w-6xl mx-auto">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Perfect for</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Perfect for</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {tool.useCases.map((useCase, i) => (
-                  <div key={i} className="p-5 rounded-xl border border-gray-200 bg-white hover:border-indigo-200 hover:shadow-sm transition-all">
-                    <p className="text-gray-700">{useCase}</p>
+                  <div key={i} className="p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-indigo-200 hover:shadow-sm transition-all">
+                    <p className="text-gray-700 dark:text-gray-300">{useCase}</p>
                   </div>
                 ))}
               </div>
@@ -266,9 +266,9 @@ export default function ToolPage({ tool, relatedTools }: ToolPageProps) {
           </section>
 
           {/* How to Use */}
-          <section className="py-12 px-4 sm:px-6 bg-gray-50 border-y border-gray-100">
+          <section className="py-12 px-4 sm:px-6 bg-gray-50 dark:bg-gray-800/50 border-y border-gray-100 dark:border-gray-800">
             <div className="max-w-6xl mx-auto">
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">How to use {tool.title}</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">How to use {tool.title}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
                   { step: "1", title: "Open the tool", desc: "Click the button above to open the tool in your browser." },
@@ -278,8 +278,8 @@ export default function ToolPage({ tool, relatedTools }: ToolPageProps) {
                 ].map((item, i) => (
                   <div key={i} className="relative">
                     <div className="text-4xl font-bold text-indigo-100 mb-2">{item.step}</div>
-                    <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
-                    <p className="text-sm text-gray-600">{item.desc}</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{item.title}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
                   </div>
                 ))}
               </div>

@@ -6,14 +6,19 @@ import {
   BsArrowRight, BsGithub, BsTwitter, BsLinkedin, BsSearch, BsFolder2, BsImage,
   BsCode, BsType, BsCameraVideo, BsCardImage, BsAspectRatio, BsArrowsFullscreen,
   BsArrowRepeat, BsClipboard, BsBarChartFill, BsGlobe, BsEraserFill, BsSoundwave,
-  BsPencilSquare, BsChatSquare, BsX, BsFire, BsScissors, BsQrCode, BsPalette
+  BsPencilSquare, BsChatSquare, BsX, BsFire, BsScissors, BsQrCode, BsPalette, BsPinMap
 } from "react-icons/bs";
 import { MdSubtitles } from "react-icons/md";
 import { RiSlideshow3Line } from "react-icons/ri";
 import { toolsData } from "@/data/toolsData";
 import { Project, cacheProjects, getRecentProjects } from "@/utils/projectStorage";
 import { sortToolsByUsage, trackToolUsage, getToolUsage } from "@/utils/toolUsage";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { Card, CardContent } from "../components/ui/card";
+import { Input } from "../components/ui/input";
 
+const FONT = "'IBM Plex Sans', sans-serif";
 
 const typeRoutes: Record<string, string> = {
   screenshot: "/editor",
@@ -24,7 +29,6 @@ const typeRoutes: Record<string, string> = {
   "text-behind-image": "/text-behind-image",
 };
 
-// Unique icon for each tool by slug
 const toolIcons: Record<string, any> = {
   "screenshot-editor": BsImage,
   "code-screenshots": BsCode,
@@ -48,32 +52,7 @@ const toolIcons: Record<string, any> = {
   "background-remover": BsScissors,
   "qr-code-generator": BsQrCode,
   "color-palette-extractor": BsPalette,
-};
-
-// Unique color for each tool by slug
-const toolColors: Record<string, string> = {
-  "screenshot-editor": "bg-violet-500",
-  "code-screenshots": "bg-emerald-500",
-  "text-behind-image": "bg-pink-500",
-  "video-captions": "bg-blue-500",
-  "tweet-editor": "bg-sky-500",
-  "carousel-editor": "bg-orange-500",
-  "aspect-ratio-converter": "bg-teal-500",
-  "image-resizer": "bg-lime-500",
-  "image-converter": "bg-cyan-500",
-  "clipboard-saver": "bg-amber-500",
-  "video-converter": "bg-indigo-500",
-  "chart-maker": "bg-rose-500",
-  "map-maker": "bg-green-500",
-  "3d-globe": "bg-purple-500",
-  "polaroid-generator": "bg-yellow-500",
-  "watermark-remover": "bg-red-500",
-  "text-to-speech": "bg-fuchsia-500",
-  "image-text-editor": "bg-slate-500",
-  "bubble-blaster": "bg-stone-500",
-  "background-remover": "bg-blue-600",
-  "qr-code-generator": "bg-gray-800",
-  "color-palette-extractor": "bg-gradient-to-r from-red-400 via-yellow-400 to-purple-500",
+  "image-map-pro": BsPinMap,
 };
 
 const toolsListSchema = {
@@ -87,8 +66,8 @@ const toolsListSchema = {
     position: index + 1,
     name: tool.title,
     description: tool.shortDesc,
-    url: `https://tsarr.in/tool/${tool.slug}`
-  }))
+    url: `https://tsarr.in/tool/${tool.slug}`,
+  })),
 };
 
 export default function ToolsPage() {
@@ -96,7 +75,6 @@ export default function ToolsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [recentProjects, setRecentProjects] = useState<Project[]>([]);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [sortedTools, setSortedTools] = useState(toolsData);
   const [hasUsageData, setHasUsageData] = useState(false);
 
@@ -106,14 +84,11 @@ export default function ToolsPage() {
       setRecentProjects(getRecentProjects());
     };
     loadRecent();
-    
-    // Sort tools by usage on client side
+
     const usage = getToolUsage();
     const hasUsage = Object.keys(usage).length > 0;
     setHasUsageData(hasUsage);
-    if (hasUsage) {
-      setSortedTools(sortToolsByUsage(toolsData));
-    }
+    if (hasUsage) setSortedTools(sortToolsByUsage(toolsData));
   }, []);
 
   const handleToolClick = (slug: string, href: string) => {
@@ -121,10 +96,11 @@ export default function ToolsPage() {
     router.push(href);
   };
 
-  const categories = ["all", ...Array.from(new Set(toolsData.map(t => t.category)))];
-  
-  const filteredTools = sortedTools.filter(tool => {
-    const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  const categories = ["all", ...Array.from(new Set(toolsData.map((t) => t.category)))];
+
+  const filteredTools = sortedTools.filter((tool) => {
+    const matchesSearch =
+      tool.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tool.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || tool.category === selectedCategory;
     return matchesSearch && matchesCategory;
@@ -140,68 +116,74 @@ export default function ToolsPage() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(toolsListSchema) }} />
       </Head>
 
-      <div className="min-h-screen bg-gray-50 pb-24 lg:pb-0">
-        {/* Header */}
-        <header className="bg-white/95 backdrop-blur-lg border-b border-gray-200/80 sticky top-0 z-50">
+      <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-800/50 pb-24 lg:pb-0" style={{ fontFamily: FONT }}>
+
+        {/* ── Header ── */}
+        <header className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-b border-[#E5E7EB] dark:border-gray-700 sticky top-0 z-50">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-            <Link href="/" className="text-lg font-bold text-gray-900">
+            <Link href="/" className="text-base font-semibold text-[#0A0A0A] dark:text-white">
               tsarr.in
             </Link>
             <nav className="flex items-center gap-2">
-              <Link href="/projects" className="p-2.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors">
-                <BsFolder2 className="text-lg" />
-              </Link>
-              <Link href="/app" className="hidden sm:block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">
-                Dashboard
-              </Link>
-              <Link href="/editor" className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors">
-                Open Editor
-              </Link>
+              <Button variant="ghost" size="icon" asChild className="rounded-full w-9 h-9">
+                <Link href="/projects" title="My Projects">
+                  <BsFolder2 className="w-4 h-4" />
+                </Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link href="/editor">Open Editor</Link>
+              </Button>
             </nav>
           </div>
         </header>
 
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-          {/* Hero - Mobile optimized */}
-          <div className="mb-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">All Tools</h1>
-            <p className="text-gray-600 text-sm sm:text-base">19+ free tools for screenshots, images, videos, and more.</p>
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+
+          {/* ── Page title ── */}
+          <div className="mb-8">
+            <h1
+              className="font-normal text-[#0A0A0A] dark:text-white mb-1"
+              style={{ fontSize: "clamp(28px,4vw,40px)", lineHeight: 1.1, letterSpacing: "-1.5px" }}
+            >
+              All Tools
+            </h1>
+            <p className="text-[#4B5563] dark:text-gray-400" style={{ fontSize: 16 }}>
+              {toolsData.length}+ free tools for screenshots, images, videos, and more.
+            </p>
           </div>
 
-          {/* Search and Filter - Mobile optimized */}
-          <div className="space-y-3 mb-6">
+          {/* ── Search + filters ── */}
+          <div className="space-y-3 mb-8">
             {/* Search */}
-            <div className={`relative transition-all ${isSearchFocused ? 'ring-2 ring-indigo-500 rounded-xl' : ''}`}>
-              <BsSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
+            <div className="relative">
+              <BsSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4B5563]/60 text-sm pointer-events-none z-10" />
+              <Input
                 type="text"
-                placeholder="Search tools..."
+                placeholder="Search tools…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
-                className="w-full pl-11 pr-10 py-3 bg-white border border-gray-200 rounded-xl text-base focus:outline-none"
+                className="pl-10 pr-10"
               />
               {searchQuery && (
-                <button 
+                <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4B5563]/60 hover:text-[#0A0A0A] transition-colors"
                 >
-                  <BsX className="text-lg" />
+                  <BsX className="w-4 h-4" />
                 </button>
               )}
             </div>
-            
-            {/* Category Pills - Horizontal scroll on mobile */}
-            <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
-              {categories.map(cat => (
+
+            {/* Category pills */}
+            <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+              {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-2 text-sm font-medium rounded-xl whitespace-nowrap transition-all active:scale-95 ${
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                     selectedCategory === cat
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
+                      ? "bg-[#0A0A0A] dark:bg-white text-white dark:text-gray-900"
+                      : "bg-white dark:bg-gray-900 text-[#4B5563] dark:text-gray-400 border border-[#E5E7EB] dark:border-gray-700 hover:border-[#60A5FA] hover:text-[#0A0A0A] dark:hover:text-white"
                   }`}
                 >
                   {cat === "all" ? "All" : cat}
@@ -210,134 +192,158 @@ export default function ToolsPage() {
             </div>
           </div>
 
-          {/* Recent Projects - Mobile optimized */}
+          {/* ── Recent Projects ── */}
           {recentProjects.length > 0 && !searchQuery && selectedCategory === "all" && (
-            <section className="mb-8">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-base font-semibold text-gray-900">Continue editing</h2>
-                <Link href="/projects" className="text-sm text-indigo-600 hover:text-indigo-700 flex items-center gap-1 font-medium">
-                  All <BsArrowRight className="text-xs" />
-                </Link>
+            <section className="mb-10">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-medium text-[#0A0A0A] dark:text-white" style={{ fontSize: 16 }}>
+                  Continue editing
+                </h2>
+                <Button variant="link" size="sm" asChild>
+                  <Link href="/projects">
+                    All <BsArrowRight className="w-3 h-3" />
+                  </Link>
+                </Button>
               </div>
-              <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 scrollbar-hide">
+              <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                 {recentProjects.slice(0, 5).map((project) => (
-                  <Link
-                    key={project.id}
-                    href={`${typeRoutes[project.type]}?project=${project.id}`}
-                    className="flex-shrink-0 w-[140px] sm:w-auto group bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all active:scale-[0.98]"
-                  >
-                    <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
-                      {project.thumbnail ? (
-                        <img src={project.thumbnail} alt={project.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <BsImage className="text-2xl text-gray-300" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-2.5">
-                      <h3 className="font-medium text-gray-900 text-sm truncate">{project.name}</h3>
-                    </div>
+                  <Link key={project.id} href={`${typeRoutes[project.type]}?project=${project.id}`} className="block flex-shrink-0 w-[140px] sm:w-auto">
+                    <Card className="overflow-hidden hover:border-[#60A5FA]">
+                      <div className="aspect-[4/3] bg-[#F3F4F6] dark:bg-gray-800 relative overflow-hidden">
+                        {project.thumbnail ? (
+                          <img src={project.thumbnail} alt={project.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <BsImage className="text-xl text-[#E5E7EB]" />
+                          </div>
+                        )}
+                      </div>
+                      <CardContent className="p-2.5">
+                        <p className="font-medium text-[#0A0A0A] dark:text-white text-sm truncate">{project.name}</p>
+                      </CardContent>
+                    </Card>
                   </Link>
                 ))}
               </div>
             </section>
           )}
 
-          {/* Tools Grid - Mobile optimized */}
+          {/* ── Tools grid ── */}
           <section>
-            <h2 className="text-base font-semibold text-gray-900 mb-3">
-              {selectedCategory === "all" ? (hasUsageData ? "Your tools" : "All tools") : selectedCategory} 
-              <span className="text-gray-400 font-normal ml-2">({filteredTools.length})</span>
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="font-medium text-[#0A0A0A] dark:text-white" style={{ fontSize: 16 }}>
+                {selectedCategory === "all"
+                  ? hasUsageData ? "Your tools" : "All tools"
+                  : selectedCategory}
+              </h2>
+              <Badge>
+                {filteredTools.length}
+              </Badge>
               {hasUsageData && selectedCategory === "all" && !searchQuery && (
-                <span className="ml-2 text-xs font-normal text-orange-500 inline-flex items-center gap-1">
-                  <BsFire /> Sorted by your usage
+                <span className="inline-flex items-center gap-1 text-xs text-[#F97316]" style={{ fontSize: 12 }}>
+                  <BsFire className="w-3 h-3" /> Sorted by usage
                 </span>
               )}
-            </h2>
-            
+            </div>
+
             {filteredTools.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
-                <BsSearch className="text-4xl text-gray-300 mx-auto mb-3" />
-                <h3 className="font-medium text-gray-900 mb-1">No tools found</h3>
-                <p className="text-sm text-gray-500">Try a different search term</p>
+              <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-[20px] border border-[#E5E7EB] dark:border-gray-700">
+                <BsSearch className="text-4xl text-[#E5E7EB] dark:text-gray-700 mx-auto mb-3" />
+                <h3 className="font-medium text-[#0A0A0A] dark:text-white mb-1">No tools found</h3>
+                <p className="text-sm text-[#4B5563] dark:text-gray-400">Try a different search term</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {filteredTools.map((tool, i) => {
                   const IconComponent = toolIcons[tool.slug] || BsImage;
-                  const colorClass = toolColors[tool.slug] || "bg-gray-500";
                   const usage = getToolUsage()[tool.slug];
                   const isFrequent = usage && usage.count >= 3;
-                  
+
                   return (
-                    <div
+                    <Card
                       key={i}
+                      className="group cursor-pointer bg-white dark:bg-gray-900 hover:border-[#DBEAFE] hover:bg-[#EFF6FF] dark:hover:bg-blue-900/30 p-4"
                       onClick={() => handleToolClick(tool.slug, tool.href)}
-                      className="group bg-white rounded-xl p-4 border border-gray-200 hover:border-indigo-200 hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer"
                     >
                       <div className="flex items-start gap-3">
-                        <div className={`w-11 h-11 ${colorClass} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm relative`}>
-                          <IconComponent className="text-white text-lg" />
+                        <div className="w-10 h-10 bg-[#EFF6FF] text-[#2563EB] rounded-[10px] flex items-center justify-center flex-shrink-0 group-hover:bg-[#DBEAFE] transition-colors relative">
+                          <IconComponent className="text-lg" />
                           {isFrequent && (
-                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#F97316] rounded-full flex items-center justify-center">
                               <BsFire className="text-white text-[8px]" />
                             </div>
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-gray-900 mb-0.5 group-hover:text-indigo-600 transition-colors">
+                          <h3 className="font-medium text-[#0A0A0A] dark:text-white mb-0.5 group-hover:text-[#2563EB] transition-colors" style={{ fontSize: 14 }}>
                             {tool.title}
                           </h3>
-                          <p className="text-sm text-gray-500 line-clamp-2">{tool.shortDesc}</p>
+                          <p className="text-[#4B5563] dark:text-gray-400 line-clamp-2" style={{ fontSize: 12 }}>
+                            {tool.shortDesc}
+                          </p>
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-1.5 mt-3">
-                        {tool.features.slice(0, 3).map((feature, j) => (
-                          <span key={j} className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">
-                            {feature}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+                      {tool.features?.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-3">
+                          {tool.features.slice(0, 3).map((feature: string, j: number) => (
+                            <Badge key={j} size="sm">{feature}</Badge>
+                          ))}
+                        </div>
+                      )}
+                    </Card>
                   );
                 })}
               </div>
             )}
           </section>
 
-          {/* CTA - Mobile optimized */}
-          <section className="mt-10 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 sm:p-8 text-center text-white">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2">Ready to create?</h2>
-            <p className="text-gray-400 mb-5 text-sm sm:text-base">All tools are free. No login required.</p>
+          {/* ── CTA ── */}
+          <section
+            className="mt-12 rounded-[20px] p-8 text-center"
+            style={{ background: "linear-gradient(145deg, #EFF6FF 0%, #DBEAFE 60%, #EFF6FF 100%)" }}
+          >
+            <h2
+              className="font-normal text-[#0A0A0A] dark:text-white mb-2"
+              style={{ fontSize: "clamp(20px,3vw,28px)", lineHeight: 1.1, letterSpacing: "-1px" }}
+            >
+              Ready to create?
+            </h2>
+            <p className="text-[#4B5563] dark:text-gray-400 mb-6" style={{ fontSize: 15 }}>
+              All tools are free. No login required.
+            </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/editor" className="px-6 py-3 bg-white text-gray-900 font-medium rounded-xl hover:bg-gray-100 transition-colors active:scale-95">
-                Screenshot Editor
-              </Link>
-              <Link href="/code" className="px-6 py-3 bg-gray-700 text-white font-medium rounded-xl hover:bg-gray-600 transition-colors border border-gray-600 active:scale-95">
-                Code Screenshots
-              </Link>
+              <Button asChild>
+                <Link href="/editor">Screenshot Editor</Link>
+              </Button>
+              <Button variant="secondary" asChild>
+                <Link href="/code">Code Screenshots</Link>
+              </Button>
             </div>
           </section>
         </main>
 
-        {/* Footer - Hidden on mobile (using MobileNav instead) */}
-        <footer className="border-t border-gray-200 bg-white mt-12 hidden lg:block">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-sm text-gray-500">
-                © 2025 tsarr.in · <a href="https://tanishmittal.com/" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900">Tanish Mittal</a>
-              </p>
-              <div className="flex items-center gap-4">
-                <a href="https://github.com/tansihmittal/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600"><BsGithub className="w-5 h-5" /></a>
-                <a href="https://x.com/glowdopera" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600"><BsTwitter className="w-5 h-5" /></a>
-                <a href="https://linkedin.com/in/tanishmittal02" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600"><BsLinkedin className="w-5 h-5" /></a>
-              </div>
+        {/* ── Footer ── */}
+        <footer className="border-t border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 mt-12 hidden lg:block">
+          <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-[#4B5563] dark:text-gray-400" style={{ fontSize: 14 }}>
+              © 2025 tsarr.in ·{" "}
+              <a href="https://tanishmittal.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#0A0A0A] dark:hover:text-white transition-colors">
+                Tanish Mittal
+              </a>
+            </p>
+            <div className="flex items-center gap-4">
+              {[
+                { href: "https://github.com/tansihmittal/", icon: <BsGithub className="w-4 h-4" /> },
+                { href: "https://x.com/glowdopera", icon: <BsTwitter className="w-4 h-4" /> },
+                { href: "https://linkedin.com/in/tanishmittal02", icon: <BsLinkedin className="w-4 h-4" /> },
+              ].map(({ href, icon }) => (
+                <a key={href} href={href} target="_blank" rel="noopener noreferrer" className="text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:hover:text-white transition-colors">
+                  {icon}
+                </a>
+              ))}
             </div>
           </div>
         </footer>
-
-
       </div>
     </>
   );

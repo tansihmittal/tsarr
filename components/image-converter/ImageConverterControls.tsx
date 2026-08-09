@@ -1,9 +1,13 @@
 import { useRef, useState } from "react";
 import { ImageConverterState } from "./ImageConverterLayout";
-import { BsUpload, BsClipboard, BsDownload, BsFileEarmarkImage } from "react-icons/bs";
+import { BsUpload, BsClipboard, BsDownload, BsFileEarmarkImage, BsImage, BsCamera, BsGlobe2, BsStars, BsCameraReels, BsPalette, BsDiamond, BsFileEarmark, BsController, BsPhone } from "react-icons/bs";
+import { IMAGE_ACCEPT } from "@/utils/imageFile";
 import { toast } from "react-hot-toast";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 
 interface Props {
   state: ImageConverterState;
@@ -13,16 +17,16 @@ interface Props {
 }
 
 const allFormats = [
-  { id: "png", name: "PNG", desc: "Lossless, transparency", icon: "🖼️", supportsQuality: false },
-  { id: "jpeg", name: "JPG", desc: "Smaller file size", icon: "📷", supportsQuality: true },
-  { id: "webp", name: "WebP", desc: "Modern, efficient", icon: "🌐", supportsQuality: true },
-  { id: "avif", name: "AVIF", desc: "Best compression", icon: "✨", supportsQuality: true },
-  { id: "gif", name: "GIF", desc: "Animation support", icon: "🎞️", supportsQuality: false },
-  { id: "bmp", name: "BMP", desc: "Uncompressed", icon: "🎨", supportsQuality: false },
-  { id: "ico", name: "ICO", desc: "Icon format", icon: "🔷", supportsQuality: false },
-  { id: "tiff", name: "TIFF", desc: "Print quality", icon: "📄", supportsQuality: false },
-  { id: "tga", name: "TGA", desc: "Game textures", icon: "🎮", supportsQuality: false },
-  { id: "heic", name: "HEIC", desc: "Apple format", icon: "🍎", supportsQuality: true },
+  { id: "png",  name: "PNG",  desc: "Lossless, transparency", icon: <BsImage />,      supportsQuality: false },
+  { id: "jpeg", name: "JPG",  desc: "Smaller file size",      icon: <BsCamera />,     supportsQuality: true  },
+  { id: "webp", name: "WebP", desc: "Modern, efficient",      icon: <BsGlobe2 />,     supportsQuality: true  },
+  { id: "avif", name: "AVIF", desc: "Best compression",       icon: <BsStars />,      supportsQuality: true  },
+  { id: "gif",  name: "GIF",  desc: "Animation support",      icon: <BsCameraReels />,supportsQuality: false },
+  { id: "bmp",  name: "BMP",  desc: "Uncompressed",           icon: <BsPalette />,    supportsQuality: false },
+  { id: "ico",  name: "ICO",  desc: "Icon format",            icon: <BsDiamond />,    supportsQuality: false },
+  { id: "tiff", name: "TIFF", desc: "Print quality",          icon: <BsFileEarmark />,supportsQuality: false },
+  { id: "tga",  name: "TGA",  desc: "Game textures",          icon: <BsController />, supportsQuality: false },
+  { id: "heic", name: "HEIC", desc: "Apple format",           icon: <BsPhone />,      supportsQuality: true  },
 ];
 
 const inputFormats = ["PNG", "JPG", "JPEG", "WEBP", "AVIF", "GIF", "BMP", "ICO", "TIFF", "TIF", "TGA", "HEIC", "HEIF", "SVG"];
@@ -52,7 +56,7 @@ const ImageConverterControls: React.FC<Props> = ({ state, updateState, onImageUp
 
   const formatSize = (bytes: number) => bytes < 1024 ? `${bytes} B` : bytes < 1024 * 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   const selectedFormat = allFormats.find(f => f.id === state.outputFormat);
-  
+
   // Filter output formats based on input format (exclude same format)
   const outputFormats = allFormats.filter(f => {
     const inputNorm = state.originalFormat?.toUpperCase().replace("JPEG", "JPG");
@@ -62,23 +66,23 @@ const ImageConverterControls: React.FC<Props> = ({ state, updateState, onImageUp
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <PanelHeading title="Image" />
-        <div className="p-4 border-b border-base-200/60">
-          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+        <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
+          <input ref={fileInputRef} type="file" accept={IMAGE_ACCEPT} onChange={handleFileChange} className="hidden" />
           <div className="grid grid-cols-2 gap-2 mb-3">
-            <button onClick={() => fileInputRef.current?.click()} className="btn btn-outline btn-sm gap-2"><BsUpload /> {state.originalImage ? "Change" : "Upload"}</button>
-            <button onClick={handlePaste} className="btn btn-outline btn-sm gap-2"><BsClipboard /> Paste</button>
+            <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-2"><BsUpload /> {state.originalImage ? "Change" : "Upload"}</Button>
+            <Button variant="secondary" size="sm" onClick={handlePaste} className="gap-2"><BsClipboard /> Paste</Button>
           </div>
           {state.originalImage && (
-            <div className="flex items-center gap-3 p-3 bg-base-200/50 rounded-lg">
-              <img src={state.originalImage} alt="Preview" className="w-14 h-14 rounded-lg object-cover" />
+            <div className="flex items-center gap-3 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 rounded-[10px]">
+              <img src={state.originalImage} alt="Preview" className="w-14 h-14 rounded-[10px] object-cover" />
               <div className="text-sm flex-1">
-                <div className="font-medium text-primary-content flex items-center gap-2">
-                  <BsFileEarmarkImage className="text-primary" />
+                <div className="font-medium text-[#0A0A0A] dark:text-white flex items-center gap-2">
+                  <BsFileEarmarkImage className="text-[#2563EB]" />
                   {state.originalFormat}
                 </div>
-                <div className="text-gray-500">{state.originalWidth} × {state.originalHeight}</div>
+                <div className="text-gray-500 dark:text-gray-400">{state.originalWidth} × {state.originalHeight}</div>
                 <div className="text-gray-400 text-xs">{formatSize(state.originalSize)}</div>
               </div>
             </div>
@@ -86,26 +90,26 @@ const ImageConverterControls: React.FC<Props> = ({ state, updateState, onImageUp
         </div>
 
         <PanelHeading title="Convert To" />
-        <div className="p-4 border-b border-base-200/60">
+        <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
           <div className="grid grid-cols-2 gap-2">
             {outputFormats.map((format) => (
               <button
                 key={format.id}
                 onClick={() => updateState({ outputFormat: format.id as ImageConverterState["outputFormat"] })}
-                className={`p-2.5 rounded-lg text-left transition-all ${state.outputFormat === format.id ? "bg-primary text-white ring-2 ring-primary ring-offset-2" : "bg-base-200 hover:bg-base-300"}`}
+                className={`p-2.5 rounded-[10px] text-left transition-all ${state.outputFormat === format.id ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-base">{format.icon}</span>
+                  <span className="text-base flex items-center">{format.icon}</span>
                   <div>
                     <div className="font-semibold text-sm">{format.name}</div>
-                    <div className={`text-[10px] ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500"}`}>{format.desc}</div>
+                    <div className={`text-[10px] ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>{format.desc}</div>
                   </div>
                 </div>
               </button>
             ))}
           </div>
           {state.originalImage && (
-            <p className="text-xs text-center mt-3 text-gray-500">
+            <p className="text-xs text-center mt-3 text-gray-500 dark:text-gray-400">
               {state.originalFormat} → {state.outputFormat.toUpperCase()}
             </p>
           )}
@@ -114,15 +118,15 @@ const ImageConverterControls: React.FC<Props> = ({ state, updateState, onImageUp
         {selectedFormat?.supportsQuality && (
           <>
             <PanelHeading title="Quality" />
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Quality</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.quality}%</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Quality</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.quality}%</span>
               </div>
-              <input type="range" min="10" max="100" value={state.quality} onChange={(e) => updateState({ quality: Number(e.target.value) })} className="range range-xs range-primary w-full mb-2" />
+              <Slider min={10} max={100} value={[state.quality]} onValueChange={([v]) => updateState({ quality: v })} className="w-full mb-2" />
               <div className="flex gap-2">
                 {[50, 75, 90, 100].map(q => (
-                  <button key={q} onClick={() => updateState({ quality: q })} className={`btn btn-xs ${state.quality === q ? "btn-primary" : "btn-outline"}`}>{q}%</button>
+                  <Button key={q} size="sm" variant={state.quality === q ? "default" : "secondary"} className="h-7 text-xs px-3" onClick={() => updateState({ quality: q })}>{q}%</Button>
                 ))}
               </div>
             </div>
@@ -131,21 +135,18 @@ const ImageConverterControls: React.FC<Props> = ({ state, updateState, onImageUp
 
         {state.outputFormat === "jpeg" && (
           <Control title="White Background">
-            <label className="custom-toggle">
-              <input type="checkbox" checked={!state.preserveTransparency} onChange={(e) => updateState({ preserveTransparency: !e.target.checked })} />
-              <span className="slider"></span>
-            </label>
+            <Switch checked={!state.preserveTransparency} onCheckedChange={(v: boolean) => updateState({ preserveTransparency: !v })} />
           </Control>
         )}
 
         <PanelHeading title="Convert" />
         <div className="p-4">
-          <button onClick={onExport} disabled={!state.originalImage} className="btn btn-primary w-full gap-2 shadow-lg shadow-primary/20 disabled:opacity-50">
+          <Button onClick={onExport} disabled={!state.originalImage} className="w-full gap-2 shadow-lg shadow-[#2563EB]/20">
             <BsDownload className="text-lg" />
             Convert to {state.outputFormat.toUpperCase()}
-          </button>
+          </Button>
           {state.originalImage && (
-            <p className="text-xs text-gray-500 mt-3 text-center">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 text-center">
               {state.originalFormat} → {state.outputFormat.toUpperCase()}
             </p>
           )}

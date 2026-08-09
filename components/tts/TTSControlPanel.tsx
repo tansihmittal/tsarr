@@ -1,14 +1,15 @@
 import { useState, useMemo } from "react";
 import ControlPanelHeading from "../common/ControlPanelHeading";
-import ControlTabButton from "../common/ControlTabButton";
 import { IoMdOptions } from "react-icons/io";
 import { BsInfoCircle, BsCheckCircle, BsMagic } from "react-icons/bs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useTTSContext } from "@/context/TTS";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 
 interface Props { }
 
 const TTSControlPanel: React.FC<Props> = () => {
-  const [selectedOption, setSelectedOption] = useState("options");
   const [languageFilter, setLanguageFilter] = useState("all");
   const [genderFilter, setGenderFilter] = useState("all");
   const { settings, updateSettings, deviceInfo, text, setText, voices, profiles, applyProfile } = useTTSContext();
@@ -44,38 +45,43 @@ const TTSControlPanel: React.FC<Props> = () => {
 
   return (
     <section className="flex flex-col transition-opacity duration-300">
-      <div className="grid grid-cols-3 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Options" isActive={selectedOption === "options"} onClick={() => setSelectedOption("options")}><IoMdOptions /></ControlTabButton>
-        <ControlTabButton title="Effects" isActive={selectedOption === "effects"} onClick={() => setSelectedOption("effects")}><BsMagic /></ControlTabButton>
-        <ControlTabButton title="Info" isActive={selectedOption === "info"} onClick={() => setSelectedOption("info")}><BsInfoCircle /></ControlTabButton>
-      </div>
+      <Tabs defaultValue="options">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F9FAFB] dark:bg-gray-800 mb-3">
+        <TabsTrigger value="options" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Options</TabsTrigger>
+        <TabsTrigger value="effects" className="gap-1.5 rounded-[10px] text-xs"><BsMagic className="w-3.5 h-3.5" /> Effects</TabsTrigger>
+        <TabsTrigger value="info" className="gap-1.5 rounded-[10px] text-xs"><BsInfoCircle className="w-3.5 h-3.5" /> Info</TabsTrigger>
+      </TabsList>
 
-      {selectedOption === "options" ? (
-        <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <TabsContent value="options">
+        <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           {/* Voice Selection */}
           <PanelHeading title={`Voice (${filteredVoices.length} of ${voices.length})`} />
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             {/* Filters */}
             <div className="flex gap-2 mb-3">
-              <select
-                value={languageFilter}
-                onChange={(e) => setLanguageFilter(e.target.value)}
-                className="select select-sm select-bordered flex-1"
-              >
-                <option value="all">All Languages</option>
-                {languages.map(lang => (
-                  <option key={lang} value={lang}>{langNames[lang] || lang}</option>
-                ))}
-              </select>
-              <select
-                value={genderFilter}
-                onChange={(e) => setGenderFilter(e.target.value)}
-                className="select select-sm select-bordered"
-              >
-                <option value="all">All</option>
-                <option value="female">Female</option>
-                <option value="male">Male</option>
-              </select>
+              <div className="flex-1">
+                <Select value={languageFilter} onValueChange={setLanguageFilter}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Languages</SelectItem>
+                    {languages.map(lang => (
+                      <SelectItem key={lang} value={lang}>{langNames[lang] || lang}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Select value={genderFilter} onValueChange={setGenderFilter}>
+                <SelectTrigger className="h-9 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="male">Male</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Voice Grid */}
@@ -84,15 +90,15 @@ const TTSControlPanel: React.FC<Props> = () => {
                 <button
                   key={voice.id}
                   onClick={() => updateSettings("voice", voice.id)}
-                  className={`p-2.5 rounded-lg border-2 text-left transition-all duration-200 ${settings.voice === voice.id
-                      ? "border-primary bg-primary/10"
-                      : "border-base-200 hover:border-primary/30"
+                  className={`p-2.5 rounded-[10px] border-2 text-left transition-all duration-200 ${settings.voice === voice.id
+                      ? "border-[#2563EB] bg-[#2563EB]/10"
+                      : "border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB]/30"
                     }`}
                 >
-                  <p className={`text-sm font-medium truncate ${settings.voice === voice.id ? "text-primary" : ""}`}>
+                  <p className={`text-sm font-medium truncate ${settings.voice === voice.id ? "text-[#2563EB]" : ""}`}>
                     {voice.name}
                   </p>
-                  <p className="text-[10px] text-gray-500 truncate">{voice.desc}</p>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{voice.desc}</p>
                 </button>
               ))}
             </div>
@@ -100,35 +106,36 @@ const TTSControlPanel: React.FC<Props> = () => {
 
           {/* Voice Blending */}
           <PanelHeading title="Voice Blending" />
-          <div className="p-4 border-b border-base-200/60">
-            <p className="text-xs text-gray-500 mb-3">Blend two voices together for unique combinations</p>
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Blend two voices together for unique combinations</p>
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">Secondary Voice</label>
-                <select
-                  value={settings.voice2}
-                  onChange={(e) => updateSettings("voice2", e.target.value)}
-                  className="select select-sm select-bordered w-full"
-                >
-                  <option value="">None (disabled)</option>
-                  {voices.filter(v => v.id !== settings.voice).map(voice => (
-                    <option key={voice.id} value={voice.id}>{voice.name}</option>
-                  ))}
-                </select>
+                <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Secondary Voice</label>
+                <Select value={settings.voice2 || "__none__"} onValueChange={(v) => updateSettings("voice2", v === "__none__" ? "" : v)}>
+                  <SelectTrigger className="h-9 text-sm w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">None (disabled)</SelectItem>
+                    {voices.filter(v => v.id !== settings.voice).map(voice => (
+                      <SelectItem key={voice.id} value={voice.id}>{voice.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               {settings.voice2 && (
                 <div>
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs text-gray-500">Blend Ratio</span>
-                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Blend Ratio</span>
+                    <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                       {Math.round(settings.blendRatio * 100)}%
                     </span>
                   </div>
-                  <input
-                    type="range" min="0" max="1" step="0.05"
-                    value={settings.blendRatio}
-                    onChange={(e) => updateSettings("blendRatio", parseFloat(e.target.value))}
-                    className="range range-xs range-primary w-full"
+                  <Slider
+                    min={0} max={1} step={0.05}
+                    value={[settings.blendRatio]}
+                    onValueChange={([v]) => updateSettings("blendRatio", v)}
+                    className="w-full"
                   />
                   <div className="flex justify-between text-[10px] text-gray-400 mt-1">
                     <span>{voices.find(v => v.id === settings.voice)?.name || "Voice 1"}</span>
@@ -141,18 +148,18 @@ const TTSControlPanel: React.FC<Props> = () => {
 
           {/* Speed Control */}
           <PanelHeading title="Speed" />
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs text-gray-500 font-medium">Speed</span>
-              <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Speed</span>
+              <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                 {settings.speed.toFixed(1)}x
               </span>
             </div>
-            <input
-              type="range" min="0.5" max="2.0" step="0.1"
-              value={settings.speed}
-              onChange={(e) => updateSettings("speed", parseFloat(e.target.value))}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={0.5} max={2.0} step={0.1}
+              value={[settings.speed]}
+              onValueChange={([v]) => updateSettings("speed", v)}
+              className="w-full"
             />
             <div className="flex justify-between text-[10px] text-gray-400 mt-1">
               <span>0.5x</span><span>1.0x</span><span>2.0x</span>
@@ -167,7 +174,7 @@ const TTSControlPanel: React.FC<Props> = () => {
                 <button
                   key={i}
                   onClick={() => setText(template)}
-                  className="w-full p-3 text-left text-sm bg-base-200/50 hover:bg-base-200 rounded-lg transition-colors"
+                  className="w-full p-3 text-left text-sm bg-[#EFF6FF] dark:bg-blue-900/20 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 rounded-[10px] transition-colors"
                 >
                   {template}
                 </button>
@@ -175,24 +182,25 @@ const TTSControlPanel: React.FC<Props> = () => {
             </div>
           </div>
         </div>
-      ) : selectedOption === "effects" ? (
-        <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      </TabsContent>
+      <TabsContent value="effects">
+        <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           {/* Voice Profiles */}
           <PanelHeading title="Voice Profiles" />
-          <div className="p-4 border-b border-base-200/60">
-            <p className="text-xs text-gray-500 mb-3">Quick presets for instant voice transformations</p>
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Quick presets for instant voice transformations</p>
             <div className="grid grid-cols-3 gap-2">
               {profiles.map((profile) => (
                 <button
                   key={profile.id}
                   onClick={() => applyProfile(profile.id)}
-                  className={`p-2.5 rounded-lg border-2 text-center transition-all duration-200 ${settings.voiceProfile === profile.id
-                      ? "border-primary bg-primary/10"
-                      : "border-base-200 hover:border-primary/30"
+                  className={`p-2.5 rounded-[10px] border-2 text-center transition-all duration-200 ${settings.voiceProfile === profile.id
+                      ? "border-[#2563EB] bg-[#2563EB]/10"
+                      : "border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB]/30"
                     }`}
                 >
                   <span className="text-xl block mb-0.5">{profile.icon}</span>
-                  <p className={`text-[10px] font-medium ${settings.voiceProfile === profile.id ? "text-primary" : ""}`}>
+                  <p className={`text-[10px] font-medium ${settings.voiceProfile === profile.id ? "text-[#2563EB]" : ""}`}>
                     {profile.name}
                   </p>
                 </button>
@@ -202,21 +210,21 @@ const TTSControlPanel: React.FC<Props> = () => {
 
           {/* Pitch Control */}
           <PanelHeading title="Pitch Shift" />
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs text-gray-500 font-medium">Pitch</span>
-              <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Pitch</span>
+              <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                 {settings.pitch > 0 ? "+" : ""}{settings.pitch} semitones
               </span>
             </div>
-            <input
-              type="range" min="-12" max="12" step="1"
-              value={settings.pitch}
-              onChange={(e) => {
-                updateSettings("pitch", parseInt(e.target.value));
+            <Slider
+              min={-12} max={12} step={1}
+              value={[settings.pitch]}
+              onValueChange={([v]) => {
+                updateSettings("pitch", v);
                 updateSettings("voiceProfile", "custom");
               }}
-              className="range range-xs range-secondary w-full"
+              className="w-full"
             />
             <div className="flex justify-between text-[10px] text-gray-400 mt-1">
               <span>-12 (Lower)</span><span>0</span><span>+12 (Higher)</span>
@@ -225,21 +233,21 @@ const TTSControlPanel: React.FC<Props> = () => {
 
           {/* Reverb Control */}
           <PanelHeading title="Reverb" />
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs text-gray-500 font-medium">Reverb Amount</span>
-              <span className="text-xs font-semibold text-secondary bg-secondary/10 px-2 py-0.5 rounded-full">
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Reverb Amount</span>
+              <span className="text-xs font-semibold text-[#4B5563] dark:text-gray-400 bg-[#F3F4F6] dark:bg-gray-800 px-2 py-0.5 rounded-full">
                 {Math.round(settings.reverb * 100)}%
               </span>
             </div>
-            <input
-              type="range" min="0" max="1" step="0.05"
-              value={settings.reverb}
-              onChange={(e) => {
-                updateSettings("reverb", parseFloat(e.target.value));
+            <Slider
+              min={0} max={1} step={0.05}
+              value={[settings.reverb]}
+              onValueChange={([v]) => {
+                updateSettings("reverb", v);
                 updateSettings("voiceProfile", "custom");
               }}
-              className="range range-xs range-secondary w-full"
+              className="w-full"
             />
             <div className="flex justify-between text-[10px] text-gray-400 mt-1">
               <span>Dry</span><span>50%</span><span>Wet</span>
@@ -249,36 +257,37 @@ const TTSControlPanel: React.FC<Props> = () => {
           {/* Current Profile Info */}
           <PanelHeading title="Current Settings" />
           <div className="p-4">
-            <div className="p-4 bg-base-200/30 rounded-xl space-y-2">
+            <div className="p-4 bg-[#F9FAFB] dark:bg-gray-800 rounded-[14px] space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Profile</span>
+                <span className="text-[#4B5563] dark:text-gray-400">Profile</span>
                 <span className="font-medium capitalize">{settings.voiceProfile}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Pitch</span>
+                <span className="text-[#4B5563] dark:text-gray-400">Pitch</span>
                 <span className="font-medium">{settings.pitch > 0 ? "+" : ""}{settings.pitch} st</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Reverb</span>
+                <span className="text-[#4B5563] dark:text-gray-400">Reverb</span>
                 <span className="font-medium">{Math.round(settings.reverb * 100)}%</span>
               </div>
               {settings.voice2 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Blending</span>
+                  <span className="text-[#4B5563] dark:text-gray-400">Blending</span>
                   <span className="font-medium">{Math.round(settings.blendRatio * 100)}%</span>
                 </div>
               )}
             </div>
           </div>
         </div>
-      ) : (
-        <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      </TabsContent>
+      <TabsContent value="info">
+        <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           {/* Device Info */}
           <PanelHeading title="Device Info" />
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">GPU Acceleration</span>
+                <span className="text-sm text-[#4B5563] dark:text-gray-400">GPU Acceleration</span>
                 <span className={`text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1 ${deviceInfo.hasWebGPU ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
                   }`}>
                   {deviceInfo.hasWebGPU && <BsCheckCircle className="text-xs" />}
@@ -286,12 +295,12 @@ const TTSControlPanel: React.FC<Props> = () => {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">CPU Cores</span>
+                <span className="text-sm text-[#4B5563] dark:text-gray-400">CPU Cores</span>
                 <span className="text-sm font-medium">{deviceInfo.cores}</span>
               </div>
               {deviceInfo.memory && (
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Memory</span>
+                  <span className="text-sm text-[#4B5563] dark:text-gray-400">Memory</span>
                   <span className="text-sm font-medium">{deviceInfo.memory} GB</span>
                 </div>
               )}
@@ -300,9 +309,9 @@ const TTSControlPanel: React.FC<Props> = () => {
 
           {/* About */}
           <PanelHeading title="About Kokoro TTS" />
-          <div className="p-4 border-b border-base-200/60">
-            <div className="p-4 bg-base-200/30 rounded-xl">
-              <ul className="text-sm text-gray-600 space-y-1">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
+            <div className="p-4 bg-[#F9FAFB] dark:bg-gray-800 rounded-[14px]">
+              <ul className="text-sm text-[#4B5563] dark:text-gray-400 space-y-1">
                 <li>• 82M parameter neural TTS model</li>
                 <li>• <strong>28 voices</strong> (US & UK English)</li>
                 <li>• Voice blending support</li>
@@ -318,12 +327,12 @@ const TTSControlPanel: React.FC<Props> = () => {
 
           {/* Voices by Language */}
           <PanelHeading title="Available Voices" />
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="space-y-2 text-sm">
               {Object.entries(langNames).map(([code, name]) => (
-                <div key={code} className="flex items-center justify-between p-2 bg-base-200/30 rounded-lg">
+                <div key={code} className="flex items-center justify-between p-2 bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px]">
                   <span>{name}</span>
-                  <span className="text-xs text-gray-500 bg-base-200 px-2 py-0.5 rounded-full">
+                  <span className="text-xs text-[#4B5563] dark:text-gray-400 bg-[#E5E7EB] px-2 py-0.5 rounded-full">
                     {voices.filter(v => v.lang === code).length} voices
                   </span>
                 </div>
@@ -336,21 +345,22 @@ const TTSControlPanel: React.FC<Props> = () => {
           <div className="p-4">
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Characters</span>
+                <span className="text-sm text-[#4B5563] dark:text-gray-400">Characters</span>
                 <span className="text-sm font-medium">{text.length}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Voice</span>
+                <span className="text-sm text-[#4B5563] dark:text-gray-400">Voice</span>
                 <span className="text-sm font-medium">{voices.find(v => v.id === settings.voice)?.name || settings.voice}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Profile</span>
+                <span className="text-sm text-[#4B5563] dark:text-gray-400">Profile</span>
                 <span className="text-sm font-medium capitalize">{settings.voiceProfile}</span>
               </div>
             </div>
           </div>
         </div>
-      )}
+      </TabsContent>
+      </Tabs>
     </section>
   );
 };

@@ -7,11 +7,18 @@ import { BiReset } from "react-icons/bi";
 import { FiDownload } from "react-icons/fi";
 import { shareImage } from "../../utils/share";
 import ProjectNameHeader from "../common/ProjectNameHeader";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface Props {
   state: CarouselEditorState;
   previewRef: RefObject<HTMLDivElement>;
-  onExport: (format: "png" | "jpeg" | "svg", scale?: number) => void;
+  onExport: (format: "png" | "jpeg" | "svg" | "webp", scale?: number) => void;
   onExportAll: () => void;
   onCopy: () => void;
   updateState: (updates: Partial<CarouselEditorState>) => void;
@@ -78,7 +85,7 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
   const WebsiteLink = () => {
     if (!currentSlideData.websiteUrl) return null;
     return (
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm">
+      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm">
         <BsGlobe style={{ color: state.websiteUrlColor }} />
         <span className="text-sm font-medium" style={{ color: state.websiteUrlColor }}>{currentSlideData.websiteUrl}</span>
       </div>
@@ -89,7 +96,7 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
   const AppIcon = () => {
     if (!currentSlideData.appIcon) return null;
     return (
-      <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg">
+      <div className="w-16 h-16 rounded-[20px] overflow-hidden shadow-lg">
         <img src={currentSlideData.appIcon} alt="" className="w-full h-full object-cover" />
       </div>
     );
@@ -105,22 +112,25 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
       />
 
       <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
-        <div className="dropdown">
-          <label tabIndex={0}><ToolbarButton title="Export"><TfiExport /></ToolbarButton></label>
-          <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50">
-            <li onClick={() => onExport("png", 1)}><a>PNG 1x</a></li>
-            <li onClick={() => onExport("png", 2)}><a>PNG 2x</a></li>
-            <li onClick={() => onExport("png", 4)}><a>PNG 4x</a></li>
-            <li onClick={() => onExport("jpeg", 2)}><a>JPEG</a></li>
-          </ul>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span><ToolbarButton title="Export"><TfiExport /></ToolbarButton></span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-[160px] z-50">
+            <DropdownMenuItem onClick={() => onExport("png", 1)}>PNG 1x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("png", 2)}>PNG 2x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("png", 4)}>PNG 4x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("jpeg", 2)}>JPEG</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("webp", 2)}>WebP</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <ToolbarButton title="Export All" onTap={onExportAll}><FiDownload /></ToolbarButton>
         <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>
         <ToolbarButton title="Reset" onTap={handleReset}><BiReset /></ToolbarButton>
         <ToolbarButton title="Share" onTap={() => shareImage(previewRef.current)}><BsShare /></ToolbarButton>
       </div>
 
-      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden py-8">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F3F4F6] dark:bg-gray-800 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden py-8">
         <div
           ref={previewRef}
           className="relative overflow-hidden"
@@ -206,10 +216,10 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
                   {currentSlideData.headline && <h1 style={{ fontSize: state.headlineSize, fontWeight: state.headlineWeight, color: state.headlineColor, marginBottom: "8px", lineHeight: 1.2 }}>{currentSlideData.headline}</h1>}
                   {currentSlideData.subheadline && <h2 style={{ fontSize: state.subheadlineSize, color: state.subheadlineColor, marginBottom: "12px", lineHeight: 1.4 }}>{currentSlideData.subheadline}</h2>}
                   {currentSlideData.description && <p style={{ fontSize: state.descriptionSize, color: state.descriptionColor, lineHeight: 1.6 }}>{currentSlideData.description}</p>}
-                  
+
                   {currentSlideData.ctaVisible && currentSlideData.ctaText && (
                     <div className={`mt-4 ${state.textAlign === "center" ? "flex justify-center" : state.textAlign === "right" ? "flex justify-end" : ""}`}>
-                      <div className="inline-block px-5 py-2.5 font-semibold text-sm rounded-lg" style={{ backgroundColor: state.headlineColor, color: state.background.color1 || "#fff" }}>
+                      <div className="inline-block px-5 py-2.5 font-semibold text-sm rounded-[10px]" style={{ backgroundColor: state.headlineColor, color: state.background.color1 || "#fff" }}>
                         {currentSlideData.ctaText}
                       </div>
                     </div>
@@ -227,16 +237,32 @@ const CarouselPreview: React.FC<Props> = ({ state, previewRef, onExport, onExpor
         </div>
 
         {/* Navigation */}
-        <button onClick={goToPrevSlide} disabled={state.currentSlide === 0} className={`absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-base-100 shadow-lg flex items-center justify-center transition-all ${state.currentSlide === 0 ? "opacity-30 cursor-not-allowed" : "hover:bg-base-200 cursor-pointer"}`}>
+        <Button
+          size="icon"
+          variant="secondary"
+          onClick={goToPrevSlide}
+          disabled={state.currentSlide === 0}
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-gray-900 shadow-lg"
+        >
           <BsChevronLeft className="text-xl" />
-        </button>
-        <button onClick={goToNextSlide} disabled={state.currentSlide === state.slides.length - 1} className={`absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-base-100 shadow-lg flex items-center justify-center transition-all ${state.currentSlide === state.slides.length - 1 ? "opacity-30 cursor-not-allowed" : "hover:bg-base-200 cursor-pointer"}`}>
+        </Button>
+        <Button
+          size="icon"
+          variant="secondary"
+          onClick={goToNextSlide}
+          disabled={state.currentSlide === state.slides.length - 1}
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-gray-900 shadow-lg"
+        >
           <BsChevronRight className="text-xl" />
-        </button>
+        </Button>
 
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
           {state.slides.map((_, index) => (
-            <button key={index} onClick={() => updateState({ currentSlide: index })} className={`w-2.5 h-2.5 rounded-full transition-all ${index === state.currentSlide ? "bg-primary w-6" : "bg-base-300 hover:bg-base-400"}`} />
+            <button
+              key={index}
+              onClick={() => updateState({ currentSlide: index })}
+              className={`h-2.5 rounded-full transition-all ${index === state.currentSlide ? "bg-[#2563EB] w-6" : "bg-[#E5E7EB] hover:bg-[#D1D5DB] w-2.5"}`}
+            />
           ))}
         </div>
       </div>

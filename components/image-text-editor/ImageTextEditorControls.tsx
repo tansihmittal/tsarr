@@ -1,7 +1,8 @@
 import { RefObject, ChangeEvent, ReactNode, useState } from "react";
+import { IMAGE_ACCEPT, normalizeImageFile } from "@/utils/imageFile";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   BsChevronRight,
   BsLayers,
@@ -10,10 +11,15 @@ import {
   BsCheck,
   BsX,
   BsPlus,
+  BsStars,
+  BsPalette,
+  BsDownload,
 } from "react-icons/bs";
 import { IoMdOptions } from "react-icons/io";
 import { BiRefresh } from "react-icons/bi";
 import { ImageTextEditorState, TextRegion } from "./ImageTextEditorLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface Props {
   state: ImageTextEditorState;
@@ -40,12 +46,11 @@ const ImageTextEditorControls = ({
   addManualRegion,
   startEditing,
 }: Props) => {
-  const [selectedOption, setSelectedOption] = useState("options");
 
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
+    const normalized = await normalizeImageFile(file);
     const reader = new FileReader();
     reader.onload = (event) => {
       const result = event.target?.result as string;
@@ -55,7 +60,7 @@ const ImageTextEditorControls = ({
       };
       img.src = result;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(normalized);
   };
 
   const modifiedCount = state.textRegions.filter((r) => r.isModified).length;
@@ -66,16 +71,17 @@ const ImageTextEditorControls = ({
         state.image ? "opacity-100" : "opacity-90"
       }`}
     >
+      <Tabs defaultValue="options">
       {/* Top Buttons Container */}
-      <div className="grid grid-cols-2 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Options" isActive={selectedOption === "options"} onClick={() => setSelectedOption("options")}><IoMdOptions /></ControlTabButton>
-        <ControlTabButton title="Text" isActive={selectedOption === "text"} onClick={() => setSelectedOption("text")}><BsLayers /></ControlTabButton>
-      </div>
+      <TabsList className="w-full grid grid-cols-2 rounded-[12px] bg-[#F9FAFB] dark:bg-gray-800 mb-3">
+        <TabsTrigger value="options" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Options</TabsTrigger>
+        <TabsTrigger value="text" className="gap-1.5 rounded-[10px] text-xs"><BsLayers className="w-3.5 h-3.5" /> Text</TabsTrigger>
+      </TabsList>
 
       {/* Options Panel */}
-      {selectedOption === "options" ? (
-        <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
-          <div className="relative rounded-xl">
+      <TabsContent value="options">
+        <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+          <div className="relative rounded-[14px]">
             {/* Upload Section */}
             <PanelHeading title="Image" />
             <label htmlFor="image-upload">
@@ -83,7 +89,7 @@ const ImageTextEditorControls = ({
                 <input
                   type="file"
                   hidden
-                  accept="image/*"
+                  accept={IMAGE_ACCEPT}
                   id="image-upload"
                   onChange={handleImageUpload}
                 />
@@ -126,24 +132,25 @@ const ImageTextEditorControls = ({
 
                 {/* Tips */}
                 <PanelHeading title="Tips" />
-                <div className="p-4 text-xs text-gray-500 space-y-2">
-                  <p>✨ Click directly on text in the image to edit</p>
-                  <p>🎨 Text color matches the original automatically</p>
-                  <p>📥 Use Download button to save your edited image</p>
+                <div className="p-4 text-xs text-gray-500 dark:text-gray-400 space-y-2">
+                  <p className="flex items-center gap-1.5"><BsStars className="shrink-0" /> Click directly on text in the image to edit</p>
+                  <p className="flex items-center gap-1.5"><BsPalette className="shrink-0" /> Text color matches the original automatically</p>
+                  <p className="flex items-center gap-1.5"><BsDownload className="shrink-0" /> Use Download button to save your edited image</p>
                 </div>
               </>
             )}
           </div>
         </div>
-      ) : (
-        /* Text Regions Panel */
-        <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      </TabsContent>
+      {/* Text Regions Panel */}
+      <TabsContent value="text">
+        <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Detected Text" />
 
           {/* Instructions */}
-          <div className="p-3 bg-primary/5 border-b border-base-200/50">
-            <p className="text-xs text-gray-600">
-              <strong>Tip:</strong> Click directly on text in the image to edit it, 
+          <div className="p-3 bg-[#EFF6FF] dark:bg-blue-900/20 border-b border-[#E5E7EB]/50 dark:border-gray-700/50">
+            <p className="text-xs text-gray-600 dark:text-gray-300">
+              <strong>Tip:</strong> Click directly on text in the image to edit it,
               or click the edit button below.
             </p>
           </div>
@@ -172,7 +179,8 @@ const ImageTextEditorControls = ({
             )}
           </div>
         </div>
-      )}
+      </TabsContent>
+      </Tabs>
     </section>
   );
 };
@@ -198,9 +206,9 @@ const TextRegionItem = ({
 }: TextRegionItemProps) => {
   return (
     <div
-      className={`border rounded-xl overflow-hidden bg-base-100 transition-all ${
-        isSelected ? "border-primary ring-2 ring-primary/20" : "border-base-200/80"
-      } ${region.isModified ? "bg-green-50/50" : ""}`}
+      className={`border rounded-[14px] overflow-hidden bg-white dark:bg-gray-900 transition-all ${
+        isSelected ? "border-[#2563EB] ring-2 ring-[#2563EB]/20" : "border-[#E5E7EB] dark:border-gray-700"
+      } ${region.isModified ? "bg-green-50/50 dark:bg-green-900/10" : ""}`}
       onClick={onSelect}
     >
       <div className="p-3">
@@ -210,7 +218,7 @@ const TextRegionItem = ({
             <div className="text-[10px] text-gray-400 uppercase tracking-wide mb-1">
               {region.isModified ? "Original" : "Detected Text"}
             </div>
-            <div className="text-sm text-gray-600 truncate">
+            <div className="text-sm text-gray-600 dark:text-gray-300 truncate">
               {region.text}
             </div>
           </div>
@@ -248,19 +256,20 @@ const TextRegionItem = ({
             value={region.newText}
             onChange={(e) => onUpdate({ newText: e.target.value })}
             onClick={(e) => e.stopPropagation()}
-            className="flex-1 px-3 py-2 bg-base-200/50 border-0 rounded-lg focus:ring-2 focus:ring-primary text-sm"
+            className="flex-1 px-3 py-2 bg-[#EFF6FF] dark:bg-blue-900/20 border-0 rounded-[10px] focus:ring-2 focus:ring-[#2563EB] text-sm outline-none"
             placeholder="Type new text..."
           />
-          <button
+          <Button
+            size="icon"
             onClick={(e) => {
               e.stopPropagation();
               onEdit();
             }}
-            className="p-2 bg-primary text-white rounded-lg hover:bg-primary-focus transition-colors"
+            className="bg-[#2563EB] text-white hover:bg-[#1D4ED8] rounded-[10px] h-9 w-9"
             title="Edit on image"
           >
             <BsPencil className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
 
         {/* Reset button if modified */}
@@ -270,7 +279,7 @@ const TextRegionItem = ({
               e.stopPropagation();
               onUpdate({ newText: region.text, isModified: false });
             }}
-            className="mt-2 text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+            className="mt-2 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 flex items-center gap-1"
           >
             <BsX className="w-4 h-4" />
             Reset to original

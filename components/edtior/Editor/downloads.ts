@@ -180,6 +180,64 @@ export const downloadimageJpeg = (node: HTMLDivElement | null, res: number) => {
   }
 };
 
+export const downloadimageWebp = (node: HTMLDivElement | null, res: number, filename?: string) => {
+  let savingToast = toast.loading("Saving Image, please wait");
+
+  if (node) {
+    let scale = window.devicePixelRatio * res;
+    domtoimage
+      .toBlob(node, {
+        width: node.clientWidth * scale,
+        height: node.clientHeight * scale,
+        style: {
+          transform: "scale(" + scale + ")",
+          transformOrigin: "top left",
+          width: node.offsetWidth + "px",
+          height: node.offsetHeight + "px",
+          overflow: "visible",
+        },
+        filter: (node: Node) => {
+          if (node instanceof HTMLElement) {
+            const style = window.getComputedStyle(node);
+            if (style.overflow === 'auto' || style.overflow === 'scroll' ||
+                style.overflowX === 'auto' || style.overflowX === 'scroll' ||
+                style.overflowY === 'auto' || style.overflowY === 'scroll') {
+              node.style.overflow = 'visible';
+            }
+          }
+          return true;
+        },
+      })
+      .then(function (blob) {
+        // Re-encode as WebP via canvas
+        const img = new Image();
+        const blobUrl = URL.createObjectURL(blob);
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext("2d")!;
+          ctx.drawImage(img, 0, 0);
+          URL.revokeObjectURL(blobUrl);
+          canvas.toBlob((webpBlob) => {
+            if (!webpBlob) { toast.error("Something went wrong", { id: savingToast }); return; }
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(webpBlob);
+            a.download = filename ? `tsarr-in-${filename}.webp` : `tsarr-in-screenshot-${new Date().toISOString()}.webp`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            toast.success("Image saved", { id: savingToast });
+          }, "image/webp", 0.92);
+        };
+        img.src = blobUrl;
+      })
+      .catch(function (error) {
+        console.error("WebP export error:", error);
+        toast.error("Something went wrong", { id: savingToast });
+      });
+  }
+};
+
 export const downloadimageSvg = (node: HTMLDivElement | null, res: number) => {
   let savingToast = toast.loading("Saving Image, please wait");
 

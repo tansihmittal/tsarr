@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import Navigation from "../common/Navigation";
 import CarouselPreview from "./CarouselPreview";
 import CarouselControls from "./CarouselControls";
-import { downloadimagePng, downloadimageJpeg, downloadimageSvg, copyToClipboard } from "../edtior/Editor/downloads";
+import { downloadimagePng, downloadimageJpeg, downloadimageSvg, downloadimageWebp, copyToClipboard } from "../edtior/Editor/downloads";
 import { BackgroundConfig } from "../common/BackgroundPicker";
 import { useProject } from "@/hooks/useProject";
 import { getProjectAsync } from "@/utils/projectStorage";
@@ -153,11 +153,11 @@ const CarouselEditorLayout: React.FC = () => {
         })
       );
       stateToSave.slides = slidesWithBase64;
-      
+
       if (stateToSave.profileImage && stateToSave.profileImage.startsWith('blob:')) {
         stateToSave.profileImage = await imageToBase64(stateToSave.profileImage);
       }
-      
+
       project.save(stateToSave, previewRef.current);
     }, 2000);
 
@@ -173,10 +173,11 @@ const CarouselEditorLayout: React.FC = () => {
     setState((prev) => ({ ...prev, ...updates }));
   };
 
-  const handleExport = async (format: "png" | "jpeg" | "svg", scale: number = 2) => {
+  const handleExport = async (format: "png" | "jpeg" | "svg" | "webp", scale: number = 2) => {
     if (!previewRef.current) return;
     if (format === "png") downloadimagePng(previewRef.current, scale);
     else if (format === "jpeg") downloadimageJpeg(previewRef.current, scale);
+    else if (format === "webp") downloadimageWebp(previewRef.current, scale);
     else downloadimageSvg(previewRef.current, scale);
   };
 
@@ -198,17 +199,17 @@ const CarouselEditorLayout: React.FC = () => {
   };
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
         <div className="flex flex-col lg:grid lg:gap-5 lg:grid-cols-[3fr_1.5fr]">
-          <CarouselPreview 
-            state={state} 
-            previewRef={previewRef} 
-            onExport={handleExport} 
-            onExportAll={handleExportAll} 
-            onCopy={handleCopy} 
+          <CarouselPreview
+            state={state}
+            previewRef={previewRef}
+            onExport={handleExport}
+            onExportAll={handleExportAll}
+            onCopy={handleCopy}
             updateState={updateState}
             projectName={project.projectName}
             onProjectNameChange={project.setProjectName}

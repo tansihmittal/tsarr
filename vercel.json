@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "pages/api/screenshot.ts": {
+      "maxDuration": 30,
+      "memory": 1024
+    },
+    "pages/api/detect-regions.ts": {
+      "maxDuration": 120,
+      "memory": 1024
+    }
+  }
+}

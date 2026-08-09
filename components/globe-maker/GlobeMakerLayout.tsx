@@ -18,11 +18,26 @@ import {
   BsArrowCounterclockwise,
   BsCode,
   BsSearch,
+  BsGeoAlt,
+  BsExclamationTriangle,
+  BsCameraVideo,
 } from "react-icons/bs";
 import { TfiExport } from "react-icons/tfi";
 import { BiReset } from "react-icons/bi";
 import { getLocationCoordinates } from "@/data/mapData";
 import { Country, State, City } from "country-state-city";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 type GlobeStyle = "default" | "night" | "day" | "topology" | "water";
 type PointStyle = "sphere" | "bar" | "ring" | "label" | "pulse";
@@ -631,29 +646,31 @@ const PointRow: React.FC<{
   };
 
   return (
-    <div className="p-2 bg-base-200 rounded-lg space-y-1">
+    <div className="p-2 bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] space-y-1">
       <div className="flex items-center gap-2">
         <input
           type="text"
           value={localName}
           onChange={(e) => handleNameChange(e.target.value)}
-          className="input input-xs input-bordered flex-1"
+          className="flex-1 text-xs border border-[#E5E7EB] dark:border-gray-700 rounded-md px-2 py-1 bg-white dark:bg-gray-800 dark:text-white dark:bg-gray-800 dark:text-white outline-none focus:border-[#2563EB]"
           placeholder="City name"
         />
         <input
           type="number"
           value={point.value}
           onChange={(e) => onUpdate(index, { value: parseFloat(e.target.value) || 0 })}
-          className="input input-xs input-bordered w-16"
+          className="w-16 text-xs border border-[#E5E7EB] dark:border-gray-700 rounded-md px-2 py-1 bg-white dark:bg-gray-800 dark:text-white dark:bg-gray-800 dark:text-white outline-none focus:border-[#2563EB]"
           placeholder="Value"
         />
-        <button onClick={() => onRemove(index)} className="btn btn-xs btn-ghost text-error"><BsTrash /></button>
+        <Button variant="ghost" size="sm" className="h-7 text-xs px-2 text-red-500" onClick={() => onRemove(index)}>
+          <BsTrash />
+        </Button>
       </div>
-      <div className="text-[10px] text-gray-500">
+      <div className="text-[10px] text-gray-500 dark:text-gray-400">
         {point.lat !== 0 || point.lng !== 0 ? (
-          <span className="text-success">📍 {point.lat.toFixed(2)}, {point.lng.toFixed(2)}</span>
+          <span className="text-green-600 flex items-center gap-1"><BsGeoAlt className="inline" /> {point.lat.toFixed(2)}, {point.lng.toFixed(2)}</span>
         ) : (
-          <span className="text-warning">⚠️ Enter a valid city name</span>
+          <span className="text-yellow-600 flex items-center gap-1"><BsExclamationTriangle className="inline" /> Enter a valid city name</span>
         )}
       </div>
     </div>
@@ -710,12 +727,26 @@ const ArcRow: React.FC<{
   };
 
   return (
-    <div className="p-2 bg-base-200 rounded-lg space-y-1">
+    <div className="p-2 bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] space-y-1">
       <div className="flex items-center gap-2">
-        <input type="text" value={localFrom} onChange={(e) => handleFromChange(e.target.value)} className="input input-xs input-bordered flex-1" placeholder="From city" />
+        <input
+          type="text"
+          value={localFrom}
+          onChange={(e) => handleFromChange(e.target.value)}
+          className="flex-1 text-xs border border-[#E5E7EB] dark:border-gray-700 rounded-md px-2 py-1 bg-white dark:bg-gray-800 dark:text-white dark:bg-gray-800 dark:text-white outline-none focus:border-[#2563EB]"
+          placeholder="From city"
+        />
         <span className="text-gray-400">→</span>
-        <input type="text" value={localTo} onChange={(e) => handleToChange(e.target.value)} className="input input-xs input-bordered flex-1" placeholder="To city" />
-        <button onClick={() => onRemove(index)} className="btn btn-xs btn-ghost text-error"><BsTrash /></button>
+        <input
+          type="text"
+          value={localTo}
+          onChange={(e) => handleToChange(e.target.value)}
+          className="flex-1 text-xs border border-[#E5E7EB] dark:border-gray-700 rounded-md px-2 py-1 bg-white dark:bg-gray-800 dark:text-white dark:bg-gray-800 dark:text-white outline-none focus:border-[#2563EB]"
+          placeholder="To city"
+        />
+        <Button variant="ghost" size="sm" className="h-7 text-xs px-2 text-red-500" onClick={() => onRemove(index)}>
+          <BsTrash />
+        </Button>
       </div>
     </div>
   );
@@ -775,7 +806,7 @@ const GlobeMakerLayout: React.FC = () => {
   const handleLocationSearch = useCallback((query: string) => {
     setLocationSearch(query);
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-    
+
     if (!query.trim()) {
       setSearchResults([]);
       setShowSearchResults(false);
@@ -799,10 +830,10 @@ const GlobeMakerLayout: React.FC = () => {
       });
 
       // Search states (limit to first 5 matching countries for performance)
-      const matchingCountries = allCountries.filter(c => 
+      const matchingCountries = allCountries.filter(c =>
         c.name.toLowerCase().includes(lowerQuery) || results.length < 10
       ).slice(0, 5);
-      
+
       matchingCountries.forEach((country) => {
         const states = State.getStatesOfCountry(country.isoCode);
         states.forEach((state) => {
@@ -853,7 +884,7 @@ const GlobeMakerLayout: React.FC = () => {
   // Focus on a location from search
   const focusOnLocation = useCallback((result: { lat: number; lng: number; name: string; type: string }) => {
     if (!globeRef.current) return;
-    
+
     // Different altitude based on type
     const altitude = result.type === "country" ? 2 : result.type === "state" ? 1.5 : 1;
     globeRef.current.pointOfView({ lat: result.lat, lng: result.lng, altitude }, 1000);
@@ -877,7 +908,7 @@ const GlobeMakerLayout: React.FC = () => {
     const initGlobe = async () => {
       const GlobeModule = await import("globe.gl");
       const Globe = GlobeModule.default;
-      
+
       if (globeRef.current) {
         globeRef.current._destructor?.();
       }
@@ -936,10 +967,10 @@ const GlobeMakerLayout: React.FC = () => {
     if (!globeRef.current || !globeLoaded) return;
 
     const globe = globeRef.current;
-    
+
     // Update globe image
     globe.globeImageUrl(globeStyles.find(s => s.id === globeStyle)?.url || globeStyles[0].url);
-    
+
     // Update atmosphere
     globe.showAtmosphere(showAtmosphere);
     globe.atmosphereColor(atmosphereColor);
@@ -1176,7 +1207,7 @@ const GlobeMakerLayout: React.FC = () => {
   const loadPreset = (preset: GlobePreset) => {
     setPoints([...preset.points]);
     setArcs([...preset.arcs]);
-    
+
     // Apply style settings if available
     if (preset.globeStyle) setGlobeStyle(preset.globeStyle);
     if (preset.pointStyle) setPointStyle(preset.pointStyle);
@@ -1187,7 +1218,7 @@ const GlobeMakerLayout: React.FC = () => {
     if (preset.showAtmosphere !== undefined) setShowAtmosphere(preset.showAtmosphere);
     if (preset.atmosphereColor) setAtmosphereColor(preset.atmosphereColor);
     if (preset.atmosphereIntensity) setAtmosphereIntensity(preset.atmosphereIntensity);
-    
+
     // Focus on preset location if available
     if (preset.focusLat !== undefined && preset.focusLng !== undefined && globeRef.current) {
       globeRef.current.pointOfView({ lat: preset.focusLat, lng: preset.focusLng, altitude: 2 }, 1000);
@@ -1200,10 +1231,10 @@ const GlobeMakerLayout: React.FC = () => {
     const country = Country.getCountryByCode(countryCode);
     if (country && country.latitude && country.longitude) {
       setFocusCountry(countryCode);
-      globeRef.current.pointOfView({ 
-        lat: parseFloat(country.latitude), 
-        lng: parseFloat(country.longitude), 
-        altitude: 2 
+      globeRef.current.pointOfView({
+        lat: parseFloat(country.latitude),
+        lng: parseFloat(country.longitude),
+        altitude: 2
       }, 1000);
       toast.success(`Focused on ${country.name}`);
     }
@@ -1312,7 +1343,7 @@ const GlobeMakerLayout: React.FC = () => {
     if (!globeRef.current || isRecording) return;
 
     setIsRecording(true);
-    toast("Recording 3 seconds...", { icon: "🎬" });
+    toast("Recording 3 seconds...");
 
     try {
       const GIF = (await import("gif.js")).default;
@@ -1364,7 +1395,7 @@ const GlobeMakerLayout: React.FC = () => {
     if (!globeRef.current || isRecording) return;
 
     setIsRecording(true);
-    toast("Recording 5 seconds...", { icon: "🎥" });
+    toast("Recording 5 seconds...");
 
     try {
       const GIF = (await import("gif.js")).default;
@@ -1444,7 +1475,7 @@ const GlobeMakerLayout: React.FC = () => {
     const pointsJson = JSON.stringify(points);
     const arcsJson = JSON.stringify(arcs);
     const globeImageUrl = globeStyles.find(s => s.id === globeStyle)?.url || globeStyles[0].url;
-    
+
     // Generate point style specific code
     let pointCode = "";
     if (pointStyle === "bar") {
@@ -1505,7 +1536,7 @@ const GlobeMakerLayout: React.FC = () => {
     const arcDashLength = arcStyle === "dash" ? 0.4 : 1;
     const arcDashGap = arcStyle === "dash" ? 0.2 : 0;
     const arcDashAnimateTime = arcStyle === "dash" ? 1500 : arcStyle === "glow" ? 2000 : 0;
-    
+
     const htmlCode = `<!DOCTYPE html>
 <html>
 <head>
@@ -1522,7 +1553,7 @@ const GlobeMakerLayout: React.FC = () => {
   <script>
     const points = ${pointsJson};
     const arcs = ${arcsJson};
-    
+
     const globe = Globe()
       .globeImageUrl('${globeImageUrl}')
       .backgroundColor('rgba(0,0,0,0)')
@@ -1540,7 +1571,7 @@ const GlobeMakerLayout: React.FC = () => {
       .arcDashGap(${arcDashGap})
       .arcDashAnimateTime(${arcDashAnimateTime})
       (document.getElementById('globe'));
-    
+
     globe.controls().autoRotate = ${autoRotate};
     globe.controls().autoRotateSpeed = ${rotateSpeed * (rotateDirection === "left" ? -1 : 1)};
   </script>
@@ -1565,7 +1596,7 @@ const GlobeMakerLayout: React.FC = () => {
 
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">
@@ -1574,25 +1605,36 @@ const GlobeMakerLayout: React.FC = () => {
           <div className="flex flex-col h-full">
             {/* Toolbar */}
             <div className="flex flex-wrap gap-2 mb-3 justify-end">
-              <div className="dropdown">
-                <label tabIndex={0}><SharedToolbarButton title="Export"><TfiExport /></SharedToolbarButton></label>
-                <ul tabIndex={0} className="dropdown-content menu p-2 mt-1 bg-base-100 border-2 rounded-lg min-w-[180px] z-50">
-                  <li className="menu-title"><span>Images</span></li>
-                  <li><a onClick={() => handleExport("png")}>PNG</a></li>
-                  <li><a onClick={() => handleExport("jpeg")}>JPEG</a></li>
-                  <li><a onClick={() => handleExport("webp")}>WebP</a></li>
-                  <li className="menu-title"><span>Animation</span></li>
-                  <li><a onClick={handleRecordGif} className={isRecording ? "opacity-50" : ""}>{isRecording ? "Recording..." : "GIF Animation (3s)"}</a></li>
-                  <li className="menu-title"><span>Embed</span></li>
-                  <li><a onClick={handleExportHtml}><BsCode className="inline mr-1" /> HTML Code</a></li>
-                </ul>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <span><SharedToolbarButton title="Export"><TfiExport /></SharedToolbarButton></span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="min-w-[180px] z-50">
+                  <DropdownMenuItem onClick={() => handleExport("png")}>PNG</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("jpeg")}>JPEG</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("webp")}>WebP</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleRecordGif}
+                    className={isRecording ? "opacity-50 pointer-events-none" : ""}
+                  >
+                    {isRecording ? "Recording..." : "GIF Animation (3s)"}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleExportHtml}>
+                    <BsCode className="inline mr-1" /> HTML Code
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <SharedToolbarButton title="Copy" onTap={handleCopyToClipboard}><BsClipboard /></SharedToolbarButton>
               <SharedToolbarButton title="Reset" onTap={resetAll}><BiReset /></SharedToolbarButton>
             </div>
 
             {/* Globe Container */}
-            <div className="relative flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl overflow-hidden" style={{ background: background.background }}>
+            <div
+              className="relative flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] overflow-hidden"
+              style={{ background: background.background }}
+            >
               <div ref={globeContainerRef} className="absolute inset-0" style={{ width: "100%", height: "100%" }} />
               {!globeLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -1603,10 +1645,14 @@ const GlobeMakerLayout: React.FC = () => {
           </div>
 
           {/* Controls Panel */}
-          <div className="bg-base-100 rounded-2xl shadow-lg p-5 h-fit max-h-[85vh] overflow-y-auto">
-            <div className="grid grid-cols-4 bg-base-200 rounded-lg p-1 mb-5">
+          <div className="bg-white dark:bg-gray-900 rounded-[20px] shadow-lg p-5 h-fit max-h-[85vh] overflow-y-auto">
+            <div className="grid grid-cols-4 bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] p-1 mb-5">
               {(["points", "arcs", "style", "presets"] as const).map((tab) => (
-                <button key={tab} onClick={() => setActiveTab(tab)} className={`py-2 px-2 text-xs font-medium rounded-md capitalize transition-all ${activeTab === tab ? "bg-base-100 shadow-sm" : "hover:bg-base-100/50"}`}>
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`py-2 px-2 text-xs font-medium rounded-md capitalize transition-all ${activeTab === tab ? "bg-white dark:bg-gray-800 shadow-sm" : "hover:bg-white/50 dark:hover:bg-gray-700/50"}`}
+                >
                   {tab}
                 </button>
               ))}
@@ -1616,20 +1662,26 @@ const GlobeMakerLayout: React.FC = () => {
               <div className="space-y-5">
                 {/* Import Data */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Import Data</label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Import Data</Label>
                   <div className="flex gap-2">
                     <input ref={fileInputRef} type="file" accept=".csv,.tsv,.txt" onChange={handleFileUpload} className="hidden" />
-                    <button onClick={() => fileInputRef.current?.click()} className="btn btn-sm btn-outline flex-1 gap-1"><BsUpload /> CSV</button>
-                    <button onClick={() => toast("Paste from Excel (Ctrl+V)", { icon: "📋" })} className="btn btn-sm btn-outline flex-1 gap-1"><BsTable /> Paste</button>
+                    <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="flex-1 gap-1">
+                      <BsUpload /> CSV
+                    </Button>
+                    <Button variant="secondary" size="sm" onClick={() => toast("Paste from Excel (Ctrl+V)")} className="flex-1 gap-1">
+                      <BsTable /> Paste
+                    </Button>
                   </div>
-                  <div className="text-[10px] text-gray-500 mt-2">Format: name, value (or lat, lng, value)</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-2">Format: name, value (or lat, lng, value)</div>
                 </div>
 
                 {/* Points List */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium text-primary-content/70">Points ({points.length})</label>
-                    <button onClick={addPoint} className="btn btn-xs btn-ghost gap-1"><BsPlus /> Add</button>
+                    <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400">Points ({points.length})</Label>
+                    <Button variant="ghost" size="sm" className="h-7 text-xs px-2 gap-1" onClick={addPoint}>
+                      <BsPlus /> Add
+                    </Button>
                   </div>
                   <div className="space-y-2 max-h-[250px] overflow-y-auto">
                     {points.map((p, i) => (
@@ -1640,10 +1692,14 @@ const GlobeMakerLayout: React.FC = () => {
 
                 {/* Point Style */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Point Style</label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Point Style</Label>
                   <div className="grid grid-cols-3 gap-2">
                     {(["sphere", "bar", "ring", "label", "pulse"] as PointStyle[]).map((style) => (
-                      <button key={style} onClick={() => setPointStyle(style)} className={`py-2 px-3 rounded-lg text-xs font-medium capitalize ${pointStyle === style ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>
+                      <button
+                        key={style}
+                        onClick={() => setPointStyle(style)}
+                        className={`py-2 px-3 rounded-[10px] text-xs font-medium capitalize ${pointStyle === style ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800"}`}
+                      >
                         {style}
                       </button>
                     ))}
@@ -1653,12 +1709,12 @@ const GlobeMakerLayout: React.FC = () => {
                 {/* Point Color & Size */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-primary-content/70 block mb-1">Point Color</label>
+                    <Label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-1">Point Color</Label>
                     <input type="color" value={pointColor} onChange={(e) => setPointColor(e.target.value)} className="w-full h-8 rounded cursor-pointer" />
                   </div>
-                  <div>
-                    <label className="text-xs text-primary-content/70 block mb-1">Size: {pointSize}</label>
-                    <input type="range" min="0.5" max="5" step="0.5" value={pointSize} onChange={(e) => setPointSize(parseFloat(e.target.value))} className="range range-primary range-xs" />
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-[#4B5563] dark:text-gray-400">Size: {pointSize}</Label>
+                    <Slider min={0.5} max={5} step={0.5} value={[pointSize]} onValueChange={([v]) => setPointSize(v)} />
                   </div>
                 </div>
               </div>
@@ -1668,20 +1724,26 @@ const GlobeMakerLayout: React.FC = () => {
               <div className="space-y-5">
                 {/* Import Arc Data */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Import Arc Data</label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Import Arc Data</Label>
                   <div className="flex gap-2">
                     <input ref={fileInputRef} type="file" accept=".csv,.tsv,.txt" onChange={handleFileUpload} className="hidden" />
-                    <button onClick={() => fileInputRef.current?.click()} className="btn btn-sm btn-outline flex-1 gap-1"><BsUpload /> CSV</button>
-                    <button onClick={() => toast("Paste from Excel (Ctrl+V)", { icon: "📋" })} className="btn btn-sm btn-outline flex-1 gap-1"><BsTable /> Paste</button>
+                    <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="flex-1 gap-1">
+                      <BsUpload /> CSV
+                    </Button>
+                    <Button variant="secondary" size="sm" onClick={() => toast("Paste from Excel (Ctrl+V)")} className="flex-1 gap-1">
+                      <BsTable /> Paste
+                    </Button>
                   </div>
-                  <div className="text-[10px] text-gray-500 mt-2">Format: from, to</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-2">Format: from, to</div>
                 </div>
 
                 {/* Arcs List */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium text-primary-content/70">Arcs ({arcs.length})</label>
-                    <button onClick={addArc} className="btn btn-xs btn-ghost gap-1"><BsPlus /> Add</button>
+                    <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400">Arcs ({arcs.length})</Label>
+                    <Button variant="ghost" size="sm" className="h-7 text-xs px-2 gap-1" onClick={addArc}>
+                      <BsPlus /> Add
+                    </Button>
                   </div>
                   <div className="space-y-2 max-h-[250px] overflow-y-auto">
                     {arcs.map((a, i) => (
@@ -1692,10 +1754,14 @@ const GlobeMakerLayout: React.FC = () => {
 
                 {/* Arc Style */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Arc Style</label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Arc Style</Label>
                   <div className="grid grid-cols-3 gap-2">
                     {(["line", "dash", "glow"] as ArcStyle[]).map((style) => (
-                      <button key={style} onClick={() => setArcStyle(style)} className={`py-2 px-3 rounded-lg text-xs font-medium capitalize ${arcStyle === style ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>
+                      <button
+                        key={style}
+                        onClick={() => setArcStyle(style)}
+                        className={`py-2 px-3 rounded-[10px] text-xs font-medium capitalize ${arcStyle === style ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800"}`}
+                      >
                         {style === "dash" ? "Animated" : style === "glow" ? "Glow" : "Solid"}
                       </button>
                     ))}
@@ -1705,12 +1771,12 @@ const GlobeMakerLayout: React.FC = () => {
                 {/* Arc Color & Altitude */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-primary-content/70 block mb-1">Arc Color</label>
+                    <Label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-1">Arc Color</Label>
                     <input type="color" value={arcColor} onChange={(e) => setArcColor(e.target.value)} className="w-full h-8 rounded cursor-pointer" />
                   </div>
-                  <div>
-                    <label className="text-xs text-primary-content/70 block mb-1">Altitude: {arcAltitude}</label>
-                    <input type="range" min="0.1" max="1" step="0.1" value={arcAltitude} onChange={(e) => setArcAltitude(parseFloat(e.target.value))} className="range range-primary range-xs" />
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-[#4B5563] dark:text-gray-400">Altitude: {arcAltitude}</Label>
+                    <Slider min={0.1} max={1} step={0.1} value={[arcAltitude]} onValueChange={([v]) => setArcAltitude(v)} />
                   </div>
                 </div>
               </div>
@@ -1720,10 +1786,14 @@ const GlobeMakerLayout: React.FC = () => {
               <div className="space-y-5">
                 {/* Globe Style */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Globe Texture</label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Globe Texture</Label>
                   <div className="grid grid-cols-3 gap-2">
                     {globeStyles.map((style) => (
-                      <button key={style.id} onClick={() => setGlobeStyle(style.id)} className={`py-2 px-2 rounded-lg text-xs font-medium ${globeStyle === style.id ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>
+                      <button
+                        key={style.id}
+                        onClick={() => setGlobeStyle(style.id)}
+                        className={`py-2 px-2 rounded-[10px] text-xs font-medium ${globeStyle === style.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800"}`}
+                      >
                         {style.name}
                       </button>
                     ))}
@@ -1732,27 +1802,25 @@ const GlobeMakerLayout: React.FC = () => {
 
                 {/* Background */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Background</label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Background</Label>
                   <BackgroundPicker background={background} onBackgroundChange={setBackground} showTilt={false} />
                 </div>
 
                 {/* Atmosphere */}
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={showAtmosphere} onChange={(e) => setShowAtmosphere(e.target.checked)} className="checkbox checkbox-primary checkbox-sm" />
-                    <span className="text-sm">Show Atmosphere</span>
-                  </label>
+                <div className="flex items-center gap-3">
+                  <Switch checked={showAtmosphere} onCheckedChange={setShowAtmosphere} />
+                  <span className="text-sm text-[#0A0A0A] dark:text-white">Show Atmosphere</span>
                 </div>
                 {showAtmosphere && (
                   <div className="space-y-3">
                     <div>
-                      <label className="text-xs text-primary-content/70 block mb-1">Atmosphere Color</label>
+                      <Label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-1">Atmosphere Color</Label>
                       <input type="color" value={atmosphereColor} onChange={(e) => setAtmosphereColor(e.target.value)} className="w-full h-8 rounded cursor-pointer" />
                     </div>
-                    <div>
-                      <label className="text-xs text-primary-content/70 block mb-1">Intensity: {atmosphereIntensity.toFixed(2)}</label>
-                      <input type="range" min="0.02" max="0.5" step="0.02" value={atmosphereIntensity} onChange={(e) => setAtmosphereIntensity(parseFloat(e.target.value))} className="range range-primary range-xs" />
-                      <div className="flex justify-between text-[10px] text-gray-500 mt-1">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs text-[#4B5563] dark:text-gray-400">Intensity: {atmosphereIntensity.toFixed(2)}</Label>
+                      <Slider min={0.02} max={0.5} step={0.02} value={[atmosphereIntensity]} onValueChange={([v]) => setAtmosphereIntensity(v)} />
+                      <div className="flex justify-between text-[10px] text-gray-500 dark:text-gray-400">
                         <span>Subtle</span>
                         <span>Strong</span>
                       </div>
@@ -1762,30 +1830,38 @@ const GlobeMakerLayout: React.FC = () => {
 
                 {/* Auto Rotate */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" checked={autoRotate} onChange={(e) => setAutoRotate(e.target.checked)} className="checkbox checkbox-primary checkbox-sm" />
-                      <span className="text-sm">Auto Rotate</span>
-                    </label>
-                    <button onClick={() => setAutoRotate(!autoRotate)} className="btn btn-xs btn-ghost">
+                  <div className="flex items-center gap-3">
+                    <Switch checked={autoRotate} onCheckedChange={setAutoRotate} />
+                    <span className="text-sm text-[#0A0A0A] dark:text-white">Auto Rotate</span>
+                    <Button variant="ghost" size="sm" className="h-7 text-xs px-2" onClick={() => setAutoRotate(!autoRotate)}>
                       {autoRotate ? <BsPause /> : <BsPlay />}
-                    </button>
+                    </Button>
                   </div>
                   {autoRotate && (
                     <>
-                      <div>
-                        <label className="text-xs text-primary-content/70 block mb-1">Speed: {rotateSpeed}</label>
-                        <input type="range" min="0.1" max="2" step="0.1" value={rotateSpeed} onChange={(e) => setRotateSpeed(parseFloat(e.target.value))} className="range range-primary range-xs" />
+                      <div className="space-y-1.5">
+                        <Label className="text-xs text-[#4B5563] dark:text-gray-400">Speed: {rotateSpeed}</Label>
+                        <Slider min={0.1} max={2} step={0.1} value={[rotateSpeed]} onValueChange={([v]) => setRotateSpeed(v)} />
                       </div>
                       <div>
-                        <label className="text-xs text-primary-content/70 block mb-1">Direction</label>
+                        <Label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-1">Direction</Label>
                         <div className="flex gap-2">
-                          <button onClick={() => setRotateDirection("left")} className={`btn btn-xs flex-1 gap-1 ${rotateDirection === "left" ? "btn-primary" : "btn-outline"}`}>
+                          <Button
+                            size="sm"
+                            variant={rotateDirection === "left" ? "default" : "secondary"}
+                            onClick={() => setRotateDirection("left")}
+                            className="flex-1 gap-1 h-7 text-xs"
+                          >
                             <BsArrowCounterclockwise /> Left
-                          </button>
-                          <button onClick={() => setRotateDirection("right")} className={`btn btn-xs flex-1 gap-1 ${rotateDirection === "right" ? "btn-primary" : "btn-outline"}`}>
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={rotateDirection === "right" ? "default" : "secondary"}
+                            onClick={() => setRotateDirection("right")}
+                            className="flex-1 gap-1 h-7 text-xs"
+                          >
                             <BsArrowClockwise /> Right
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </>
@@ -1794,31 +1870,30 @@ const GlobeMakerLayout: React.FC = () => {
 
                 {/* Focus on Country */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Search & Focus Location</label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Search & Focus Location</Label>
                   <div className="relative" ref={searchContainerRef}>
                     <div className="relative">
                       <BsSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="text"
+                      <Input
                         value={locationSearch}
                         onChange={(e) => handleLocationSearch(e.target.value)}
                         onFocus={() => searchResults.length > 0 && setShowSearchResults(true)}
                         placeholder="Type country, state, or city..."
-                        className="input input-bordered input-sm w-full pl-9"
+                        className="h-9 text-xs pl-9"
                       />
                     </div>
                     {showSearchResults && searchResults.length > 0 && (
-                      <div className="absolute z-50 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-lg max-h-[200px] overflow-y-auto">
+                      <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-900 border border-[#E5E7EB] dark:border-gray-700 rounded-[10px] shadow-lg max-h-[200px] overflow-y-auto">
                         {searchResults.map((result, idx) => (
                           <button
                             key={`${result.type}-${result.name}-${idx}`}
                             onClick={() => focusOnLocation(result)}
-                            className="w-full px-3 py-2 text-left hover:bg-base-200 flex items-center gap-2 text-sm"
+                            className="w-full px-3 py-2 text-left hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 flex items-center gap-2 text-sm"
                           >
                             <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                              result.type === "country" ? "bg-primary/20 text-primary" :
-                              result.type === "state" ? "bg-secondary/20 text-secondary" :
-                              "bg-accent/20 text-accent"
+                              result.type === "country" ? "bg-[#2563EB]/20 text-[#2563EB]" :
+                              result.type === "state" ? "bg-gray-200 text-gray-600 dark:text-gray-300" :
+                              "bg-[#EFF6FF] dark:bg-blue-900/20 text-[#2563EB]/70"
                             }`}>
                               {result.type}
                             </span>
@@ -1829,23 +1904,25 @@ const GlobeMakerLayout: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <div className="text-[10px] text-gray-500 mt-1">Start typing to search and auto-zoom</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Start typing to search and auto-zoom</div>
                 </div>
 
                 {/* Quick Country Buttons */}
                 <div>
-                  <label className="text-xs text-primary-content/70 block mb-2">Quick Focus</label>
+                  <Label className="text-xs text-[#4B5563] dark:text-gray-400 block mb-2">Quick Focus</Label>
                   <div className="flex flex-wrap gap-1">
                     {["US", "IN", "CN", "JP", "GB", "DE", "FR", "BR", "AU", "CA"].map((code) => {
                       const country = Country.getCountryByCode(code);
                       return (
-                        <button
+                        <Button
                           key={code}
+                          size="sm"
+                          variant={focusCountry === code ? "default" : "secondary"}
                           onClick={() => focusOnCountry(code)}
-                          className={`btn btn-xs ${focusCountry === code ? "btn-primary" : "btn-outline"}`}
+                          className="h-7 text-xs px-2"
                         >
                           {country?.flag} {code}
-                        </button>
+                        </Button>
                       );
                     })}
                   </div>
@@ -1857,28 +1934,41 @@ const GlobeMakerLayout: React.FC = () => {
               <div className="space-y-5">
                 {/* Save Custom Preset */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Save Current as Preset</label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Save Current as Preset</Label>
                   <div className="flex gap-2">
-                    <input type="text" value={newPresetName} onChange={(e) => setNewPresetName(e.target.value)} className="input input-bordered input-sm flex-1" placeholder="Preset name" />
-                    <button onClick={saveAsPreset} className="btn btn-sm btn-primary gap-1"><BsBookmark /> Save</button>
+                    <Input
+                      value={newPresetName}
+                      onChange={(e) => setNewPresetName(e.target.value)}
+                      className="h-9 text-xs flex-1"
+                      placeholder="Preset name"
+                    />
+                    <Button size="sm" onClick={saveAsPreset} className="gap-1"><BsBookmark /> Save</Button>
                   </div>
                 </div>
 
                 {/* Custom Presets */}
                 {customPresets.length > 0 && (
                   <div>
-                    <label className="text-sm font-medium text-primary-content/70 block mb-2">Your Presets</label>
+                    <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Your Presets</Label>
                     <div className="grid grid-cols-2 gap-2">
                       {customPresets.map((p) => (
                         <div key={p.id} className="relative group">
-                          <button onClick={() => loadPreset(p)} className="w-full p-3 bg-base-200 rounded-lg text-left hover:bg-base-300 transition-all">
+                          <button
+                            onClick={() => loadPreset(p)}
+                            className="w-full p-3 bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] text-left hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 transition-all"
+                          >
                             <div className="flex items-center gap-2">
-                              <BsBookmarkFill className="text-primary" />
+                              <BsBookmarkFill className="text-[#2563EB]" />
                               <span className="text-sm font-medium truncate">{p.name}</span>
                             </div>
-                            <div className="text-[10px] text-gray-500 mt-1">{p.points.length} points • {p.arcs.length} arcs</div>
+                            <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">{p.points.length} points • {p.arcs.length} arcs</div>
                           </button>
-                          <button onClick={() => deleteCustomPreset(p.id)} className="absolute top-1 right-1 btn btn-xs btn-ghost text-error opacity-0 group-hover:opacity-100"><BsTrash /></button>
+                          <button
+                            onClick={() => deleteCustomPreset(p.id)}
+                            className="absolute top-1 right-1 p-1 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <BsTrash size={12} />
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -1887,15 +1977,19 @@ const GlobeMakerLayout: React.FC = () => {
 
                 {/* Default Presets */}
                 <div>
-                  <label className="text-sm font-medium text-primary-content/70 block mb-2">Templates</label>
+                  <Label className="text-sm font-medium text-[#4B5563] dark:text-gray-400 block mb-2">Templates</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {defaultPresets.map((p) => (
-                      <button key={p.id} onClick={() => loadPreset(p)} className="p-3 bg-base-200 rounded-lg text-left hover:bg-base-300 transition-all">
+                      <button
+                        key={p.id}
+                        onClick={() => loadPreset(p)}
+                        className="p-3 bg-[#F9FAFB] dark:bg-gray-800 rounded-[10px] text-left hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 transition-all"
+                      >
                         <div className="flex items-center gap-2">
-                          <BsGlobe className="text-gray-500" />
+                          <BsGlobe className="text-gray-500 dark:text-gray-400" />
                           <span className="text-sm font-medium truncate">{p.name}</span>
                         </div>
-                        <div className="text-[10px] text-gray-500 mt-1">{p.points.length} points • {p.arcs.length} arcs</div>
+                        <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">{p.points.length} points • {p.arcs.length} arcs</div>
                       </button>
                     ))}
                   </div>

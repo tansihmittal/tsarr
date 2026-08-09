@@ -7,6 +7,7 @@ import {
   downloadimagePng,
   downloadimageJpeg,
   downloadimageSvg,
+  downloadimageWebp,
   copyToClipboard,
 } from "../edtior/Editor/downloads";
 import { BackgroundConfig } from "../common/BackgroundPicker";
@@ -64,7 +65,7 @@ const TweetEditorLayout: React.FC = () => {
     avatarUrl: "",
     verified: true,
     tweetText:
-      "Just shipped something amazing! 🚀\n\nBuilding in public is the best way to learn and grow.",
+      "Just shipped something amazing!\n\nBuilding in public is the best way to learn and grow.",
     date: new Date(),
     likes: "1,234",
     retweets: "567",
@@ -137,10 +138,11 @@ const TweetEditorLayout: React.FC = () => {
     setState((prev) => ({ ...prev, ...updates }));
   };
 
-  const handleExport = (format: "png" | "jpeg" | "svg", scale: number = 2) => {
+  const handleExport = (format: "png" | "jpeg" | "svg" | "webp", scale: number = 2) => {
     if (!previewRef.current) return;
     if (format === "png") downloadimagePng(previewRef.current, scale);
     else if (format === "jpeg") downloadimageJpeg(previewRef.current, scale);
+    else if (format === "webp") downloadimageWebp(previewRef.current, scale);
     else downloadimageSvg(previewRef.current, scale);
   };
 
@@ -153,7 +155,7 @@ const TweetEditorLayout: React.FC = () => {
   };
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">

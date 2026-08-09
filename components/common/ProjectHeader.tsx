@@ -4,6 +4,8 @@ import {
   BsCloud, BsCloudCheck, BsCloudArrowUp, BsChevronDown,
   BsFolder2, BsPencil, BsCheck2
 } from "react-icons/bs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface ProjectHeaderProps {
   projectName: string;
@@ -64,18 +66,18 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       {/* Logo */}
       <Link
         href="/app"
-        className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
+        className="text-lg font-bold bg-gradient-to-r from-[#2563EB] to-purple-600 bg-clip-text text-transparent"
       >
         tsarr.in
       </Link>
 
-      <span className="text-gray-300">|</span>
+      <span className="text-gray-300 dark:text-gray-600">|</span>
 
       {/* Project name */}
       <div className="flex items-center gap-2">
         {isEditing ? (
           <div className="flex items-center gap-1">
-            <input
+            <Input
               ref={inputRef}
               type="text"
               value={editName}
@@ -88,43 +90,47 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                   setIsEditing(false);
                 }
               }}
-              className="px-2 py-1 text-sm font-medium border border-indigo-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 w-40"
+              className="px-2 py-1 text-sm font-medium border border-[#2563EB]/30 rounded focus:outline-none focus:ring-2 focus:ring-[#2563EB] w-40 h-8"
             />
-            <button
+            <Button
+              size="icon"
+              variant="ghost"
               onClick={handleSubmit}
-              className="p-1 hover:bg-gray-100 rounded"
+              className="h-7 w-7"
             >
               <BsCheck2 className="text-green-600" />
-            </button>
+            </Button>
           </div>
         ) : (
-          <button
+          <Button
+            variant="ghost"
             onClick={() => setIsEditing(true)}
-            className="flex items-center gap-1.5 px-2 py-1 hover:bg-gray-100 rounded-lg transition-colors group"
+            className="flex items-center gap-1.5 px-2 py-1 h-auto rounded-[10px] group"
           >
-            <span className="font-medium text-gray-900 text-sm max-w-[150px] truncate">
+            <span className="font-medium text-[#0A0A0A] dark:text-white text-sm max-w-[150px] truncate">
               {projectName}
             </span>
-            <BsPencil className="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
-          </button>
+            <BsPencil className="text-[#4B5563] text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Button>
         )}
       </div>
 
       {/* Save status */}
       <div className="flex items-center gap-2 ml-2">
         {isSaving ? (
-          <div className="flex items-center gap-1.5 text-gray-500 text-xs">
+          <div className="flex items-center gap-1.5 text-[#4B5563] dark:text-gray-400 text-xs">
             <BsCloudArrowUp className="animate-pulse" />
             <span>Saving...</span>
           </div>
         ) : hasUnsavedChanges ? (
-          <button
+          <Button
+            variant="ghost"
             onClick={onSave}
-            className="flex items-center gap-1.5 text-amber-600 text-xs hover:bg-amber-50 px-2 py-1 rounded transition-colors"
+            className="flex items-center gap-1.5 text-amber-600 text-xs hover:bg-amber-50 px-2 py-1 h-auto rounded"
           >
             <BsCloud />
             <span>Unsaved</span>
-          </button>
+          </Button>
         ) : lastSaved ? (
           <div className="flex items-center gap-1.5 text-green-600 text-xs">
             <BsCloudCheck />
@@ -136,7 +142,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       {/* Projects link */}
       <Link
         href="/projects"
-        className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors ml-auto"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[#4B5563] dark:text-gray-400 hover:text-[#0A0A0A] dark:hover:text-white hover:bg-[#F9FAFB] dark:hover:bg-gray-800 rounded-[10px] transition-colors ml-auto"
       >
         <BsFolder2 />
         <span className="hidden sm:inline">My Projects</span>

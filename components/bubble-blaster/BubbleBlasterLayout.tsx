@@ -239,6 +239,14 @@ const BubbleBlasterLayout = () => {
 
       // Replace dark grayscale pixels (text) with background color
       const textThreshold = state.textThreshold;
+      // Anti-aliased text edges sit between textThreshold and background
+      // brightness — a hard cutoff there left a visible gray "ghost" outline
+      // around every removed glyph. Fade those edge pixels toward the
+      // background instead of leaving them untouched. This fringe can
+      // extend nearly all the way to white regardless of where
+      // textThreshold is set, so the blend zone's ceiling is fixed, not
+      // relative to textThreshold.
+      const softEdge = Math.max(textThreshold + 10, 245);
 
       for (let j = 0; j < pixels.length; j += 4) {
         const r = pixels[j];
@@ -251,11 +259,23 @@ const BubbleBlasterLayout = () => {
         const minC = Math.min(r, g, b);
         const colorVariance = maxC - minC;
 
-        // Remove if: dark AND grayscale (text is typically black/dark gray)
-        if (brightness < textThreshold && colorVariance < 40) {
+        if (colorVariance >= 40) continue; // colored ink, not grayscale text
+
+        if (brightness < textThreshold) {
+          // Solidly dark text - full replace
           pixels[j] = bgR;
           pixels[j + 1] = bgG;
           pixels[j + 2] = bgB;
+        } else if (brightness < softEdge) {
+          // Anti-aliased fringe - blend toward background. A linear ramp
+          // over this whole span left mid-gray edge pixels barely faded
+          // (they're much closer to textThreshold than to white), so bias
+          // the curve to stay near full-strength until close to softEdge.
+          const t = (brightness - textThreshold) / (softEdge - textThreshold);
+          const alpha = 1 - t * t * t * t;
+          pixels[j] = Math.round(r + (bgR - r) * alpha);
+          pixels[j + 1] = Math.round(g + (bgG - g) * alpha);
+          pixels[j + 2] = Math.round(b + (bgB - b) * alpha);
         }
       }
 
@@ -368,16 +388,31 @@ const BubbleBlasterLayout = () => {
   }, [state.originalImage, detectBubbles, updateState]);
 
   const resetToOriginal = useCallback(() => {
-    if (state.originalImage) {
+    if (!state.originalImage || !workingCanvasRef.current) return;
+
+    // Clearing processedImageData alone doesn't repaint anything — the
+    // working canvas still holds the blasted pixels from putImageData, so
+    // redraw it from the untouched original before resetting the flags.
+    const canvas = workingCanvasRef.current;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return;
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      canvas.width = state.imageWidth;
+      canvas.height = state.imageHeight;
+      ctx.drawImage(img, 0, 0, state.imageWidth, state.imageHeight);
       updateState({
         processedImageData: null,
         bubbles: state.bubbles.map((b) => ({ ...b, isProcessed: false })),
       });
-    }
-  }, [state.originalImage, state.bubbles, updateState]);
+    };
+    img.src = state.originalImage;
+  }, [state.originalImage, state.bubbles, state.imageWidth, state.imageHeight, updateState]);
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">

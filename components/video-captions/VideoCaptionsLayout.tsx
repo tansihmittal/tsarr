@@ -180,14 +180,14 @@ const VideoCaptionsLayout = () => {
   const duplicateCaption = useCallback((captionId: string) => {
     const caption = state.captions.find((c) => c.id === captionId);
     if (!caption) return;
-    
+
     const newCaption: Caption = {
       ...caption,
       id: crypto.randomUUID(),
       startTime: caption.endTime,
       endTime: caption.endTime + (caption.endTime - caption.startTime),
     };
-    
+
     setState((prev) => ({
       ...prev,
       captions: [...prev.captions, newCaption].sort((a, b) => a.startTime - b.startTime),
@@ -206,10 +206,10 @@ const VideoCaptionsLayout = () => {
   const playFromCaption = useCallback((captionId: string) => {
     const caption = state.captions.find((c) => c.id === captionId);
     if (!caption || !videoRef.current) return;
-    
+
     videoRef.current.currentTime = caption.startTime;
     videoRef.current.play();
-    updateState({ 
+    updateState({
       currentTime: caption.startTime,
       isPlaying: true,
       selectedCaptionId: captionId,
@@ -282,7 +282,7 @@ const VideoCaptionsLayout = () => {
   }, [state.isTranscribing, state.wordsPerCaption, updateState]);
 
   return (
-    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0">
+    <main className="min-h-[100vh] h-fit editor-bg relative pb-20 lg:pb-0" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
       <Navigation />
       <section className="container mx-auto px-3 sm:px-4 lg:px-0 relative">

@@ -628,5 +628,61 @@ export const toolsData: ToolData[] = [
       "Art and illustration reference"
     ],
     keywords: ["color palette extractor", "image color picker", "dominant colors", "palette from image", "color extractor", "color palette generator"]
+  },
+  {
+    slug: "image-map-pro",
+    title: "Image Map Pro",
+    shortDesc: "Interactive image maps with AI hotspot detection",
+    description: "Create interactive image maps with clickable hotspots. Use AI to auto-detect regions or draw them by hand, and layer in your own images, text, and shapes — all exported as a clean, self-contained SVG.",
+    longDescription: "Image Map Pro is a fully native, browser-based image map editor. Upload any image and add clickable hotspot areas — rectangles, ellipses, or custom polygons — then layer in additional images, text labels, and shapes right on top. Every element can carry a tooltip, link, description, and custom fill, stroke, opacity, and hover styles. Use AI Detect to automatically find interesting regions, fine-tune them on a real canvas with drag-to-move, resize handles, undo/redo, and live preview, then export a self-contained interactive SVG, copy ready-to-paste embed HTML, or save the editable project as JSON.",
+    metaDescription: "Create interactive image maps with clickable hotspots, plus your own images, text & shapes. AI region detection, live preview, SVG & embed export. Free.",
+    href: "/image-map-pro",
+    category: "Image Editing",
+    features: [
+      "Native canvas editor — rect, ellipse, polygon, pin/marker hotspots",
+      "Layer in your own images, text labels, and shapes",
+      "AI region detection finds hotspots automatically",
+      "Rich styled tooltips, links, and per-spot actions (link/tooltip/none)",
+      "Pulse & glow animations, drop shadows, dashed borders, full hover states",
+      "Map options: highlight-on-hover, background, tooltip theming & custom CSS",
+      "Drag to move, resize handles, undo/redo & live preview",
+      "Export self-contained interactive SVG or copy interactive embed HTML",
+      "Save projects locally and export/import as JSON"
+    ],
+    useCases: [
+      "Interactive product demos",
+      "Annotated infographics",
+      "Clickable floor plans and maps",
+      "Educational diagrams",
+      "Interactive e-commerce product images",
+      "Real estate virtual tours"
+    ],
+    keywords: ["image map", "image map creator", "clickable image", "hotspot creator", "interactive image", "image annotation tool"]
+  },
+  {
+    slug: "app-icon-generator",
+    title: "App Icon Generator",
+    shortDesc: "iOS, Android, Web & macOS icon sets",
+    description: "Upload one image and generate a complete app icon set for iOS, Android, Web/Favicon, and macOS as a single ZIP download.",
+    longDescription: "Stop resizing icons by hand. Upload a single square image and the App Icon Generator produces every size and file each platform actually expects: a full Xcode AppIcon.appiconset with Contents.json for iOS, launcher mipmaps plus a Play Store icon for Android, a favicon.ico alongside apple-touch-icon, android-chrome icons, and a web manifest for the browser, and an AppIcon.iconset folder for macOS (ready for iconutil). Adjust the background color and padding, preview with rounded corners, choose which platforms to include, and download it all as one ZIP.",
+    metaDescription: "Free app icon generator. Upload one image, export iOS, Android, Web/Favicon, and macOS icon sets as a ZIP. Contents.json, manifest, favicon.ico included.",
+    href: "/app-icon-generator",
+    category: "Utilities",
+    features: [
+      "Full Xcode AppIcon.appiconset with generated Contents.json",
+      "Android launcher mipmaps (mdpi–xxxhdpi) plus Play Store icon",
+      "favicon.ico, apple-touch-icon, android-chrome icons, and web manifest",
+      "macOS AppIcon.iconset folder (run iconutil for a .icns)",
+      "Background color and padding controls with rounded-corner preview",
+      "Toggle platforms on/off before exporting",
+      "One-click ZIP download, all generated locally in your browser"
+    ],
+    useCases: [
+      "Preparing app icons for an iOS or Android release",
+      "Generating favicons and web app manifest icons for a new site",
+      "Producing a macOS app icon set for Xcode or a DMG",
+      "Quickly re-exporting icons after a logo redesign"
+    ],
+    keywords: ["app icon generator", "ios icon generator", "android icon generator", "favicon generator", "appicon.appiconset", "icon set generator"]
   }
 ];

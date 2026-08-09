@@ -2,6 +2,9 @@ import { useEffect, useRef, RefObject, useCallback, ReactNode } from "react";
 import { BsClipboard, BsRepeat, BsImage, BsDownload } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { ImageTextEditorState, TextRegion } from "./ImageTextEditorLayout";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { normalizeImageFile, IMAGE_ACCEPT } from "@/utils/imageFile";
 
 // Helper to check if a color is light (for shadow direction)
 const isColorLight = (color: string): boolean => {
@@ -135,11 +138,11 @@ const ImageTextEditorPreview = ({
 
     // Create a smooth gradient fill
     const gradient = ctx.createLinearGradient(x, y, x + w, y + h);
-    
+
     // Blend all 4 colors for smooth transition
     const avgLeft = [(leftColor[0] + topColor[0]) / 2, (leftColor[1] + topColor[1]) / 2, (leftColor[2] + topColor[2]) / 2];
     const avgRight = [(rightColor[0] + bottomColor[0]) / 2, (rightColor[1] + bottomColor[1]) / 2, (rightColor[2] + bottomColor[2]) / 2];
-    
+
     gradient.addColorStop(0, `rgb(${avgLeft[0]}, ${avgLeft[1]}, ${avgLeft[2]})`);
     gradient.addColorStop(1, `rgb(${avgRight[0]}, ${avgRight[1]}, ${avgRight[2]})`);
 
@@ -187,16 +190,16 @@ const ImageTextEditorPreview = ({
           ctx.fillStyle = region.textColor; // Use detected text color
           ctx.textBaseline = "middle";
           ctx.textAlign = "left";
-          
+
           // Add subtle shadow for depth (adapts to text color brightness)
           const isLightText = isColorLight(region.textColor);
           ctx.shadowColor = isLightText ? "rgba(0, 0, 0, 0.4)" : "rgba(255, 255, 255, 0.3)";
           ctx.shadowBlur = 2;
           ctx.shadowOffsetX = 0;
           ctx.shadowOffsetY = 1;
-          
+
           ctx.fillText(region.newText, region.x, region.y + region.height / 2);
-          
+
           ctx.shadowColor = "transparent";
           ctx.shadowBlur = 0;
           ctx.shadowOffsetY = 0;
@@ -249,11 +252,12 @@ const ImageTextEditorPreview = ({
     };
   };
 
-  const handleDownload = () => {
+  const handleDownload = (format: "png" | "jpeg" | "webp" = "png") => {
     if (!canvasRef.current) return;
+    const mimeMap = { png: "image/png", jpeg: "image/jpeg", webp: "image/webp" };
     const link = document.createElement("a");
-    link.download = `tsarr-in-edited-image.png`;
-    link.href = canvasRef.current.toDataURL("image/png");
+    link.download = `tsarr-in-edited-image.${format}`;
+    link.href = canvasRef.current.toDataURL(mimeMap[format], format === "png" ? 1.0 : 0.92);
     link.click();
   };
 
@@ -271,11 +275,12 @@ const ImageTextEditorPreview = ({
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const url = URL.createObjectURL(file);
+    const normalized = await normalizeImageFile(file);
+    const url = URL.createObjectURL(normalized);
     const img = new Image();
     img.onload = () => {
       onImageUpload?.(url, img.width, img.height) ?? updateState({
@@ -344,18 +349,20 @@ const ImageTextEditorPreview = ({
     onClick?: () => void;
     disabled?: boolean;
   }) => (
-    <button
-      className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
+    <Button
+      variant="secondary"
+      size="sm"
+      className={`flex items-center gap-2 px-4 py-2.5 h-auto font-medium transition-all ${
         disabled
-          ? "opacity-50 cursor-not-allowed bg-base-200 text-gray-400"
-          : "bg-base-100 text-primary-content border border-base-200 hover:bg-base-200/50 hover:border-primary/30 hover:shadow-sm"
+          ? "opacity-50 cursor-not-allowed"
+          : ""
       }`}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
     >
       <span className="text-lg">{children}</span>
       <span>{title}</span>
-    </button>
+    </Button>
   );
 
   const editingRegion = state.textRegions.find((r) => r.id === state.editingRegionId);
@@ -365,14 +372,25 @@ const ImageTextEditorPreview = ({
     <div className="flex flex-col h-full w-full">
       {/* Action buttons */}
       <div className={`flex flex-wrap gap-2 mb-3 justify-end ${state.image ? "opacity-100" : "opacity-60 pointer-events-none"}`}>
-        <ActionButton title="Download" onClick={handleDownload} disabled={!state.image}>
-          <BsDownload />
-        </ActionButton>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span>
+              <ActionButton title="Download" onClick={() => {}} disabled={!state.image}>
+                <BsDownload />
+              </ActionButton>
+            </span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[160px]">
+            <DropdownMenuItem onClick={() => handleDownload("png")}>PNG (Lossless)</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload("jpeg")}>JPEG</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload("webp")}>WebP</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <ActionButton title="Copy" onClick={handleCopyToClipboard} disabled={!state.image}>
           <BsClipboard />
         </ActionButton>
         <label>
-          <input type="file" hidden accept="image/*" ref={fileInputRef} onChange={handleImageUpload} />
+          <input type="file" hidden accept={IMAGE_ACCEPT} ref={fileInputRef} onChange={handleImageUpload} />
           <ActionButton title="Change">
             <BsRepeat />
           </ActionButton>
@@ -385,18 +403,18 @@ const ImageTextEditorPreview = ({
       {/* Canvas area */}
       <div
         ref={containerRef}
-        className="relative flex-1 min-h-[300px] sm:min-h-[400px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden"
+        className="relative flex-1 min-h-[300px] sm:min-h-[400px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/30 dark:bg-gray-800/30 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden"
       >
         {state.image ? (
           <div className="relative p-6">
             <div className="relative">
               <canvas
                 ref={canvasRef}
-                className="max-w-full max-h-[70vh] rounded-xl shadow-2xl cursor-pointer"
+                className="max-w-full max-h-[70vh] rounded-[14px] shadow-2xl cursor-pointer"
                 style={{ boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
                 onClick={handleCanvasClick}
               />
-              
+
               {/* Inline editor */}
               {editingRegion && editingStyle && (
                 <input
@@ -411,54 +429,54 @@ const ImageTextEditorPreview = ({
                 />
               )}
             </div>
-            
+
             {/* Processing overlay */}
             {state.isProcessing && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm rounded-xl">
-                <div className="bg-base-100 p-5 rounded-xl shadow-2xl min-w-[240px]">
-                  <div className="h-2 bg-base-200 rounded-full overflow-hidden mb-3">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm rounded-[14px]">
+                <div className="bg-white dark:bg-gray-900 p-5 rounded-[14px] shadow-2xl min-w-[240px]">
+                  <div className="h-2 bg-[#F9FAFB] dark:bg-gray-800 rounded-full overflow-hidden mb-3">
                     <div
-                      className="h-full bg-primary rounded-full transition-all duration-300"
+                      className="h-full bg-[#2563EB] rounded-full transition-all duration-300"
                       style={{ width: `${state.processingPercent}%` }}
                     />
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-primary-content">{state.processingProgress}</span>
-                    <span className="font-bold text-primary">{state.processingPercent}%</span>
+                    <span className="text-[#0A0A0A] dark:text-white">{state.processingProgress}</span>
+                    <span className="font-bold text-[#2563EB]">{state.processingPercent}%</span>
                   </div>
                 </div>
               </div>
             )}
-            
+
             {/* Status */}
             {!state.isProcessing && state.textRegions.length > 0 && (
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/80 text-white text-xs px-4 py-2 rounded-full">
-                ✨ {state.textRegions.length} text regions • Click to edit
+                {state.textRegions.length} text regions • Click to edit
               </div>
             )}
           </div>
         ) : (
-          <div className="p-8 bg-base-100 rounded-2xl shadow-xl max-w-md w-full">
+          <div className="p-8 bg-white dark:bg-gray-900 rounded-[20px] shadow-xl max-w-md w-full">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-primary-content mb-2">
-                ✨ Magic Text Editor
+              <h2 className="text-2xl font-bold text-[#0A0A0A] dark:text-white mb-2">
+                Magic Text Editor
               </h2>
-              <p className="text-gray-500 text-sm">
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
                 Edit any text in images seamlessly
               </p>
             </div>
-            
+
             <label
               htmlFor="image-upload-main"
-              className="flex flex-col items-center justify-center gap-4 p-8 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all"
+              className="flex flex-col items-center justify-center gap-4 p-8 border-2 border-dashed border-gray-300 rounded-[14px] cursor-pointer hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5 transition-all"
             >
-              <div className="p-4 rounded-full bg-primary/10">
-                <BsImage className="text-primary text-3xl" />
+              <div className="p-4 rounded-full bg-[#2563EB]/10">
+                <BsImage className="text-[#2563EB] text-3xl" />
               </div>
-              <input type="file" hidden accept="image/*" id="image-upload-main" onChange={handleImageUpload} />
+              <input type="file" hidden accept={IMAGE_ACCEPT} id="image-upload-main" onChange={handleImageUpload} />
               <div className="text-center">
-                <p className="font-medium text-gray-700">
-                  <span className="text-primary">Click to upload</span> or drag & drop
+                <p className="font-medium text-gray-700 dark:text-gray-200">
+                  <span className="text-[#2563EB]">Click to upload</span> or drag & drop
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
                   PNG, JPG, WEBP • Or paste with Ctrl+V
@@ -466,12 +484,12 @@ const ImageTextEditorPreview = ({
               </div>
             </label>
 
-            <button
+            <Button
               onClick={() => document.getElementById("image-upload-main")?.click()}
-              className="w-full mt-4 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary-focus transition-all shadow-lg shadow-primary/20"
+              className="w-full mt-4 py-3 h-auto font-semibold rounded-[14px] shadow-lg shadow-[#2563EB]/20"
             >
               START EDITING
-            </button>
+            </Button>
           </div>
         )}
       </div>

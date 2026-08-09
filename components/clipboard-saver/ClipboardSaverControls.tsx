@@ -1,6 +1,8 @@
 import { BsDownload } from "react-icons/bs";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import { OutputFormat } from "./ClipboardSaverPreview";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 
 const formats: { id: OutputFormat; name: string; desc: string; supportsQuality: boolean }[] = [
   { id: "png", name: "PNG", desc: "Lossless", supportsQuality: false },
@@ -33,22 +35,22 @@ const ClipboardSaverControls: React.FC<Props> = ({
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         <ControlPanelHeading title="Output Format" />
-        <div className="p-4 border-b border-base-200/60">
+        <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
           <div className="grid grid-cols-2 gap-2">
             {formats.map((format) => (
               <button
                 key={format.id}
                 onClick={() => onFormatChange(format.id)}
-                className={`p-3 rounded-lg text-left transition-all ${
+                className={`p-3 rounded-[10px] text-left transition-all ${
                   outputFormat === format.id
-                    ? "bg-primary text-white ring-2 ring-primary ring-offset-2"
-                    : "bg-base-200 hover:bg-base-300"
+                    ? "bg-[#2563EB] text-white ring-2 ring-[#2563EB] ring-offset-2"
+                    : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"
                 }`}
               >
                 <div className="font-semibold text-sm">{format.name}</div>
-                <div className={`text-xs ${outputFormat === format.id ? "text-white/70" : "text-gray-500"}`}>
+                <div className={`text-xs ${outputFormat === format.id ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>
                   {format.desc}
                 </div>
               </button>
@@ -59,28 +61,28 @@ const ClipboardSaverControls: React.FC<Props> = ({
         {selectedFormat?.supportsQuality && (
           <>
             <ControlPanelHeading title="Quality" />
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Quality</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{quality}%</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Quality</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{quality}%</span>
               </div>
-              <input
-                type="range"
-                min="10"
-                max="100"
-                value={quality}
-                onChange={(e) => onQualityChange(Number(e.target.value))}
-                className="range range-xs range-primary w-full mb-2"
+              <Slider
+                min={10}
+                max={100}
+                value={[quality]}
+                onValueChange={([v]) => onQualityChange(v)}
+                className="w-full mb-2"
               />
               <div className="flex gap-2">
                 {[50, 75, 90, 100].map((q) => (
-                  <button
+                  <Button
                     key={q}
                     onClick={() => onQualityChange(q)}
-                    className={`btn btn-xs ${quality === q ? "btn-primary" : "btn-outline"}`}
+                    variant={quality === q ? "default" : "secondary"}
+                    className="h-7 text-xs px-3"
                   >
                     {q}%
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -88,15 +90,15 @@ const ClipboardSaverControls: React.FC<Props> = ({
         )}
 
         <ControlPanelHeading title="Export" />
-        <div className="p-4 border-b border-base-200/60">
-          <button
+        <div className="p-4 border-b border-[#E5E7EB]/6 dark:border-gray-700/60 dark:border-gray-700/60">
+          <Button
             onClick={onDownload}
             disabled={!hasImage}
-            className="btn btn-primary w-full gap-2 shadow-lg shadow-primary/20 disabled:opacity-50"
+            className="w-full gap-2 shadow-lg shadow-[#2563EB]/20"
           >
             <BsDownload className="text-lg" />
             Download as {outputFormat.toUpperCase()}
-          </button>
+          </Button>
         </div>
       </div>
     </section>

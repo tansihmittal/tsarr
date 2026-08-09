@@ -7,11 +7,17 @@ import { BsClipboard, BsShare } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { shareImage } from "../../utils/share";
 import ProjectNameHeader from "../common/ProjectNameHeader";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface Props {
   state: CodeEditorState;
   previewRef: RefObject<HTMLDivElement>;
-  onExport: (format: "png" | "jpeg" | "svg", scale?: number) => void;
+  onExport: (format: "png" | "jpeg" | "svg" | "webp", scale?: number) => void;
   onCopy: () => void;
   projectName: string;
   onProjectNameChange: (name: string) => void;
@@ -79,7 +85,7 @@ const highlightLine = (line: string, language: string, theme: ThemeColors, keywo
 
 const highlightCode = (code: string, language: string, theme: ThemeColors) => {
   const keywords = languageKeywords[language] || languageKeywords.javascript;
-  
+
   return code
     .split("\n")
     .map((line) => highlightLine(line, language, theme, keywords))
@@ -89,7 +95,7 @@ const highlightCode = (code: string, language: string, theme: ThemeColors) => {
 
 const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, projectName, onProjectNameChange, isSaving }) => {
   const [highlightedCode, setHighlightedCode] = useState("");
-  
+
   // Get the current theme - fallback to dracula if not found
   // Use useMemo to ensure theme is recalculated when state.theme changes
   const theme: ThemeColors = themes[state.theme] || themes.dracula;
@@ -150,8 +156,8 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, pro
       {state.headerVisible && state.windowStyle !== "none" && (
         <div
           className="flex items-center px-4 py-3 relative"
-          style={{ 
-            backgroundColor: state.windowBackground === "alternative" 
+          style={{
+            backgroundColor: state.windowBackground === "alternative"
               ? (theme.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)")
               : theme.bg,
             borderBottom: `1px solid ${theme.isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
@@ -242,23 +248,23 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, pro
 
       {/* Top options - matching other editors */}
       <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
-        <div className="dropdown">
-          <label tabIndex={0}>
-            <ToolbarButton title="Export Image">
-              <TfiExport />
-            </ToolbarButton>
-          </label>
-          <ul
-            tabIndex={0}
-            className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50"
-          >
-            <li onClick={() => onExport("png", 1)}><a>Export as PNG 1x</a></li>
-            <li onClick={() => onExport("png", 2)}><a>Export as PNG 2x</a></li>
-            <li onClick={() => onExport("png", 4)}><a>Export as PNG 4x</a></li>
-            <li onClick={() => onExport("svg", 2)}><a>Export as SVG</a></li>
-            <li onClick={() => onExport("jpeg", 2)}><a>Export as JPEG</a></li>
-          </ul>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span>
+              <ToolbarButton title="Export Image">
+                <TfiExport />
+              </ToolbarButton>
+            </span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-[200px] z-50">
+            <DropdownMenuItem onClick={() => onExport("png", 1)}>PNG 1x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("png", 2)}>PNG 2x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("png", 4)}>PNG 4x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("jpeg", 2)}>JPEG</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("webp", 2)}>WebP</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("svg", 2)}>SVG</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <ToolbarButton title="Copy" onTap={onCopy}>
           <BsClipboard className="icon" />
@@ -274,7 +280,7 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, pro
       </div>
 
       {/* Editor Canvas Area */}
-      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden py-8">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/3 dark:bg-gray-800/30 dark:bg-gray-800/50 border border-[#E5E7EB]/8 dark:border-gray-700/80 dark:border-gray-700 overflow-hidden py-8">
         <div
           ref={previewRef}
           style={{
@@ -305,13 +311,13 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, pro
               }}
             />
           )}
-          <div 
-            className="relative flex flex-col" 
-            key={state.theme} 
-            style={{ 
+          <div
+            className="relative flex flex-col"
+            key={state.theme}
+            style={{
               transform: `${state.tilt.value} translateX(${state.left}px) translateY(${state.top}px) rotate(${state.rotate}deg) scale(${state.scale})`,
-              transformStyle: "preserve-3d", 
-              transition: "transform 0.3s ease" 
+              transformStyle: "preserve-3d",
+              transition: "transform 0.3s ease"
             }}
           >
             {/* Main Window */}
@@ -320,7 +326,7 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, pro
 
           {/* Reflection - proper gradient fade effect */}
           {state.reflection && (
-            <div 
+            <div
               className="relative overflow-hidden"
               style={{
                 marginTop: "4px",
@@ -343,8 +349,8 @@ const CodePreview: React.FC<Props> = ({ state, previewRef, onExport, onCopy, pro
                 {state.headerVisible && state.windowStyle !== "none" && (
                   <div
                     className="flex items-center px-4 py-3"
-                    style={{ 
-                      backgroundColor: state.windowBackground === "alternative" 
+                    style={{
+                      backgroundColor: state.windowBackground === "alternative"
                         ? (theme.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)")
                         : theme.bg,
                     }}

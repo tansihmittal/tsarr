@@ -6,7 +6,11 @@ import { BsUpload, BsClipboard, BsDownload } from "react-icons/bs";
 import { toast } from "react-hot-toast";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
 
 interface Props {
   state: AspectRatioState;
@@ -53,7 +57,6 @@ const outputFormats = [
 ];
 
 const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUpload, onExport }) => {
-  const [selectedTab, setSelectedTab] = useState("ratio");
   const [customWidth, setCustomWidth] = useState("");
   const [customHeight, setCustomHeight] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -97,90 +100,92 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="grid grid-cols-3 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Ratio" isActive={selectedTab === "ratio"} onClick={() => setSelectedTab("ratio")}><BiCrop /></ControlTabButton>
-        <ControlTabButton title="Fit" isActive={selectedTab === "fit"} onClick={() => setSelectedTab("fit")}><BiImage /></ControlTabButton>
-        <ControlTabButton title="Output" isActive={selectedTab === "output"} onClick={() => setSelectedTab("output")}><IoMdOptions /></ControlTabButton>
-      </div>
+      <Tabs defaultValue="ratio">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-3">
+        <TabsTrigger value="ratio" className="gap-1.5 rounded-[10px] text-xs"><BiCrop className="w-3.5 h-3.5" /> Ratio</TabsTrigger>
+        <TabsTrigger value="fit" className="gap-1.5 rounded-[10px] text-xs"><BiImage className="w-3.5 h-3.5" /> Fit</TabsTrigger>
+        <TabsTrigger value="output" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Output</TabsTrigger>
+      </TabsList>
 
-      <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
         {/* Upload Section - Always visible */}
         <PanelHeading title="Image" />
-        <div className="p-4 border-b border-base-200/60">
+        <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
           <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/heic,image/gif,image/svg+xml" onChange={handleFileChange} className="hidden" />
           <div className="grid grid-cols-2 gap-2 mb-3">
-            <button onClick={() => fileInputRef.current?.click()} className="btn btn-outline btn-sm gap-2">
+            <Button onClick={() => fileInputRef.current?.click()} variant="secondary" size="sm" className="gap-2">
               <BsUpload /> {state.originalImage ? "Change" : "Upload"}
-            </button>
-            <button onClick={handlePaste} className="btn btn-outline btn-sm gap-2">
+            </Button>
+            <Button onClick={handlePaste} variant="secondary" size="sm" className="gap-2">
               <BsClipboard /> Paste
-            </button>
+            </Button>
           </div>
           {state.originalImage && (
             <div className="flex items-center gap-3">
-              <img src={state.originalImage} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
+              <img src={state.originalImage} alt="Preview" className="w-16 h-16 rounded-[10px] object-cover" />
               <div className="text-sm">
-                <div className="font-medium text-primary-content">{state.originalWidth} × {state.originalHeight}</div>
-                <div className="text-gray-500">Original size</div>
+                <div className="font-medium text-[#0A0A0A] dark:text-white">{state.originalWidth} × {state.originalHeight}</div>
+                <div className="text-gray-500 dark:text-gray-400">Original size</div>
               </div>
             </div>
           )}
         </div>
 
-        {selectedTab === "ratio" ? (
+        <TabsContent value="ratio">
           <div className="relative rounded-md">
             <PanelHeading title="Aspect Ratio" />
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-3 gap-2">
                 {aspectRatios.map((ratio) => (
                   <button
                     key={ratio.id}
                     onClick={() => updateState({ targetAspectRatio: { name: ratio.name, value: ratio.value } })}
-                    className={`p-3 rounded-lg text-center transition-all ${state.targetAspectRatio.name === ratio.name ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}
+                    className={`p-3 rounded-[10px] text-center transition-all ${state.targetAspectRatio.name === ratio.name ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
                   >
                     <div className="font-semibold text-sm">{ratio.name}</div>
-                    <div className={`text-xs ${state.targetAspectRatio.name === ratio.name ? "text-white/70" : "text-gray-500"}`}>{ratio.desc}</div>
+                    <div className={`text-xs ${state.targetAspectRatio.name === ratio.name ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>{ratio.desc}</div>
                   </button>
                 ))}
               </div>
             </div>
 
             <PanelHeading title="Common Presets" />
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => updateState({ targetAspectRatio: { name: "1:1", value: 1 } })} className="btn btn-sm btn-outline">Instagram Post</button>
-                <button onClick={() => updateState({ targetAspectRatio: { name: "9:16", value: 9/16 } })} className="btn btn-sm btn-outline">Story/Reel</button>
-                <button onClick={() => updateState({ targetAspectRatio: { name: "16:9", value: 16/9 } })} className="btn btn-sm btn-outline">YouTube</button>
-                <button onClick={() => updateState({ targetAspectRatio: { name: "2:1", value: 2 } })} className="btn btn-sm btn-outline">Twitter Header</button>
-                <button onClick={() => updateState({ targetAspectRatio: { name: "4:5", value: 4/5 } })} className="btn btn-sm btn-outline">Instagram Portrait</button>
-                <button onClick={() => updateState({ targetAspectRatio: { name: "3:2", value: 3/2 } })} className="btn btn-sm btn-outline">Photo Print</button>
+                <Button onClick={() => updateState({ targetAspectRatio: { name: "1:1", value: 1 } })} variant="secondary" size="sm">Instagram Post</Button>
+                <Button onClick={() => updateState({ targetAspectRatio: { name: "9:16", value: 9/16 } })} variant="secondary" size="sm">Story/Reel</Button>
+                <Button onClick={() => updateState({ targetAspectRatio: { name: "16:9", value: 16/9 } })} variant="secondary" size="sm">YouTube</Button>
+                <Button onClick={() => updateState({ targetAspectRatio: { name: "2:1", value: 2 } })} variant="secondary" size="sm">Twitter Header</Button>
+                <Button onClick={() => updateState({ targetAspectRatio: { name: "4:5", value: 4/5 } })} variant="secondary" size="sm">Instagram Portrait</Button>
+                <Button onClick={() => updateState({ targetAspectRatio: { name: "3:2", value: 3/2 } })} variant="secondary" size="sm">Photo Print</Button>
               </div>
             </div>
 
             <PanelHeading title="Custom Ratio" />
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex gap-2 items-center">
-                <input type="number" value={customWidth} onChange={(e) => setCustomWidth(e.target.value)} placeholder="W" className="input input-sm input-bordered w-20" min="1" />
-                <span className="text-gray-500">:</span>
-                <input type="number" value={customHeight} onChange={(e) => setCustomHeight(e.target.value)} placeholder="H" className="input input-sm input-bordered w-20" min="1" />
-                <button onClick={applyCustomRatio} className="btn btn-sm btn-primary">Apply</button>
+                <Input type="number" value={customWidth} onChange={(e) => setCustomWidth(e.target.value)} placeholder="W" className="h-9 text-sm w-20" min="1" />
+                <span className="text-gray-500 dark:text-gray-400">:</span>
+                <Input type="number" value={customHeight} onChange={(e) => setCustomHeight(e.target.value)} placeholder="H" className="h-9 text-sm w-20" min="1" />
+                <Button onClick={applyCustomRatio} size="sm">Apply</Button>
               </div>
-              <p className="text-xs text-gray-500 mt-2">Current: {state.targetAspectRatio.name}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Current: {state.targetAspectRatio.name}</p>
             </div>
           </div>
-        ) : selectedTab === "fit" ? (
+        </TabsContent>
+        <TabsContent value="fit">
           <div className="relative rounded-md">
             <PanelHeading title="Fit Mode" />
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-2 gap-2">
                 {fitModes.map((mode) => (
                   <button
                     key={mode.id}
                     onClick={() => updateState({ fitMode: mode.id as AspectRatioState["fitMode"] })}
-                    className={`p-3 rounded-lg text-left transition-all ${state.fitMode === mode.id ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}
+                    className={`p-3 rounded-[10px] text-left transition-all ${state.fitMode === mode.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
                   >
                     <div className="font-semibold text-sm">{mode.name}</div>
-                    <div className={`text-xs ${state.fitMode === mode.id ? "text-white/70" : "text-gray-500"}`}>{mode.desc}</div>
+                    <div className={`text-xs ${state.fitMode === mode.id ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>{mode.desc}</div>
                   </button>
                 ))}
               </div>
@@ -189,17 +194,17 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
             {(state.fitMode === "cover" || state.fitMode === "crop") && (
               <>
                 <PanelHeading title="Crop Position" />
-                <div className="p-4 border-b border-base-200/60">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs text-gray-500 font-medium">Horizontal</span>
-                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.cropPosition.x}%</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Horizontal</span>
+                    <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.cropPosition.x}%</span>
                   </div>
-                  <input type="range" min="0" max="100" value={state.cropPosition.x} onChange={(e) => updateState({ cropPosition: { ...state.cropPosition, x: Number(e.target.value) } })} className="range range-xs range-primary w-full mb-4" />
+                  <Slider min={0} max={100} value={[state.cropPosition.x]} onValueChange={([v]) => updateState({ cropPosition: { ...state.cropPosition, x: v } })} className="w-full mb-4" />
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs text-gray-500 font-medium">Vertical</span>
-                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.cropPosition.y}%</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Vertical</span>
+                    <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.cropPosition.y}%</span>
                   </div>
-                  <input type="range" min="0" max="100" value={state.cropPosition.y} onChange={(e) => updateState({ cropPosition: { ...state.cropPosition, y: Number(e.target.value) } })} className="range range-xs range-primary w-full" />
+                  <Slider min={0} max={100} value={[state.cropPosition.y]} onValueChange={([v]) => updateState({ cropPosition: { ...state.cropPosition, y: v } })} className="w-full" />
                 </div>
               </>
             )}
@@ -210,7 +215,7 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
                 <Control title="Type">
                   <div className="flex gap-1">
                     {(["solid", "blur", "transparent"] as const).map((type) => (
-                      <button key={type} onClick={() => updateState({ backgroundType: type })} className={`px-2 py-1 rounded text-xs capitalize ${state.backgroundType === type ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>{type}</button>
+                      <button key={type} onClick={() => updateState({ backgroundType: type })} className={`px-2 py-1 rounded text-xs capitalize ${state.backgroundType === type ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>{type}</button>
                     ))}
                   </div>
                 </Control>
@@ -222,56 +227,54 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
               </>
             )}
           </div>
-        ) : (
+        </TabsContent>
+        <TabsContent value="output">
           <div className="relative rounded-md">
             <PanelHeading title="Size Mode" />
             <Control title="Use Custom Size">
-              <label className="custom-toggle">
-                <input type="checkbox" checked={state.useCustomSize} onChange={(e) => updateState({ useCustomSize: e.target.checked })} />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={state.useCustomSize} onCheckedChange={(v: boolean) => updateState({ useCustomSize: v })} />
             </Control>
 
             {state.useCustomSize ? (
               <>
                 <PanelHeading title="Custom Output Size" />
-                <div className="p-4 border-b border-base-200/60">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="grid grid-cols-2 gap-3 mb-3">
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Width (px)</label>
-                      <input type="number" value={state.customOutputWidth} onChange={(e) => updateState({ customOutputWidth: Number(e.target.value) })} className="input input-sm input-bordered w-full" min="1" max="8000" />
+                      <label className="text-xs text-gray-500 dark:text-gray-400 block mb-1">Width (px)</label>
+                      <Input type="number" value={state.customOutputWidth} onChange={(e) => updateState({ customOutputWidth: Number(e.target.value) })} className="h-9 text-sm w-full" min="1" max="8000" />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Height (px)</label>
-                      <input type="number" value={state.customOutputHeight} onChange={(e) => updateState({ customOutputHeight: Number(e.target.value) })} className="input input-sm input-bordered w-full" min="1" max="8000" />
+                      <label className="text-xs text-gray-500 dark:text-gray-400 block mb-1">Height (px)</label>
+                      <Input type="number" value={state.customOutputHeight} onChange={(e) => updateState({ customOutputHeight: Number(e.target.value) })} className="h-9 text-sm w-full" min="1" max="8000" />
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
-                    <button onClick={() => updateState({ customOutputWidth: 1080, customOutputHeight: 1080 })} className="btn btn-xs btn-outline">1080×1080</button>
-                    <button onClick={() => updateState({ customOutputWidth: 1920, customOutputHeight: 1080 })} className="btn btn-xs btn-outline">1920×1080</button>
-                    <button onClick={() => updateState({ customOutputWidth: 1080, customOutputHeight: 1920 })} className="btn btn-xs btn-outline">1080×1920</button>
-                    <button onClick={() => updateState({ customOutputWidth: 1200, customOutputHeight: 630 })} className="btn btn-xs btn-outline">1200×630</button>
-                    <button onClick={() => updateState({ customOutputWidth: 800, customOutputHeight: 600 })} className="btn btn-xs btn-outline">800×600</button>
-                    <button onClick={() => updateState({ customOutputWidth: 2048, customOutputHeight: 2048 })} className="btn btn-xs btn-outline">2048×2048</button>
+                    <Button onClick={() => updateState({ customOutputWidth: 1080, customOutputHeight: 1080 })} variant="secondary" size="sm" className="h-7 text-xs px-3">1080×1080</Button>
+                    <Button onClick={() => updateState({ customOutputWidth: 1920, customOutputHeight: 1080 })} variant="secondary" size="sm" className="h-7 text-xs px-3">1920×1080</Button>
+                    <Button onClick={() => updateState({ customOutputWidth: 1080, customOutputHeight: 1920 })} variant="secondary" size="sm" className="h-7 text-xs px-3">1080×1920</Button>
+                    <Button onClick={() => updateState({ customOutputWidth: 1200, customOutputHeight: 630 })} variant="secondary" size="sm" className="h-7 text-xs px-3">1200×630</Button>
+                    <Button onClick={() => updateState({ customOutputWidth: 800, customOutputHeight: 600 })} variant="secondary" size="sm" className="h-7 text-xs px-3">800×600</Button>
+                    <Button onClick={() => updateState({ customOutputWidth: 2048, customOutputHeight: 2048 })} variant="secondary" size="sm" className="h-7 text-xs px-3">2048×2048</Button>
                   </div>
                 </div>
               </>
             ) : (
               <>
                 <PanelHeading title="Output Scale" />
-                <div className="p-4 border-b border-base-200/60">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="flex flex-wrap gap-2">
                     {outputScales.map((scale) => (
                       <button
                         key={scale.id}
                         onClick={() => updateState({ outputScale: scale.value })}
-                        className={`px-4 py-2 rounded-lg font-medium transition-all ${state.outputScale === scale.value ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}
+                        className={`px-4 py-2 rounded-[10px] font-medium transition-all ${state.outputScale === scale.value ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
                       >
                         {scale.name}
                       </button>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-500 mt-3">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
                     Output: ~{Math.round(800 * state.outputScale * (state.targetAspectRatio.value >= 1 ? 1 : state.targetAspectRatio.value))} × {Math.round(800 * state.outputScale / (state.targetAspectRatio.value >= 1 ? state.targetAspectRatio.value : 1))} px
                   </p>
                 </div>
@@ -279,16 +282,16 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
             )}
 
             <PanelHeading title="Format" />
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="grid grid-cols-3 gap-2">
                 {outputFormats.map((format) => (
                   <button
                     key={format.id}
                     onClick={() => updateState({ outputFormat: format.id as AspectRatioState["outputFormat"] })}
-                    className={`p-3 rounded-lg text-center transition-all ${state.outputFormat === format.id ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}
+                    className={`p-3 rounded-[10px] text-center transition-all ${state.outputFormat === format.id ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
                   >
                     <div className="font-semibold text-sm">{format.name}</div>
-                    <div className={`text-xs ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500"}`}>{format.desc}</div>
+                    <div className={`text-xs ${state.outputFormat === format.id ? "text-white/70" : "text-gray-500 dark:text-gray-400"}`}>{format.desc}</div>
                   </button>
                 ))}
               </div>
@@ -297,36 +300,37 @@ const AspectRatioControls: React.FC<Props> = ({ state, updateState, onImageUploa
             {state.outputFormat !== "png" && (
               <>
                 <PanelHeading title="Quality" />
-                <div className="p-4 border-b border-base-200/60">
+                <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-xs text-gray-500 font-medium">Quality</span>
-                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.quality}%</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Quality</span>
+                    <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.quality}%</span>
                   </div>
-                  <input type="range" min="10" max="100" value={state.quality} onChange={(e) => updateState({ quality: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+                  <Slider min={10} max={100} value={[state.quality]} onValueChange={([v]) => updateState({ quality: v })} className="w-full" />
                 </div>
               </>
             )}
 
             <PanelHeading title="Export" />
-            <div className="p-4 border-b border-base-200/60">
-              <button
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
+              <Button
                 onClick={onExport}
                 disabled={!state.originalImage}
-                className="btn btn-primary w-full gap-2 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all disabled:opacity-50"
+                className="w-full gap-2 shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all"
               >
                 <BsDownload className="text-lg" />
                 Export {state.outputFormat.toUpperCase()} {state.useCustomSize ? `(${state.customOutputWidth}×${state.customOutputHeight})` : `(${state.outputScale}x)`}
-              </button>
-              <p className="text-xs text-gray-500 mt-2 text-center">
-                {state.useCustomSize 
+              </Button>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+                {state.useCustomSize
                   ? `${state.customOutputWidth} × ${state.customOutputHeight} px`
                   : `~${Math.round(800 * state.outputScale * (state.targetAspectRatio.value >= 1 ? 1 : state.targetAspectRatio.value))} × ${Math.round(800 * state.outputScale / (state.targetAspectRatio.value >= 1 ? state.targetAspectRatio.value : 1))} px`
                 }
               </p>
             </div>
           </div>
-        )}
+        </TabsContent>
       </div>
+      </Tabs>
     </section>
   );
 };

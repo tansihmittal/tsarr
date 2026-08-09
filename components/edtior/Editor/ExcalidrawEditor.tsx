@@ -38,7 +38,7 @@ const ExcalidrawEditor: React.FC = () => {
 
   if (!isClient) {
     return (
-      <div className="h-full w-full flex items-center justify-center text-gray-500">
+      <div className="h-full w-full flex items-center justify-center text-gray-500 dark:text-gray-400">
         Loading...
       </div>
     );

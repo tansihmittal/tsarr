@@ -3,12 +3,12 @@ import type { AppProps } from "next/app";
 import { Poppins } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { useEffect, useState } from "react";
 
 // local
 import { EditorContextProvider } from "@/context/Editor";
 import { AuthContextProvider } from "@/context/User";
-import SavePresetModal from "@/components/common/SavePresetModal";
 import MobileNav from "@/components/common/MobileNav";
 import { InstallPrompt, OfflineIndicator } from "@/components/common/PWAPrompts";
 import SplashScreen from "@/components/common/SplashScreen";
@@ -75,6 +75,7 @@ export default function App({ Component, pageProps }: AppProps) {
             <MobileNav />
             <InstallPrompt />
             <Analytics />
+            <SpeedInsights />
             <Toaster
               toastOptions={{
                 style: {
@@ -82,10 +83,10 @@ export default function App({ Component, pageProps }: AppProps) {
                   boxShadow: "none",
                   color: "#f2f2f2",
                 },
-                icon: "👏",
+                icon: undefined,
               }}
             />
-            <SavePresetModal />
+
           </>
         )}
       </AuthContextProvider>

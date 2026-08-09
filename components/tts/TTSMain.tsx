@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { BiReset, BiCopy, BiDownload } from "react-icons/bi";
-import { BsPlay, BsPause, BsStop } from "react-icons/bs";
+import { BsPlay, BsPause, BsStop, BsCpu, BsMic, BsShuffle } from "react-icons/bs";
 import { HiOutlineSpeakerWave } from "react-icons/hi2";
 import { toast } from "react-hot-toast";
 import { useTTSContext } from "@/context/TTS";
@@ -52,8 +52,8 @@ const TTSMain: React.FC<Props> = () => {
     try {
       const result = await generateSpeech(
         text.trim(),
-        { 
-          voice: settings.voice, 
+        {
+          voice: settings.voice,
           voice2: settings.voice2 || undefined,
           blendRatio: settings.blendRatio,
           speed: settings.speed,
@@ -92,30 +92,30 @@ const TTSMain: React.FC<Props> = () => {
   const convertToFormat = async (format: string): Promise<Blob | null> => {
     if (!audioBlob) return null;
     if (format === "wav") return audioBlob;
-    
+
     try {
       const audioContext = new AudioContext();
       const arrayBuffer = await audioBlob.arrayBuffer();
       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-      
+
       const offlineContext = new OfflineAudioContext(
         audioBuffer.numberOfChannels,
         audioBuffer.length,
         audioBuffer.sampleRate
       );
-      
+
       const source = offlineContext.createBufferSource();
       source.buffer = audioBuffer;
       source.connect(offlineContext.destination);
       source.start();
-      
+
       const renderedBuffer = await offlineContext.startRendering();
-      
+
       if (format === "mp3" || format === "ogg") {
         const wavBlob = audioBufferToWav(renderedBuffer);
         return new Blob([wavBlob], { type: format === "mp3" ? "audio/mpeg" : "audio/ogg" });
       }
-      
+
       return audioBlob;
     } catch (err) {
       console.error("Conversion error:", err);
@@ -168,10 +168,10 @@ const TTSMain: React.FC<Props> = () => {
   const handleDownload = async (format: string = "wav") => {
     if (!audioBlob) return;
     setShowDownloadMenu(false);
-    
+
     const blob = await convertToFormat(format);
     if (!blob) { toast.error("Failed to convert audio"); return; }
-    
+
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -193,12 +193,16 @@ const TTSMain: React.FC<Props> = () => {
     children: ReactNode; title: string; onTap?: () => void; disabled?: boolean; loading?: boolean;
   }) => (
     <div
-      className={`text-primary-content bg-base-100 py-2.5 px-4 flex items-center justify-center gap-2.5 border border-base-200 rounded-lg transition-all duration-200 ${
-        disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-base-200/50 hover:border-primary/20 hover:shadow-sm cursor-pointer"
+      className={`text-[#0A0A0A] dark:text-white bg-white dark:bg-gray-900 py-2.5 px-4 flex items-center justify-center gap-2.5 border border-[#E5E7EB] dark:border-gray-700 rounded-[10px] transition-all duration-200 ${
+        disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-[#F9FAFB] dark:hover:bg-gray-800 hover:border-[#2563EB]/20 hover:shadow-sm cursor-pointer"
       }`}
       onClick={disabled ? undefined : onTap}
     >
-      {loading ? <span className="loading loading-spinner loading-sm"></span> : <span className="text-lg">{children}</span>}
+      {loading ? (
+        <span className="w-4 h-4 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
+      ) : (
+        <span className="text-lg">{children}</span>
+      )}
       <span className="font-medium">{title}</span>
     </div>
   );
@@ -211,18 +215,18 @@ const TTSMain: React.FC<Props> = () => {
           <HiOutlineSpeakerWave />
         </OptionButton>
         <OptionButton title="Copy" onTap={handleCopyText} disabled={!text.trim()}><BiCopy /></OptionButton>
-        
+
         <div className="relative">
           <OptionButton title="Download" onTap={() => setShowDownloadMenu(!showDownloadMenu)} disabled={!audioBlob}>
             <BiDownload />
           </OptionButton>
           {showDownloadMenu && audioBlob && (
-            <div className="absolute top-full mt-2 right-0 bg-base-100 border border-base-200 rounded-lg shadow-lg z-50 min-w-[140px]">
+            <div className="absolute top-full mt-2 right-0 bg-white dark:bg-gray-900 border border-[#E5E7EB] dark:border-gray-700 rounded-[10px] shadow-lg z-50 min-w-[140px]">
               {["wav", "mp3", "ogg"].map((fmt) => (
                 <button
                   key={fmt}
                   onClick={() => handleDownload(fmt)}
-                  className="w-full px-4 py-2.5 text-left hover:bg-base-200 first:rounded-t-lg last:rounded-b-lg text-sm font-medium"
+                  className="w-full px-4 py-2.5 text-left hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 first:rounded-t-[10px] last:rounded-b-[10px] text-sm font-medium"
                 >
                   {fmt.toUpperCase()}
                 </button>
@@ -230,35 +234,35 @@ const TTSMain: React.FC<Props> = () => {
             </div>
           )}
         </div>
-        
+
         <OptionButton title="Reset" onTap={handleReset}><BiReset /></OptionButton>
       </div>
 
       {/* Badge row */}
       <div className="flex justify-between items-center mb-2 w-full flex-wrap gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full font-medium">🧠 Kokoro 82M</span>
+          <span className="text-xs bg-[#2563EB]/10 text-[#2563EB] px-3 py-1 rounded-full font-medium flex items-center gap-1"><BsCpu /> Kokoro 82M</span>
           {currentVoice && (
-            <span className="text-xs bg-base-200 text-primary-content px-3 py-1 rounded-full font-medium">
-              🎤 {currentVoice.name}
+            <span className="text-xs bg-[#F3F4F6] dark:bg-gray-800 text-[#0A0A0A] dark:text-white px-3 py-1 rounded-full font-medium flex items-center gap-1">
+              <BsMic /> {currentVoice.name}
             </span>
           )}
           {currentProfile && settings.voiceProfile !== "default" && (
-            <span className="text-xs bg-accent/10 text-accent px-3 py-1 rounded-full font-medium">
+            <span className="text-xs bg-[#60A5FA]/10 text-[#60A5FA] px-3 py-1 rounded-full font-medium">
               {currentProfile.icon} {currentProfile.name}
             </span>
           )}
           {settings.voice2 && (
-            <span className="text-xs bg-info/10 text-info px-3 py-1 rounded-full font-medium">
-              🔀 Blended
+            <span className="text-xs bg-[#EFF6FF] dark:bg-blue-900/20 text-[#2563EB] px-3 py-1 rounded-full font-medium flex items-center gap-1">
+              <BsShuffle /> Blended
             </span>
           )}
         </div>
-        <span className="text-xs text-gray-500 bg-base-200 px-3 py-1 rounded-full">{text.length} chars</span>
+        <span className="text-xs text-[#4B5563] dark:text-gray-400 bg-[#F3F4F6] dark:bg-gray-800 px-3 py-1 rounded-full">{text.length} chars</span>
       </div>
 
       {/* Main Editor Area */}
-      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex flex-col rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex flex-col rounded-[20px] bg-[#F9FAFB] dark:bg-gray-800 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden">
         <div className="flex-1 p-4">
           <textarea
             value={text}
@@ -271,7 +275,7 @@ Examples:
 • Kokoro is an 82 million parameter neural TTS model.
 
 Long text is automatically chunked into sentences for better quality."
-            className="w-full h-full min-h-[300px] bg-transparent resize-none outline-none text-primary-content text-lg leading-relaxed placeholder:text-gray-400"
+            className="w-full h-full min-h-[300px] bg-transparent resize-none outline-none text-[#0A0A0A] dark:text-white text-lg leading-relaxed placeholder:text-gray-400"
             disabled={isGenerating}
           />
         </div>
@@ -279,31 +283,31 @@ Long text is automatically chunked into sentences for better quality."
         {/* Progress Bar */}
         {isGenerating && (
           <div className="px-4 pb-4">
-            <div className="w-full bg-base-300 rounded-full h-2.5 overflow-hidden">
-              <div className="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+            <div className="w-full bg-[#E5E7EB] rounded-full h-2.5 overflow-hidden">
+              <div className="bg-gradient-to-r from-[#2563EB] to-[#60A5FA] h-2.5 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
             </div>
-            <p className="text-xs text-gray-500 mt-2 text-center">{progressStatus}</p>
+            <p className="text-xs text-[#4B5563] dark:text-gray-400 mt-2 text-center">{progressStatus}</p>
           </div>
         )}
 
         {/* Audio Player */}
         {audioUrl && !isGenerating && (
-          <div className="border-t border-base-200/80 p-4 bg-base-100/50">
+          <div className="border-t border-[#E5E7EB] dark:border-gray-700 p-4 bg-white/50">
             <audio ref={audioRef} src={audioUrl} className="hidden" />
             <div className="flex items-center gap-4">
-              <button onClick={handlePlayPause} className="w-12 h-12 rounded-full bg-primary text-primary-content flex items-center justify-center hover:bg-primary/90 transition-all shadow-lg shadow-primary/30">
+              <button onClick={handlePlayPause} className="w-12 h-12 rounded-full bg-[#2563EB] text-white flex items-center justify-center hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/30">
                 {isPlaying ? <BsPause className="text-xl" /> : <BsPlay className="text-xl ml-0.5" />}
               </button>
-              <button onClick={handleStop} className="w-10 h-10 rounded-full bg-base-200 text-primary-content flex items-center justify-center hover:bg-base-300 transition-all">
+              <button onClick={handleStop} className="w-10 h-10 rounded-full bg-[#F3F4F6] dark:bg-gray-800 text-[#0A0A0A] dark:text-white flex items-center justify-center hover:bg-[#E5E7EB] dark:hover:bg-gray-700 transition-all">
                 <BsStop className="text-lg" />
               </button>
-              <div className="flex-1 h-10 bg-base-200 rounded-lg flex items-center justify-center gap-0.5 px-4 overflow-hidden">
+              <div className="flex-1 h-10 bg-[#F3F4F6] dark:bg-gray-800 rounded-[10px] flex items-center justify-center gap-0.5 px-4 overflow-hidden">
                 {[...Array(40)].map((_, i) => (
-                  <div key={i} className={`w-1 bg-primary/60 rounded-full transition-all duration-150 ${isPlaying ? "animate-pulse" : ""}`}
+                  <div key={i} className={`w-1 bg-[#2563EB]/60 rounded-full transition-all duration-150 ${isPlaying ? "animate-pulse" : ""}`}
                     style={{ height: `${Math.sin(i * 0.3) * 12 + 16}px`, animationDelay: `${i * 30}ms`, opacity: isPlaying ? 1 : 0.5 }} />
                 ))}
               </div>
-              <button onClick={() => setShowDownloadMenu(!showDownloadMenu)} className="w-10 h-10 rounded-full bg-base-200 text-primary-content flex items-center justify-center hover:bg-base-300 transition-all" title="Download">
+              <button onClick={() => setShowDownloadMenu(!showDownloadMenu)} className="w-10 h-10 rounded-full bg-[#F3F4F6] dark:bg-gray-800 text-[#0A0A0A] dark:text-white flex items-center justify-center hover:bg-[#E5E7EB] dark:hover:bg-gray-700 transition-all" title="Download">
                 <BiDownload className="text-lg" />
               </button>
             </div>
@@ -312,7 +316,7 @@ Long text is automatically chunked into sentences for better quality."
 
         {error && (
           <div className="px-4 pb-4">
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-[10px] text-sm">
               <p className="font-medium">Error</p>
               <p className="text-red-500 mt-1">{error}</p>
             </div>

@@ -74,11 +74,13 @@ export const getProjects = (): Project[] => {
   }
 };
 
-// Cache projects to session storage for sync access
+// Cache projects to session storage for sync access.
+// Only metadata is cached (no data blob) to stay well under the 5MB sessionStorage limit.
 export const cacheProjects = async (): Promise<Project[]> => {
   const projects = await getProjectsAsync();
   try {
-    sessionStorage.setItem('tsarr_projects_cache', JSON.stringify(projects));
+    const metadata = projects.map(({ data: _data, ...rest }) => rest);
+    sessionStorage.setItem('tsarr_projects_cache', JSON.stringify(metadata));
   } catch {}
   return projects;
 };

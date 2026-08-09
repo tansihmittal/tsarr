@@ -1,8 +1,9 @@
 import { RefObject, useEffect, useState, useMemo, useRef } from "react";
 import ToolbarButton from "../common/ToolbarButton";
-import { BsPlayFill, BsPauseFill, BsUpload } from "react-icons/bs";
+import { BsPlayFill, BsPauseFill, BsUpload, BsStars } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { VideoCaptionsState, Caption, CaptionStyle } from "./VideoCaptionsLayout";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   state: VideoCaptionsState;
@@ -18,16 +19,16 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
   const [isDragging, setIsDragging] = useState(false);
   // Local time state for smoother caption updates during playback
   const [localTime, setLocalTime] = useState(0);
-  
+
   // Dragging state for caption
   const [isDraggingCaption, setIsDraggingCaption] = useState(false);
   const videoContainerRef = useRef<HTMLDivElement>(null);
-  
+
   // Inline editing state
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState("");
   const editInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Resize state
   const [isResizing, setIsResizing] = useState(false);
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, fontSize: 32 });
@@ -75,7 +76,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
       const deltaX = e.clientX - resizeStart.x;
       const deltaY = e.clientY - resizeStart.y;
       const delta = (deltaX + deltaY) / 4; // Average and scale down
-      
+
       // Calculate new font size
       const newFontSize = Math.max(12, Math.min(150, resizeStart.fontSize + delta));
       updateStyle({ fontSize: Math.round(newFontSize) });
@@ -258,7 +259,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
   // Caption style to CSS
   const getCaptionStyles = (style: CaptionStyle): React.CSSProperties => {
     const rgba = hexToRgba(style.backgroundColor, style.backgroundOpacity);
-    
+
     // Build text shadow with optional stroke effect
     let textShadowValue = "";
     if (style.textShadow) {
@@ -274,7 +275,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
           }
         }
       }
-      textShadowValue = textShadowValue 
+      textShadowValue = textShadowValue
         ? `${textShadowValue}, ${strokeShadows.join(", ")}`
         : strokeShadows.join(", ");
     }
@@ -299,7 +300,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
   const getPositionStyles = (style: CaptionStyle): React.CSSProperties => {
     // Build transform with rotation and 3D tilt combined with position transform
     let transformParts: string[] = [];
-    
+
     if (style.position === "custom") {
       transformParts.push("translate(-50%, -50%)");
     } else if (style.position === "center") {
@@ -307,7 +308,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
     } else {
       transformParts.push("translateX(-50%)");
     }
-    
+
     if (style.rotation !== 0) {
       transformParts.push(`rotate(${style.rotation}deg)`);
     }
@@ -339,26 +340,26 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
     e.preventDefault();
     e.stopPropagation();
     if (!videoContainerRef.current) return;
-    
+
     setIsDraggingCaption(true);
   };
 
   // Handle caption drag
   const handleCaptionMouseMove = (e: React.MouseEvent) => {
     if (!isDraggingCaption || !videoContainerRef.current) return;
-    
+
     const rect = videoContainerRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-    
+
     // Clamp values between 5 and 95 to keep caption visible
     const clampedX = Math.max(5, Math.min(95, x));
     const clampedY = Math.max(5, Math.min(95, y));
-    
-    updateStyle({ 
+
+    updateStyle({
       position: "custom",
-      customX: clampedX, 
-      customY: clampedY 
+      customX: clampedX,
+      customY: clampedY
     });
   };
 
@@ -401,12 +402,12 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
   // Handle resize move
   const handleResizeMouseMove = (e: React.MouseEvent) => {
     if (!isResizing) return;
-    
+
     // Calculate delta from start position (diagonal movement)
     const deltaX = e.clientX - resizeStart.x;
     const deltaY = e.clientY - resizeStart.y;
     const delta = (deltaX + deltaY) / 4; // Average and scale down
-    
+
     // Calculate new font size
     const newFontSize = Math.max(12, Math.min(150, resizeStart.fontSize + delta));
     updateStyle({ fontSize: Math.round(newFontSize) });
@@ -476,7 +477,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
 
       {/* Editor Area */}
       <div
-        className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80"
+        className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F3F4F6] dark:bg-gray-800 border border-[#E5E7EB] dark:border-gray-700"
         style={{ overflow: "visible" }}
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
         onDragLeave={() => setIsDragging(false)}
@@ -486,9 +487,9 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
           <div className="relative w-full h-full flex flex-col">
             {/* Video Container */}
             <div className="relative flex-1 flex items-center justify-center p-4">
-              <div 
+              <div
                 ref={videoContainerRef}
-                className="relative max-w-full max-h-[60vh] rounded-xl shadow-2xl overflow-hidden"
+                className="relative max-w-full max-h-[60vh] rounded-[10px] shadow-2xl overflow-hidden"
                 onMouseMove={(e) => {
                   handleCaptionMouseMove(e);
                   handleResizeMouseMove(e);
@@ -506,7 +507,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                   ref={videoRef}
                   src={state.videoUrl}
                   preload="metadata"
-                  className="max-w-full max-h-[60vh] rounded-xl"
+                  className="max-w-full max-h-[60vh] rounded-[10px]"
                   onClick={togglePlay}
                   onLoadedMetadata={(e) => {
                     const video = e.currentTarget;
@@ -515,7 +516,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                     }
                   }}
                 />
-                
+
                 {/* Caption Overlay - Draggable, Editable, and Resizable */}
                 {currentCaption && (
                   <div
@@ -544,33 +545,33 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                           }}
                         >
                           {word}
-                          {idx < arr.length - 1 ? "\u00A0" : ""}
+                          {idx < arr.length - 1 ? " " : ""}
                         </span>
                       ))}
                     </span>
-                    
+
                     {/* Resize Handles - Show on hover */}
                     {(isHoveringCaption || isResizing) && !isEditing && (
                       <>
                         {/* Corner resize handles */}
                         <div
-                          className="absolute -top-2 -left-2 w-4 h-4 bg-white border-2 border-primary rounded-full cursor-nwse-resize hover:scale-125 transition-transform shadow-md"
+                          className="absolute -top-2 -left-2 w-4 h-4 bg-white border-2 border-[#2563EB] rounded-full cursor-nwse-resize hover:scale-125 transition-transform shadow-md"
                           onMouseDown={handleResizeMouseDown}
                         />
                         <div
-                          className="absolute -top-2 -right-2 w-4 h-4 bg-white border-2 border-primary rounded-full cursor-nesw-resize hover:scale-125 transition-transform shadow-md"
+                          className="absolute -top-2 -right-2 w-4 h-4 bg-white border-2 border-[#2563EB] rounded-full cursor-nesw-resize hover:scale-125 transition-transform shadow-md"
                           onMouseDown={handleResizeMouseDown}
                         />
                         <div
-                          className="absolute -bottom-2 -left-2 w-4 h-4 bg-white border-2 border-primary rounded-full cursor-nesw-resize hover:scale-125 transition-transform shadow-md"
+                          className="absolute -bottom-2 -left-2 w-4 h-4 bg-white border-2 border-[#2563EB] rounded-full cursor-nesw-resize hover:scale-125 transition-transform shadow-md"
                           onMouseDown={handleResizeMouseDown}
                         />
                         <div
-                          className="absolute -bottom-2 -right-2 w-4 h-4 bg-white border-2 border-primary rounded-full cursor-nwse-resize hover:scale-125 transition-transform shadow-md"
+                          className="absolute -bottom-2 -right-2 w-4 h-4 bg-white border-2 border-[#2563EB] rounded-full cursor-nwse-resize hover:scale-125 transition-transform shadow-md"
                           onMouseDown={handleResizeMouseDown}
                         />
                         {/* Border outline when hovering */}
-                        <div className="absolute inset-0 border-2 border-primary/50 border-dashed rounded pointer-events-none" />
+                        <div className="absolute inset-0 border-2 border-[#2563EB]/50 border-dashed rounded pointer-events-none" />
                       </>
                     )}
                   </div>
@@ -593,7 +594,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                 {/* Transcription Progress Overlay - Veed.io style */}
                 {state.isTranscribing && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
-                    <div className="bg-white p-8 rounded-2xl shadow-2xl min-w-[320px] text-center">
+                    <div className="bg-white dark:bg-gray-900 p-8 rounded-[20px] shadow-2xl min-w-[320px] text-center">
                       {/* Circular Progress */}
                       <div className="relative w-24 h-24 mx-auto mb-6">
                         <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
@@ -640,7 +641,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                       </h3>
 
                       {/* Status text */}
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
                         {state.transcriptionProgress || "...this may take a minute, hang tight!"}
                       </p>
                     </div>
@@ -650,16 +651,16 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
             </div>
 
             {/* Timeline */}
-            <div className="p-4 bg-base-100 border-t border-base-200">
+            <div className="p-4 bg-white dark:bg-gray-900 border-t border-[#E5E7EB] dark:border-gray-700">
               {/* Time Display */}
               <div className="flex justify-between items-center mb-2 text-sm">
-                <span className="font-mono text-primary">{formatTime(localTime)}</span>
-                <span className="font-mono text-gray-500">{formatTime(state.videoDuration || 0)}</span>
+                <span className="font-mono text-[#2563EB]">{formatTime(localTime)}</span>
+                <span className="font-mono text-gray-500 dark:text-gray-400">{formatTime(state.videoDuration || 0)}</span>
               </div>
 
               {/* Progress Bar - Simplified for better performance */}
-              <div 
-                className="relative h-10 bg-gray-800 rounded-lg cursor-pointer overflow-hidden"
+              <div
+                className="relative h-10 bg-gray-800 rounded-[10px] cursor-pointer overflow-hidden"
                 onClick={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const x = e.clientX - rect.left;
@@ -678,8 +679,8 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                         key={caption.id}
                         className={`absolute top-1 bottom-1 rounded-sm transition-colors ${
                           state.selectedCaptionId === caption.id
-                            ? "bg-primary"
-                            : "bg-primary/40 hover:bg-primary/60"
+                            ? "bg-[#2563EB]"
+                            : "bg-[#2563EB]/40 hover:bg-[#2563EB]/60"
                         }`}
                         style={{
                           left: `${left}%`,
@@ -695,19 +696,19 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                     );
                   })}
                 </div>
-                
+
                 {/* Progress fill */}
                 <div
                   className="absolute top-0 bottom-0 left-0 bg-white/10 pointer-events-none"
-                  style={{ 
+                  style={{
                     width: state.videoDuration > 0 ? `${(localTime / state.videoDuration) * 100}%` : "0%",
                   }}
                 />
-                
+
                 {/* Playhead */}
                 <div
                   className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg pointer-events-none"
-                  style={{ 
+                  style={{
                     left: state.videoDuration > 0 ? `${(localTime / state.videoDuration) * 100}%` : "0%",
                     transform: "translateX(-50%)",
                   }}
@@ -718,15 +719,16 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
 
               {/* Playback Controls */}
               <div className="flex justify-center items-center gap-4 mt-3">
-                <button
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={() => seekTo(Math.max(0, state.currentTime - 5))}
-                  className="px-3 py-1.5 bg-base-200 hover:bg-base-300 rounded-lg text-sm font-medium transition-colors"
                 >
                   -5s
-                </button>
+                </Button>
                 <button
                   onClick={togglePlay}
-                  className="w-12 h-12 rounded-full bg-primary hover:bg-primary-focus text-white flex items-center justify-center shadow-lg transition-all"
+                  className="w-12 h-12 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white flex items-center justify-center shadow-lg transition-all"
                 >
                   {state.isPlaying ? (
                     <BsPauseFill className="w-6 h-6" />
@@ -734,36 +736,37 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                     <BsPlayFill className="w-6 h-6 ml-0.5" />
                   )}
                 </button>
-                <button
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={() => seekTo(Math.min(state.videoDuration || 0, state.currentTime + 5))}
-                  className="px-3 py-1.5 bg-base-200 hover:bg-base-300 rounded-lg text-sm font-medium transition-colors"
                 >
                   +5s
-                </button>
+                </Button>
               </div>
             </div>
           </div>
         ) : (
           /* Upload Prompt */
-          <div className={`p-6 sm:p-8 bg-base-100 relative z-20 rounded-2xl shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-primary" : ""}`}>
+          <div className={`p-6 sm:p-8 bg-white dark:bg-gray-900 relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-[#2563EB]" : ""}`}>
             <div className="flex gap-1 flex-col mb-6">
               <div className="flex items-start gap-4 sm:gap-6">
-                <h2 className="font-bold text-2xl text-primary-content bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
+                <h2 className="font-bold text-2xl text-[#0A0A0A] dark:text-white bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
                   Upload Your Video
                 </h2>
-                <div className="text-2xl text-primary animate-pulse-soft">✦</div>
+                <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
               </div>
-              <span className="text-sm text-gray-500 mt-1">
+              <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Add captions and subtitles to your videos
               </span>
             </div>
 
             <label
               htmlFor="video-upload-main"
-              className="flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-2xl border-dashed transition-all duration-300 cursor-pointer border-gray-300 hover:border-primary/50 hover:bg-primary/5"
+              className="flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer border-gray-300 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"
             >
-              <div className="p-4 rounded-full bg-primary/10 transition-transform duration-300">
-                <BsUpload className="text-primary text-2xl" />
+              <div className="p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300">
+                <BsUpload className="text-[#2563EB] text-2xl" />
               </div>
               <input
                 type="file"
@@ -772,8 +775,8 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                 id="video-upload-main"
                 onChange={handleFileChange}
               />
-              <h3 className="text-gray-700 font-medium">
-                <span className="text-primary hover:underline cursor-pointer">
+              <h3 className="text-gray-700 dark:text-gray-200 font-medium">
+                <span className="text-[#2563EB] hover:underline cursor-pointer">
                   Click to upload
                 </span>{" "}
                 or drag and drop
@@ -784,7 +787,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
             <div className="grid grid-cols-1 gap-3 mt-6">
               <label
                 htmlFor="video-upload-btn"
-                className="btn btn-primary rounded-xl font-semibold w-full shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
+                className="cursor-pointer"
               >
                 <input
                   type="file"
@@ -793,7 +796,9 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
                   id="video-upload-btn"
                   onChange={handleFileChange}
                 />
-                START EDITING
+                <Button className="w-full shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all duration-200 hover:-translate-y-0.5">
+                  START EDITING
+                </Button>
               </label>
             </div>
           </div>
@@ -803,15 +808,15 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
       {/* Floating Edit Modal - Outside video container to avoid clipping */}
       {isEditing && currentCaption && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 min-w-[400px] max-w-[600px] mx-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Edit Caption</h3>
+          <div className="bg-white dark:bg-gray-900 rounded-[20px] shadow-2xl p-6 min-w-[400px] max-w-[600px] mx-4">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Edit Caption</h3>
             <input
               ref={editInputRef}
               type="text"
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
               onKeyDown={handleEditKeyDown}
-              className="w-full px-4 py-3 text-lg border-2 border-gray-200 rounded-xl focus:border-primary focus:outline-none transition-colors"
+              className="w-full px-4 py-3 text-lg border-2 border-gray-200 dark:border-gray-700 rounded-[14px] focus:border-[#2563EB] focus:outline-none transition-colors"
               style={{
                 fontFamily: state.style.fontFamily,
                 fontWeight: state.style.fontWeight,
@@ -819,18 +824,17 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
               autoFocus
             />
             <div className="flex justify-end gap-3 mt-4">
-              <button
+              <Button
+                variant="ghost"
                 onClick={handleEditCancel}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleEditSubmit}
-                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-focus transition-colors"
               >
                 Save
-              </button>
+              </Button>
             </div>
             <p className="text-xs text-gray-400 mt-3 text-center">
               Press Enter to save, Escape to cancel
@@ -858,36 +862,36 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
           100% { background-color: inherit; }
         }
         @keyframes caption-pop {
-          0% { 
-            opacity: 0; 
+          0% {
+            opacity: 0;
             transform: translate(-50%, -50%) scale(0.5);
           }
-          50% { 
+          50% {
             transform: translate(-50%, -50%) scale(1.1);
           }
-          100% { 
-            opacity: 1; 
+          100% {
+            opacity: 1;
             transform: translate(-50%, -50%) scale(1);
           }
         }
         @keyframes caption-karaoke {
-          0% { 
+          0% {
             opacity: 0.7;
             transform: translate(-50%, -50%) scale(0.95);
           }
-          100% { 
-            opacity: 1; 
+          100% {
+            opacity: 1;
             transform: translate(-50%, -50%) scale(1);
           }
         }
         @keyframes word-pop {
-          0% { 
+          0% {
             transform: scale(0.8) translateY(3px);
           }
-          60% { 
+          60% {
             transform: scale(1.1) translateY(-1px);
           }
-          100% { 
+          100% {
             transform: scale(1) translateY(0);
           }
         }
@@ -897,13 +901,13 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
         .animate-caption-highlight { animation: caption-highlight 0.25s ease-out forwards; }
         .animate-caption-pop { animation: caption-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         .animate-caption-karaoke { animation: caption-karaoke 0.1s ease-out forwards; }
-        
+
         .animate-caption-pop .caption-word,
         .animate-caption-karaoke .caption-word {
           animation: word-pop 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        
-        .animate-caption-typewriter { 
+
+        .animate-caption-typewriter {
           overflow: hidden;
           white-space: nowrap;
           animation: typewriter 0.5s steps(20) forwards;
@@ -953,10 +957,10 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
           100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
         @keyframes caption-neon {
-          0%, 100% { 
+          0%, 100% {
             text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 20px currentColor, 0 0 40px #ff00de, 0 0 80px #ff00de;
           }
-          50% { 
+          50% {
             text-shadow: 0 0 2px currentColor, 0 0 5px currentColor, 0 0 10px currentColor, 0 0 20px #ff00de, 0 0 40px #ff00de;
           }
         }
@@ -983,7 +987,7 @@ const VideoCaptionsEditor = ({ state, videoRef, updateState, updateStyle, update
         .animate-caption-wave .caption-word:nth-child(even) {
           animation-delay: 0.1s;
         }
-        
+
         .caption-text-wrapper {
           display: inline-flex;
           flex-wrap: wrap;

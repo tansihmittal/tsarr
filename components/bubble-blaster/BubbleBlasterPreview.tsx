@@ -7,12 +7,19 @@ import {
   useState,
   ChangeEvent,
 } from "react";
-import { BsClipboard, BsRepeat, BsUpload } from "react-icons/bs";
+import { BsClipboard, BsRepeat, BsUpload, BsStars } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { TfiExport } from "react-icons/tfi";
 import { BubbleBlasterState } from "./BubbleBlasterLayout";
 import { toast } from "react-hot-toast";
 import ToolbarButton from "../common/ToolbarButton";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface Props {
   state: BubbleBlasterState;
@@ -293,27 +300,26 @@ const BubbleBlasterPreview = ({
           state.image ? "opacity-100" : "opacity-80"
         }`}
       >
-        <div className="dropdown">
-          <label tabIndex={0}>
-            <ToolbarButton title="Export Image" disabled={!state.image}>
-              <TfiExport />
-            </ToolbarButton>
-          </label>
-          <ul
-            tabIndex={0}
-            className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50"
-          >
-            <li onClick={() => handleDownload(1)}>
-              <a>Export as PNG 1x</a>
-            </li>
-            <li onClick={() => handleDownload(2)}>
-              <a>Export as PNG 2x</a>
-            </li>
-            <li onClick={() => handleDownload(4)}>
-              <a>Export as PNG 4x</a>
-            </li>
-          </ul>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span>
+              <ToolbarButton title="Export Image" disabled={!state.image}>
+                <TfiExport />
+              </ToolbarButton>
+            </span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="min-w-[262px]">
+            <DropdownMenuItem onClick={() => handleDownload(1)}>
+              Export as PNG 1x
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(2)}>
+              Export as PNG 2x
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload(4)}>
+              Export as PNG 4x
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <ToolbarButton
           title="Copy"
@@ -343,13 +349,13 @@ const BubbleBlasterPreview = ({
       </div>
 
       {/* Canvas area */}
-      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#EFF6FF]/30 dark:bg-blue-900/20 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden">
         {state.image ? (
           <div className="relative p-6">
             <div className="relative">
               <canvas
                 ref={canvasRef}
-                className={`max-w-full max-h-[70vh] rounded-xl shadow-2xl ${
+                className={`max-w-full max-h-[70vh] rounded-[14px] shadow-2xl ${
                   state.mode === "draw" ? "cursor-crosshair" : "cursor-pointer"
                 }`}
                 style={{ boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
@@ -364,19 +370,19 @@ const BubbleBlasterPreview = ({
 
             {/* Processing overlay */}
             {state.isProcessing && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm rounded-xl">
-                <div className="bg-base-100 p-5 rounded-xl shadow-2xl min-w-[240px]">
-                  <div className="h-2 bg-base-200 rounded-full overflow-hidden mb-3">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm rounded-[14px]">
+                <div className="bg-white dark:bg-gray-900 p-5 rounded-[14px] shadow-2xl min-w-[240px]">
+                  <div className="h-2 bg-[#F9FAFB] dark:bg-gray-800 rounded-full overflow-hidden mb-3">
                     <div
-                      className="h-full bg-primary rounded-full transition-all duration-300"
+                      className="h-full bg-[#2563EB] rounded-full transition-all duration-300"
                       style={{ width: `${state.processingPercent}%` }}
                     />
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-primary-content">
+                    <span className="text-[#0A0A0A] dark:text-white">
                       {state.processingProgress}
                     </span>
-                    <span className="font-bold text-primary">
+                    <span className="font-bold text-[#2563EB]">
                       {state.processingPercent}%
                     </span>
                   </div>
@@ -387,11 +393,11 @@ const BubbleBlasterPreview = ({
             {/* Status bar */}
             {!state.isProcessing && state.bubbles.length > 0 && (
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/80 text-white text-xs px-4 py-2 rounded-full flex items-center gap-3">
-                <span>💬 {state.bubbles.length} bubbles</span>
-                <span className="text-primary">✓ {selectedCount} selected</span>
+                <span><span className="inline-block w-3 h-3 rounded-full bg-current" /> {state.bubbles.length} bubbles</span>
+                <span className="text-[#60A5FA]">{selectedCount} selected</span>
                 {processedCount > 0 && (
                   <span className="text-green-400">
-                    ✨ {processedCount} cleaned
+                    {processedCount} cleaned
                   </span>
                 )}
               </div>
@@ -400,7 +406,7 @@ const BubbleBlasterPreview = ({
             {/* Mode indicator */}
             {state.mode === "draw" && (
               <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-xs px-4 py-2 rounded-full">
-                ✏️ Draw mode - Click and drag to select bubble region
+                Draw mode — click and drag to select region
               </div>
             )}
           </div>
@@ -454,15 +460,15 @@ const DropZone = ({
   };
 
   return (
-    <div className="p-6 sm:p-8 bg-base-100 relative z-20 rounded-2xl shadow-xl shadow-black/5 animate-fade-in-scale max-w-lg w-full">
+    <div className="p-6 sm:p-8 bg-white dark:bg-gray-900 relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale max-w-lg w-full">
       <div className="flex gap-1 flex-col mb-6">
         <div className="flex items-start gap-4 sm:gap-6">
-          <h2 className="font-bold text-2xl text-primary-content bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
-            💬 Bubble Blaster
+          <h2 className="font-bold text-2xl text-[#0A0A0A] dark:text-white bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
+            Bubble Blaster
           </h2>
-          <div className="text-2xl text-primary animate-pulse-soft">✦</div>
+          <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
         </div>
-        <span className="text-sm text-gray-500 mt-1">
+        <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Remove text from manga speech bubbles instantly
         </span>
       </div>
@@ -471,17 +477,17 @@ const DropZone = ({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-2xl border-dashed transition-all duration-300 cursor-pointer ${
+        className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer ${
           isDragActive
-            ? "border-primary bg-primary/5 scale-[1.02]"
-            : "border-gray-300 hover:border-primary/50 hover:bg-primary/5"
+            ? "border-[#2563EB] bg-[#2563EB]/5 scale-[1.02]"
+            : "border-gray-300 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"
         }`}
         onClick={() => fileInputRef.current?.click()}
       >
         <div
-          className={`p-4 rounded-full bg-primary/10 transition-transform duration-300 ${isDragActive ? "scale-110" : ""}`}
+          className={`p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300 ${isDragActive ? "scale-110" : ""}`}
         >
-          <BsUpload className="text-primary text-2xl" />
+          <BsUpload className="text-[#2563EB] text-2xl" />
         </div>
         <input
           type="file"
@@ -490,17 +496,17 @@ const DropZone = ({
           ref={fileInputRef}
           onChange={handleChange}
         />
-        <h3 className="text-gray-700 font-medium">
-          <span className="text-primary hover:underline cursor-pointer">
+        <h3 className="text-gray-700 dark:text-gray-200 font-medium">
+          <span className="text-[#2563EB] hover:underline cursor-pointer">
             Click to upload
           </span>{" "}
           or drag and drop
         </h3>
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
           <BsClipboard className="text-xs" />
           <span>
             or press{" "}
-            <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">
+            <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">
               Ctrl+V
             </kbd>{" "}
             to paste
@@ -509,18 +515,18 @@ const DropZone = ({
         <span className="text-xs text-gray-400">PNG, JPG, WEBP up to 30MB</span>
       </div>
 
-      <button
-        className="btn btn-primary rounded-xl font-semibold w-full mt-6 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5"
+      <Button
+        className="w-full mt-6 shadow-lg shadow-[#2563EB]/20 hover:shadow-xl hover:shadow-[#2563EB]/30 transition-all duration-200 hover:-translate-y-0.5"
         onClick={() => fileInputRef.current?.click()}
       >
         {isDragActive ? "DROP TO UPLOAD" : "UPLOAD MANGA PAGE"}
-      </button>
+      </Button>
 
-      <div className="mt-6 p-4 bg-base-200/50 rounded-xl">
-        <h3 className="font-medium text-sm text-primary-content mb-2">
+      <div className="mt-6 p-4 bg-[#EFF6FF] dark:bg-blue-900/20 rounded-[14px]">
+        <h3 className="font-medium text-sm text-[#0A0A0A] dark:text-white mb-2">
           How it works:
         </h3>
-        <ol className="text-xs text-gray-500 space-y-1">
+        <ol className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
           <li>1. Upload a manga/comic page</li>
           <li>2. Bubbles are auto-detected (or draw manually)</li>
           <li>3. Click &quot;Blast!&quot; to remove text</li>

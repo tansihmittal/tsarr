@@ -1,21 +1,61 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import puppeteer from "puppeteer-core";
+import { isRateLimited } from "@/lib/rateLimit";
+import { assertSafeUrl, isBlockedIp, UnsafeUrlError } from "@/lib/ssrfGuard";
+import { isIP } from "net";
+import { promises as dns } from "dns";
 
-// Screenshot capture API using external service
-// This uses a free screenshot API service
+const CHROMIUM_CDN =
+  "https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.tar";
 
-interface ScreenshotOptions {
-  url: string;
-  width?: number;
-  height?: number;
-  fullPage?: boolean;
-  device?: "desktop" | "tablet" | "mobile";
+const MAC_CHROME =
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+
+const deviceProfiles = {
+  desktop: {
+    viewport: { width: 1920, height: 1080 },
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+    isMobile: false,
+    deviceScaleFactor: 1,
+  },
+  tablet: {
+    viewport: { width: 768, height: 1024 },
+    userAgent:
+      "Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/121.0.6167.57 Mobile/15E148 Safari/604.1",
+    isMobile: true,
+    deviceScaleFactor: 2,
+  },
+  mobile: {
+    viewport: { width: 390, height: 844 },
+    userAgent:
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+    isMobile: true,
+    deviceScaleFactor: 3,
+  },
+};
+
+async function getExecutablePath(): Promise<string> {
+  if (process.env.NODE_ENV !== "production") {
+    return process.env.CHROME_PATH || MAC_CHROME;
+  }
+  const chromium = (await import("@sparticuz/chromium-min")).default;
+  chromium.setGraphicsMode = false;
+  return chromium.executablePath(process.env.CHROMIUM_URL || CHROMIUM_CDN);
 }
 
-const deviceSizes = {
-  desktop: { width: 1920, height: 1080 },
-  tablet: { width: 768, height: 1024 },
-  mobile: { width: 375, height: 812 },
-};
+async function getLaunchArgs(): Promise<string[]> {
+  if (process.env.NODE_ENV !== "production") {
+    return [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+    ];
+  }
+  const chromium = (await import("@sparticuz/chromium-min")).default;
+  return chromium.args;
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -25,55 +65,119 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  // Each request launches a full headless Chromium instance — expensive
+  // compute with no auth in front of it, so keep the ceiling tight.
+  if (isRateLimited(req, res, { limit: 5, windowMs: 60_000, keyPrefix: "screenshot" })) {
+    return;
+  }
+
+  let browser = null;
   try {
-    const { url, device = "desktop", fullPage = false, width, height } = req.body as ScreenshotOptions;
+    const { url, device = "desktop", fullPage = false, width, height } =
+      req.body as {
+        url: string;
+        device?: "desktop" | "tablet" | "mobile";
+        fullPage?: boolean;
+        width?: number;
+        height?: number;
+      };
 
-    if (!url) {
-      return res.status(400).json({ error: "URL is required" });
-    }
+    if (!url) return res.status(400).json({ error: "URL is required" });
 
-    // Validate URL
+    let validUrl: URL;
     try {
-      new URL(url);
-    } catch {
-      return res.status(400).json({ error: "Invalid URL format" });
+      validUrl = await assertSafeUrl(url);
+    } catch (e) {
+      const message = e instanceof UnsafeUrlError ? e.message : "Invalid URL format";
+      return res.status(400).json({ error: message });
     }
 
-    // Get device dimensions
-    const dimensions = width && height 
-      ? { width, height }
-      : deviceSizes[device] || deviceSizes.desktop;
+    const profile = deviceProfiles[device] ?? deviceProfiles.desktop;
+    const viewport =
+      width && height
+        ? { width: Number(width), height: Number(height) }
+        : profile.viewport;
 
-    // Use screenshotone.com API (free tier available) or similar service
-    // For now, we'll use a simple approach with urlbox or similar
-    // You can replace this with your preferred screenshot service
-    
-    const screenshotUrl = `https://api.screenshotone.com/take?url=${encodeURIComponent(url)}&viewport_width=${dimensions.width}&viewport_height=${dimensions.height}&full_page=${fullPage}&format=png&access_key=${process.env.SCREENSHOT_API_KEY || "free"}`;
+    const [executablePath, args] = await Promise.all([
+      getExecutablePath(),
+      getLaunchArgs(),
+    ]);
 
-    // Alternative: Use microlink.io (has free tier)
-    const microlinkUrl = `https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url&viewport.width=${dimensions.width}&viewport.height=${dimensions.height}${fullPage ? "&screenshot.fullPage=true" : ""}`;
-
-    // Fetch from microlink (free tier)
-    const response = await fetch(microlinkUrl);
-    const data = await response.json();
-
-    if (data.status === "success" && data.data?.screenshot?.url) {
-      return res.status(200).json({ 
-        success: true, 
-        imageUrl: data.data.screenshot.url,
-        dimensions: dimensions
-      });
-    }
-
-    // Fallback: Return the microlink URL for client-side fetching
-    return res.status(200).json({ 
-      success: true, 
-      imageUrl: `https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url`,
-      dimensions: dimensions
+    browser = await puppeteer.launch({
+      args,
+      executablePath,
+      headless: true,
+      defaultViewport: null,
     });
 
+    const page = await browser.newPage();
+
+    // Re-validate every request the page makes (including redirect hops and
+    // its own subresource fetches) — the initial URL check alone doesn't
+    // stop a redirect or an <img>/fetch on the page from targeting an
+    // internal address (DNS rebinding, or the page itself probing your
+    // network from inside it).
+    await page.setRequestInterception(true);
+    page.on("request", async (request) => {
+      try {
+        const reqUrl = new URL(request.url());
+        if (reqUrl.protocol !== "http:" && reqUrl.protocol !== "https:") {
+          // Allow non-network schemes (data:, blob:, about:) through untouched.
+          if (["data:", "blob:", "about:"].includes(reqUrl.protocol)) {
+            return request.continue();
+          }
+          return request.abort("blockedbyclient");
+        }
+        const hostname = reqUrl.hostname.toLowerCase();
+        if (hostname === "localhost" || hostname.endsWith(".localhost")) {
+          return request.abort("blockedbyclient");
+        }
+        if (isIP(hostname)) {
+          if (isBlockedIp(hostname)) return request.abort("blockedbyclient");
+          return request.continue();
+        }
+        const addresses = await dns.lookup(hostname, { all: true }).catch(() => []);
+        if (addresses.length === 0 || addresses.some((a) => isBlockedIp(a.address))) {
+          return request.abort("blockedbyclient");
+        }
+        return request.continue();
+      } catch {
+        return request.abort("blockedbyclient");
+      }
+    });
+
+    await page.setUserAgent(profile.userAgent);
+    await page.setViewport({
+      ...viewport,
+      isMobile: profile.isMobile,
+      deviceScaleFactor: profile.deviceScaleFactor,
+      hasTouch: profile.isMobile,
+    });
+
+    await page.goto(validUrl.href, {
+      waitUntil: "networkidle2",
+      timeout: 25000,
+    });
+
+    // Brief pause for deferred rendering / CSS transitions
+    await new Promise((r) => setTimeout(r, 500));
+
+    const screenshot = await page.screenshot({
+      type: "jpeg",
+      quality: 85,
+      fullPage,
+      ...(!fullPage && {
+        clip: { x: 0, y: 0, width: viewport.width, height: viewport.height },
+      }),
+    });
+
+    res.setHeader("Content-Type", "image/jpeg");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    return res.status(200).send(Buffer.from(screenshot));
   } catch (error) {
     console.error("Screenshot error:", error);
     return res.status(500).json({ error: "Failed to capture screenshot" });
+  } finally {
+    if (browser) await browser.close().catch(() => {});
   }
 }

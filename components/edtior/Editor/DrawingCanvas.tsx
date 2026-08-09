@@ -1,5 +1,8 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useEditorContext } from "@/context/Editor";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 interface Point {
   x: number;
@@ -873,7 +876,7 @@ const DrawingCanvas: React.FC = () => {
   // Handle cursor change on mouse move for resize handles
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const pos = getMousePos(e);
-    
+
     // Check if hovering over resize handle
     if (selectedElementId && drawingTool === "select") {
       const element = pathsRef.current.find(el => el.id === selectedElementId);
@@ -891,7 +894,7 @@ const DrawingCanvas: React.FC = () => {
           draw(e);
           return;
         }
-        
+
         // Check if hovering over the element (for move cursor)
         const foundElement = findElementAtPoint(pos);
         if (foundElement && foundElement.id === selectedElementId) {
@@ -904,13 +907,13 @@ const DrawingCanvas: React.FC = () => {
         }
       }
     }
-    
+
     // Reset to default cursor
     const canvas = canvasRef.current;
     if (canvas) {
       canvas.style.cursor = getCursor();
     }
-    
+
     draw(e);
   };
 
@@ -918,8 +921,8 @@ const DrawingCanvas: React.FC = () => {
   const shouldCaptureEvents = drawingTool !== "select" || isDrawing || isResizing || selectedElementId;
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className="absolute inset-0 z-30"
       style={{ pointerEvents: shouldCaptureEvents ? "auto" : "none" }}
     >
@@ -942,25 +945,20 @@ const DrawingCanvas: React.FC = () => {
             }
           }}
         >
-          <div className="bg-white rounded-xl shadow-2xl p-5 min-w-[320px] max-w-[500px]">
+          <div className="bg-white dark:bg-gray-900 rounded-[14px] shadow-2xl p-5 min-w-[320px] max-w-[500px]">
             <div className="mb-4">
-              <label className="text-sm font-medium text-gray-700 block mb-2">
-                Font Size
-              </label>
-              <input
-                type="range"
-                min="14"
-                max="72"
-                value={textInput.fontSize}
-                onChange={(e) =>
-                  setTextInput({
-                    ...textInput,
-                    fontSize: Number(e.target.value),
-                  })
-                }
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <div className="space-y-1.5">
+                <Label>Font Size</Label>
+                <Slider
+                  min={14}
+                  max={72}
+                  value={[textInput.fontSize]}
+                  onValueChange={([v]) =>
+                    setTextInput({ ...textInput, fontSize: v })
+                  }
+                />
+              </div>
+              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                 <span>14px</span>
                 <span className="font-medium">{textInput.fontSize}px</span>
                 <span>72px</span>
@@ -985,29 +983,30 @@ const DrawingCanvas: React.FC = () => {
                 color: strokeColor,
                 fontSize: `${Math.min(textInput.fontSize, 32)}px`,
               }}
-              className="w-full border-2 border-gray-200 rounded-lg p-3 min-h-[100px] resize-none focus:border-indigo-500 focus:outline-none transition-colors"
+              className="w-full border-2 border-[#E5E7EB] dark:border-gray-700 rounded-[10px] p-3 min-h-[100px] resize-none focus:border-[#2563EB] focus:outline-none transition-colors bg-white dark:bg-gray-900 text-[#0A0A0A] dark:text-white"
               placeholder="Type your text here..."
               autoFocus
             />
             <div className="flex justify-between items-center mt-4">
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">
                 Ctrl+Enter to save, Esc to cancel
               </span>
               <div className="flex gap-2">
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() =>
                     setTextInput({ ...textInput, visible: false })
                   }
-                  className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
+                  size="sm"
                   onClick={handleTextSubmit}
-                  className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                 >
                   Add Text
-                </button>
+                </Button>
               </div>
             </div>
           </div>

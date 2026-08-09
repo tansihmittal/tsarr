@@ -13,6 +13,7 @@ import {
   downloadimageJpeg,
   downloadimagePng,
   downloadimageSvg,
+  downloadimageWebp,
   getImageBlob,
 } from "./downloads";
 import { toast } from "react-hot-toast";
@@ -25,16 +26,22 @@ import { useProject } from "@/hooks/useProject";
 import { getProjectAsync } from "@/utils/projectStorage";
 import { imageToBase64 } from "@/utils/imageStorage";
 import ProjectNameHeader from "@/components/common/ProjectNameHeader";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface Props {}
 
 const Editor: React.FC<Props> = () => {
-  const { 
-    updateData, 
-    resetChanges, 
-    selectedImage, 
-    noise, 
-    watermark, 
+  const {
+    updateData,
+    resetChanges,
+    selectedImage,
+    noise,
+    watermark,
     showAnnotations,
     currentBackground,
     currentBackgroundType,
@@ -134,24 +141,53 @@ const Editor: React.FC<Props> = () => {
     frameUrl,
   });
 
+  // Stable ref so the save callback always reads current project.save without
+  // being listed as a dep (project object changes identity every render).
+  const projectSaveRef = useRef(project.save);
+  useEffect(() => { projectSaveRef.current = project.save; });
+
   // Auto-save with debounce (Canva-style) - saves 2 seconds after last change
   useEffect(() => {
     // Only auto-save if there's an image (actual content to save)
     if (!selectedImage) return;
-    
+
     // Clear previous timeout
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current);
     }
 
+    // Capture state values synchronously so the async callback below is not stale
+    const snapshot = {
+      selectedImage,
+      imageDimensions,
+      currentBackground,
+      currentBackgroundType,
+      scale,
+      borderRadius,
+      canvasRoundness,
+      padding,
+      left,
+      right,
+      tilt,
+      rotate,
+      aspectRatio,
+      currentBoxShadow,
+      noise,
+      watermark,
+      selectedFrame,
+      frameTitle,
+      frameUrl,
+    };
+
     // Set new timeout for auto-save
     autoSaveTimeoutRef.current = setTimeout(async () => {
-      const editorState = getEditorState();
-      // Convert blob URL to base64 for persistence
+      const editorState = { ...snapshot };
+      // Convert blob URL to base64 off the hot path — deferred so it doesn't
+      // block interaction (fires after the 2-second idle gap).
       if (editorState.selectedImage && editorState.selectedImage.startsWith('blob:')) {
         editorState.selectedImage = await imageToBase64(editorState.selectedImage);
       }
-      project.save(editorState, imageToDownload.current);
+      projectSaveRef.current(editorState, imageToDownload.current);
     }, 2000); // 2 second debounce
 
     return () => {
@@ -159,9 +195,9 @@ const Editor: React.FC<Props> = () => {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedImage,
+    imageDimensions,
     currentBackground,
     currentBackgroundType,
     scale,
@@ -181,18 +217,20 @@ const Editor: React.FC<Props> = () => {
     frameUrl,
   ]);
 
+  const projectMarkChangedRef = useRef(project.markChanged);
+  useEffect(() => { projectMarkChangedRef.current = project.markChanged; });
+
   // Mark project as changed when editor state changes
   useEffect(() => {
     if (projectLoaded || selectedImage) {
-      project.markChanged();
+      projectMarkChangedRef.current();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedImage, currentBackground, scale, borderRadius, canvasRoundness, padding, left, right, tilt, rotate, aspectRatio, currentBoxShadow, noise, watermark, selectedFrame]);
+  }, [projectLoaded, selectedImage, currentBackground, scale, borderRadius, canvasRoundness, padding, left, right, tilt, rotate, aspectRatio, currentBoxShadow, noise, watermark, selectedFrame]);
 
   // Share functionality
   const handleShare = async () => {
     if (!imageToDownload.current || !selectedImage) return;
-    
+
     setIsSharing(true);
     try {
       const blob = await getImageBlob(imageToDownload.current, 2);
@@ -203,7 +241,7 @@ const Editor: React.FC<Props> = () => {
       }
 
       const file = new File([blob], "tsarr-creation.png", { type: "image/png" });
-      const shareText = "Created with tsarr.in - Free Screenshot Editor ✨";
+      const shareText = "Created with tsarr.in - Free Screenshot Editor";
       const shareUrl = "https://tsarr.in";
 
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -292,14 +330,15 @@ const Editor: React.FC<Props> = () => {
     return () => window.removeEventListener("paste", handlePaste);
   }, [updateData, selectedImage]);
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const { normalizeImageFile } = await import("@/utils/imageFile");
+      const normalized = await normalizeImageFile(file);
       if (selectedImage && selectedImage.startsWith("blob:")) URL.revokeObjectURL(selectedImage);
-      const fileUrl = URL.createObjectURL(file);
+      const fileUrl = URL.createObjectURL(normalized);
       updateData && updateData("selectedImage", fileUrl);
 
-      // Get image dimensions
       const img = new window.Image();
       img.onload = () => {
         updateData && updateData("imageDimensions", { width: img.width, height: img.height });
@@ -332,33 +371,23 @@ const Editor: React.FC<Props> = () => {
           selectedImage ? "opacity-100" : "opacity-80"
         }`}
       >
-        <div className="dropdown">
-          <label tabIndex={0}>
-            <ToolbarButton title="Export Image">
-              <TfiExport />
-            </ToolbarButton>
-          </label>
-          <ul
-            tabIndex={0}
-            className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md"
-          >
-            <li onClick={() => downloadimagePng(imageToDownload.current, 1)}>
-              <a>Export as PNG 1x</a>
-            </li>
-            <li onClick={() => downloadimagePng(imageToDownload.current, 2)}>
-              <a>Export as PNG 2x</a>
-            </li>
-            <li onClick={() => downloadimagePng(imageToDownload.current, 4)}>
-              <a>Export as PNG 4x</a>
-            </li>
-            <li onClick={() => downloadimageSvg(imageToDownload.current, 2)}>
-              <a>Export as SVG</a>
-            </li>
-            <li onClick={() => downloadimageJpeg(imageToDownload.current, 2)}>
-              <a>Export as JPEG</a>
-            </li>
-          </ul>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span>
+              <ToolbarButton title="Export Image">
+                <TfiExport />
+              </ToolbarButton>
+            </span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="min-w-[262px]" align="end">
+            <DropdownMenuItem onClick={() => downloadimagePng(imageToDownload.current, 1)}>PNG 1x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimagePng(imageToDownload.current, 2)}>PNG 2x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimagePng(imageToDownload.current, 4)}>PNG 4x</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimageJpeg(imageToDownload.current, 2)}>JPEG</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimageWebp(imageToDownload.current, 2)}>WebP</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadimageSvg(imageToDownload.current, 2)}>SVG</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <ToolbarButton
           title="Copy"
@@ -396,7 +425,7 @@ const Editor: React.FC<Props> = () => {
           title={showAnnotations ? "Close Drawing" : "Draw/Annotate"}
           onTap={() => updateData && updateData("showAnnotations", !showAnnotations)}
         >
-          <FaPencilAlt className={showAnnotations ? "text-primary" : "icon"} />
+          <FaPencilAlt className={showAnnotations ? "text-[#2563EB]" : "icon"} />
         </ToolbarButton>
 
         <ToolbarButton
@@ -415,14 +444,14 @@ const Editor: React.FC<Props> = () => {
       {/* Image Dimensions Display */}
       {selectedImage && imageDimensions.width > 0 && (
         <div className="flex justify-end mb-2 w-full">
-          <span className="text-xs text-gray-500 bg-base-200 px-3 py-1 rounded-full">
+          <span className="text-xs text-gray-500 dark:text-gray-400 bg-[#F9FAFB] dark:bg-gray-800/50 px-3 py-1 rounded-full">
             {imageDimensions.width} × {imageDimensions.height} px
           </span>
         </div>
       )}
 
       {/* Editor Canvas Area */}
-      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
+      <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#F9FAFB]/3 dark:bg-gray-800/30 dark:bg-gray-800/50 border border-[#E5E7EB]/8 dark:border-gray-700/80 dark:border-gray-700 overflow-hidden">
         <EditorWrapper imageRef={imageToDownload}>
           <>
             {noise && (
@@ -445,7 +474,7 @@ const Editor: React.FC<Props> = () => {
             )}
             {watermark.visible && (
               <span
-                className="text-primary-content absolute bottom-3 right-4 z-20 color-base-100 opacity-90 font-medium outline-none font-sans text-[1rem]"
+                className="text-[#0A0A0A] dark:text-white absolute bottom-3 right-4 z-20 opacity-90 font-medium outline-none font-sans text-[1rem]"
                 spellCheck={false}
                 suppressContentEditableWarning={true}
                 contentEditable

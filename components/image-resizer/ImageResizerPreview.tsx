@@ -1,10 +1,13 @@
 import { RefObject, useEffect, useCallback, useState } from "react";
+import { IMAGE_ACCEPT } from "@/utils/imageFile";
 import { ImageResizerState } from "./ImageResizerLayout";
 import { TfiExport } from "react-icons/tfi";
-import { BsClipboard, BsUpload, BsRepeat } from "react-icons/bs";
+import { BsClipboard, BsUpload, BsRepeat, BsStars } from "react-icons/bs";
 import { BiReset } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import ToolbarButton from "../common/ToolbarButton";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 interface Props {
   state: ImageResizerState;
@@ -27,7 +30,7 @@ const ImageResizerPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCo
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith("image/")) onImageUpload(file);
+    if (file && (file.type.startsWith("image/") || /\.(heic|heif)$/i.test(file.name))) onImageUpload(file);
   }, [onImageUpload]);
 
   const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); };
@@ -87,30 +90,35 @@ const ImageResizerPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCo
     return (
       <div className="flex items-center justify-start flex-col h-full w-full">
         <div className="flex flex-wrap gap-2 w-full mb-3 justify-end opacity-80" style={{ pointerEvents: "none" }}>
-          <div className="dropdown"><label tabIndex={0}><ToolbarButton title="Export Image" disabled><TfiExport /></ToolbarButton></label></div>
+          <ToolbarButton title="Export Image" disabled><TfiExport /></ToolbarButton>
           <ToolbarButton title="Copy" disabled><BsClipboard /></ToolbarButton>
-          <label><ToolbarButton title="Reset Image" disabled><BsRepeat /></ToolbarButton></label>
+          <ToolbarButton title="Reset Image" disabled><BsRepeat /></ToolbarButton>
           <ToolbarButton title="Reset Canvas" disabled><BiReset /></ToolbarButton>
         </div>
-        <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border border-base-200/80 overflow-hidden">
-          <div className={`p-6 sm:p-8 bg-base-100 relative z-20 rounded-2xl shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-primary" : ""}`} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
+        <div className="relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#EFF6FF] dark:bg-blue-900/20 border border-[#E5E7EB] dark:border-gray-700 overflow-hidden">
+          <div className={`p-6 sm:p-8 bg-white dark:bg-gray-900 relative z-20 rounded-[20px] shadow-xl shadow-black/5 animate-fade-in-scale ${isDragging ? "ring-2 ring-[#2563EB]" : ""}`} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
             <div className="flex gap-1 flex-col mb-6">
               <div className="flex items-start gap-4 sm:gap-6">
-                <h2 className="font-bold text-2xl text-primary-content">Resize Image</h2>
-                <div className="text-2xl text-primary animate-pulse-soft">✦</div>
+                <h2 className="font-bold text-2xl text-[#0A0A0A] dark:text-white">Resize Image</h2>
+                <BsStars className="text-xl text-[#2563EB] animate-pulse-soft" />
               </div>
-              <span className="text-sm text-gray-500 mt-1">Resize images to exact dimensions or by percentage</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">Resize images to exact dimensions or by percentage</span>
             </div>
-            <label className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-2xl border-dashed transition-all duration-300 cursor-pointer ${isDragging ? "border-primary bg-primary/5 scale-[1.02]" : "border-gray-300 hover:border-primary/50 hover:bg-primary/5"}`}>
-              <div className={`p-4 rounded-full bg-primary/10 transition-transform duration-300 ${isDragging ? "scale-110" : ""}`}><BsUpload className="text-primary text-2xl" /></div>
-              <input type="file" hidden accept="image/*" onChange={handleFileInput} />
-              <h3 className="text-gray-700 font-medium"><span className="text-primary hover:underline">Click to upload</span> or drag and drop</h3>
-              <div className="flex items-center gap-2 text-sm text-gray-500"><BsClipboard className="text-xs" /><span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span></div>
-              <span className="text-xs text-gray-400">JPG, PNG, WebP, AVIF, GIF, SVG up to 30MB</span>
+            <label className={`flex flex-col items-center justify-center gap-3 aspect-[2/1] p-8 border-2 rounded-[20px] border-dashed transition-all duration-300 cursor-pointer ${isDragging ? "border-[#2563EB] bg-[#2563EB]/5 scale-[1.02]" : "border-gray-300 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5"}`}>
+              <div className={`p-4 rounded-full bg-[#2563EB]/10 transition-transform duration-300 ${isDragging ? "scale-110" : ""}`}><BsUpload className="text-[#2563EB] text-2xl" /></div>
+              <input type="file" hidden accept={IMAGE_ACCEPT} onChange={handleFileInput} />
+              <h3 className="text-gray-700 dark:text-gray-200 font-medium"><span className="text-[#2563EB] hover:underline">Click to upload</span> or drag and drop</h3>
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"><BsClipboard className="text-xs" /><span>or press <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">Ctrl+V</kbd> to paste</span></div>
+              <span className="text-xs text-gray-400">PNG, JPG, WebP, AVIF, GIF, HEIC, SVG and more</span>
             </label>
             <div className="grid grid-cols-2 gap-3 mt-6">
-              <label className="btn btn-primary rounded-xl font-semibold w-full shadow-lg shadow-primary/20 cursor-pointer"><input type="file" hidden accept="image/*" onChange={handleFileInput} />{isDragging ? "DROP TO UPLOAD" : "START EDITING"}</label>
-              <button onClick={handlePaste} className="btn btn-outline rounded-xl font-semibold w-full gap-2"><BsClipboard className="text-lg" />PASTE IMAGE</button>
+              <label className="cursor-pointer">
+                <input type="file" hidden accept={IMAGE_ACCEPT} onChange={handleFileInput} />
+                <Button className="rounded-[14px] font-semibold w-full shadow-lg shadow-[#2563EB]/20 pointer-events-none">
+                  {isDragging ? "DROP TO UPLOAD" : "START EDITING"}
+                </Button>
+              </label>
+              <Button variant="secondary" onClick={handlePaste} className="rounded-[14px] font-semibold w-full gap-2"><BsClipboard className="text-lg" />PASTE IMAGE</Button>
             </div>
           </div>
         </div>
@@ -123,24 +131,26 @@ const ImageResizerPreview: React.FC<Props> = ({ state, canvasRef, onExport, onCo
   return (
     <div className="flex items-center justify-start flex-col h-full w-full">
       <div className="flex flex-wrap gap-2 w-full mb-3 justify-end">
-        <div className="dropdown">
-          <label tabIndex={0}><ToolbarButton title="Export Image"><TfiExport /></ToolbarButton></label>
-          <ul tabIndex={0} className="dropdown-content p-2 mt-1 menu bg-base-100 w-full min-w-[262px] border-2 rounded-md z-50">
-            <li onClick={onExport}><a>Export as {state.outputFormat.toUpperCase()} ({dims.width}×{dims.height})</a></li>
-          </ul>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span><ToolbarButton title="Export Image"><TfiExport /></ToolbarButton></span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="min-w-[262px]">
+            <DropdownMenuItem onClick={onExport}>Export as {state.outputFormat.toUpperCase()} ({dims.width}×{dims.height})</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <ToolbarButton title="Copy" onTap={onCopy}><BsClipboard /></ToolbarButton>
-        <label htmlFor="resizer-change-image"><input type="file" hidden accept="image/*" id="resizer-change-image" onChange={handleFileInput} /><ToolbarButton title="Reset Image"><BsRepeat /></ToolbarButton></label>
+        <label htmlFor="resizer-change-image"><input type="file" hidden accept={IMAGE_ACCEPT} id="resizer-change-image" onChange={handleFileInput} /><ToolbarButton title="Reset Image"><BsRepeat /></ToolbarButton></label>
         <ToolbarButton title="Reset Canvas" onTap={handleReset}><BiReset /></ToolbarButton>
       </div>
       <div className="flex justify-end mb-2 w-full">
-        <span className="text-xs text-gray-500 bg-base-200 px-3 py-1 rounded-full">
+        <span className="text-xs text-gray-500 dark:text-gray-400 bg-[#F9FAFB] dark:bg-gray-800 px-3 py-1 rounded-full">
           {state.originalWidth} × {state.originalHeight} px → {dims.width} × {dims.height} px
         </span>
       </div>
-      <div className={`relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-2xl bg-base-200/30 border ${isDragging ? "border-primary border-dashed bg-primary/5" : "border-base-200/80"} overflow-hidden`} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
+      <div className={`relative w-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] flex items-center justify-center rounded-[20px] bg-[#EFF6FF] dark:bg-blue-900/20 border ${isDragging ? "border-[#2563EB] border-dashed bg-[#2563EB]/5" : "border-[#E5E7EB] dark:border-gray-700"} overflow-hidden`} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
         <div className="relative flex items-center justify-center p-4">
-          <canvas ref={canvasRef} className="max-w-full max-h-[550px] rounded-lg shadow-2xl shadow-black/10" />
+          <canvas ref={canvasRef} className="max-w-full max-h-[550px] rounded-[10px] shadow-2xl shadow-black/10" />
         </div>
       </div>
     </div>

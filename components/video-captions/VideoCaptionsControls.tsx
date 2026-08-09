@@ -1,7 +1,7 @@
 import { ReactNode, useState, useEffect } from "react";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "react-hot-toast";
 import {
   BsPlus,
@@ -22,6 +22,12 @@ import {
   DEFAULT_STYLE,
 } from "./VideoCaptionsLayout";
 import { GOOGLE_FONTS, loadFont } from "../../data/fonts";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 interface Props {
   state: VideoCaptionsState;
@@ -610,7 +616,6 @@ const VideoCaptionsControls = ({
   playFromCaption,
   videoRef,
 }: Props) => {
-  const [selectedTab, setSelectedTab] = useState("captions");
   const [isExportingVideo, setIsExportingVideo] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [exportQuality, setExportQuality] = useState<"720p" | "1080p" | "4k" | "original">("original");
@@ -748,7 +753,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     // For GIF, we'll export as WebM and let user convert, or use a simpler frame-based approach
     // Since browser GIF encoding is complex, we'll export as WebM with a note
     setExportProgress(10);
-    
+
     const stream = canvas.captureStream(10); // Lower FPS for GIF-like feel
     const mediaRecorder = new MediaRecorder(stream, {
       mimeType: "video/webm;codecs=vp9",
@@ -784,7 +789,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     const drawCaptionOnCanvas = (caption: Caption | null) => {
       if (!caption) return;
       const style = state.style;
-      const text = style.textTransform === "uppercase" 
+      const text = style.textTransform === "uppercase"
         ? caption.text.toUpperCase()
         : style.textTransform === "lowercase"
         ? caption.text.toLowerCase()
@@ -802,7 +807,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
       let x = canvas.width / 2;
       let y = canvas.height * 0.9;
-      
+
       if (style.position === "custom") {
         x = (style.customX / 100) * canvas.width;
         y = (style.customY / 100) * canvas.height;
@@ -865,7 +870,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     // Set canvas size based on quality
     let targetWidth = video.videoWidth;
     let targetHeight = video.videoHeight;
-    
+
     if (exportQuality === "720p") {
       const aspectRatio = video.videoWidth / video.videoHeight;
       targetHeight = 720;
@@ -879,7 +884,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       targetHeight = 2160;
       targetWidth = Math.round(2160 * aspectRatio);
     }
-    
+
     canvas.width = targetWidth;
     canvas.height = targetHeight;
 
@@ -891,7 +896,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
     // Create a MediaRecorder to capture the canvas
     const stream = canvas.captureStream(30); // 30 FPS
-    
+
     // Try to get audio from the video
     let audioTrack: MediaStreamTrack | null = null;
     try {
@@ -910,13 +915,13 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     }
 
     // Determine mime type based on format
-    const mimeType = exportFormat === "mp4" 
-      ? "video/mp4;codecs=avc1" 
+    const mimeType = exportFormat === "mp4"
+      ? "video/mp4;codecs=avc1"
       : "video/webm;codecs=vp9";
-    
+
     // Check if the format is supported, fallback to webm
-    const supportedMimeType = MediaRecorder.isTypeSupported(mimeType) 
-      ? mimeType 
+    const supportedMimeType = MediaRecorder.isTypeSupported(mimeType)
+      ? mimeType
       : "video/webm;codecs=vp9";
 
     // Set bitrate based on quality
@@ -939,7 +944,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
     // Use the selected format as extension (browser exports as WebM/MP4 internally)
     const fileExtension = exportFormat;
-    
+
     mediaRecorder.onstop = () => {
       const blob = new Blob(chunks, { type: supportedMimeType });
       const url = URL.createObjectURL(blob);
@@ -964,7 +969,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       if (!caption) return;
 
       const style = state.style;
-      const text = style.textTransform === "uppercase" 
+      const text = style.textTransform === "uppercase"
         ? caption.text.toUpperCase()
         : style.textTransform === "lowercase"
         ? caption.text.toLowerCase()
@@ -990,7 +995,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       // Calculate position based on style.position
       let x: number;
       let y: number;
-      
+
       if (style.position === "custom") {
         x = (style.customX / 100) * canvas.width;
         y = (style.customY / 100) * canvas.height;
@@ -1011,7 +1016,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       // Save context for transforms
       ctx.save();
       ctx.translate(x, y);
-      
+
       // Apply rotation
       if (style.rotation !== 0) {
         ctx.rotate((style.rotation * Math.PI) / 180);
@@ -1047,7 +1052,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       // Draw text
       ctx.fillStyle = style.textColor;
       ctx.fillText(text, 0, 0);
-      
+
       ctx.restore();
       ctx.globalAlpha = 1;
     };
@@ -1091,35 +1096,36 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
   return (
     <section className={`flex flex-col transition-opacity duration-300 ${state.videoUrl ? "opacity-100" : "opacity-90"}`}>
+      <Tabs defaultValue="captions">
       {/* Tab Buttons */}
-      <div className="grid grid-cols-3 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Captions" isActive={selectedTab === "captions"} onClick={() => setSelectedTab("captions")}><MdSubtitles /></ControlTabButton>
-        <ControlTabButton title="Style" isActive={selectedTab === "style"} onClick={() => setSelectedTab("style")}><MdStyle /></ControlTabButton>
-        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BsBookmarkFill /></ControlTabButton>
-      </div>
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F3F4F6] dark:bg-gray-800 mb-3">
+        <TabsTrigger value="captions" className="gap-1.5 rounded-[10px] text-xs"><MdSubtitles className="w-3.5 h-3.5" /> Captions</TabsTrigger>
+        <TabsTrigger value="style" className="gap-1.5 rounded-[10px] text-xs"><MdStyle className="w-3.5 h-3.5" /> Style</TabsTrigger>
+        <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+      </TabsList>
 
       {/* Captions Panel */}
-      {selectedTab === "captions" && (
-        <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <TabsContent value="captions">
+        <div className="rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Captions" />
 
           {/* Auto-Transcribe Button */}
-          <div className="p-3 border-b border-base-200/60">
+          <div className="p-3 border-b border-[#E5E7EB] dark:border-gray-700">
             {/* Words per caption setting */}
             <div className="mb-3">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-primary-content font-medium">Words per Caption</span>
-                <span className="px-2 py-0.5 text-xs bg-primary/20 text-primary rounded-full font-semibold">
+                <span className="text-sm text-[#0A0A0A] dark:text-white font-medium">Words per Caption</span>
+                <span className="px-2 py-0.5 text-xs bg-[#2563EB]/20 text-[#2563EB] rounded-full font-semibold">
                   {state.wordsPerCaption === 0 ? "Auto" : `${state.wordsPerCaption} ${state.wordsPerCaption === 1 ? "word" : "words"}`}
                 </span>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => updateState({ wordsPerCaption: 0 })}
-                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex-1 py-2 rounded-[10px] text-sm font-medium transition-colors ${
                     state.wordsPerCaption === 0
-                      ? "bg-primary text-white"
-                      : "bg-base-200 hover:bg-base-300 text-primary-content"
+                      ? "bg-[#2563EB] text-white"
+                      : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800 text-[#0A0A0A] dark:text-white"
                   }`}
                 >
                   Auto
@@ -1128,10 +1134,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                   <button
                     key={num}
                     onClick={() => updateState({ wordsPerCaption: num })}
-                    className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex-1 py-2 rounded-[10px] text-sm font-medium transition-colors ${
                       state.wordsPerCaption === num
-                        ? "bg-primary text-white"
-                        : "bg-base-200 hover:bg-base-300 text-primary-content"
+                        ? "bg-[#2563EB] text-white"
+                        : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800 text-[#0A0A0A] dark:text-white"
                     }`}
                   >
                     {num}
@@ -1139,27 +1145,27 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 ))}
               </div>
               <p className="text-[10px] text-gray-400 mt-1.5">
-                {state.wordsPerCaption === 0 ? "✨ AI picks optimal words based on speech rhythm" : state.wordsPerCaption <= 2 ? "⚡ Fast, punchy TikTok style" : state.wordsPerCaption <= 3 ? "📱 Balanced for social media" : "📺 Traditional subtitle style"}
+                {state.wordsPerCaption === 0 ? "AI picks optimal words based on speech rhythm" : state.wordsPerCaption <= 2 ? "Fast, punchy TikTok style" : state.wordsPerCaption <= 3 ? "Balanced for social media" : "Traditional subtitle style"}
               </p>
             </div>
 
             <button
               onClick={transcribeVideo}
               disabled={!state.videoUrl || state.isTranscribing}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl transition-all duration-200 font-semibold shadow-lg shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-[14px] transition-all duration-200 font-semibold shadow-lg shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <BsMagic className="w-5 h-5" />
               {state.isTranscribing ? "Transcribing..." : "Auto-Generate Captions"}
             </button>
-            
+
             {/* Progress indicator */}
             {state.isTranscribing && (
               <div className="mt-3">
                 <div className="flex justify-between items-center mb-1">
-                  <span className="text-xs text-gray-500">{state.transcriptionProgress}</span>
-                  <span className="text-xs font-semibold text-primary">{Math.round(state.transcriptionPercent)}%</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{state.transcriptionProgress}</span>
+                  <span className="text-xs font-semibold text-[#2563EB]">{Math.round(state.transcriptionPercent)}%</span>
                 </div>
-                <div className="h-2 bg-base-200 rounded-full overflow-hidden">
+                <div className="h-2 bg-[#F9FAFB] dark:bg-gray-800/50 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full transition-all duration-300"
                     style={{ width: `${state.transcriptionPercent}%` }}
@@ -1167,7 +1173,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 </div>
               </div>
             )}
-            
+
             <p className="text-xs text-gray-400 mt-2 text-center">
               Uses AI (Whisper) to auto-detect speech • Runs locally in browser
             </p>
@@ -1175,20 +1181,20 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
           {/* Add Caption Button */}
           <div className="p-3">
-            <button
+            <Button
               onClick={addCaption}
               disabled={!state.videoUrl}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-focus text-primary-content rounded-xl transition-all duration-200 font-medium shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2"
             >
               <BsPlus className="w-5 h-5" />
               Add Caption at {formatTime(state.currentTime)}
-            </button>
+            </Button>
           </div>
 
           {/* Caption List */}
           <div className="px-3 pb-3 space-y-2">
             {state.captions.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <MdSubtitles className="w-12 h-12 mx-auto mb-2 opacity-30" />
                 <p className="text-sm">No captions yet</p>
                 <p className="text-xs mt-1">Click &quot;Add Caption&quot; to get started</p>
@@ -1223,16 +1229,16 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
               <div className="p-3">
                 {/* Quality Selection */}
                 <div className="mb-3">
-                  <span className="text-xs text-gray-500 font-medium block mb-1.5">Quality</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Quality</span>
                   <div className="grid grid-cols-4 gap-2">
                     {(["720p", "1080p", "4k", "original"] as const).map((quality) => (
                       <button
                         key={quality}
                         onClick={() => setExportQuality(quality)}
-                        className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors ${
+                        className={`px-2 py-2 rounded-[10px] text-xs font-medium transition-colors ${
                           exportQuality === quality
-                            ? "bg-primary text-white"
-                            : "bg-base-200 hover:bg-base-300"
+                            ? "bg-[#2563EB] text-white"
+                            : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800"
                         }`}
                       >
                         {quality === "original" ? "Orig" : quality}
@@ -1243,16 +1249,16 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
                 {/* Format Selection */}
                 <div className="mb-3">
-                  <span className="text-xs text-gray-500 font-medium block mb-1.5">Format</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Format</span>
                   <div className="grid grid-cols-3 gap-1.5 mb-1">
                     {(["webm", "mp4", "mov"] as const).map((format) => (
                       <button
                         key={format}
                         onClick={() => setExportFormat(format)}
-                        className={`px-2 py-1.5 rounded-lg text-xs font-medium transition-colors uppercase ${
+                        className={`px-2 py-1.5 rounded-[10px] text-xs font-medium transition-colors uppercase ${
                           exportFormat === format
-                            ? "bg-primary text-white"
-                            : "bg-base-200 hover:bg-base-300"
+                            ? "bg-[#2563EB] text-white"
+                            : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800"
                         }`}
                       >
                         {format}
@@ -1264,10 +1270,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                       <button
                         key={format}
                         onClick={() => setExportFormat(format)}
-                        className={`px-2 py-1.5 rounded-lg text-xs font-medium transition-colors uppercase ${
+                        className={`px-2 py-1.5 rounded-[10px] text-xs font-medium transition-colors uppercase ${
                           exportFormat === format
-                            ? "bg-primary text-white"
-                            : "bg-base-200 hover:bg-base-300"
+                            ? "bg-[#2563EB] text-white"
+                            : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800"
                         }`}
                       >
                         {format}
@@ -1275,9 +1281,9 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                     ))}
                   </div>
                   <p className="text-[10px] text-gray-400 mt-1.5">
-                    {exportFormat === "gif" 
-                      ? "GIF: No audio, optimized for sharing" 
-                      : exportFormat === "webm" 
+                    {exportFormat === "gif"
+                      ? "GIF: No audio, optimized for sharing"
+                      : exportFormat === "webm"
                       ? "WebM: Best browser support, smaller size"
                       : `${exportFormat.toUpperCase()}: Exported as WebM (rename to .${exportFormat})`}
                   </p>
@@ -1286,26 +1292,26 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 <button
                   onClick={exportVideoWithCaptions}
                   disabled={isExportingVideo || !state.videoUrl}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl transition-all duration-200 font-semibold shadow-lg shadow-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed mb-3"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-[14px] transition-all duration-200 font-semibold shadow-lg shadow-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed mb-3"
                 >
                   <BsCameraVideo className="w-5 h-5" />
                   {isExportingVideo ? `Exporting... ${exportProgress}%` : `Export ${exportQuality} ${exportFormat.toUpperCase()}`}
                 </button>
-                
+
                 {isExportingVideo && (
                   <div className="mb-3">
-                    <div className="h-2 bg-base-200 rounded-full overflow-hidden">
+                    <div className="h-2 bg-[#F9FAFB] dark:bg-gray-800/50 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-300"
                         style={{ width: `${exportProgress}%` }}
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1 text-center">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
                       Rendering video with burned-in captions...
                     </p>
                   </div>
                 )}
-                
+
                 <p className="text-xs text-gray-400 text-center mb-3">
                   Captions will be burned into the video
                 </p>
@@ -1315,88 +1321,91 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
               <div className="p-3 grid grid-cols-3 gap-2">
                 <button
                   onClick={exportSRT}
-                  className="flex flex-col items-center gap-1 p-3 bg-base-200/50 hover:bg-base-200 rounded-xl transition-colors"
+                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-[14px] transition-colors"
                 >
-                  <BsDownload className="w-5 h-5 text-primary" />
+                  <BsDownload className="w-5 h-5 text-[#2563EB]" />
                   <span className="text-xs font-medium">SRT</span>
                 </button>
                 <button
                   onClick={exportVTT}
-                  className="flex flex-col items-center gap-1 p-3 bg-base-200/50 hover:bg-base-200 rounded-xl transition-colors"
+                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-[14px] transition-colors"
                 >
-                  <BsDownload className="w-5 h-5 text-primary" />
+                  <BsDownload className="w-5 h-5 text-[#2563EB]" />
                   <span className="text-xs font-medium">VTT</span>
                 </button>
                 <button
                   onClick={exportASS}
-                  className="flex flex-col items-center gap-1 p-3 bg-base-200/50 hover:bg-base-200 rounded-xl transition-colors"
+                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-[14px] transition-colors"
                 >
-                  <BsDownload className="w-5 h-5 text-primary" />
+                  <BsDownload className="w-5 h-5 text-[#2563EB]" />
                   <span className="text-xs font-medium">ASS</span>
                 </button>
                 <button
                   onClick={exportJSON}
-                  className="flex flex-col items-center gap-1 p-3 bg-base-200/50 hover:bg-base-200 rounded-xl transition-colors"
+                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-[14px] transition-colors"
                 >
-                  <BsDownload className="w-5 h-5 text-primary" />
+                  <BsDownload className="w-5 h-5 text-[#2563EB]" />
                   <span className="text-xs font-medium">JSON</span>
                 </button>
                 <button
                   onClick={exportCSV}
-                  className="flex flex-col items-center gap-1 p-3 bg-base-200/50 hover:bg-base-200 rounded-xl transition-colors"
+                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-[14px] transition-colors"
                 >
-                  <BsDownload className="w-5 h-5 text-primary" />
+                  <BsDownload className="w-5 h-5 text-[#2563EB]" />
                   <span className="text-xs font-medium">CSV</span>
                 </button>
                 <button
                   onClick={exportTXT}
-                  className="flex flex-col items-center gap-1 p-3 bg-base-200/50 hover:bg-base-200 rounded-xl transition-colors"
+                  className="flex flex-col items-center gap-1 p-3 bg-[#EFF6FF] dark:bg-blue-900/30 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-[14px] transition-colors"
                 >
-                  <BsDownload className="w-5 h-5 text-primary" />
+                  <BsDownload className="w-5 h-5 text-[#2563EB]" />
                   <span className="text-xs font-medium">TXT</span>
                 </button>
               </div>
             </>
           )}
         </div>
-      )}
+      </TabsContent>
 
       {/* Style Panel */}
-      {selectedTab === "style" && (
-        <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <TabsContent value="style">
+        <div className="rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Caption Style" />
-          
+
           {/* Font Family */}
           <Control title="Font" value={`${state.style.fontFamily} (${GOOGLE_FONTS.length})`}>
-            <select
+            <Select
               value={state.style.fontFamily}
-              onChange={(e) => {
-                loadFont(e.target.value);
-                updateStyle({ fontFamily: e.target.value });
+              onValueChange={(v) => {
+                loadFont(v);
+                updateStyle({ fontFamily: v });
               }}
-              className="select select-sm bg-base-200/50 border-0 text-sm max-w-[150px]"
             >
-              {GOOGLE_FONTS.map((font) => (
-                <option key={font.name} value={font.name}>{font.name}</option>
-              ))}
-            </select>
+              <SelectTrigger className="h-9 text-sm max-w-[150px] bg-[#F3F4F6] dark:bg-gray-800 border-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {GOOGLE_FONTS.map((font) => (
+                  <SelectItem key={font.name} value={font.name}>{font.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </Control>
 
           {/* Font Size */}
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-primary-content font-medium">Font Size</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Font Size</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.fontSize}px
               </span>
             </div>
-            <input
-              type="range"
-              min="16"
-              max="150"
-              value={state.style.fontSize}
-              onChange={(e) => updateStyle({ fontSize: parseInt(e.target.value) })}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={16}
+              max={150}
+              value={[state.style.fontSize]}
+              onValueChange={([v]) => updateStyle({ fontSize: v })}
+              className="w-full"
             />
             <div className="flex justify-between text-xs text-gray-400 mt-1">
               <span>16px</span>
@@ -1405,21 +1414,20 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </div>
 
           {/* Font Weight */}
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-primary-content font-medium">Font Weight</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Font Weight</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.fontWeight}
               </span>
             </div>
-            <input
-              type="range"
-              min="100"
-              max="900"
-              step="100"
-              value={state.style.fontWeight}
-              onChange={(e) => updateStyle({ fontWeight: parseInt(e.target.value) })}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={100}
+              max={900}
+              step={100}
+              value={[state.style.fontWeight]}
+              onValueChange={([v]) => updateStyle({ fontWeight: v })}
+              className="w-full"
             />
           </div>
 
@@ -1444,21 +1452,20 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </Control>
 
           {/* Background Opacity */}
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-primary-content font-medium">Background Opacity</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Background Opacity</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {Math.round(state.style.backgroundOpacity * 100)}%
               </span>
             </div>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.05"
-              value={state.style.backgroundOpacity}
-              onChange={(e) => updateStyle({ backgroundOpacity: parseFloat(e.target.value) })}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={0}
+              max={1}
+              step={0.05}
+              value={[state.style.backgroundOpacity]}
+              onValueChange={([v]) => updateStyle({ backgroundOpacity: v })}
+              className="w-full"
             />
           </div>
 
@@ -1471,8 +1478,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                   onClick={() => updateStyle({ position: pos })}
                   className={`px-3 py-1 rounded text-xs font-medium transition-colors capitalize ${
                     state.style.position === pos
-                      ? "bg-primary text-white"
-                      : "bg-base-200 hover:bg-base-300"
+                      ? "bg-[#2563EB] text-white"
+                      : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800"
                   }`}
                 >
                   {pos}
@@ -1484,36 +1491,34 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           {/* Custom Position Controls */}
           {state.style.position === "custom" && (
             <>
-              <div className="p-4 border-b border-base-200/60">
+              <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-primary-content font-medium">Horizontal (X)</span>
-                  <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium">
+                  <span className="text-[#0A0A0A] dark:text-white font-medium">Horizontal (X)</span>
+                  <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                     {Math.round(state.style.customX)}%
                   </span>
                 </div>
-                <input
-                  type="range"
-                  min="5"
-                  max="95"
-                  value={state.style.customX}
-                  onChange={(e) => updateStyle({ customX: parseInt(e.target.value) })}
-                  className="range range-xs range-primary w-full"
+                <Slider
+                  min={5}
+                  max={95}
+                  value={[state.style.customX]}
+                  onValueChange={([v]) => updateStyle({ customX: v })}
+                  className="w-full"
                 />
               </div>
-              <div className="p-4 border-b border-base-200/60">
+              <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-primary-content font-medium">Vertical (Y)</span>
-                  <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium">
+                  <span className="text-[#0A0A0A] dark:text-white font-medium">Vertical (Y)</span>
+                  <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                     {Math.round(state.style.customY)}%
                   </span>
                 </div>
-                <input
-                  type="range"
-                  min="5"
-                  max="95"
-                  value={state.style.customY}
-                  onChange={(e) => updateStyle({ customY: parseInt(e.target.value) })}
-                  className="range range-xs range-primary w-full"
+                <Slider
+                  min={5}
+                  max={95}
+                  value={[state.style.customY]}
+                  onValueChange={([v]) => updateStyle({ customY: v })}
+                  className="w-full"
                 />
               </div>
             </>
@@ -1521,27 +1526,31 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
           {/* Animation */}
           <Control title="Animation" value={state.style.animation}>
-            <select
+            <Select
               value={state.style.animation}
-              onChange={(e) => updateStyle({ animation: e.target.value as CaptionStyle["animation"] })}
-              className="select select-sm bg-base-200/50 border-0 text-sm"
+              onValueChange={(v) => updateStyle({ animation: v as CaptionStyle["animation"] })}
             >
-              <option value="none">None</option>
-              <option value="pop">Pop ⭐</option>
-              <option value="karaoke">Karaoke</option>
-              <option value="fade">Fade</option>
-              <option value="slide">Slide</option>
-              <option value="bounce">Bounce</option>
-              <option value="highlight">Highlight</option>
-              <option value="glow">Glow ✨</option>
-              <option value="shake">Shake</option>
-              <option value="wave">Wave 🌊</option>
-              <option value="zoom">Zoom</option>
-              <option value="flip">Flip 3D</option>
-              <option value="swing">Swing</option>
-              <option value="elastic">Elastic</option>
-              <option value="neon">Neon 💡</option>
-            </select>
+              <SelectTrigger className="h-9 text-sm bg-[#F3F4F6] dark:bg-gray-800 border-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                <SelectItem value="pop">Pop ⭐</SelectItem>
+                <SelectItem value="karaoke">Karaoke</SelectItem>
+                <SelectItem value="fade">Fade</SelectItem>
+                <SelectItem value="slide">Slide</SelectItem>
+                <SelectItem value="bounce">Bounce</SelectItem>
+                <SelectItem value="highlight">Highlight</SelectItem>
+                <SelectItem value="glow">Glow</SelectItem>
+                <SelectItem value="shake">Shake</SelectItem>
+                <SelectItem value="wave">Wave</SelectItem>
+                <SelectItem value="zoom">Zoom</SelectItem>
+                <SelectItem value="flip">Flip 3D</SelectItem>
+                <SelectItem value="swing">Swing</SelectItem>
+                <SelectItem value="elastic">Elastic</SelectItem>
+                <SelectItem value="neon">Neon</SelectItem>
+              </SelectContent>
+            </Select>
           </Control>
 
           {/* Highlight Color */}
@@ -1555,21 +1564,20 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </Control>
 
           {/* Text Stroke */}
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-primary-content font-medium">Text Stroke</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Text Stroke</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.strokeWidth}px
               </span>
             </div>
             <div className="flex gap-2 items-center">
-              <input
-                type="range"
-                min="0"
-                max="4"
-                value={state.style.strokeWidth}
-                onChange={(e) => updateStyle({ strokeWidth: parseInt(e.target.value) })}
-                className="range range-xs range-primary flex-1"
+              <Slider
+                min={0}
+                max={4}
+                value={[state.style.strokeWidth]}
+                onValueChange={([v]) => updateStyle({ strokeWidth: v })}
+                className="flex-1"
               />
               <input
                 type="color"
@@ -1582,127 +1590,122 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
           {/* Text Transform */}
           <Control title="Text Case" value={state.style.textTransform}>
-            <select
+            <Select
               value={state.style.textTransform}
-              onChange={(e) => updateStyle({ textTransform: e.target.value as CaptionStyle["textTransform"] })}
-              className="select select-sm bg-base-200/50 border-0 text-sm"
+              onValueChange={(v) => updateStyle({ textTransform: v as CaptionStyle["textTransform"] })}
             >
-              <option value="none">Normal</option>
-              <option value="uppercase">UPPERCASE</option>
-              <option value="lowercase">lowercase</option>
-              <option value="capitalize">Capitalize</option>
-            </select>
+              <SelectTrigger className="h-9 text-sm bg-[#F3F4F6] dark:bg-gray-800 border-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Normal</SelectItem>
+                <SelectItem value="uppercase">UPPERCASE</SelectItem>
+                <SelectItem value="lowercase">lowercase</SelectItem>
+                <SelectItem value="capitalize">Capitalize</SelectItem>
+              </SelectContent>
+            </Select>
           </Control>
 
           {/* Text Shadow Toggle */}
           <Control title="Text Shadow">
-            <label className="custom-toggle">
-              <input
-                type="checkbox"
-                checked={state.style.textShadow}
-                onChange={(e) => updateStyle({ textShadow: e.target.checked })}
-              />
-              <span className="slider"></span>
-            </label>
+            <Switch
+              checked={state.style.textShadow}
+              onCheckedChange={(checked) => updateStyle({ textShadow: checked })}
+            />
           </Control>
 
           {/* Border Radius */}
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-primary-content font-medium">Border Radius</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Border Radius</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.borderRadius}px
               </span>
             </div>
-            <input
-              type="range"
-              min="0"
-              max="24"
-              value={state.style.borderRadius}
-              onChange={(e) => updateStyle({ borderRadius: parseInt(e.target.value) })}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={0}
+              max={24}
+              value={[state.style.borderRadius]}
+              onValueChange={([v]) => updateStyle({ borderRadius: v })}
+              className="w-full"
             />
           </div>
 
           {/* Padding */}
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-primary-content font-medium">Padding</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Padding</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.padding}px
               </span>
             </div>
-            <input
-              type="range"
-              min="4"
-              max="32"
-              value={state.style.padding}
-              onChange={(e) => updateStyle({ padding: parseInt(e.target.value) })}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={4}
+              max={32}
+              value={[state.style.padding]}
+              onValueChange={([v]) => updateStyle({ padding: v })}
+              className="w-full"
             />
           </div>
 
           <PanelHeading title="Advanced Text Options" />
 
           {/* Opacity */}
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-primary-content font-medium">Opacity</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Opacity</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.opacity}%
               </span>
             </div>
-            <input
-              type="range"
-              min="10"
-              max="100"
-              value={state.style.opacity}
-              onChange={(e) => updateStyle({ opacity: parseInt(e.target.value) })}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={10}
+              max={100}
+              value={[state.style.opacity]}
+              onValueChange={([v]) => updateStyle({ opacity: v })}
+              className="w-full"
             />
           </div>
 
           {/* Letter Spacing */}
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-primary-content font-medium">Letter Spacing</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Letter Spacing</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.letterSpacing}px
               </span>
             </div>
-            <input
-              type="range"
-              min="-5"
-              max="20"
-              value={state.style.letterSpacing}
-              onChange={(e) => updateStyle({ letterSpacing: parseInt(e.target.value) })}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={-5}
+              max={20}
+              value={[state.style.letterSpacing]}
+              onValueChange={([v]) => updateStyle({ letterSpacing: v })}
+              className="w-full"
             />
           </div>
 
           {/* Rotation */}
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-primary-content font-medium">Rotation</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Rotation</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.rotation}°
               </span>
             </div>
-            <input
-              type="range"
-              min="-45"
-              max="45"
-              value={state.style.rotation}
-              onChange={(e) => updateStyle({ rotation: parseInt(e.target.value) })}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={-45}
+              max={45}
+              value={[state.style.rotation]}
+              onValueChange={([v]) => updateStyle({ rotation: v })}
+              className="w-full"
             />
           </div>
 
           <PanelHeading title="3D Tilt Effects" />
 
           {/* 3D Tilt Presets */}
-          <div className="p-4 border-b border-base-200/60">
-            <span className="text-primary-content font-medium text-sm block mb-2">Tilt Presets</span>
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
+            <span className="text-[#0A0A0A] dark:text-white font-medium text-sm block mb-2">Tilt Presets</span>
             <div className="grid grid-cols-3 gap-1.5">
               {[
                 { id: "none", name: "None", tiltX: 0, tiltY: 0 },
@@ -1719,8 +1722,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                   onClick={() => updateStyle({ tiltX: preset.tiltX, tiltY: preset.tiltY })}
                   className={`px-2 py-1.5 rounded text-[10px] font-medium transition-colors ${
                     state.style.tiltX === preset.tiltX && state.style.tiltY === preset.tiltY
-                      ? "bg-primary text-white"
-                      : "bg-base-200 hover:bg-base-300"
+                      ? "bg-[#2563EB] text-white"
+                      : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800"
                   }`}
                 >
                   {preset.name}
@@ -1730,81 +1733,74 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </div>
 
           {/* Tilt X */}
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-primary-content font-medium">Tilt X</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Tilt X</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.tiltX}°
               </span>
             </div>
-            <input
-              type="range"
-              min="-45"
-              max="45"
-              value={state.style.tiltX}
-              onChange={(e) => updateStyle({ tiltX: parseInt(e.target.value) })}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={-45}
+              max={45}
+              value={[state.style.tiltX]}
+              onValueChange={([v]) => updateStyle({ tiltX: v })}
+              className="w-full"
             />
           </div>
 
           {/* Tilt Y */}
-          <div className="p-4 border-b border-base-200/60">
+          <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-primary-content font-medium">Tilt Y</span>
-              <span className="px-2.5 py-1 text-[0.65rem] bg-base-200/80 rounded-full font-medium">
+              <span className="text-[#0A0A0A] dark:text-white font-medium">Tilt Y</span>
+              <span className="px-2.5 py-1 text-[0.65rem] bg-[#F3F4F6] dark:bg-gray-800 rounded-full font-medium">
                 {state.style.tiltY}°
               </span>
             </div>
-            <input
-              type="range"
-              min="-45"
-              max="45"
-              value={state.style.tiltY}
-              onChange={(e) => updateStyle({ tiltY: parseInt(e.target.value) })}
-              className="range range-xs range-primary w-full"
+            <Slider
+              min={-45}
+              max={45}
+              value={[state.style.tiltY]}
+              onValueChange={([v]) => updateStyle({ tiltY: v })}
+              className="w-full"
             />
           </div>
 
           {/* 3D Reflection Toggle */}
           <Control title="3D Reflection">
-            <label className="custom-toggle">
-              <input
-                type="checkbox"
-                checked={state.style.reflection}
-                onChange={(e) => updateStyle({ reflection: e.target.checked })}
-              />
-              <span className="slider"></span>
-            </label>
+            <Switch
+              checked={state.style.reflection}
+              onCheckedChange={(checked) => updateStyle({ reflection: checked })}
+            />
           </Control>
 
           {/* Reflection Opacity - only show when reflection is enabled */}
           {state.style.reflection && (
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Reflection Opacity</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Reflection Opacity</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">
                   {Math.round((state.style.reflectionOpacity || 0.3) * 100)}%
                 </span>
               </div>
-              <input
-                type="range"
-                min="0.1"
-                max="0.8"
-                step="0.05"
-                value={state.style.reflectionOpacity || 0.3}
-                onChange={(e) => updateStyle({ reflectionOpacity: parseFloat(e.target.value) })}
-                className="range range-xs range-primary w-full"
+              <Slider
+                min={0.1}
+                max={0.8}
+                step={0.05}
+                value={[state.style.reflectionOpacity || 0.3]}
+                onValueChange={([v]) => updateStyle({ reflectionOpacity: v })}
+                className="w-full"
               />
             </div>
           )}
         </div>
-      )}
+      </TabsContent>
 
       {/* Presets Panel */}
-      {selectedTab === "presets" && (
-        <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+      <TabsContent value="presets">
+        <div className="rounded-[10px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
           <PanelHeading title="Style Presets" />
-          <p className="text-xs text-gray-500 px-4 py-2">
+          <p className="text-xs text-gray-500 dark:text-gray-400 px-4 py-2">
             Click a preset to apply it to your captions
           </p>
           <div className="grid grid-cols-2 gap-3 p-3">
@@ -1812,7 +1808,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
               <button
                 key={preset.id}
                 onClick={() => updateStyle(preset.style as Partial<CaptionStyle>)}
-                className="group relative overflow-hidden rounded-xl border border-base-200/80 hover:border-primary transition-all hover:shadow-lg"
+                className="group relative overflow-hidden rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB] transition-all hover:shadow-lg"
               >
                 <div className="h-16 w-full flex items-center justify-center bg-gray-900">
                   <span
@@ -1828,8 +1824,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                     Sample
                   </span>
                 </div>
-                <div className="p-2 bg-base-100 text-center border-t border-base-200/50">
-                  <span className="text-xs font-medium text-primary-content">
+                <div className="p-2 bg-white dark:bg-gray-900 text-center border-t border-[#E5E7EB] dark:border-gray-700">
+                  <span className="text-xs font-medium text-[#0A0A0A] dark:text-white">
                     {preset.name}
                   </span>
                 </div>
@@ -1838,16 +1834,18 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           </div>
 
           {/* Reset to Default */}
-          <div className="p-3 border-t border-base-200/50">
-            <button
+          <div className="p-3 border-t border-[#E5E7EB] dark:border-gray-700">
+            <Button
+              variant="secondary"
               onClick={() => updateStyle(DEFAULT_STYLE)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-base-200 hover:bg-base-300 text-primary-content rounded-lg transition-all duration-200 text-sm"
+              className="w-full"
             >
               Reset to Default
-            </button>
+            </Button>
           </div>
         </div>
-      )}
+      </TabsContent>
+      </Tabs>
     </section>
   );
 };
@@ -1887,17 +1885,17 @@ const CaptionItem = ({
   }, [isSelected]);
 
   return (
-    <div className={`border rounded-xl overflow-hidden transition-all ${isSelected ? "border-primary bg-primary/5" : "border-base-200/80 bg-base-100"}`}>
+    <div className={`border rounded-[14px] overflow-hidden transition-all ${isSelected ? "border-[#2563EB] bg-[#2563EB]/5" : "border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900"}`}>
       {/* Header */}
       <div
-        className="flex items-center justify-between p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
+        className="flex items-center justify-between p-3 cursor-pointer hover:bg-[#F3F4F6] dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors"
         onClick={() => { setIsExpanded(!isExpanded); onSelect(); }}
       >
         <div className="flex items-center gap-2">
           {isExpanded ? (
-            <BiChevronUp className="w-4 h-4 text-gray-500" />
+            <BiChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
           ) : (
-            <BiChevronDown className="w-4 h-4 text-gray-500" />
+            <BiChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
           )}
           <span className="font-medium text-sm">#{index + 1}</span>
           <span className="text-xs text-gray-400 truncate max-w-[100px]">
@@ -1907,21 +1905,21 @@ const CaptionItem = ({
         <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={onPlay}
-            className="p-1.5 hover:bg-primary/20 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-[#2563EB]/20 rounded-[10px] transition-colors"
             title="Play from here"
           >
-            <BsPlayFill className="w-4 h-4 text-primary" />
+            <BsPlayFill className="w-4 h-4 text-[#2563EB]" />
           </button>
           <button
             onClick={onDuplicate}
-            className="p-1.5 hover:bg-base-200 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 rounded-[10px] transition-colors"
             title="Duplicate"
           >
-            <BsFiles className="w-3.5 h-3.5 text-gray-500" />
+            <BsFiles className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
           </button>
           <button
             onClick={onDelete}
-            className="p-1.5 hover:bg-red-100 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-red-100 rounded-[10px] transition-colors"
             title="Delete"
           >
             <BsTrash className="w-3.5 h-3.5 text-red-500" />
@@ -1931,14 +1929,14 @@ const CaptionItem = ({
 
       {/* Content */}
       {isExpanded && (
-        <div className="p-3 pt-0 space-y-3 border-t border-base-200/60">
+        <div className="p-3 pt-0 space-y-3 border-t border-[#E5E7EB] dark:border-gray-700">
           {/* Text */}
           <div>
-            <span className="text-xs text-gray-500 font-medium block mb-1.5">Caption Text</span>
-            <textarea
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Caption Text</span>
+            <Textarea
               value={caption.text}
               onChange={(e) => onUpdate({ text: e.target.value })}
-              className="w-full px-3 py-2 bg-base-200/50 border-0 rounded-lg focus:ring-2 focus:ring-primary text-sm resize-none"
+              className="w-full bg-[#F3F4F6] dark:bg-gray-800 border-0 text-sm resize-none"
               rows={2}
               placeholder="Enter caption text"
             />
@@ -1947,8 +1945,8 @@ const CaptionItem = ({
           {/* Timing */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <span className="text-xs text-gray-500 font-medium block mb-1.5">Start Time</span>
-              <input
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">Start Time</span>
+              <Input
                 type="text"
                 value={formatTime(caption.startTime)}
                 onChange={(e) => {
@@ -1957,12 +1955,12 @@ const CaptionItem = ({
                     onUpdate({ startTime: time });
                   }
                 }}
-                className="w-full px-3 py-2 bg-base-200/50 border-0 rounded-lg focus:ring-2 focus:ring-primary text-sm font-mono"
+                className="bg-[#F3F4F6] dark:bg-gray-800 border-0 text-sm font-mono h-9"
               />
             </div>
             <div>
-              <span className="text-xs text-gray-500 font-medium block mb-1.5">End Time</span>
-              <input
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block mb-1.5">End Time</span>
+              <Input
                 type="text"
                 value={formatTime(caption.endTime)}
                 onChange={(e) => {
@@ -1971,7 +1969,7 @@ const CaptionItem = ({
                     onUpdate({ endTime: time });
                   }
                 }}
-                className="w-full px-3 py-2 bg-base-200/50 border-0 rounded-lg focus:ring-2 focus:ring-primary text-sm font-mono"
+                className="bg-[#F3F4F6] dark:bg-gray-800 border-0 text-sm font-mono h-9"
               />
             </div>
           </div>

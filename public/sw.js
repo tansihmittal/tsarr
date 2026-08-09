@@ -1,5 +1,5 @@
 // tsarr.in Service Worker v9 - PWABuilder Offline Compatible
-const CACHE_VERSION = 'v9';
+const CACHE_VERSION = 'v11';
 const CACHE_NAME = `tsarr-${CACHE_VERSION}`;
 const STATIC_CACHE = `tsarr-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `tsarr-dynamic-${CACHE_VERSION}`;

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback, memo, ChangeEvent } from "rea
 import { TweetEditorState } from "./TweetEditorLayout";
 import ControlPanelHeading from "../common/ControlPanelHeading";
 import ControlPanelRow from "../common/ControlPanelRow";
-import ControlTabButton from "../common/ControlTabButton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { BiMessageRounded, BiReset, BiChevronRight, BiLink } from "react-icons/bi";
 import { IoMdOptions } from "react-icons/io";
 import { BsBookmarkFill, BsBookmark, BsTrash } from "react-icons/bs";
@@ -13,6 +13,10 @@ import { boxShadows } from "@/data/gradients";
 import { tiltDirectionArray } from "@/data/misc";
 import { gereateRandomGradient } from "@/utils/randomGradient";
 import useCustomPresets from "@/hooks/useCustomPresets";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
 
 interface Props {
   state: TweetEditorState;
@@ -68,7 +72,7 @@ const DebouncedInput = memo(({ value, onChange, className, placeholder, maxLengt
     const newValue = maxLength ? e.target.value.slice(0, maxLength) : e.target.value;
     setLocalValue(newValue);
     isTypingRef.current = true;
-    
+
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       onChange(newValue);
@@ -113,7 +117,7 @@ const DebouncedTextarea = memo(({ value, onChange, className, placeholder, maxLe
     const newValue = e.target.value;
     setLocalValue(newValue);
     isTypingRef.current = true;
-    
+
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       onChange(newValue);
@@ -148,7 +152,6 @@ const DebouncedTextarea = memo(({ value, onChange, className, placeholder, maxLe
 DebouncedTextarea.displayName = "DebouncedTextarea";
 
 const TweetControls: React.FC<Props> = ({ state, updateState }) => {
-  const [selectedTab, setSelectedTab] = useState("content");
   const [showBgPicker, setShowBgPicker] = useState(false);
   const [tweetUrl, setTweetUrl] = useState("");
   const [isImporting, setIsImporting] = useState(false);
@@ -156,7 +159,7 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const customBgInputRef = useRef<HTMLInputElement>(null);
 
-  const { presets: customPresets, savePreset, deletePreset } = useCustomPresets<TweetPresetData>(PRESET_STORAGE_KEY);
+  const { presets: customPresets, savePreset, deletePreset } = useCustomPresets<TweetPresetData>(PRESET_STORAGE_KEY, "tweet-editor");
 
   const getCurrentPresetData = (): TweetPresetData => ({
     theme: state.theme,
@@ -289,46 +292,47 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
 
   return (
     <section className="flex flex-col transition-opacity duration-300 opacity-100">
-      <div className="grid grid-cols-3 bg-base-200/60 rounded-xl p-1 mb-3 cursor-pointer backdrop-blur-sm">
-        <ControlTabButton title="Content" isActive={selectedTab === "content"} onClick={() => setSelectedTab("content")}><BiMessageRounded /></ControlTabButton>
-        <ControlTabButton title="Style" isActive={selectedTab === "style"} onClick={() => setSelectedTab("style")}><IoMdOptions /></ControlTabButton>
-        <ControlTabButton title="Presets" isActive={selectedTab === "presets"} onClick={() => setSelectedTab("presets")}><BsBookmarkFill /></ControlTabButton>
-      </div>
+      <Tabs defaultValue="content">
+      <TabsList className="w-full grid grid-cols-3 rounded-[12px] bg-[#F9FAFB] dark:bg-gray-800/50 mb-3">
+        <TabsTrigger value="content" className="gap-1.5 rounded-[10px] text-xs"><BiMessageRounded className="w-3.5 h-3.5" /> Content</TabsTrigger>
+        <TabsTrigger value="style" className="gap-1.5 rounded-[10px] text-xs"><IoMdOptions className="w-3.5 h-3.5" /> Style</TabsTrigger>
+        <TabsTrigger value="presets" className="gap-1.5 rounded-[10px] text-xs"><BsBookmarkFill className="w-3.5 h-3.5" /> Presets</TabsTrigger>
+      </TabsList>
 
-      <div className="rounded-xl border border-base-200/80 bg-base-100 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
-        {selectedTab === "content" ? (
+      <div className="rounded-[14px] border border-[#E5E7EB] dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm lg:h-[calc(100vh-150px)] lg:overflow-y-scroll scrollbar-hide animate-fade-in">
+        <TabsContent value="content">
           <div className="relative rounded-md">
             <PanelHeading title="Import Tweet" />
 
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex gap-2">
-                <input
+                <Input
                   type="text"
                   value={tweetUrl}
                   onChange={(e) => setTweetUrl(e.target.value)}
                   placeholder="Paste tweet URL (twitter.com or x.com)"
-                  className="input input-sm input-bordered flex-1"
+                  className="h-9 text-sm flex-1"
                   onKeyDown={(e) => e.key === "Enter" && handleImportTweet()}
                 />
-                <button
+                <Button
                   onClick={handleImportTweet}
                   disabled={isImporting}
-                  className={`btn btn-sm btn-primary ${isImporting ? "loading" : ""}`}
+                  size="sm"
                 >
                   {isImporting ? "" : <BiLink className="text-lg" />}
-                </button>
+                </Button>
               </div>
-              <p className="text-xs text-gray-400 mt-2">
+              <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-2">
                 Paste a tweet link to auto-fill all fields
               </p>
             </div>
 
             <PanelHeading title="Profile" />
 
-            <div className="py-3 px-4 border-b border-base-200/60">
+            <div className="py-3 px-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex items-center gap-3">
                 <div
-                  className="w-12 h-12 rounded-full overflow-hidden bg-base-200 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
+                  className="w-12 h-12 rounded-full overflow-hidden bg-[#F9FAFB] dark:bg-gray-800/50 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   {state.avatarUrl ? (
@@ -338,36 +342,33 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
                   )}
                 </div>
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
-                <button onClick={() => fileInputRef.current?.click()} className="btn btn-sm btn-outline">Upload</button>
-                {state.avatarUrl && <button onClick={() => updateState({ avatarUrl: "" })} className="btn btn-sm btn-ghost text-error">Remove</button>}
+                <Button onClick={() => fileInputRef.current?.click()} variant="secondary" size="sm">Upload</Button>
+                {state.avatarUrl && <Button onClick={() => updateState({ avatarUrl: "" })} variant="ghost" size="sm" className="text-[#EF4444]">Remove</Button>}
               </div>
             </div>
 
             <Control title="Display Name">
-              <DebouncedInput value={state.displayName} onChange={(v) => updateState({ displayName: v })} className="input input-sm input-bordered w-[140px]" placeholder="Your Name" maxLength={50} />
+              <DebouncedInput value={state.displayName} onChange={(v) => updateState({ displayName: v })} className="h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 w-[140px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" placeholder="Your Name" maxLength={50} />
             </Control>
 
             <Control title="Username">
               <div className="flex items-center">
                 <span className="text-gray-400 mr-1">@</span>
-                <DebouncedInput value={state.username} onChange={(v) => updateState({ username: v })} className="input input-sm input-bordered w-[120px]" placeholder="username" maxLength={15} />
+                <DebouncedInput value={state.username} onChange={(v) => updateState({ username: v })} className="h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 w-[120px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" placeholder="username" maxLength={15} />
               </div>
             </Control>
 
             <Control title="Verified">
-              <label className="custom-toggle">
-                <input type="checkbox" checked={state.verified} onChange={(e) => updateState({ verified: e.target.checked })} />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={state.verified} onCheckedChange={(v: boolean) => updateState({ verified: v })} />
             </Control>
 
             <PanelHeading title="Tweet" />
 
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <DebouncedTextarea
                 value={state.tweetText}
                 onChange={(v) => updateState({ tweetText: v })}
-                className="w-full h-28 p-3 text-sm bg-base-200 rounded-lg border-2 border-base-300 focus:border-primary focus:outline-none resize-none"
+                className="w-full h-28 p-3 text-sm bg-[#F9FAFB] dark:bg-gray-800/50 rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 focus:border-[#2563EB] focus:outline-none resize-none"
                 placeholder="What's happening?"
                 maxLength={TWITTER_CHAR_LIMIT}
               />
@@ -375,15 +376,15 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
 
             <PanelHeading title="Date & Time" />
 
-            <div className="py-3 px-4 border-b border-base-200/60">
+            <div className="py-3 px-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex gap-2">
                 <div className="flex-1">
-                  <label className="text-xs text-gray-500 block mb-1">Date</label>
-                  <input type="date" value={formatDateForInput(state.date)} onChange={(e) => handleDateChange(e.target.value)} className="input input-sm input-bordered w-full" />
+                  <label className="text-xs text-gray-500 dark:text-gray-400 block mb-1">Date</label>
+                  <input type="date" value={formatDateForInput(state.date)} onChange={(e) => handleDateChange(e.target.value)} className="h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 w-full focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
                 </div>
                 <div className="flex-1">
-                  <label className="text-xs text-gray-500 block mb-1">Time</label>
-                  <input type="time" value={formatTimeForInput(state.date)} onChange={(e) => handleTimeChange(e.target.value)} className="input input-sm input-bordered w-full" />
+                  <label className="text-xs text-gray-500 dark:text-gray-400 block mb-1">Time</label>
+                  <input type="time" value={formatTimeForInput(state.date)} onChange={(e) => handleTimeChange(e.target.value)} className="h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 w-full focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
                 </div>
               </div>
             </div>
@@ -391,29 +392,30 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
             <PanelHeading title="Metrics" />
 
             <Control title="Likes">
-              <DebouncedInput value={state.likes} onChange={(v) => updateState({ likes: v })} className="input input-sm input-bordered w-[100px]" />
+              <DebouncedInput value={state.likes} onChange={(v) => updateState({ likes: v })} className="h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 w-[100px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
             </Control>
             <Control title="Reposts">
-              <DebouncedInput value={state.retweets} onChange={(v) => updateState({ retweets: v })} className="input input-sm input-bordered w-[100px]" />
+              <DebouncedInput value={state.retweets} onChange={(v) => updateState({ retweets: v })} className="h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 w-[100px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
             </Control>
             <Control title="Replies">
-              <DebouncedInput value={state.replies} onChange={(v) => updateState({ replies: v })} className="input input-sm input-bordered w-[100px]" />
+              <DebouncedInput value={state.replies} onChange={(v) => updateState({ replies: v })} className="h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 w-[100px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
             </Control>
             <Control title="Views">
-              <DebouncedInput value={state.views} onChange={(v) => updateState({ views: v })} className="input input-sm input-bordered w-[100px]" />
+              <DebouncedInput value={state.views} onChange={(v) => updateState({ views: v })} className="h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 w-[100px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
             </Control>
             <Control title="Bookmarks">
-              <DebouncedInput value={state.bookmarks} onChange={(v) => updateState({ bookmarks: v })} className="input input-sm input-bordered w-[100px]" />
+              <DebouncedInput value={state.bookmarks} onChange={(v) => updateState({ bookmarks: v })} className="h-9 text-sm px-3 rounded-full bg-[#EFF6FF] dark:bg-blue-900/30 border border-[#E5E7EB] dark:border-gray-700 w-[100px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20" />
             </Control>
           </div>
-        ) : selectedTab === "style" ? (
+        </TabsContent>
+        <TabsContent value="style">
           <div className="relative rounded-md">
             <PanelHeading title="Theme" />
 
             <Control title="Theme">
               <div className="flex gap-1">
                 {(["light", "dark", "dim"] as const).map((theme) => (
-                  <button key={theme} onClick={() => updateState({ theme })} className={`px-3 py-1 rounded text-xs capitalize ${state.theme === theme ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>
+                  <button key={theme} onClick={() => updateState({ theme })} className={`px-3 py-1 rounded text-xs capitalize ${state.theme === theme ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>
                     {theme}
                   </button>
                 ))}
@@ -423,7 +425,7 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
             <Control title="Card Style">
               <div className="flex gap-1">
                 {(["minimal", "default", "detailed"] as const).map((cardStyle) => (
-                  <button key={cardStyle} onClick={() => updateState({ cardStyle })} className={`px-3 py-1 rounded text-xs capitalize ${state.cardStyle === cardStyle ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>
+                  <button key={cardStyle} onClick={() => updateState({ cardStyle })} className={`px-3 py-1 rounded text-xs capitalize ${state.cardStyle === cardStyle ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>
                     {cardStyle}
                   </button>
                 ))}
@@ -433,28 +435,19 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
             <PanelHeading title="Display" />
 
             <Control title="Show Metrics">
-              <label className="custom-toggle">
-                <input type="checkbox" checked={state.showMetrics} onChange={(e) => updateState({ showMetrics: e.target.checked })} />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={state.showMetrics} onCheckedChange={(v: boolean) => updateState({ showMetrics: v })} />
             </Control>
             <Control title="Show Timestamp">
-              <label className="custom-toggle">
-                <input type="checkbox" checked={state.showTimestamp} onChange={(e) => updateState({ showTimestamp: e.target.checked })} />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={state.showTimestamp} onCheckedChange={(v: boolean) => updateState({ showTimestamp: v })} />
             </Control>
             <Control title="Show Source">
-              <label className="custom-toggle">
-                <input type="checkbox" checked={state.showSource} onChange={(e) => updateState({ showSource: e.target.checked })} />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={state.showSource} onCheckedChange={(v: boolean) => updateState({ showSource: v })} />
             </Control>
 
             <Control title="Source Device">
               <div className="flex gap-1">
                 {(["web", "ios", "android"] as const).map((src) => (
-                  <button key={src} onClick={() => updateState({ source: src })} className={`px-2 py-1 rounded text-xs capitalize ${state.source === src ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}>
+                  <button key={src} onClick={() => updateState({ source: src })} className={`px-2 py-1 rounded text-xs capitalize ${state.source === src ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}>
                     {src === "web" ? "Web" : src === "ios" ? "iOS" : "Android"}
                   </button>
                 ))}
@@ -464,14 +457,14 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
             <PanelHeading title="Image Options" />
 
             {/* Shadow */}
-            <div className="py-3 px-4 border-b border-base-200/60">
-              <span className="text-primary-content block mb-2">Shadow</span>
+            <div className="py-3 px-4 border-b border-[#E5E7EB] dark:border-gray-700">
+              <span className="text-[#0A0A0A] dark:text-white block mb-2">Shadow</span>
               <div className="grid grid-cols-3 gap-2">
                 {boxShadows.map((shadow) => (
                   <button
                     key={shadow.id}
                     onClick={() => updateState({ shadow: shadow.value })}
-                    className={`py-2 px-3 rounded-lg text-xs font-medium transition-all ${state.shadow === shadow.value ? "bg-primary text-white" : "bg-base-200 hover:bg-base-300"}`}
+                    className={`py-2 px-3 rounded-[10px] text-xs font-medium transition-all ${state.shadow === shadow.value ? "bg-[#2563EB] text-white" : "bg-[#F9FAFB] dark:bg-gray-800/50 hover:bg-[#E5E7EB] dark:hover:bg-gray-700"}`}
                   >
                     {shadow.name}
                   </button>
@@ -480,30 +473,30 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
             </div>
 
             {/* Scale */}
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Scale</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.scale}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Scale</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.scale}</span>
               </div>
-              <input type="range" min="0.5" max="1.5" step="0.05" value={state.scale} onChange={(e) => updateState({ scale: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+              <Slider min={0.5} max={1.5} step={0.05} value={[state.scale]} onValueChange={([v]: number[]) => updateState({ scale: v })} />
             </div>
 
             {/* Border Radius */}
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Border Radius</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.borderRadius}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Border Radius</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.borderRadius}</span>
               </div>
-              <input type="range" min="0" max="32" value={state.borderRadius} onChange={(e) => updateState({ borderRadius: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+              <Slider min={0} max={32} value={[state.borderRadius]} onValueChange={([v]: number[]) => updateState({ borderRadius: v })} />
             </div>
 
             {/* Padding */}
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Padding</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.padding}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Padding</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.padding}</span>
               </div>
-              <input type="range" min="0" max="160" value={state.padding} onChange={(e) => updateState({ padding: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+              <Slider min={0} max={160} value={[state.padding]} onValueChange={([v]: number[]) => updateState({ padding: v })} />
             </div>
 
             <PanelHeading title="Image Transforms" />
@@ -512,7 +505,7 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
               <div className="flex gap-1">
                 {tiltDirectionArray.map((dir) => (
                   <span
-                    className={`text-primary-content h-8 w-8 rounded-[4px] flex justify-center items-center border-2 border-base-200 cursor-pointer hover:bg-base-200 ${state.tilt.name === dir.name && "bg-base-200"}`}
+                    className={`text-[#0A0A0A] dark:text-white h-8 w-8 rounded-[4px] flex justify-center items-center border-2 border-[#E5E7EB] dark:border-gray-700 cursor-pointer hover:bg-[#F9FAFB] dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 ${state.tilt.name === dir.name && "bg-[#F9FAFB] dark:bg-gray-800"}`}
                     key={dir.id}
                     onClick={() => updateState({ tilt: { name: dir.name, value: dir.value } })}
                   >
@@ -522,28 +515,28 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
               </div>
             </Control>
 
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Left</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.left}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Left</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.left}</span>
               </div>
-              <input type="range" min="-100" max="100" step="5" value={state.left} onChange={(e) => updateState({ left: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+              <Slider min={-100} max={100} step={5} value={[state.left]} onValueChange={([v]: number[]) => updateState({ left: v })} />
             </div>
 
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Top</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.top}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Top</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.top}</span>
               </div>
-              <input type="range" min="-100" max="100" step="5" value={state.top} onChange={(e) => updateState({ top: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+              <Slider min={-100} max={100} step={5} value={[state.top]} onValueChange={([v]: number[]) => updateState({ top: v })} />
             </div>
 
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Rotate</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.rotate}°</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Rotate</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.rotate}°</span>
               </div>
-              <input type="range" min="-90" max="90" step="5" value={state.rotate} onChange={(e) => updateState({ rotate: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+              <Slider min={-90} max={90} step={5} value={[state.rotate]} onValueChange={([v]: number[]) => updateState({ rotate: v })} />
             </div>
 
             <Control title="Reset Transforms" onTap={() => updateState({ tilt: { name: "to center", value: "rotate(0)" }, left: 0, top: 0, rotate: 0, scale: 1 })}>
@@ -552,10 +545,10 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
 
             <PanelHeading title="Background Options" />
 
-            <div className="p-4 border-b border-base-200/60">
-              <span className="text-primary-content block mb-2">Background</span>
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
+              <span className="text-[#0A0A0A] dark:text-white block mb-2">Background</span>
               <div
-                className="w-full h-12 rounded-lg border-2 border-base-200 cursor-pointer hover:border-primary transition-all mb-3"
+                className="w-full h-12 rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 cursor-pointer hover:border-[#2563EB] transition-all mb-3"
                 style={{ background: state.background.background }}
                 onClick={() => setShowBgPicker(!showBgPicker)}
               />
@@ -571,12 +564,12 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
             </div>
 
             {/* Canvas Roundness */}
-            <div className="p-4 border-b border-base-200/60">
+            <div className="p-4 border-b border-[#E5E7EB] dark:border-gray-700">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-gray-500 font-medium">Roundness</span>
-                <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{state.canvasRoundness}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Roundness</span>
+                <span className="text-xs font-semibold text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded-full">{state.canvasRoundness}</span>
               </div>
-              <input type="range" min="0" max="20" step="1" value={state.canvasRoundness} onChange={(e) => updateState({ canvasRoundness: Number(e.target.value) })} className="range range-xs range-primary w-full" />
+              <Slider min={0} max={20} step={1} value={[state.canvasRoundness]} onValueChange={([v]: number[]) => updateState({ canvasRoundness: v })} />
             </div>
 
             {/* Custom Background */}
@@ -602,44 +595,39 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
             <PanelHeading title="Miscellaneous" />
 
             <Control title="Noise">
-              <label className="custom-toggle">
-                <input type="checkbox" checked={state.noise} onChange={(e) => updateState({ noise: e.target.checked })} />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={state.noise} onCheckedChange={(v: boolean) => updateState({ noise: v })} />
             </Control>
 
             <Control title="Frame Visible">
-              <label className="custom-toggle">
-                <input type="checkbox" checked={state.frameVisible} onChange={(e) => updateState({ frameVisible: e.target.checked })} />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={state.frameVisible} onCheckedChange={(v: boolean) => updateState({ frameVisible: v })} />
             </Control>
           </div>
-        ) : (
+        </TabsContent>
+        <TabsContent value="presets">
           <div className="p-4">
             {/* Save Current as Preset */}
             <div className="mb-6">
-              <p className="text-sm font-medium text-primary-content mb-2">Save Current Style</p>
+              <p className="text-sm font-medium text-[#0A0A0A] dark:text-white mb-2">Save Current Style</p>
               <div className="flex gap-2">
-                <input type="text" value={newPresetName} onChange={(e) => setNewPresetName(e.target.value)} className="input input-sm input-bordered flex-1" placeholder="Preset name" />
-                <button onClick={handleSavePreset} className="btn btn-sm btn-primary gap-1"><BsBookmark /> Save</button>
+                <Input type="text" value={newPresetName} onChange={(e) => setNewPresetName(e.target.value)} className="h-9 text-sm flex-1" placeholder="Preset name" />
+                <Button onClick={handleSavePreset} size="sm" className="gap-1"><BsBookmark /> Save</Button>
               </div>
             </div>
 
             {/* Custom Presets */}
             {customPresets.length > 0 && (
               <div className="mb-6">
-                <p className="text-sm font-medium text-primary-content mb-2">Your Presets</p>
+                <p className="text-sm font-medium text-[#0A0A0A] dark:text-white mb-2">Your Presets</p>
                 <div className="grid grid-cols-2 gap-2">
                   {customPresets.map((preset) => (
                     <div key={preset.id} className="relative group">
-                      <button onClick={() => applyCustomPreset(preset.data)} className="w-full group relative overflow-hidden rounded-lg border-2 border-base-200 hover:border-primary transition-all">
+                      <button onClick={() => applyCustomPreset(preset.data)} className="w-full group relative overflow-hidden rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB] transition-all">
                         <div className="h-12 w-full" style={{ background: preset.data.background.background }} />
-                        <div className="p-2 bg-base-100 text-center">
-                          <span className="text-xs font-medium text-primary-content flex items-center justify-center gap-1"><BsBookmarkFill className="text-primary" /> {preset.name}</span>
+                        <div className="p-2 bg-white dark:bg-gray-900 text-center">
+                          <span className="text-xs font-medium text-[#0A0A0A] dark:text-white flex items-center justify-center gap-1"><BsBookmarkFill className="text-[#2563EB]" /> {preset.name}</span>
                         </div>
                       </button>
-                      <button onClick={() => { deletePreset(preset.id); toast.success("Preset deleted"); }} className="absolute top-1 right-1 btn btn-xs btn-circle btn-ghost text-error opacity-0 group-hover:opacity-100 bg-base-100/80"><BsTrash /></button>
+                      <button onClick={() => { deletePreset(preset.id); toast.success("Preset deleted"); }} className="absolute top-1 right-1 h-7 w-7 flex items-center justify-center rounded-full text-[#EF4444] opacity-0 group-hover:opacity-100 bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-900 transition-opacity"><BsTrash className="text-xs" /></button>
                     </div>
                   ))}
                 </div>
@@ -647,24 +635,25 @@ const TweetControls: React.FC<Props> = ({ state, updateState }) => {
             )}
 
             {/* Default Presets */}
-            <p className="text-sm font-medium text-primary-content mb-2">Templates</p>
+            <p className="text-sm font-medium text-[#0A0A0A] dark:text-white mb-2">Templates</p>
             <div className="grid grid-cols-2 gap-3">
               {defaultPresets.map((preset) => (
-                <button key={preset.id} onClick={() => updateState(preset.settings)} className="group relative overflow-hidden rounded-lg border-2 border-base-200 hover:border-primary transition-all">
+                <button key={preset.id} onClick={() => updateState(preset.settings)} className="group relative overflow-hidden rounded-[10px] border-2 border-[#E5E7EB] dark:border-gray-700 hover:border-[#2563EB] transition-all">
                   <div className="h-20 w-full" style={{ background: preset.preview }}>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-3/4 h-10 rounded-md shadow-lg" style={{ backgroundColor: preset.settings.theme === "light" ? "#fff" : "#15202b", opacity: 0.9 }} />
                     </div>
                   </div>
-                  <div className="p-2 bg-base-100 text-center">
-                    <span className="text-xs font-medium text-primary-content">{preset.name}</span>
+                  <div className="p-2 bg-white dark:bg-gray-900 text-center">
+                    <span className="text-xs font-medium text-[#0A0A0A] dark:text-white">{preset.name}</span>
                   </div>
                 </button>
               ))}
             </div>
           </div>
-        )}
+        </TabsContent>
       </div>
+      </Tabs>
     </section>
   );
 };

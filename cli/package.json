@@ -1,0 +1,38 @@
+{
+  "name": "tsarr-tools-cli",
+  "version": "0.1.0",
+  "description": "CLI and MCP server for tsarr.in tools: app icon generation, image resize/convert, color palette extraction, QR codes, watermark removal, and URL screenshots.",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "tsarr": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "ts-node src/cli.ts",
+    "mcp": "node dist/mcp.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.7.0",
+    "commander": "^12.1.0",
+    "jszip": "^3.10.1",
+    "puppeteer": "^25.3.0",
+    "qrcode": "^1.5.4",
+    "sharp": "^0.33.5",
+    "tesseract.js": "^5.1.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@types/qrcode": "^1.5.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  }
+}
